@@ -7,10 +7,12 @@
 #pragma once
 
 #include <vector>
-#include <lights/sequence.h>
-#include <lights/exception.h>
 #include <set>
 #include <map>
+#include <lights/sequence.h>
+#include <lights/exception.h>
+
+#include "common/basics.h"
 
 
 namespace spaceless {
@@ -63,17 +65,11 @@ inline bool operator== (const User& lhs, const User& rhs)
 	return lhs.uid == rhs.uid;
 }
 
-#define SINGLETON_INSTANCE(class_name) \
-static class_name* instance() \
-{ \
-	static class_name inst; \
-	return &inst; \
-}
 
 class UserManager
 {
 public:
-	SINGLETON_INSTANCE(UserManager);
+	SPACELESS_SINGLETON_INSTANCE(UserManager);
 
 	User& register_user(lights::StringView username, lights::StringView password);
 
@@ -146,7 +142,7 @@ inline bool operator== (const SharingGroup& lhs, const SharingGroup& rhs)
 class SharingGroupManager
 {
 public:
-	SINGLETON_INSTANCE(SharingGroupManager);
+	SPACELESS_SINGLETON_INSTANCE(SharingGroupManager);
 
 	SharingGroup& register_group(int uid, lights::StringView group_name);
 
@@ -187,7 +183,7 @@ struct SharingFile
 class SharingFileManager
 {
 public:
-	SINGLETON_INSTANCE(SharingFileManager);
+	SPACELESS_SINGLETON_INSTANCE(SharingFileManager);
 
 	SharingFile& register_file(SharingFile::FileType file_type,
 							   lights::StringView file_name,
@@ -225,7 +221,7 @@ struct StorageNode
 class StorageNodeManager
 {
 public:
-	SINGLETON_INSTANCE(StorageNodeManager);
+	SPACELESS_SINGLETON_INSTANCE(StorageNodeManager);
 
 	StorageNode& register_node(lights::StringView node_ip, short node_port);
 

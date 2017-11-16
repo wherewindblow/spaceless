@@ -11,6 +11,8 @@
 #include <boost/asio.hpp>
 #include <lights/sequence.h>
 
+#include "basics.h"
+
 
 namespace spaceless {
 
@@ -19,20 +21,13 @@ using tcp = asio::ip::tcp;
 using TcpSocket = tcp::socket;
 using TcpEndpoint = tcp::endpoint;
 
-#define SINGLETON_INSTANCE(class_name) \
-static class_name* instance() \
-{ \
-	static class_name inst; \
-	return &inst; \
-}
-
 
 class PackageBuffer;
 
 class CommandHandlerManager
 {
 public:
-	SINGLETON_INSTANCE(CommandHandlerManager);
+	SPACELESS_SINGLETON_INSTANCE(CommandHandlerManager);
 
 	using CommandHandler = std::function<void(const PackageBuffer&)>;
 
@@ -45,9 +40,6 @@ public:
 private:
 	std::map<int, CommandHandler> m_handler_list;
 };
-
-
-#define SPACELESS_POD_PACKED_ATTRIBUTE __attribute__((packed))
 
 const int PACKAGE_VERSION = 1;
 
@@ -161,7 +153,7 @@ using ConnectionPtr = std::shared_ptr<Connection>;
 class ConnectionManager
 {
 public:
-	SINGLETON_INSTANCE(ConnectionManager);
+	SPACELESS_SINGLETON_INSTANCE(ConnectionManager);
 
 	~ConnectionManager();
 
