@@ -10,6 +10,9 @@
 
 namespace spaceless {
 
+asio::io_service service;
+
+
 void CommandHandlerManager::register_command(int cmd, CommandHandlerManager::CommandHandler callback)
 {
 	m_handler_list.insert(std::make_pair(cmd, callback));
@@ -33,15 +36,24 @@ CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cm
 }
 
 
-Connection::Connection(TcpSocket tcp_socket):
-	m_socket(std::move(tcp_socket))
+Connection::Connection():
+	m_socket(service)
 {
 }
+
 
 Connection::~Connection()
 {
 	stop();
 }
+
+
+void Connection::connect(lights::StringView address, unsigned short port)
+{
+	tcp::endpoint endpoint(asio::ip::address::from_string(address.data()), port);
+	m_socket.connect(endpoint);
+}
+
 
 void Connection::start()
 {
@@ -51,7 +63,11 @@ void Connection::start()
 
 void Connection::stop()
 {
-	m_socket.close();
+	if (m_socket.is_open())
+	{
+		m_socket.shutdown(tcp::socket::shutdown_both);
+		m_socket.close();
+	}
 }
 
 
@@ -61,21 +77,26 @@ void Connection::read_header()
 	asio::async_read(m_socket, buffer,
 					 [this](const boost::system::error_code& error, std::size_t bytes_transferred)
 	{
-		if (error)
+		if (error.value() == asio::error::eof && bytes_transferred == 0)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Read package header have error: {}", error.message());
+			return;
+		}
+
+		if (error && error.value() != asio::error::eof)
+		{
+			SPACELESS_ERROR(MODULE_NETWORK, error.message());
 			return;
 		}
 
 		if (bytes_transferred < PackageBuffer::MAX_HEADER_LEN)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Read package header have error: Not enought bytes for header");
+			SPACELESS_ERROR(MODULE_NETWORK, "Not enought bytes for header");
 			return;
 		}
 
 		if (m_read_buffer.header().content_length > static_cast<int>(PackageBuffer::MAX_CONTENT_LEN))
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Read package header have error: Content length is too large");
+			SPACELESS_ERROR(MODULE_NETWORK, "Content length is too large");
 			return;
 		}
 
@@ -94,14 +115,21 @@ void Connection::read_content()
 	{
 		if (error)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Read package content have error: {}", error.message());
+			SPACELESS_ERROR(MODULE_NETWORK, error.message());
 			return;
 		}
 
-		auto callback = CommandHandlerManager::instance()->find_handler(m_read_buffer.header().command);
-		if (callback)
+		auto handler = CommandHandlerManager::instance()->find_handler(m_read_buffer.header().command);
+		if (handler)
 		{
-			callback(m_read_buffer);
+			try
+			{
+				handler(m_read_buffer);
+			}
+			catch (const lights::Exception& ex)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, ex);
+			}
 		}
 
 		read_header();
@@ -124,34 +152,43 @@ ConnectionManager::~ConnectionManager()
 }
 
 
-Connection& ConnectionManager::create(TcpSocket tcp_socket)
+Connection& ConnectionManager::create_connection(lights::StringView address, unsigned short port)
 {
-	auto conn = new Connection(std::move(tcp_socket));
-	m_conn_list.push_back(conn);
-	return *conn;
+	Connection& conn = m_conn_list.emplace_back();
+	conn.connect(address, port);
+	return conn;
+}
+
+
+void ConnectionManager::listen(lights::StringView address, unsigned short port)
+{
+	tcp::endpoint endpoint(asio::ip::address::from_string(address.data()), port);
+	tcp::acceptor& acceptor = m_acceptor_list.emplace_back(service, endpoint);
+
+	Connection& conn = m_conn_list.emplace_back();
+	acceptor.async_accept(conn.m_socket, [&conn](const boost::system::error_code& error)
+	{
+		conn.start();
+	});
 }
 
 
 void ConnectionManager::stop_all()
 {
-	for (std::size_t i = 0; i < m_conn_list.size(); ++i)
+	for (auto& conn: m_conn_list)
 	{
-		m_conn_list[i]->stop();
-		delete m_conn_list[i];
-		m_conn_list[i] = nullptr;
+		conn.stop();
 	}
-}
+	m_conn_list.clear();
 
-
-void ConnectionManager::run()
-{
-	m_io_service.run();
-}
-
-
-asio::io_service& ConnectionManager::io_service()
-{
-	return m_io_service;
+	for (auto& acceptor: m_acceptor_list)
+	{
+		if (acceptor.is_open())
+		{
+			acceptor.close();
+		}
+	}
+	m_acceptor_list.clear();
 }
 
 

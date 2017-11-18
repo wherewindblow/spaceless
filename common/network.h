@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <list>
 #include <boost/asio.hpp>
 #include <lights/sequence.h>
 
@@ -18,8 +19,9 @@ namespace spaceless {
 
 namespace asio = boost::asio;
 using tcp = asio::ip::tcp;
-using TcpSocket = tcp::socket;
-using TcpEndpoint = tcp::endpoint;
+
+
+extern asio::io_service service;
 
 
 class PackageBuffer;
@@ -127,9 +129,11 @@ class ConnectionManager;
 class Connection
 {
 public:
-	Connection(TcpSocket tcp_socket);
+	Connection();
 
 	~Connection();
+
+	void connect(lights::StringView address, unsigned short port);
 
 	void start();
 
@@ -142,12 +146,12 @@ private:
 
 	void read_content();
 
-	TcpSocket m_socket;
+	friend ConnectionManager;
+
+	tcp::socket m_socket;
 	PackageBuffer m_read_buffer;
 	PackageBuffer m_write_buffer;
 };
-
-using ConnectionPtr = std::shared_ptr<Connection>;
 
 
 class ConnectionManager
@@ -157,19 +161,17 @@ public:
 
 	~ConnectionManager();
 
-	Connection& create(TcpSocket tcp_socket);
+	Connection& create_connection(lights::StringView address, unsigned short port);
+
+	void listen(lights::StringView address, unsigned short port);
 
 	void stop_all();
-
-	void run();
-
-	asio::io_service& io_service();
 
 private:
 	friend class Connection;
 
-	std::vector<Connection*> m_conn_list;
-	asio::io_service m_io_service;
+	std::list<Connection> m_conn_list;
+	std::list<tcp::acceptor> m_acceptor_list;
 };
 
 } // namespace spaceless

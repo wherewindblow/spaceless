@@ -103,10 +103,10 @@ User& UserManager::get_user(lights::StringView username)
 }
 
 
-SharingGroup::SharingGroup(int group_id, int ower_id, lights::StringView group_name, int root_dir_id):
+SharingGroup::SharingGroup(int group_id, lights::StringView group_name, int ower_id, int root_dir_id):
 	m_group_id(group_id),
-	m_owner_id(ower_id),
 	m_group_name(group_name.to_std_string()),
+	m_owner_id(ower_id),
 	m_root_dir_id(root_dir_id)
 {
 	m_manager_list.push_back(ower_id);
@@ -310,7 +310,7 @@ SharingGroup& SharingGroupManager::register_group(int uid, lights::StringView gr
 	}
 
 	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
-	SharingGroup new_group(m_next_id, uid, group_name, root_dir.file_id);
+	SharingGroup new_group(m_next_id, group_name, uid, root_dir.file_id);
 	++m_next_id;
 
 	auto itr = m_group_list.insert(std::make_pair(new_group.group_id(), new_group));

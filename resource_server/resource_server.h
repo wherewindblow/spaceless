@@ -93,7 +93,7 @@ private:
 class SharingGroup
 {
 public:
-	SharingGroup(int group_id, int ower_id, lights::StringView group_name,  int root_dir_id);
+	SharingGroup(int group_id, lights::StringView group_name, int ower_id, int root_dir_id);
 
 	int group_id() const;
 
@@ -126,8 +126,8 @@ public:
 private:
 	int m_group_id;
 	std::string m_group_name;
-	int m_root_dir_id;
 	int m_owner_id;
+	int m_root_dir_id;
 	std::vector<int> m_manager_list;
 	std::vector<int> m_member_list;
 };
