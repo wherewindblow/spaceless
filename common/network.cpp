@@ -6,11 +6,30 @@
 
 #include "network.h"
 #include "log.h"
+#include "exception.h"
 
 
 namespace spaceless {
 
 asio::io_service service;
+
+
+PackageBuffer& PackageBufferManager::register_package_buffer()
+{
+	auto pari = m_buffer_list.emplace(m_next_id, PackageBuffer(m_next_id));
+	++m_next_id;
+	if (pari.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_REGISTER);
+	}
+	return pari.first->second;
+}
+
+
+void PackageBufferManager::remove_package_buffer(int buffer_id)
+{
+	m_buffer_list.erase(buffer_id);
+}
 
 
 void CommandHandlerManager::register_command(int cmd, CommandHandlerManager::CommandHandler callback)
@@ -36,15 +55,21 @@ CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cm
 }
 
 
-Connection::Connection():
-	m_socket(service)
+Connection::Connection(int id):
+	m_id(id), m_socket(service), m_read_buffer(0)
 {
 }
 
 
 Connection::~Connection()
 {
-	stop();
+	close();
+}
+
+
+int Connection::connection_id() const
+{
+	return m_id;
 }
 
 
@@ -55,13 +80,13 @@ void Connection::connect(lights::StringView address, unsigned short port)
 }
 
 
-void Connection::start()
+void Connection::start_reading()
 {
 	read_header();
 }
 
 
-void Connection::stop()
+void Connection::close()
 {
 	if (m_socket.is_open())
 	{
@@ -137,12 +162,14 @@ void Connection::read_content()
 }
 
 
-void Connection::write(const PackageBuffer& package)
+void Connection::write_package_buffer(const PackageBuffer& package)
 {
 	// TODO Consider to use coroutines to serialize asynchronization. (asio::spawn ?)
-	m_write_buffer = package; // To ensure buffer is avaliable when really write.
-	asio::async_write(m_socket, m_write_buffer.asio_buffer(),
-					  [](const boost::system::error_code& error, std::size_t bytes_transferred) {});
+	asio::async_write(m_socket, package.asio_buffer(),
+					  [&package](const boost::system::error_code& error, std::size_t bytes_transferred)
+	{
+		PackageBufferManager::instance()->remove_package_buffer(package.package_id());
+	});
 }
 
 
@@ -152,23 +179,25 @@ ConnectionManager::~ConnectionManager()
 }
 
 
-Connection& ConnectionManager::create_connection(lights::StringView address, unsigned short port)
+Connection& ConnectionManager::register_connection(lights::StringView address, unsigned short port)
 {
-	Connection& conn = m_conn_list.emplace_back();
+	Connection& conn = m_conn_list.emplace_back(m_next_id);
+	++m_next_id;
 	conn.connect(address, port);
 	return conn;
 }
 
 
-void ConnectionManager::listen(lights::StringView address, unsigned short port)
+void ConnectionManager::register_listener(lights::StringView address, unsigned short port)
 {
 	tcp::endpoint endpoint(asio::ip::address::from_string(address.data()), port);
 	tcp::acceptor& acceptor = m_acceptor_list.emplace_back(service, endpoint);
 
-	Connection& conn = m_conn_list.emplace_back();
+	Connection& conn = m_conn_list.emplace_back(m_next_id);
+	++m_next_id;
 	acceptor.async_accept(conn.m_socket, [&conn](const boost::system::error_code& error)
 	{
-		conn.start();
+		conn.start_reading();
 	});
 }
 
@@ -177,7 +206,7 @@ void ConnectionManager::stop_all()
 {
 	for (auto& conn: m_conn_list)
 	{
-		conn.stop();
+		conn.close();
 	}
 	m_conn_list.clear();
 

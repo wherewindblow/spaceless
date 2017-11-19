@@ -10,8 +10,9 @@
 #include <utility>
 
 #include <boost/algorithm/string/split.hpp>
-
 #include <lights/exception.h>
+
+#include "common/exception.h"
 
 
 namespace lights {

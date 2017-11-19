@@ -17,7 +17,7 @@
 
 namespace spaceless {
 
-enum ErrorTpye
+enum
 {
 	ERR_USER_ALREADY_EXIST = 1000,
 	ERR_USER_CANNOT_REGISTER = 1001,
@@ -39,15 +39,6 @@ enum ErrorTpye
 	ERR_NODE_ALREADY_EXIST = 1300,
 	ERR_NODE_CANNOT_CREATE = 1301,
 	ERR_NODE_NOT_EXIST = 1302,
-};
-
-
-class Exception: public lights::Exception
-{
-public:
-	Exception(const lights::SourceLocation& occur_location, ErrorTpye error_tpye):
-		lights::Exception(occur_location, error_tpye)
-	{}
 };
 
 
