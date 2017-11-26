@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package spaceless.protocol;
+
+message ReqRegisterUser
+{
+    string username = 1;
+    string password = 2;
+}
+
+message User
+{
+    int32 uid = 1;
+    string name = 2;
+    repeated int32 group_list = 3;
+}
+
+message RspRegisterUser
+{
+    int32 result = 1;
+    User user = 2;
+}
+
+message ReqLoginUser
+{
+    int32 uid = 1;
+    string password = 2;
+}
+
+message RspLoginUser
+{
+    bool result = 1;
+}
+
+message ReqRemoveUser
+{
+    int32 uid = 1;
+}
+
+message RspRemoveUser
+{
+    bool result = 1;
+}

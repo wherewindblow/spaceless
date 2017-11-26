@@ -11,8 +11,6 @@
 
 namespace spaceless {
 
-const int MODULE_NETWORK = 1;
-
 extern lights::TextLogger logger;
 
 #define SPACELESS_DEBUG(module, ...) \

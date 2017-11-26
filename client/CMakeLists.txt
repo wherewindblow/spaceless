@@ -1,17 +1,17 @@
 include_directories(..)
 
-set(SPACELESS_RESOURCE_SERVER_SRC
+set(SPACELESS_CLIENT_SRC
         main.cpp
-        resource_server.h resource_server.cpp)
-add_executable(spaceless_resource_server ${SPACELESS_RESOURCE_SERVER_SRC})
+        client.h client.cpp)
+add_executable(spaceless_client ${SPACELESS_CLIENT_SRC})
 
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 include_directories(${Boost_INCLUDE_DIR})
 
-target_link_libraries(spaceless_resource_server
+target_link_libraries(spaceless_client
         spaceless_common
         spaceless_protocol
         lights_static
         ${Boost_LIBRARIES}
         protobuf
-        PocoFoundation)
+        pthread)

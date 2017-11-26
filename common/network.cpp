@@ -5,8 +5,6 @@
  */
 
 #include "network.h"
-#include "log.h"
-#include "exception.h"
 
 
 namespace spaceless {
@@ -16,13 +14,13 @@ asio::io_service service;
 
 PackageBuffer& PackageBufferManager::register_package_buffer()
 {
-	auto pari = m_buffer_list.emplace(m_next_id, PackageBuffer(m_next_id));
+	auto pair = m_buffer_list.emplace(m_next_id, PackageBuffer(m_next_id));
 	++m_next_id;
-	if (pari.second == false)
+	if (pair.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_REGISTER);
 	}
-	return pari.first->second;
+	return pair.first->second;
 }
 
 
@@ -56,7 +54,10 @@ CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cm
 
 
 Connection::Connection(int id):
-	m_id(id), m_socket(service), m_read_buffer(0)
+	m_id(id),
+	m_socket(service),
+	m_read_buffer(0),
+	m_attachment(nullptr)
 {
 }
 
@@ -75,8 +76,9 @@ int Connection::connection_id() const
 
 void Connection::connect(lights::StringView address, unsigned short port)
 {
-	tcp::endpoint endpoint(asio::ip::address::from_string(address.data()), port);
-	m_socket.connect(endpoint);
+	m_remote_endpoint.address(asio::ip::address::from_string(address.data()));
+	m_remote_endpoint.port(port);
+	m_socket.connect(m_remote_endpoint);
 }
 
 
@@ -90,9 +92,49 @@ void Connection::close()
 {
 	if (m_socket.is_open())
 	{
-		m_socket.shutdown(tcp::socket::shutdown_both);
-		m_socket.close();
+		try
+		{
+			m_socket.shutdown(tcp::socket::shutdown_both);
+			m_socket.close();
+		}
+		catch (const boost::system::system_error& ex)
+		{
+			SPACELESS_ERROR(MODULE_NETWORK, ex.what());
+		}
 	}
+}
+
+
+void Connection::write_package_buffer(const PackageBuffer& package)
+{
+	// TODO Consider to use coroutines to serialize asynchronization. (asio::spawn ?)
+	if (static_cast<std::size_t>(package.header().content_length) > PackageBuffer::MAX_CONTENT_LEN)
+	{
+		PackageBufferManager::instance()->remove_package_buffer(package.package_id());
+		SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Content length is too large. Length:{}",
+						remote_endpoint(), package.header().content_length)
+		return;
+	}
+
+	auto buffer = asio::buffer(package.data(),
+							   PackageBuffer::MAX_HEADER_LEN + package.header().content_length);
+	asio::async_write(m_socket, buffer,
+					  [&package](const boost::system::error_code& error, std::size_t bytes_transferred)
+	{
+		PackageBufferManager::instance()->remove_package_buffer(package.package_id());
+	});
+}
+
+
+void Connection::set_attachment(void* attachment)
+{
+	m_attachment = attachment;
+}
+
+
+void* Connection::attachment()
+{
+	return m_attachment;
 }
 
 
@@ -107,21 +149,25 @@ void Connection::read_header()
 			return;
 		}
 
-		if (error && error.value() != asio::error::eof)
+		if (error &&
+			error.value() != asio::error::eof &&
+			error.value() != asio::error::connection_reset)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, error.message());
+			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. {}", remote_endpoint(), error.message());
 			return;
 		}
 
 		if (bytes_transferred < PackageBuffer::MAX_HEADER_LEN)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Not enought bytes for header");
+			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Not enought bytes for header. Bytes:{}",
+							remote_endpoint(), bytes_transferred);
 			return;
 		}
 
-		if (m_read_buffer.header().content_length > static_cast<int>(PackageBuffer::MAX_CONTENT_LEN))
+		if (static_cast<std::size_t>(m_read_buffer.header().content_length) > PackageBuffer::MAX_CONTENT_LEN)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Content length is too large");
+			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Content length is too large. Length:{}",
+							remote_endpoint(), m_read_buffer.header().content_length);
 			return;
 		}
 
@@ -140,7 +186,7 @@ void Connection::read_content()
 	{
 		if (error)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, error.message());
+			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. {}", remote_endpoint(), error.message());
 			return;
 		}
 
@@ -149,12 +195,17 @@ void Connection::read_content()
 		{
 			try
 			{
-				handler(m_read_buffer);
+				handler(*this, m_read_buffer);
 			}
 			catch (const lights::Exception& ex)
 			{
-				SPACELESS_ERROR(MODULE_NETWORK, ex);
+				SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. {}", remote_endpoint(), ex);
 			}
+		}
+		else
+		{
+			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Unkown command: {}",
+							remote_endpoint(), m_read_buffer.header().command);
 		}
 
 		read_header();
@@ -162,14 +213,15 @@ void Connection::read_content()
 }
 
 
-void Connection::write_package_buffer(const PackageBuffer& package)
+tcp::endpoint Connection::remote_endpoint()
 {
-	// TODO Consider to use coroutines to serialize asynchronization. (asio::spawn ?)
-	asio::async_write(m_socket, package.asio_buffer(),
-					  [&package](const boost::system::error_code& error, std::size_t bytes_transferred)
+	boost::system::error_code error_code;
+	tcp::endpoint remote_endpoint = m_socket.remote_endpoint(error_code);
+	if (!error_code)
 	{
-		PackageBufferManager::instance()->remove_package_buffer(package.package_id());
-	});
+		m_remote_endpoint = remote_endpoint;
+	}
+	return m_remote_endpoint;
 }
 
 
@@ -192,12 +244,19 @@ void ConnectionManager::register_listener(lights::StringView address, unsigned s
 {
 	tcp::endpoint endpoint(asio::ip::address::from_string(address.data()), port);
 	tcp::acceptor& acceptor = m_acceptor_list.emplace_back(service, endpoint);
+	accept_connection(acceptor);
+}
 
+
+void ConnectionManager::accept_connection(tcp::acceptor& acceptor)
+{
 	Connection& conn = m_conn_list.emplace_back(m_next_id);
 	++m_next_id;
-	acceptor.async_accept(conn.m_socket, [&conn](const boost::system::error_code& error)
+	acceptor.async_accept(conn.m_socket, [&acceptor, &conn](const boost::system::error_code& error)
 	{
 		conn.start_reading();
+		conn.remote_endpoint();
+		ConnectionManager::instance()->accept_connection(acceptor);
 	});
 }
 
@@ -214,7 +273,12 @@ void ConnectionManager::stop_all()
 	{
 		if (acceptor.is_open())
 		{
-			acceptor.close();
+			boost::system::error_code error;
+			acceptor.close(error);
+			if (error)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Close accpetor: {}", error.message());
+			}
 		}
 	}
 	m_acceptor_list.clear();

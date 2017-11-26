@@ -13,20 +13,40 @@
 #include <lights/sequence.h>
 
 #include "basics.h"
+#include "log.h"
+#include "exception.h"
 
 
+namespace lights {
+
+template <typename Sink>
+FormatSinkAdapter<Sink> operator<< (FormatSinkAdapter<Sink> out, const boost::asio::ip::tcp::endpoint& endpoint)
+{
+	out << endpoint.address().to_string() << ':' << endpoint.port();
+	return out;
+}
+
+} // namespace lights
+
+
+/**
+ * @note All function that use in framework cannot throw exception. Because don't know who can catch it.
+ */
 namespace spaceless {
 
-namespace asio = boost::asio;
-using tcp = asio::ip::tcp;
-
-
-extern asio::io_service service;
+const int MODULE_NETWORK = 1;
 
 enum
 {
 	ERR_NETWORK_PACKAGE_CANNOT_REGISTER = 100,
+	ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF = 101,
 };
+
+
+namespace asio = boost::asio;
+using tcp = asio::ip::tcp;
+
+extern asio::io_service service;
 
 
 const int PACKAGE_VERSION = 1;
@@ -111,18 +131,25 @@ public:
 		return m_buffer;
 	}
 
-	/**
-	 * @note Must ensure header cnd content have set.
-	 */
-	asio::const_buffers_1 asio_buffer() const
-	{
-		return asio::buffer(static_cast<const char*>(m_buffer), MAX_HEADER_LEN + header().content_length);
-	}
+	template <typename T>
+	void parse_as_protobuf(T& value) const;
 
 private:
 	int m_id;
 	char m_buffer[MAX_BUFFER_LEN];
 };
+
+
+template <typename T>
+void PackageBuffer::parse_as_protobuf(T& value) const
+{
+	lights::SequenceView storage = content();
+	bool ok = value.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
+	if (!ok)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF);
+	}
+}
 
 
 /**
@@ -143,6 +170,8 @@ private:
 };
 
 
+class Connection;
+
 /**
  * Manage all command and handler. When recieve a command will trigger associated handler.
  * @note A command only can associate one handler.
@@ -152,7 +181,7 @@ class CommandHandlerManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(CommandHandlerManager);
 
-	using CommandHandler = std::function<void(const PackageBuffer&)>;
+	using CommandHandler = std::function<void(Connection&, const PackageBuffer&)>;
 
 	void register_command(int cmd, CommandHandler callback);
 
@@ -190,16 +219,27 @@ public:
 	 */
 	void write_package_buffer(const PackageBuffer& package);
 
+	template <typename T>
+	void write_protobuf(int cmd, const T& msg);
+
+	void set_attachment(void* attachment);
+
+	void* attachment();
+
+	tcp::endpoint remote_endpoint();
+
 private:
+	friend ConnectionManager;
+
 	void read_header();
 
 	void read_content();
 
-	friend ConnectionManager;
-
 	int m_id;
 	tcp::socket m_socket;
+	tcp::endpoint m_remote_endpoint;
 	PackageBuffer m_read_buffer;
+	void* m_attachment;
 };
 
 
@@ -217,11 +257,35 @@ public:
 	void stop_all();
 
 private:
+	void accept_connection(tcp::acceptor& acceptor);
+
 	friend class Connection;
 
 	int m_next_id;
 	std::list<Connection> m_conn_list;
 	std::list<tcp::acceptor> m_acceptor_list;
 };
+
+
+template <typename T>
+void Connection::write_protobuf(int cmd, const T& msg)
+{
+	int size = msg.ByteSize();
+	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Content length is too large. Length:{}",
+						remote_endpoint(), size)
+		return;
+	}
+
+	PackageBuffer& package = PackageBufferManager::instance()->register_package_buffer();
+	package.header().command = cmd;
+	package.header().content_length = size;
+	lights::Sequence storage = package.content_buffer();
+	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
+
+	write_package_buffer(package);
+}
+
 
 } // namespace spaceless

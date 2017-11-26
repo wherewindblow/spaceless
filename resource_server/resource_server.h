@@ -11,17 +11,21 @@
 #include <map>
 #include <lights/sequence.h>
 #include <lights/exception.h>
+#include <common/network.h>
 
 #include "common/basics.h"
 
 
 namespace spaceless {
+namespace resource_server {
+
 
 enum
 {
 	ERR_USER_ALREADY_EXIST = 1000,
 	ERR_USER_CANNOT_REGISTER = 1001,
 	ERR_USER_NOT_EXIST = 1002,
+
 	ERR_GROUP_ALREADY_EXIST = 1100,
 	ERR_GROUP_CANNOT_REGISTER = 1101,
 	ERR_GROUP_NOT_EXIST = 1102,
@@ -36,6 +40,7 @@ enum
 	ERR_FILE_ALREADY_EXIST = 1200,
 	ERR_FILE_CANNOT_CREATE = 1201,
 	ERR_FILE_NOT_EXIST = 1202,
+
 	ERR_NODE_ALREADY_EXIST = 1300,
 	ERR_NODE_CANNOT_CREATE = 1301,
 	ERR_NODE_NOT_EXIST = 1302,
@@ -45,9 +50,10 @@ enum
 struct User
 {
 	int uid;
-	std::string name;
+	std::string username;
 	std::string password;
 	std::vector<int> group_list;
+	int conn_id = 0;
 };
 
 
@@ -63,6 +69,8 @@ public:
 	SPACELESS_SINGLETON_INSTANCE(UserManager);
 
 	User& register_user(lights::StringView username, lights::StringView password);
+
+	bool login_user(int uid, lights::StringView password, Connection& conn);
 
 	void remove_user(int uid);
 
@@ -232,4 +240,5 @@ private:
 	int m_next_id = 1;
 };
 
+} // namespace resource_server
 } // namespace spaceless

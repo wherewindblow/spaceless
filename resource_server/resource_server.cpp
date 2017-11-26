@@ -22,10 +22,16 @@ inline bool operator==(StringView lhs, StringView rhs)
 	return lhs.length() == rhs.length() && std::strncmp(lhs.data(), rhs.data(), lhs.length()) == 0;
 }
 
+inline bool operator!=(StringView lhs, StringView rhs)
+{
+	return !(lhs == rhs);
+}
+
 } // namespace lights
 
 
 namespace spaceless {
+namespace resource_server {
 
 User& UserManager::register_user(lights::StringView username, lights::StringView password)
 {
@@ -44,6 +50,25 @@ User& UserManager::register_user(lights::StringView username, lights::StringView
 	}
 
 	return itr.first->second;
+}
+
+
+bool UserManager::login_user(int uid, lights::StringView password, Connection& conn)
+{
+	User* user = find_user(uid);
+	if (!user)
+	{
+		return false;
+	}
+
+	if (user->password != password)
+	{
+		return false;
+	}
+
+	user->conn_id = conn.connection_id();
+	conn.set_attachment(&user);
+	return true;
 }
 
 
@@ -70,7 +95,7 @@ User* UserManager::find_user(lights::StringView username)
 	auto itr = std::find_if(m_user_list.begin(), m_user_list.end(),
 							[&username](const UserList::value_type& value_type)
 	{
-		return value_type.second.name == username;
+		return value_type.second.username == username;
 	});
 
 	if (itr == m_user_list.end())
@@ -550,5 +575,5 @@ StorageNode& StorageNodeManager::get_node(lights::StringView node_ip, short node
 	return *node;
 }
 
-
+} // namespace resource_server
 } // namespace spaceless
