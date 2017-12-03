@@ -5,13 +5,11 @@ set(SPACELESS_RESOURCE_SERVER_SRC
         resource_server.h resource_server.cpp)
 add_executable(spaceless_resource_server ${SPACELESS_RESOURCE_SERVER_SRC})
 
-find_package(Boost REQUIRED COMPONENTS system filesystem)
-include_directories(${Boost_INCLUDE_DIR})
-
 target_link_libraries(spaceless_resource_server
         spaceless_common
         spaceless_protocol
         lights_static
-        ${Boost_LIBRARIES}
         protobuf
-        PocoFoundation)
+        PocoFoundation
+        PocoNet
+        PocoUtil)

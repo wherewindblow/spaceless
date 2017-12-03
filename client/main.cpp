@@ -1,10 +1,8 @@
 #include <iostream>
 #include <thread>
 
-#include <boost/asio.hpp>
 #include <lights/ostream.h>
 #include <protocol/all.h>
-
 
 #include "common/network.h"
 #include "common/log.h"
@@ -17,7 +15,6 @@ namespace spaceless {
 const int MODULE_CLIENT = 1100;
 
 namespace client {
-
 
 void read_handler(spaceless::Connection& conn, const spaceless::PackageBuffer& package)
 {
@@ -72,11 +69,10 @@ int main(int argc, const char* argv[])
 		}
 
 		conn = &ConnectionManager::instance()->register_connection("127.0.0.1", 10240);
-		conn->start_reading();
 
 		// Must run after have a event in loop. Just after reading.
 		std::thread thread([]() {
-			service.run();
+			ConnectionManager::instance()->run();
 		});
 		thread.detach();
 

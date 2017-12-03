@@ -9,8 +9,13 @@
 #include <map>
 #include <memory>
 #include <list>
-#include <boost/asio.hpp>
 #include <lights/sequence.h>
+
+#include <Poco/Net/SocketAcceptor.h>
+#include <Poco/Net/SocketNotification.h>
+#include <Poco/Net/SocketReactor.h>
+#include <Poco/Net/ServerSocket.h>
+#include <Poco/Net/StreamSocket.h>
 
 #include "basics.h"
 #include "log.h"
@@ -20,9 +25,9 @@
 namespace lights {
 
 template <typename Sink>
-FormatSinkAdapter<Sink> operator<< (FormatSinkAdapter<Sink> out, const boost::asio::ip::tcp::endpoint& endpoint)
+FormatSinkAdapter<Sink> operator<< (FormatSinkAdapter<Sink> out, const Poco::Net::SocketAddress& address)
 {
-	out << endpoint.address().to_string() << ':' << endpoint.port();
+	out << address.toString();
 	return out;
 }
 
@@ -34,6 +39,17 @@ FormatSinkAdapter<Sink> operator<< (FormatSinkAdapter<Sink> out, const boost::as
  */
 namespace spaceless {
 
+using Poco::Net::SocketAcceptor;
+using Poco::Net::SocketNotification;
+using Poco::Net::SocketReactor;
+using Poco::Net::ServerSocket;
+using Poco::Net::StreamSocket;
+using Poco::Net::ReadableNotification;
+using Poco::Net::ShutdownNotification;
+using Poco::Net::TimeoutNotification;
+using Poco::Net::ErrorNotification;
+
+
 const int MODULE_NETWORK = 1;
 
 enum
@@ -41,12 +57,6 @@ enum
 	ERR_NETWORK_PACKAGE_CANNOT_REGISTER = 100,
 	ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF = 101,
 };
-
-
-namespace asio = boost::asio;
-using tcp = asio::ip::tcp;
-
-extern asio::io_service service;
 
 
 const int PACKAGE_VERSION = 1;
@@ -59,6 +69,9 @@ struct PackageHeader
 } SPACELESS_POD_PACKED_ATTRIBUTE;
 
 
+/**
+ * Network data package to seperate message.
+ */
 class PackageBuffer
 {
 public:
@@ -66,29 +79,32 @@ public:
 	static const std::size_t MAX_HEADER_LEN = sizeof(PackageHeader);
 	static const std::size_t MAX_CONTENT_LEN = MAX_BUFFER_LEN - MAX_HEADER_LEN;
 
-	PackageBuffer(int id):
-		m_id(id)
+	/**
+	 * Creates the package buffer and init package version.
+	 */
+	PackageBuffer()
 	{
 		header().version = PACKAGE_VERSION;
 	}
 
-	int package_id() const
-	{
-		return m_id;
-	}
-
+	/**
+	 * Returns package header of buffer.
+	 */
 	PackageHeader& header()
 	{
 		return *reinterpret_cast<PackageHeader*>(m_buffer);
 	}
 
+	/**
+	 * Returns package header of buffer.
+	 */
 	const PackageHeader& header() const
 	{
 		return *reinterpret_cast<const PackageHeader*>(m_buffer);
 	}
 
 	/**
-	 * Return buffer according to header content length.
+	 * Returns buffer according to header content length.
 	 * @note Must ensure header is valid.
 	 */
 	lights::Sequence content()
@@ -97,7 +113,7 @@ public:
 	}
 
 	/**
-	 * Return buffer according to header content length.
+	 * Returns buffer according to header content length.
 	 * @note Must ensure header is valid.
 	 */
 	lights::SequenceView content() const
@@ -106,7 +122,7 @@ public:
 	}
 
 	/**
-	 * Return all content buffer.
+	 * Returns all content buffer.
 	 */
 	lights::Sequence content_buffer()
 	{
@@ -114,37 +130,45 @@ public:
 	}
 
 	/**
-	 * Return all content buffer.
+	 * Returns all content buffer.
 	 */
 	lights::SequenceView content_buffer() const
 	{
 		return { m_buffer + MAX_HEADER_LEN, MAX_CONTENT_LEN };
 	}
 
+	/**
+	 * Returns underlying storage buffer data.
+	 */
 	char* data()
 	{
 		return m_buffer;
 	}
 
+	/**
+	 * Returns underlying storage buffer data.
+	 */
 	const char* data() const
 	{
 		return m_buffer;
 	}
 
+	/**
+	 * Parses package content as a protobuf.
+	 */
 	template <typename T>
-	void parse_as_protobuf(T& value) const;
+	void parse_as_protobuf(T& msg) const;
 
 private:
-	int m_id;
 	char m_buffer[MAX_BUFFER_LEN];
 };
 
 
 template <typename T>
-void PackageBuffer::parse_as_protobuf(T& value) const
+void PackageBuffer::parse_as_protobuf(T& msg) const
 {
 	lights::SequenceView storage = content();
-	bool ok = value.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
+	bool ok = msg.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
 	if (!ok)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF);
@@ -152,28 +176,10 @@ void PackageBuffer::parse_as_protobuf(T& value) const
 }
 
 
-/**
- * Manage package buffer and guarantee they are valid when connetion underlying write is call.
- */
-class PackageBufferManager
-{
-public:
-	SPACELESS_SINGLETON_INSTANCE(PackageBufferManager);
-
-	PackageBuffer& register_package_buffer();
-
-	void remove_package_buffer(int buffer_id);
-
-private:
-	int m_next_id = 1;
-	std::map<int, PackageBuffer> m_buffer_list;
-};
-
-
 class Connection;
 
 /**
- * Manage all command and handler. When recieve a command will trigger associated handler.
+ * Manages all command and handler. When recieve a command will trigger associated handler.
  * @note A command only can associate one handler.
  */
 class CommandHandlerManager
@@ -183,10 +189,20 @@ public:
 
 	using CommandHandler = std::function<void(Connection&, const PackageBuffer&)>;
 
+	/**
+	 * Registers associate a command with handler.
+	 */
 	void register_command(int cmd, CommandHandler callback);
 
+	/**
+	 * Removes associate a command with handler.
+	 */
 	void remove_command(int cmd);
 
+	/**
+	 * Finds the associate handler of command.
+	 * @note If cannot found command will return nullptr.
+	 */
 	CommandHandler find_handler(int cmd);
 
 private:
@@ -194,98 +210,161 @@ private:
 };
 
 
-class ConnectionManager;
-
+/**
+ * Connection handler socket notification and cache receive message.
+ */
 class Connection
 {
 public:
-	Connection(int id);
-
-	~Connection();
-
-	int connection_id() const;
-
-	void connect(lights::StringView address, unsigned short port);
-
-	void start_reading();
+	enum class ReadState
+	{
+		READ_HEADER,
+		READ_CONTENT,
+	};
 
 	/**
-	 * Stop reading and close connection.
+	 * Creates the connection and add event handler.
+	 * @note Do not create in stack.
+	 */
+	Connection(StreamSocket& socket, SocketReactor& reactor);
+
+	/**
+	 * Destroys the connection and remove event handler。
+	 */
+	~Connection();
+
+	/**
+	 * Returns connection id.
+	 */
+	int connection_id() const;
+
+	/**
+	 * Handlers readable notification.
+	 */
+	void on_readable(ReadableNotification* notification);
+
+	/**
+	 * Handlers shutdown notification.
+	 */
+	void on_shutdown(ShutdownNotification* notification);
+
+	/**
+	 * Handlers timeout notification.
+	 */
+	void on_timeout(TimeoutNotification* notification);
+
+	/**
+	 * Handlers error notification.
+	 */
+	void on_error(ErrorNotification* notification);
+
+	/**
+	 * Sends a package buffer to remote.
+	 */
+	void send_package_buffer(const PackageBuffer& package);
+
+	/**
+	 * Parses a protobuf as package buffer and send to remote.
+	 */
+	template <typename ProtobufType>
+	void send_protobuf(int cmd, const ProtobufType& msg);
+
+	/**
+	 * Destroys connection.
+	 * @note Cannot use connection after close it.
 	 */
 	void close();
 
 	/**
-	 * @note package must be create from PackageBufferManager::instance()->register_package_buffer().
+	 * Sets associate attachment data with this connection.
 	 */
-	void write_package_buffer(const PackageBuffer& package);
-
-	template <typename T>
-	void write_protobuf(int cmd, const T& msg);
-
 	void set_attachment(void* attachment);
 
-	void* attachment();
+	/**
+	 * Gets attachment and the real type of attachement is according to real type that call @c set_attachment.
+	 */
+	void* get_attachment();
 
-	tcp::endpoint remote_endpoint();
+	/**
+	 * Returns underlying stream socket.
+	 */
+	StreamSocket& stream_socket();
 
 private:
-	friend ConnectionManager;
-
-	void read_header();
-
-	void read_content();
+	void read_for_state(int deep = 0);
 
 	int m_id;
-	tcp::socket m_socket;
-	tcp::endpoint m_remote_endpoint;
-	PackageBuffer m_read_buffer;
+	StreamSocket m_socket;
+	SocketReactor& m_reactor;
+	PackageBuffer m_buffer;
+	int m_readed_len;
+	ReadState m_read_state;
 	void* m_attachment;
 };
 
 
-class ConnectionManager
-{
-public:
-	SPACELESS_SINGLETON_INSTANCE(ConnectionManager);
-
-	~ConnectionManager();
-
-	Connection& register_connection(lights::StringView address, unsigned short port);
-
-	void register_listener(lights::StringView address, unsigned short port);
-
-	void stop_all();
-
-private:
-	void accept_connection(tcp::acceptor& acceptor);
-
-	friend class Connection;
-
-	int m_next_id;
-	std::list<Connection> m_conn_list;
-	std::list<tcp::acceptor> m_acceptor_list;
-};
-
-
-template <typename T>
-void Connection::write_protobuf(int cmd, const T& msg)
+template <typename ProtobufType>
+void Connection::send_protobuf(int cmd, const ProtobufType& msg)
 {
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Content length is too large. Length:{}",
-						remote_endpoint(), size)
+		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Content length {} is too large.",
+						stream_socket().peerAddress(), size)
 		return;
 	}
 
-	PackageBuffer& package = PackageBufferManager::instance()->register_package_buffer();
+	PackageBuffer package;
 	package.header().command = cmd;
 	package.header().content_length = size;
 	lights::Sequence storage = package.content_buffer();
 	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
 
-	write_package_buffer(package);
+	send_package_buffer(package);
 }
+
+
+/**
+ * Connection manager to manage all connection and listener.
+ */
+class ConnectionManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(ConnectionManager);
+
+	/**
+	 * Destroys the connection manager.
+	 */
+	~ConnectionManager();
+
+	/**
+	 * Registers a connection with host and port.
+	 */
+	Connection& register_connection(const std::string& address, unsigned short port);
+
+	/**
+	 * Registers a listener with host and port.
+	 */
+	void register_listener(const std::string& address, unsigned short port);
+
+	/**
+	 * Stop all connection and listener.
+	 */
+	void stop_all();
+
+	/**
+	 * To run underlying reactor.
+	 */
+	void run();
+
+private:
+	friend class Connection;
+
+	int m_next_id = 1;
+	std::list<Connection*> m_conn_list;
+	std::list<SocketAcceptor<Connection>> m_acceptor_list;
+	SocketReactor m_reactor;
+};
 
 
 } // namespace spaceless

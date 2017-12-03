@@ -6,28 +6,13 @@
 
 #include "network.h"
 
+#include <Poco/Net/SocketAddress.h>
+#include <Poco/Observer.h>
+
 
 namespace spaceless {
 
-asio::io_service service;
-
-
-PackageBuffer& PackageBufferManager::register_package_buffer()
-{
-	auto pair = m_buffer_list.emplace(m_next_id, PackageBuffer(m_next_id));
-	++m_next_id;
-	if (pair.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_REGISTER);
-	}
-	return pair.first->second;
-}
-
-
-void PackageBufferManager::remove_package_buffer(int buffer_id)
-{
-	m_buffer_list.erase(buffer_id);
-}
+using Poco::Net::SocketAddress;
 
 
 void CommandHandlerManager::register_command(int cmd, CommandHandlerManager::CommandHandler callback)
@@ -53,18 +38,60 @@ CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cm
 }
 
 
-Connection::Connection(int id):
-	m_id(id),
-	m_socket(service),
-	m_read_buffer(0),
-	m_attachment(nullptr)
+Connection::Connection(StreamSocket& socket, SocketReactor& reactor) :
+	m_socket(socket),
+	m_reactor(reactor),
+	m_readed_len(0),
+	m_read_state(ReadState::READ_HEADER)
 {
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a connection: {}/{}", m_socket.address(), m_socket.peerAddress())
+	ConnectionManager::instance()->m_conn_list.emplace_back(this);
+	m_id = ConnectionManager::instance()->m_next_id;
+	++ConnectionManager::instance()->m_next_id;
+
+	Poco::Observer<Connection, ReadableNotification> readable_observer(*this, &Connection::on_readable);
+	m_reactor.addEventHandler(m_socket, readable_observer);
+	Poco::Observer<Connection, ShutdownNotification> shutdown_observer(*this, &Connection::on_shutdown);
+	m_reactor.addEventHandler(m_socket, shutdown_observer);
+	Poco::Observer<Connection, TimeoutNotification> timeout_observer(*this, &Connection::on_timeout);
+	m_reactor.addEventHandler(m_socket, timeout_observer);
+	Poco::Observer<Connection, ErrorNotification> error_observer(*this, &Connection::on_error);
+	m_reactor.addEventHandler(m_socket, error_observer);
 }
 
 
 Connection::~Connection()
 {
-	close();
+	SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a connection: {}/{}", m_socket.address(), m_socket.peerAddress())
+	try
+	{
+		auto& conn_list = ConnectionManager::instance()->m_conn_list;
+		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const Connection* conn)
+		{
+			return conn->connection_id() == this->connection_id();
+		});
+		conn_list.erase(need_delete);
+
+		Poco::Observer<Connection, ReadableNotification> readable_observer(*this, &Connection::on_readable);
+		m_reactor.removeEventHandler(m_socket, readable_observer);
+		Poco::Observer<Connection, ShutdownNotification> shutdown_observer(*this, &Connection::on_shutdown);
+		m_reactor.removeEventHandler(m_socket, shutdown_observer);
+		Poco::Observer<Connection, TimeoutNotification> timeout_observer(*this, &Connection::on_timeout);
+		m_reactor.removeEventHandler(m_socket, timeout_observer);
+		Poco::Observer<Connection, ErrorNotification> error_observer(*this, &Connection::on_error);
+		m_reactor.removeEventHandler(m_socket, error_observer);
+
+		m_socket.shutdown();
+		m_socket.close();
+	}
+	catch (const std::exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}", m_socket.peerAddress(), ex.what());
+	}
+	catch (...)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown error", m_socket.peerAddress());
+	}
 }
 
 
@@ -74,55 +101,41 @@ int Connection::connection_id() const
 }
 
 
-void Connection::connect(lights::StringView address, unsigned short port)
+void Connection::on_readable(ReadableNotification* notification)
 {
-	m_remote_endpoint.address(asio::ip::address::from_string(address.data()));
-	m_remote_endpoint.port(port);
-	m_socket.connect(m_remote_endpoint);
+	notification->release();
+	read_for_state();
 }
 
 
-void Connection::start_reading()
+void Connection::on_shutdown(ShutdownNotification* /*notification*/)
 {
-	read_header();
+	close();
+}
+
+
+void Connection::on_timeout(TimeoutNotification* /*notification*/)
+{
+	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On time out.", m_socket.peerAddress());
+}
+
+
+void Connection::on_error(ErrorNotification* /*notification*/)
+{
+	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On error.", m_socket.peerAddress());
+}
+
+
+void Connection::send_package_buffer(const PackageBuffer& package)
+{
+	int len = static_cast<int>(PackageBuffer::MAX_HEADER_LEN + package.header().content_length);
+	m_socket.sendBytes(package.data(), len);
 }
 
 
 void Connection::close()
 {
-	if (m_socket.is_open())
-	{
-		try
-		{
-			m_socket.shutdown(tcp::socket::shutdown_both);
-			m_socket.close();
-		}
-		catch (const boost::system::system_error& ex)
-		{
-			SPACELESS_ERROR(MODULE_NETWORK, ex.what());
-		}
-	}
-}
-
-
-void Connection::write_package_buffer(const PackageBuffer& package)
-{
-	// TODO Consider to use coroutines to serialize asynchronization. (asio::spawn ?)
-	if (static_cast<std::size_t>(package.header().content_length) > PackageBuffer::MAX_CONTENT_LEN)
-	{
-		PackageBufferManager::instance()->remove_package_buffer(package.package_id());
-		SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Content length is too large. Length:{}",
-						remote_endpoint(), package.header().content_length)
-		return;
-	}
-
-	auto buffer = asio::buffer(package.data(),
-							   PackageBuffer::MAX_HEADER_LEN + package.header().content_length);
-	asio::async_write(m_socket, buffer,
-					  [&package](const boost::system::error_code& error, std::size_t bytes_transferred)
-	{
-		PackageBufferManager::instance()->remove_package_buffer(package.package_id());
-	});
+	delete this;
 }
 
 
@@ -132,157 +145,143 @@ void Connection::set_attachment(void* attachment)
 }
 
 
-void* Connection::attachment()
+void* Connection::get_attachment()
 {
 	return m_attachment;
 }
 
 
-void Connection::read_header()
+StreamSocket& Connection::stream_socket()
 {
-	auto buffer = asio::buffer(m_read_buffer.data(), PackageBuffer::MAX_HEADER_LEN);
-	asio::async_read(m_socket, buffer,
-					 [this](const boost::system::error_code& error, std::size_t bytes_transferred)
-	{
-		if (error.value() == asio::error::eof && bytes_transferred == 0)
-		{
-			return;
-		}
-
-		if (error &&
-			error.value() != asio::error::eof &&
-			error.value() != asio::error::connection_reset)
-		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. {}", remote_endpoint(), error.message());
-			return;
-		}
-
-		if (bytes_transferred < PackageBuffer::MAX_HEADER_LEN)
-		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Not enought bytes for header. Bytes:{}",
-							remote_endpoint(), bytes_transferred);
-			return;
-		}
-
-		if (static_cast<std::size_t>(m_read_buffer.header().content_length) > PackageBuffer::MAX_CONTENT_LEN)
-		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Content length is too large. Length:{}",
-							remote_endpoint(), m_read_buffer.header().content_length);
-			return;
-		}
-
-		read_content();
-	});
+	return m_socket;
 }
 
 
-void Connection::read_content()
+void Connection::read_for_state(int deep)
 {
-	auto buffer = asio::buffer(m_read_buffer.data() + PackageBuffer::MAX_HEADER_LEN,
-				 static_cast<std::size_t>(m_read_buffer.header().content_length));
-
-	asio::async_read(m_socket, buffer,
-					 [this](const boost::system::error_code& error, std::size_t bytes_transferred )
+	if (deep > 5) // Reduce call recursive too deeply.
 	{
-		if (error)
-		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. {}", remote_endpoint(), error.message());
-			return;
-		}
-
-		auto handler = CommandHandlerManager::instance()->find_handler(m_read_buffer.header().command);
-		if (handler)
-		{
-			try
-			{
-				handler(*this, m_read_buffer);
-			}
-			catch (const lights::Exception& ex)
-			{
-				SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. {}", remote_endpoint(), ex);
-			}
-		}
-		else
-		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Remote endpoint {}. Unkown command: {}",
-							remote_endpoint(), m_read_buffer.header().command);
-		}
-
-		read_header();
-	});
-}
-
-
-tcp::endpoint Connection::remote_endpoint()
-{
-	boost::system::error_code error_code;
-	tcp::endpoint remote_endpoint = m_socket.remote_endpoint(error_code);
-	if (!error_code)
-	{
-		m_remote_endpoint = remote_endpoint;
+		return;
 	}
-	return m_remote_endpoint;
+
+	switch (m_read_state)
+	{
+		case ReadState::READ_HEADER:
+		{
+			int len = m_socket.receiveBytes(m_buffer.data() + m_readed_len,
+											static_cast<int>(PackageBuffer::MAX_HEADER_LEN) - m_readed_len);
+			if (len == 0 && deep == 0)
+			{
+				close();
+				return;
+			}
+
+			m_readed_len += len;
+			if (m_readed_len == PackageBuffer::MAX_HEADER_LEN)
+			{
+				m_readed_len = 0;
+				m_read_state = ReadState::READ_CONTENT;
+			}
+			break;
+		}
+
+		case ReadState::READ_CONTENT:
+		{
+			int len = m_socket.receiveBytes(m_buffer.data() + PackageBuffer::MAX_HEADER_LEN + m_readed_len,
+											m_buffer.header().content_length - m_readed_len);
+			if (len == 0 && deep == 0)
+			{
+				close();
+				return;
+			}
+
+			m_readed_len += len;
+			if (m_readed_len == m_buffer.header().content_length)
+			{
+				m_readed_len = 0;
+				m_read_state = ReadState::READ_HEADER;
+
+				auto handler = CommandHandlerManager::instance()->find_handler(m_buffer.header().command);
+				if (handler)
+				{
+					try
+					{
+						handler(*this, m_buffer);
+					}
+					catch (const Exception& ex)
+					{
+						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}.", m_socket.peerAddress(), ex);
+					}
+					catch (const std::exception& ex)
+					{
+						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}.", m_socket.peerAddress(), ex.what());
+					}
+					catch (...)
+					{
+						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown error.", m_socket.peerAddress());
+					}
+				}
+				else
+				{
+					SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown command {}.",
+									m_socket.peerAddress(), m_buffer.header().command);
+				}
+			}
+			break;
+		}
+	}
+
+	read_for_state(++deep);
 }
 
 
 ConnectionManager::~ConnectionManager()
 {
-	stop_all();
-}
-
-
-Connection& ConnectionManager::register_connection(lights::StringView address, unsigned short port)
-{
-	Connection& conn = m_conn_list.emplace_back(m_next_id);
-	++m_next_id;
-	conn.connect(address, port);
-	return conn;
-}
-
-
-void ConnectionManager::register_listener(lights::StringView address, unsigned short port)
-{
-	tcp::endpoint endpoint(asio::ip::address::from_string(address.data()), port);
-	tcp::acceptor& acceptor = m_acceptor_list.emplace_back(service, endpoint);
-	accept_connection(acceptor);
-}
-
-
-void ConnectionManager::accept_connection(tcp::acceptor& acceptor)
-{
-	Connection& conn = m_conn_list.emplace_back(m_next_id);
-	++m_next_id;
-	acceptor.async_accept(conn.m_socket, [&acceptor, &conn](const boost::system::error_code& error)
+	try
 	{
-		conn.start_reading();
-		conn.remote_endpoint();
-		ConnectionManager::instance()->accept_connection(acceptor);
-	});
+		stop_all();
+	}
+	catch (const std::exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, ex.what());
+	}
+	catch (...)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Unkown error");
+	}
+}
+
+
+Connection& ConnectionManager::register_connection(const std::string& host, unsigned short port)
+{
+	StreamSocket stream_socket(SocketAddress(host, port));
+	Connection* conn = new Connection(stream_socket, m_reactor);
+	return *conn;
+}
+
+
+void ConnectionManager::register_listener(const std::string& host, unsigned short port)
+{
+	ServerSocket serve_socket(SocketAddress(host, port));
+	m_acceptor_list.emplace_back(serve_socket, m_reactor);
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a listener: {}", serve_socket.address());
 }
 
 
 void ConnectionManager::stop_all()
 {
-	for (auto& conn: m_conn_list)
+	for (Connection* conn: m_conn_list)
 	{
-		conn.close();
+		conn->close();
 	}
 	m_conn_list.clear();
-
-	for (auto& acceptor: m_acceptor_list)
-	{
-		if (acceptor.is_open())
-		{
-			boost::system::error_code error;
-			acceptor.close(error);
-			if (error)
-			{
-				SPACELESS_ERROR(MODULE_NETWORK, "Close accpetor: {}", error.message());
-			}
-		}
-	}
 	m_acceptor_list.clear();
 }
 
+
+void ConnectionManager::run()
+{
+	m_reactor.run();
+}
 
 } // namespace spaceless

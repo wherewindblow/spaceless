@@ -9,15 +9,11 @@
 #include "common/log.h"
 #include "protocol/protocol.pb.h"
 
-#include <Poco/Environment.h>
-
-
 namespace spaceless {
 
 const int MODULE_RESOURCE_SERVER = 1000;
 
 namespace resource_server {
-
 
 void on_register_user(Connection& conn, const PackageBuffer& package)
 {
@@ -33,16 +29,18 @@ void on_register_user(Connection& conn, const PackageBuffer& package)
 		{
 			*rsponse.mutable_user()->mutable_group_list()->Add() = group_id;
 		}
-		conn.write_protobuf(RSP_REGISTER_USER, rsponse);
+		conn.send_protobuf(RSP_REGISTER_USER, rsponse);
 	}
 	catch (const Exception& ex)
 	{
 		protocol::RspRegisterUser rsponse;
 		rsponse.set_result(ex.code());
-		conn.write_protobuf(RSP_REGISTER_USER, rsponse);
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Rmote endpoint {}. {}", conn.remote_endpoint(), ex);
+		conn.send_protobuf(RSP_REGISTER_USER, rsponse);
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Rmote address {}. {}",
+						conn.stream_socket().peerAddress().toString(), ex);
 	}
 }
+
 
 void on_login_user(Connection& conn, const PackageBuffer& package)
 {
@@ -51,8 +49,9 @@ void on_login_user(Connection& conn, const PackageBuffer& package)
 	bool pass = UserManager::instance()->login_user(request.uid(), request.password(), conn);
 	protocol::RspLoginUser rsponse;
 	rsponse.set_result(pass);
-	conn.write_protobuf(RSP_LOGIN_USER, rsponse);
+	conn.send_protobuf(RSP_LOGIN_USER, rsponse);
 }
+
 
 void on_remove_user(Connection& conn, const PackageBuffer& package)
 {
@@ -61,8 +60,9 @@ void on_remove_user(Connection& conn, const PackageBuffer& package)
 	UserManager::instance()->remove_user(request.uid());
 	protocol::RspRemoveUser rsponse;
 	rsponse.set_result(true);
-	conn.write_protobuf(RSP_LOGIN_USER, rsponse);
+	conn.send_protobuf(RSP_LOGIN_USER, rsponse);
 }
+
 
 int main(int argc, const char* argv[])
 {
@@ -80,7 +80,8 @@ int main(int argc, const char* argv[])
 		{
 			CommandHandlerManager::instance()->register_command(handlers[i].first, handlers[i].second);
 		}
-		service.run();
+
+		ConnectionManager::instance()->run();
 	}
 	catch (const Exception& ex)
 	{
