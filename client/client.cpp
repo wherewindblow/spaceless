@@ -11,7 +11,7 @@
 namespace spaceless {
 namespace client {
 
-Connection* conn = nullptr;
+NetworkConnection* conn = nullptr;
 
 
 void UserManager::register_user(lights::StringView username, lights::StringView password)

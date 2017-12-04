@@ -17,7 +17,7 @@
 namespace spaceless {
 namespace client {
 
-extern Connection* conn;
+extern NetworkConnection* conn;
 
 struct User
 {

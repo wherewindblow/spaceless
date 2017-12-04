@@ -15,7 +15,7 @@ const int MODULE_RESOURCE_SERVER = 1000;
 
 namespace resource_server {
 
-void on_register_user(Connection& conn, const PackageBuffer& package)
+void on_register_user(NetworkConnection& conn, const ProtocolPackageBuffer& package)
 {
 	protocol::ReqRegisterUser request;
 	package.parse_as_protobuf(request);
@@ -42,7 +42,7 @@ void on_register_user(Connection& conn, const PackageBuffer& package)
 }
 
 
-void on_login_user(Connection& conn, const PackageBuffer& package)
+void on_login_user(NetworkConnection& conn, const ProtocolPackageBuffer& package)
 {
 	protocol::ReqLoginUser request;
 	package.parse_as_protobuf(request);
@@ -53,7 +53,7 @@ void on_login_user(Connection& conn, const PackageBuffer& package)
 }
 
 
-void on_remove_user(Connection& conn, const PackageBuffer& package)
+void on_remove_user(NetworkConnection& conn, const ProtocolPackageBuffer& package)
 {
 	protocol::ReqRemoveUser request;
 	package.parse_as_protobuf(request);
@@ -68,7 +68,7 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		ConnectionManager::instance()->register_listener("127.0.0.1", 10240);
+		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
 
 		std::pair<int, CommandHandlerManager::CommandHandler> handlers[] = {
 			{REQ_REGISTER_USER, on_register_user},
@@ -81,7 +81,7 @@ int main(int argc, const char* argv[])
 			CommandHandlerManager::instance()->register_command(handlers[i].first, handlers[i].second);
 		}
 
-		ConnectionManager::instance()->run();
+		NetworkConnectionManager::instance()->run();
 	}
 	catch (const Exception& ex)
 	{

@@ -38,47 +38,47 @@ CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cm
 }
 
 
-Connection::Connection(StreamSocket& socket, SocketReactor& reactor) :
+NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor) :
 	m_socket(socket),
 	m_reactor(reactor),
 	m_readed_len(0),
 	m_read_state(ReadState::READ_HEADER)
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a connection: {}/{}", m_socket.address(), m_socket.peerAddress())
-	ConnectionManager::instance()->m_conn_list.emplace_back(this);
-	m_id = ConnectionManager::instance()->m_next_id;
-	++ConnectionManager::instance()->m_next_id;
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
+	NetworkConnectionManager::instance()->m_conn_list.emplace_back(this);
+	m_id = NetworkConnectionManager::instance()->m_next_id;
+	++NetworkConnectionManager::instance()->m_next_id;
 
-	Poco::Observer<Connection, ReadableNotification> readable_observer(*this, &Connection::on_readable);
+	Poco::Observer<NetworkConnection, ReadableNotification> readable_observer(*this, &NetworkConnection::on_readable);
 	m_reactor.addEventHandler(m_socket, readable_observer);
-	Poco::Observer<Connection, ShutdownNotification> shutdown_observer(*this, &Connection::on_shutdown);
+	Poco::Observer<NetworkConnection, ShutdownNotification> shutdown_observer(*this, &NetworkConnection::on_shutdown);
 	m_reactor.addEventHandler(m_socket, shutdown_observer);
-	Poco::Observer<Connection, TimeoutNotification> timeout_observer(*this, &Connection::on_timeout);
+	Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
 	m_reactor.addEventHandler(m_socket, timeout_observer);
-	Poco::Observer<Connection, ErrorNotification> error_observer(*this, &Connection::on_error);
+	Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
 	m_reactor.addEventHandler(m_socket, error_observer);
 }
 
 
-Connection::~Connection()
+NetworkConnection::~NetworkConnection()
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a connection: {}/{}", m_socket.address(), m_socket.peerAddress())
+	SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
 	try
 	{
-		auto& conn_list = ConnectionManager::instance()->m_conn_list;
-		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const Connection* conn)
+		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
+		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
 		{
 			return conn->connection_id() == this->connection_id();
 		});
 		conn_list.erase(need_delete);
 
-		Poco::Observer<Connection, ReadableNotification> readable_observer(*this, &Connection::on_readable);
+		Poco::Observer<NetworkConnection, ReadableNotification> readable_observer(*this, &NetworkConnection::on_readable);
 		m_reactor.removeEventHandler(m_socket, readable_observer);
-		Poco::Observer<Connection, ShutdownNotification> shutdown_observer(*this, &Connection::on_shutdown);
+		Poco::Observer<NetworkConnection, ShutdownNotification> shutdown_observer(*this, &NetworkConnection::on_shutdown);
 		m_reactor.removeEventHandler(m_socket, shutdown_observer);
-		Poco::Observer<Connection, TimeoutNotification> timeout_observer(*this, &Connection::on_timeout);
+		Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
 		m_reactor.removeEventHandler(m_socket, timeout_observer);
-		Poco::Observer<Connection, ErrorNotification> error_observer(*this, &Connection::on_error);
+		Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
 		m_reactor.removeEventHandler(m_socket, error_observer);
 
 		m_socket.shutdown();
@@ -95,69 +95,69 @@ Connection::~Connection()
 }
 
 
-int Connection::connection_id() const
+int NetworkConnection::connection_id() const
 {
 	return m_id;
 }
 
 
-void Connection::on_readable(ReadableNotification* notification)
+void NetworkConnection::on_readable(ReadableNotification* notification)
 {
 	notification->release();
 	read_for_state();
 }
 
 
-void Connection::on_shutdown(ShutdownNotification* /*notification*/)
+void NetworkConnection::on_shutdown(ShutdownNotification* /*notification*/)
 {
 	close();
 }
 
 
-void Connection::on_timeout(TimeoutNotification* /*notification*/)
+void NetworkConnection::on_timeout(TimeoutNotification* /*notification*/)
 {
 	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On time out.", m_socket.peerAddress());
 }
 
 
-void Connection::on_error(ErrorNotification* /*notification*/)
+void NetworkConnection::on_error(ErrorNotification* /*notification*/)
 {
 	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On error.", m_socket.peerAddress());
 }
 
 
-void Connection::send_package_buffer(const PackageBuffer& package)
+void NetworkConnection::send_package(const ProtocolPackageBuffer& package)
 {
-	int len = static_cast<int>(PackageBuffer::MAX_HEADER_LEN + package.header().content_length);
+	int len = static_cast<int>(ProtocolPackageBuffer::MAX_HEADER_LEN + package.header().content_length);
 	m_socket.sendBytes(package.data(), len);
 }
 
 
-void Connection::close()
+void NetworkConnection::close()
 {
 	delete this;
 }
 
 
-void Connection::set_attachment(void* attachment)
+void NetworkConnection::set_attachment(void* attachment)
 {
 	m_attachment = attachment;
 }
 
 
-void* Connection::get_attachment()
+void* NetworkConnection::get_attachment()
 {
 	return m_attachment;
 }
 
 
-StreamSocket& Connection::stream_socket()
+StreamSocket& NetworkConnection::stream_socket()
 {
 	return m_socket;
 }
 
 
-void Connection::read_for_state(int deep)
+void NetworkConnection::read_for_state(int deep)
 {
 	if (deep > 5) // Reduce call recursive too deeply.
 	{
@@ -169,7 +169,7 @@ void Connection::read_for_state(int deep)
 		case ReadState::READ_HEADER:
 		{
 			int len = m_socket.receiveBytes(m_buffer.data() + m_readed_len,
-											static_cast<int>(PackageBuffer::MAX_HEADER_LEN) - m_readed_len);
+											static_cast<int>(ProtocolPackageBuffer::MAX_HEADER_LEN) - m_readed_len);
 			if (len == 0 && deep == 0)
 			{
 				close();
@@ -177,7 +177,7 @@ void Connection::read_for_state(int deep)
 			}
 
 			m_readed_len += len;
-			if (m_readed_len == PackageBuffer::MAX_HEADER_LEN)
+			if (m_readed_len == ProtocolPackageBuffer::MAX_HEADER_LEN)
 			{
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_CONTENT;
@@ -187,7 +187,7 @@ void Connection::read_for_state(int deep)
 
 		case ReadState::READ_CONTENT:
 		{
-			int len = m_socket.receiveBytes(m_buffer.data() + PackageBuffer::MAX_HEADER_LEN + m_readed_len,
+			int len = m_socket.receiveBytes(m_buffer.data() + ProtocolPackageBuffer::MAX_HEADER_LEN + m_readed_len,
 											m_buffer.header().content_length - m_readed_len);
 			if (len == 0 && deep == 0)
 			{
@@ -235,7 +235,7 @@ void Connection::read_for_state(int deep)
 }
 
 
-ConnectionManager::~ConnectionManager()
+NetworkConnectionManager::~NetworkConnectionManager()
 {
 	try
 	{
@@ -252,25 +252,25 @@ ConnectionManager::~ConnectionManager()
 }
 
 
-Connection& ConnectionManager::register_connection(const std::string& host, unsigned short port)
+NetworkConnection& NetworkConnectionManager::register_connection(const std::string& host, unsigned short port)
 {
 	StreamSocket stream_socket(SocketAddress(host, port));
-	Connection* conn = new Connection(stream_socket, m_reactor);
+	NetworkConnection* conn = new NetworkConnection(stream_socket, m_reactor);
 	return *conn;
 }
 
 
-void ConnectionManager::register_listener(const std::string& host, unsigned short port)
+void NetworkConnectionManager::register_listener(const std::string& host, unsigned short port)
 {
 	ServerSocket serve_socket(SocketAddress(host, port));
 	m_acceptor_list.emplace_back(serve_socket, m_reactor);
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a listener: {}", serve_socket.address());
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a listener: {}.", serve_socket.address());
 }
 
 
-void ConnectionManager::stop_all()
+void NetworkConnectionManager::stop_all()
 {
-	for (Connection* conn: m_conn_list)
+	for (NetworkConnection* conn: m_conn_list)
 	{
 		conn->close();
 	}
@@ -279,7 +279,7 @@ void ConnectionManager::stop_all()
 }
 
 
-void ConnectionManager::run()
+void NetworkConnectionManager::run()
 {
 	m_reactor.run();
 }

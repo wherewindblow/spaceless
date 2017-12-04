@@ -53,7 +53,7 @@ User& UserManager::register_user(lights::StringView username, lights::StringView
 }
 
 
-bool UserManager::login_user(int uid, lights::StringView password, Connection& conn)
+bool UserManager::login_user(int uid, lights::StringView password, NetworkConnection& conn)
 {
 	User* user = find_user(uid);
 	if (!user)

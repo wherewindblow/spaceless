@@ -59,9 +59,9 @@ enum
 };
 
 
-const int PACKAGE_VERSION = 1;
+const int PROTOCOL_PACKAGE_VERSION = 1;
 
-struct PackageHeader
+struct ProtocolPackageHeader
 {
 	short version;
 	int command;
@@ -72,35 +72,35 @@ struct PackageHeader
 /**
  * Network data package to seperate message.
  */
-class PackageBuffer
+class ProtocolPackageBuffer
 {
 public:
 	static const std::size_t MAX_BUFFER_LEN = 65536;
-	static const std::size_t MAX_HEADER_LEN = sizeof(PackageHeader);
+	static const std::size_t MAX_HEADER_LEN = sizeof(ProtocolPackageHeader);
 	static const std::size_t MAX_CONTENT_LEN = MAX_BUFFER_LEN - MAX_HEADER_LEN;
 
 	/**
-	 * Creates the package buffer and init package version.
+	 * Creates the NetworkConnection and init package version.
 	 */
-	PackageBuffer()
+	ProtocolPackageBuffer()
 	{
-		header().version = PACKAGE_VERSION;
+		header().version = PROTOCOL_PACKAGE_VERSION;
 	}
 
 	/**
 	 * Returns package header of buffer.
 	 */
-	PackageHeader& header()
+	ProtocolPackageHeader& header()
 	{
-		return *reinterpret_cast<PackageHeader*>(m_buffer);
+		return *reinterpret_cast<ProtocolPackageHeader*>(m_buffer);
 	}
 
 	/**
 	 * Returns package header of buffer.
 	 */
-	const PackageHeader& header() const
+	const ProtocolPackageHeader& header() const
 	{
-		return *reinterpret_cast<const PackageHeader*>(m_buffer);
+		return *reinterpret_cast<const ProtocolPackageHeader*>(m_buffer);
 	}
 
 	/**
@@ -165,7 +165,7 @@ private:
 
 
 template <typename T>
-void PackageBuffer::parse_as_protobuf(T& msg) const
+void ProtocolPackageBuffer::parse_as_protobuf(T& msg) const
 {
 	lights::SequenceView storage = content();
 	bool ok = msg.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
@@ -176,10 +176,10 @@ void PackageBuffer::parse_as_protobuf(T& msg) const
 }
 
 
-class Connection;
+class NetworkConnection;
 
 /**
- * Manages all command and handler. When recieve a command will trigger associated handler.
+ * CommandHandlerManager manages all command and handler. When recieve a command will trigger associated handler.
  * @note A command only can associate one handler.
  */
 class CommandHandlerManager
@@ -187,7 +187,7 @@ class CommandHandlerManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(CommandHandlerManager);
 
-	using CommandHandler = std::function<void(Connection&, const PackageBuffer&)>;
+	using CommandHandler = std::function<void(NetworkConnection&, const ProtocolPackageBuffer&)>;
 
 	/**
 	 * Registers associate a command with handler.
@@ -211,9 +211,9 @@ private:
 
 
 /**
- * Connection handler socket notification and cache receive message.
+ * NetworkConnection handler socket notification and cache receive message.
  */
-class Connection
+class NetworkConnection
 {
 public:
 	enum class ReadState
@@ -223,15 +223,15 @@ public:
 	};
 
 	/**
-	 * Creates the connection and add event handler.
+	 * Creates the NetworkConnection and add event handler.
 	 * @note Do not create in stack.
 	 */
-	Connection(StreamSocket& socket, SocketReactor& reactor);
+	NetworkConnection(StreamSocket& socket, SocketReactor& reactor);
 
 	/**
-	 * Destroys the connection and remove event handler。
+	 * Destroys the NetworkConnection and remove event handler。
 	 */
-	~Connection();
+	~NetworkConnection();
 
 	/**
 	 * Returns connection id.
@@ -259,9 +259,9 @@ public:
 	void on_error(ErrorNotification* notification);
 
 	/**
-	 * Sends a package buffer to remote.
+	 * Sends a package to remote.
 	 */
-	void send_package_buffer(const PackageBuffer& package);
+	void send_package(const ProtocolPackageBuffer& package);
 
 	/**
 	 * Parses a protobuf as package buffer and send to remote.
@@ -296,7 +296,7 @@ private:
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
-	PackageBuffer m_buffer;
+	ProtocolPackageBuffer m_buffer;
 	int m_readed_len;
 	ReadState m_read_state;
 	void* m_attachment;
@@ -304,43 +304,43 @@ private:
 
 
 template <typename ProtobufType>
-void Connection::send_protobuf(int cmd, const ProtobufType& msg)
+void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg)
 {
 	int size = msg.ByteSize();
-	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
+	if (static_cast<std::size_t>(size) > ProtocolPackageBuffer::MAX_CONTENT_LEN)
 	{
 		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Content length {} is too large.",
 						stream_socket().peerAddress(), size)
 		return;
 	}
 
-	PackageBuffer package;
+	ProtocolPackageBuffer package;
 	package.header().command = cmd;
 	package.header().content_length = size;
 	lights::Sequence storage = package.content_buffer();
 	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
 
-	send_package_buffer(package);
+	send_package(package);
 }
 
 
 /**
- * Connection manager to manage all connection and listener.
+ * NetworkConnectionManager manages all network connection and listener.
  */
-class ConnectionManager
+class NetworkConnectionManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(ConnectionManager);
+	SPACELESS_SINGLETON_INSTANCE(NetworkConnectionManager);
 
 	/**
 	 * Destroys the connection manager.
 	 */
-	~ConnectionManager();
+	~NetworkConnectionManager();
 
 	/**
 	 * Registers a connection with host and port.
 	 */
-	Connection& register_connection(const std::string& address, unsigned short port);
+	NetworkConnection& register_connection(const std::string& address, unsigned short port);
 
 	/**
 	 * Registers a listener with host and port.
@@ -358,11 +358,11 @@ public:
 	void run();
 
 private:
-	friend class Connection;
+	friend class NetworkConnection;
 
 	int m_next_id = 1;
-	std::list<Connection*> m_conn_list;
-	std::list<SocketAcceptor<Connection>> m_acceptor_list;
+	std::list<NetworkConnection*> m_conn_list;
+	std::list<SocketAcceptor<NetworkConnection>> m_acceptor_list;
 	SocketReactor m_reactor;
 };
 

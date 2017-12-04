@@ -16,7 +16,7 @@ const int MODULE_CLIENT = 1100;
 
 namespace client {
 
-void read_handler(spaceless::Connection& conn, const spaceless::PackageBuffer& package)
+void read_handler(NetworkConnection& conn, const ProtocolPackageBuffer& package)
 {
 	switch (package.header().command)
 	{
@@ -68,11 +68,11 @@ int main(int argc, const char* argv[])
 			CommandHandlerManager::instance()->register_command(handlers[i].first, handlers[i].second);
 		}
 
-		conn = &ConnectionManager::instance()->register_connection("127.0.0.1", 10240);
+		conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
 
 		// Must run after have a event in loop. Just after reading.
 		std::thread thread([]() {
-			ConnectionManager::instance()->run();
+			NetworkConnectionManager::instance()->run();
 		});
 		thread.detach();
 

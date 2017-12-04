@@ -70,7 +70,7 @@ public:
 
 	User& register_user(lights::StringView username, lights::StringView password);
 
-	bool login_user(int uid, lights::StringView password, Connection& conn);
+	bool login_user(int uid, lights::StringView password, NetworkConnection& conn);
 
 	void remove_user(int uid);
 
