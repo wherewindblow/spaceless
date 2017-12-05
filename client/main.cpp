@@ -68,7 +68,7 @@ int main(int argc, const char* argv[])
 			CommandHandlerManager::instance()->register_command(handlers[i].first, handlers[i].second);
 		}
 
-		conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
+		network_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
 
 		// Must run after have a event in loop. Just after reading.
 		std::thread thread([]() {

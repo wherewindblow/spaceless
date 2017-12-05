@@ -11,24 +11,24 @@
 namespace spaceless {
 namespace client {
 
-NetworkConnection* conn = nullptr;
+NetworkConnection* network_conn = nullptr;
 
 
-void UserManager::register_user(lights::StringView username, lights::StringView password)
+void UserManager::register_user(const std::string& username, const std::string& password)
 {
 	protocol::ReqRegisterUser request;
-	request.set_username(username.to_std_string());
-	request.set_password(password.to_std_string());
-	conn->send_protobuf(REQ_REGISTER_USER, request);
+	request.set_username(username);
+	request.set_password(password);
+	network_conn->send_protobuf(REQ_REGISTER_USER, request);
 }
 
 
-void UserManager::login_user(int uid, lights::StringView password)
+void UserManager::login_user(int uid, const std::string& password)
 {
 	protocol::ReqLoginUser request;
 	request.set_uid(uid);
-	request.set_password(password.to_std_string());
-	conn->send_protobuf(REQ_LOGIN_USER, request);
+	request.set_password(password);
+	network_conn->send_protobuf(REQ_LOGIN_USER, request);
 }
 
 
@@ -36,7 +36,7 @@ void UserManager::remove_user(int uid)
 {
 	protocol::ReqRemoveUser request;
 	request.set_uid(uid);
-	conn->send_protobuf(REQ_REMOVE_USER, request);
+	network_conn->send_protobuf(REQ_REMOVE_USER, request);
 }
 
 

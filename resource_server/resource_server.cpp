@@ -33,27 +33,21 @@ inline bool operator!=(StringView lhs, StringView rhs)
 namespace spaceless {
 namespace resource_server {
 
-User& UserManager::register_user(lights::StringView username, lights::StringView password)
+User& UserManager::register_user(const std::string& username, const std::string& password)
 {
-	User* old_user = find_user(username);
-	if (old_user)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
-	}
-
-	User new_user = { m_next_id, username.to_std_string(), password.to_std_string() };
+	User new_user = { m_next_id, username, password };
 	++m_next_id;
 	auto itr = m_user_list.insert(std::make_pair(new_user.uid, new_user));
 	if (itr.second == false)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_CANNOT_REGISTER);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
 	}
 
 	return itr.first->second;
 }
 
 
-bool UserManager::login_user(int uid, lights::StringView password, NetworkConnection& conn)
+bool UserManager::login_user(int uid, const std::string& password, NetworkConnection& conn)
 {
 	User* user = find_user(uid);
 	if (!user)
@@ -90,7 +84,7 @@ User* UserManager::find_user(int uid)
 }
 
 
-User* UserManager::find_user(lights::StringView username)
+User* UserManager::find_user(const std::string& username)
 {
 	auto itr = std::find_if(m_user_list.begin(), m_user_list.end(),
 							[&username](const UserList::value_type& value_type)
@@ -118,7 +112,7 @@ User& UserManager::get_user(int uid)
 }
 
 
-User& UserManager::get_user(lights::StringView username)
+User& UserManager::get_user(const std::string& username)
 {
 	User* user = find_user(username);
 	if (user == nullptr)
@@ -129,9 +123,9 @@ User& UserManager::get_user(lights::StringView username)
 }
 
 
-SharingGroup::SharingGroup(int group_id, lights::StringView group_name, int ower_id, int root_dir_id):
+SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id):
 	m_group_id(group_id),
-	m_group_name(group_name.to_std_string()),
+	m_group_name(group_name),
 	m_owner_id(ower_id),
 	m_root_dir_id(root_dir_id)
 {
@@ -145,7 +139,7 @@ int SharingGroup::group_id() const
 }
 
 
-lights::StringView SharingGroup::group_name() const
+const std::string& SharingGroup::group_name() const
 {
 	return m_group_name;
 }
@@ -157,19 +151,19 @@ int SharingGroup::owner_id() const
 }
 
 
-void SharingGroup::put_file(int uid, lights::StringView target_name, lights::SequenceView file_content)
+void SharingGroup::put_file(int uid, const std::string& target_name, lights::SequenceView file_content)
 {
 	// TODO
 }
 
 
-void SharingGroup::get_file(int uid, lights::StringView target_name, lights::Sequence file_content)
+void SharingGroup::get_file(int uid, const std::string& target_name, lights::Sequence file_content)
 {
 	// TODO
 }
 
 
-void SharingGroup::create_directory(int uid, lights::StringView full_dir_path)
+void SharingGroup::create_directory(int uid, const std::string& full_dir_path)
 {
 	auto manager_itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
 	if (manager_itr == m_manager_list.end())
@@ -178,8 +172,7 @@ void SharingGroup::create_directory(int uid, lights::StringView full_dir_path)
 	}
 
 	std::vector<std::string> result;
-	std::string input = full_dir_path.to_std_string();
-	boost::split(result, input, [](char ch)
+	boost::split(result, full_dir_path, [](char ch)
 	{
 		return ch == '/';
 	});
@@ -226,7 +219,7 @@ void SharingGroup::create_directory(int uid, lights::StringView full_dir_path)
 }
 
 
-void SharingGroup::remove_directory(int uid, lights::StringView full_dir_path)
+void SharingGroup::remove_directory(int uid, const std::string& full_dir_path)
 {
 	auto manager_itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
 	if (manager_itr == m_manager_list.end())
@@ -235,8 +228,7 @@ void SharingGroup::remove_directory(int uid, lights::StringView full_dir_path)
 	}
 
 	std::vector<std::string> result;
-	std::string input = full_dir_path.to_std_string();
-	boost::split(result, input, [](char ch)
+	boost::split(result, full_dir_path, [](char ch)
 	{
 		return ch == '/';
 	});
@@ -327,24 +319,18 @@ void SharingGroup::kick_out(int uid)
 }
 
 
-SharingGroup& SharingGroupManager::register_group(int uid, lights::StringView group_name)
+SharingGroup& SharingGroupManager::register_group(int uid, const std::string& group_name)
 {
-	SharingGroup* old_group = find_group(group_name);
-	if (old_group)
+	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
+	SharingGroup new_group(m_next_id, group_name, uid, root_dir.file_id);
+
+	auto itr = m_group_list.insert(std::make_pair(new_group.group_id(), new_group));
+	if (itr.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
 
-	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
-	SharingGroup new_group(m_next_id, group_name, uid, root_dir.file_id);
 	++m_next_id;
-
-	auto itr = m_group_list.insert(std::make_pair(new_group.group_id(), new_group));
-	if (itr.second)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CANNOT_REGISTER);
-	}
-
 	return itr.first->second;
 }
 
@@ -375,7 +361,7 @@ SharingGroup* SharingGroupManager::find_group(int group_id)
 }
 
 
-SharingGroup* SharingGroupManager::find_group(lights::StringView group_name)
+SharingGroup* SharingGroupManager::find_group(const std::string& group_name)
 {
 	auto itr = std::find_if(m_group_list.begin(), m_group_list.end(),
 							[&group_name](const GroupList::value_type& value_type)
@@ -401,7 +387,7 @@ SharingGroup& SharingGroupManager::get_group(int group_id)
 	return *group;
 }
 
-SharingGroup& SharingGroupManager::get_group(lights::StringView group_name)
+SharingGroup& SharingGroupManager::get_group(const std::string& group_name)
 {
 	SharingGroup* group = find_group(group_name);
 	if (group == nullptr)
@@ -413,30 +399,25 @@ SharingGroup& SharingGroupManager::get_group(lights::StringView group_name)
 
 
 SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type,
-											   lights::StringView file_name,
+											   const std::string& file_name,
 											   int node_id,
-											   lights::StringView node_file_name)
+											   const std::string& node_file_name)
 {
-	StorageFile storage_file = std::make_pair(node_id, node_file_name.to_std_string());
-	auto old_itr = m_storage_file_list.find(storage_file);
-	if (old_itr != m_storage_file_list.end())
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_ALREADY_EXIST);
-	}
+	StorageFile storage_file = std::make_pair(node_id, node_file_name);
 
 	SharingFile sharing_file = {
 		m_next_id,
 		file_type,
-		file_name.to_std_string(),
+		file_name,
 		node_id,
-		node_file_name.to_std_string()
+		node_file_name
 	};
 	++m_next_id;
 
 	auto new_itr = m_sharing_file_list.insert(std::make_pair(sharing_file.file_id, sharing_file));
 	if (new_itr.second == false)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_CANNOT_CREATE);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_ALREADY_EXIST);
 	}
 
 	m_storage_file_list.insert(std::make_pair(storage_file, sharing_file.file_id));
@@ -465,9 +446,9 @@ SharingFile* SharingFileManager::find_file(int file_id)
 }
 
 
-SharingFile* SharingFileManager::find_file(int node_id, lights::StringView node_file_name)
+SharingFile* SharingFileManager::find_file(int node_id, const std::string& node_file_name)
 {
-	StorageFile storage_file = std::make_pair(node_id, node_file_name.to_std_string());
+	StorageFile storage_file = std::make_pair(node_id, node_file_name);
 	auto itr = m_storage_file_list.find(storage_file);
 	if (itr == m_storage_file_list.end())
 	{
@@ -489,7 +470,7 @@ SharingFile& SharingFileManager::get_file(int file_id)
 }
 
 
-SharingFile& SharingFileManager::get_file(int node_id, lights::StringView node_file_name)
+SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_file_name)
 {
 	SharingFile* file = find_file(node_id, node_file_name);
 	if (file == nullptr)
@@ -500,19 +481,13 @@ SharingFile& SharingFileManager::get_file(int node_id, lights::StringView node_f
 }
 
 
-StorageNode& StorageNodeManager::register_node(lights::StringView node_ip, short node_port)
+StorageNode& StorageNodeManager::register_node(const std::string& node_ip, short node_port)
 {
-	StorageNode* old_node = find_node(node_ip, node_port);
-	if (old_node)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_ALREADY_EXIST);
-	}
-
-	StorageNode new_node = { m_next_id, node_ip.to_std_string(), node_port };
+	StorageNode new_node = { m_next_id, node_ip, node_port };
 	auto itr = m_node_list.insert(std::make_pair(new_node.node_id, new_node));
 	if (itr.second == false)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_CANNOT_CREATE);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_ALREADY_EXIST);
 	}
 
 	return itr.first->second;
@@ -537,12 +512,12 @@ StorageNode* StorageNodeManager::find_node(int node_id)
 }
 
 
-StorageNode* StorageNodeManager::find_node(lights::StringView node_ip, short node_port)
+StorageNode* StorageNodeManager::find_node(const std::string& node_ip, short node_port)
 {
 	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(),
 							[&](const StorageNodeList::value_type& value_type)
 	{
-		return value_type.second.node_ip == node_ip && value_type.second.node_port;
+		return value_type.second.node_ip == node_ip && value_type.second.node_port == node_port;
 	});
 
 	if (itr == m_node_list.end())
@@ -565,7 +540,7 @@ StorageNode& StorageNodeManager::get_node(int node_id)
 }
 
 
-StorageNode& StorageNodeManager::get_node(lights::StringView node_ip, short node_port)
+StorageNode& StorageNodeManager::get_node(const std::string& node_ip, short node_port)
 {
 	StorageNode* node = find_node(node_ip, node_port);
 	if (node == nullptr)

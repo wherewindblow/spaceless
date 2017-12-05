@@ -17,7 +17,7 @@
 namespace spaceless {
 namespace client {
 
-extern NetworkConnection* conn;
+extern NetworkConnection* network_conn;
 
 struct User
 {
@@ -32,19 +32,19 @@ class UserManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(UserManager);
 
-	void register_user(lights::StringView username, lights::StringView password);
+	void register_user(const std::string& username, const std::string& password);
 
-	void login_user(int uid, lights::StringView password);
+	void login_user(int uid, const std::string& password);
 
 	void remove_user(int uid);
 
 	User* find_user(int uid);
 
-	User* find_user(lights::StringView username);
+	User* find_user(const std::string& username);
 
 	User& get_user(int uid);
 
-	User& get_user(lights::StringView username);
+	User& get_user(const std::string& username);
 
 private:
 	using UserList = std::map<int, User>;
