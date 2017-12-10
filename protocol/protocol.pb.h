@@ -27,10 +27,14 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/generated_enum_reflection.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 namespace spaceless {
 namespace protocol {
+class ReqFindUser;
+class ReqFindUserDefaultTypeInternal;
+extern ReqFindUserDefaultTypeInternal _ReqFindUser_default_instance_;
 class ReqLoginUser;
 class ReqLoginUserDefaultTypeInternal;
 extern ReqLoginUserDefaultTypeInternal _ReqLoginUser_default_instance_;
@@ -40,6 +44,9 @@ extern ReqRegisterUserDefaultTypeInternal _ReqRegisterUser_default_instance_;
 class ReqRemoveUser;
 class ReqRemoveUserDefaultTypeInternal;
 extern ReqRemoveUserDefaultTypeInternal _ReqRemoveUser_default_instance_;
+class RspFindUser;
+class RspFindUserDefaultTypeInternal;
+extern RspFindUserDefaultTypeInternal _RspFindUser_default_instance_;
 class RspLoginUser;
 class RspLoginUserDefaultTypeInternal;
 extern RspLoginUserDefaultTypeInternal _RspLoginUser_default_instance_;
@@ -69,6 +76,34 @@ void AddDescriptors();
 void InitDefaults();
 }  // namespace protobuf_protocol_2eproto
 
+enum CommandType {
+  INVALID_COMMAND = 0,
+  REQ_REGISTER_USER = 1,
+  RSP_REGISTER_USER = 2,
+  REQ_LOGIN_USER = 3,
+  RSP_LOGIN_USER = 4,
+  REQ_REMOVE_USER = 5,
+  RSP_REMOVE_USER = 6,
+  REQ_FIND_USER = 7,
+  RSP_FIND_USER = 8,
+  CommandType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  CommandType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool CommandType_IsValid(int value);
+const CommandType CommandType_MIN = INVALID_COMMAND;
+const CommandType CommandType_MAX = RSP_FIND_USER;
+const int CommandType_ARRAYSIZE = CommandType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* CommandType_descriptor();
+inline const ::std::string& CommandType_Name(CommandType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    CommandType_descriptor(), value);
+}
+inline bool CommandType_Parse(
+    const ::std::string& name, CommandType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<CommandType>(
+    CommandType_descriptor(), name, value);
+}
 // ===================================================================
 
 class ReqRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqRegisterUser) */ {
@@ -256,19 +291,19 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
       mutable_group_list();
 
-  // string name = 2;
-  void clear_name();
-  static const int kNameFieldNumber = 2;
-  const ::std::string& name() const;
-  void set_name(const ::std::string& value);
+  // string username = 2;
+  void clear_username();
+  static const int kUsernameFieldNumber = 2;
+  const ::std::string& username() const;
+  void set_username(const ::std::string& value);
   #if LANG_CXX11
-  void set_name(::std::string&& value);
+  void set_username(::std::string&& value);
   #endif
-  void set_name(const char* value);
-  void set_name(const char* value, size_t size);
-  ::std::string* mutable_name();
-  ::std::string* release_name();
-  void set_allocated_name(::std::string* name);
+  void set_username(const char* value);
+  void set_username(const char* value, size_t size);
+  ::std::string* mutable_username();
+  ::std::string* release_username();
+  void set_allocated_username(::std::string* username);
 
   // int32 uid = 1;
   void clear_uid();
@@ -282,7 +317,7 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 > group_list_;
   mutable int _group_list_cached_byte_size_;
-  ::google::protobuf::internal::ArenaStringPtr name_;
+  ::google::protobuf::internal::ArenaStringPtr username_;
   ::google::protobuf::int32 uid_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
@@ -727,6 +762,197 @@ class RspRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
+// -------------------------------------------------------------------
+
+class ReqFindUser : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqFindUser) */ {
+ public:
+  ReqFindUser();
+  virtual ~ReqFindUser();
+
+  ReqFindUser(const ReqFindUser& from);
+
+  inline ReqFindUser& operator=(const ReqFindUser& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqFindUser& default_instance();
+
+  static inline const ReqFindUser* internal_default_instance() {
+    return reinterpret_cast<const ReqFindUser*>(
+               &_ReqFindUser_default_instance_);
+  }
+
+  void Swap(ReqFindUser* other);
+
+  // implements Message ----------------------------------------------
+
+  inline ReqFindUser* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  ReqFindUser* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const ReqFindUser& from);
+  void MergeFrom(const ReqFindUser& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(ReqFindUser* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string username = 2;
+  void clear_username();
+  static const int kUsernameFieldNumber = 2;
+  const ::std::string& username() const;
+  void set_username(const ::std::string& value);
+  #if LANG_CXX11
+  void set_username(::std::string&& value);
+  #endif
+  void set_username(const char* value);
+  void set_username(const char* value, size_t size);
+  ::std::string* mutable_username();
+  ::std::string* release_username();
+  void set_allocated_username(::std::string* username);
+
+  // int32 uid = 1;
+  void clear_uid();
+  static const int kUidFieldNumber = 1;
+  ::google::protobuf::int32 uid() const;
+  void set_uid(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqFindUser)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr username_;
+  ::google::protobuf::int32 uid_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspFindUser : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspFindUser) */ {
+ public:
+  RspFindUser();
+  virtual ~RspFindUser();
+
+  RspFindUser(const RspFindUser& from);
+
+  inline RspFindUser& operator=(const RspFindUser& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspFindUser& default_instance();
+
+  static inline const RspFindUser* internal_default_instance() {
+    return reinterpret_cast<const RspFindUser*>(
+               &_RspFindUser_default_instance_);
+  }
+
+  void Swap(RspFindUser* other);
+
+  // implements Message ----------------------------------------------
+
+  inline RspFindUser* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  RspFindUser* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const RspFindUser& from);
+  void MergeFrom(const RspFindUser& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(RspFindUser* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // .spaceless.protocol.User user = 2;
+  bool has_user() const;
+  void clear_user();
+  static const int kUserFieldNumber = 2;
+  const ::spaceless::protocol::User& user() const;
+  ::spaceless::protocol::User* mutable_user();
+  ::spaceless::protocol::User* release_user();
+  void set_allocated_user(::spaceless::protocol::User* user);
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspFindUser)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::spaceless::protocol::User* user_;
+  ::google::protobuf::int32 result_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
 // ===================================================================
 
 
@@ -857,56 +1083,56 @@ inline void User::set_uid(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.User.uid)
 }
 
-// string name = 2;
-inline void User::clear_name() {
-  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// string username = 2;
+inline void User::clear_username() {
+  username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& User::name() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.User.name)
-  return name_.GetNoArena();
+inline const ::std::string& User::username() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.User.username)
+  return username_.GetNoArena();
 }
-inline void User::set_name(const ::std::string& value) {
+inline void User::set_username(const ::std::string& value) {
   
-  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:spaceless.protocol.User.name)
+  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.User.username)
 }
 #if LANG_CXX11
-inline void User::set_name(::std::string&& value) {
+inline void User::set_username(::std::string&& value) {
   
-  name_.SetNoArena(
+  username_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.User.name)
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.User.username)
 }
 #endif
-inline void User::set_name(const char* value) {
+inline void User::set_username(const char* value) {
   
-  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:spaceless.protocol.User.name)
+  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.User.username)
 }
-inline void User::set_name(const char* value, size_t size) {
+inline void User::set_username(const char* value, size_t size) {
   
-  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.User.name)
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.User.username)
 }
-inline ::std::string* User::mutable_name() {
+inline ::std::string* User::mutable_username() {
   
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.User.name)
-  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.User.username)
+  return username_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* User::release_name() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.User.name)
+inline ::std::string* User::release_username() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.User.username)
   
-  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return username_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void User::set_allocated_name(::std::string* name) {
-  if (name != NULL) {
+inline void User::set_allocated_username(::std::string* username) {
+  if (username != NULL) {
     
   } else {
     
   }
-  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.User.name)
+  username_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), username);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.User.username)
 }
 
 // repeated int32 group_list = 3;
@@ -1120,7 +1346,138 @@ inline void RspRemoveUser::set_result(bool value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.RspRemoveUser.result)
 }
 
+// -------------------------------------------------------------------
+
+// ReqFindUser
+
+// int32 uid = 1;
+inline void ReqFindUser::clear_uid() {
+  uid_ = 0;
+}
+inline ::google::protobuf::int32 ReqFindUser::uid() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqFindUser.uid)
+  return uid_;
+}
+inline void ReqFindUser::set_uid(::google::protobuf::int32 value) {
+  
+  uid_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqFindUser.uid)
+}
+
+// string username = 2;
+inline void ReqFindUser::clear_username() {
+  username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ReqFindUser::username() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqFindUser.username)
+  return username_.GetNoArena();
+}
+inline void ReqFindUser::set_username(const ::std::string& value) {
+  
+  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqFindUser.username)
+}
+#if LANG_CXX11
+inline void ReqFindUser::set_username(::std::string&& value) {
+  
+  username_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqFindUser.username)
+}
+#endif
+inline void ReqFindUser::set_username(const char* value) {
+  
+  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqFindUser.username)
+}
+inline void ReqFindUser::set_username(const char* value, size_t size) {
+  
+  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqFindUser.username)
+}
+inline ::std::string* ReqFindUser::mutable_username() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqFindUser.username)
+  return username_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ReqFindUser::release_username() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqFindUser.username)
+  
+  return username_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ReqFindUser::set_allocated_username(::std::string* username) {
+  if (username != NULL) {
+    
+  } else {
+    
+  }
+  username_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), username);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqFindUser.username)
+}
+
+// -------------------------------------------------------------------
+
+// RspFindUser
+
+// int32 result = 1;
+inline void RspFindUser::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspFindUser::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspFindUser.result)
+  return result_;
+}
+inline void RspFindUser::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspFindUser.result)
+}
+
+// .spaceless.protocol.User user = 2;
+inline bool RspFindUser::has_user() const {
+  return this != internal_default_instance() && user_ != NULL;
+}
+inline void RspFindUser::clear_user() {
+  if (GetArenaNoVirtual() == NULL && user_ != NULL) delete user_;
+  user_ = NULL;
+}
+inline const ::spaceless::protocol::User& RspFindUser::user() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspFindUser.user)
+  return user_ != NULL ? *user_
+                         : *::spaceless::protocol::User::internal_default_instance();
+}
+inline ::spaceless::protocol::User* RspFindUser::mutable_user() {
+  
+  if (user_ == NULL) {
+    user_ = new ::spaceless::protocol::User;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspFindUser.user)
+  return user_;
+}
+inline ::spaceless::protocol::User* RspFindUser::release_user() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspFindUser.user)
+  
+  ::spaceless::protocol::User* temp = user_;
+  user_ = NULL;
+  return temp;
+}
+inline void RspFindUser::set_allocated_user(::spaceless::protocol::User* user) {
+  delete user_;
+  user_ = user;
+  if (user) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspFindUser.user)
+}
+
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -1139,6 +1496,20 @@ inline void RspRemoveUser::set_result(bool value) {
 
 }  // namespace protocol
 }  // namespace spaceless
+
+#ifndef SWIG
+namespace google {
+namespace protobuf {
+
+template <> struct is_proto_enum< ::spaceless::protocol::CommandType> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::spaceless::protocol::CommandType>() {
+  return ::spaceless::protocol::CommandType_descriptor();
+}
+
+}  // namespace protobuf
+}  // namespace google
+#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

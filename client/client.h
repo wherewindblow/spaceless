@@ -38,9 +38,9 @@ public:
 
 	void remove_user(int uid);
 
-	User* find_user(int uid);
+	void find_user(int uid);
 
-	User* find_user(const std::string& username);
+	void find_user(const std::string& username);
 
 	User& get_user(int uid);
 

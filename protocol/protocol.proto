@@ -2,6 +2,19 @@ syntax = "proto3";
 
 package spaceless.protocol;
 
+enum CommandType
+{
+    INVALID_COMMAND = 0;
+    REQ_REGISTER_USER = 1;
+    RSP_REGISTER_USER = 2;
+    REQ_LOGIN_USER = 3;
+    RSP_LOGIN_USER = 4;
+    REQ_REMOVE_USER = 5;
+    RSP_REMOVE_USER = 6;
+    REQ_FIND_USER = 7;
+    RSP_FIND_USER = 8;
+};
+
 message ReqRegisterUser
 {
     string username = 1;
@@ -11,7 +24,7 @@ message ReqRegisterUser
 message User
 {
     int32 uid = 1;
-    string name = 2;
+    string username = 2;
     repeated int32 group_list = 3;
 }
 
@@ -40,4 +53,16 @@ message ReqRemoveUser
 message RspRemoveUser
 {
     bool result = 1;
+}
+
+message ReqFindUser
+{
+    int32 uid = 1;
+    string username = 2;
+}
+
+message RspFindUser
+{
+    int32 result = 1;
+    User user = 2;
 }

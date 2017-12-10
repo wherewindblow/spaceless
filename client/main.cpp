@@ -16,11 +16,11 @@ const int MODULE_CLIENT = 1100;
 
 namespace client {
 
-void read_handler(NetworkConnection& conn, const ProtocolPackageBuffer& package)
+void read_handler(NetworkConnection& conn, const ProtocolBuffer& package)
 {
 	switch (package.header().command)
 	{
-		case RSP_REGISTER_USER:
+		case protocol::RSP_REGISTER_USER:
 		{
 			protocol::RspRegisterUser rsponse;
 			package.parse_as_protobuf(rsponse);
@@ -34,18 +34,34 @@ void read_handler(NetworkConnection& conn, const ProtocolPackageBuffer& package)
 			}
 			break;
 		}
-		case RSP_LOGIN_USER:
+		case protocol::RSP_LOGIN_USER:
 		{
 			protocol::RspLoginUser rsponse;
 			package.parse_as_protobuf(rsponse);
 			std::cout << lights::format("Login result:{}.", rsponse.result()) << std::endl;
 			break;
 		}
-		case RSP_REMOVE_USER:
+		case protocol::RSP_REMOVE_USER:
 		{
 			protocol::RspRemoveUser rsponse;
 			package.parse_as_protobuf(rsponse);
 			std::cout << lights::format("Remove result:{}.", rsponse.result()) << std::endl;
+			break;
+		}
+		case protocol::RSP_FIND_USER:
+		{
+			protocol::RspFindUser rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				std::cout << lights::format("Remove result:{}.", rsponse.result()) << std::endl;
+			}
+			else
+			{
+				std::cout << lights::format("Your uid is {} and username is {}.",
+											rsponse.user().uid(), rsponse.user().username())
+						  << std::endl;
+			}
 			break;
 		}
 		default:break;
@@ -58,9 +74,10 @@ int main(int argc, const char* argv[])
 	try
 	{
 		std::pair<int, CommandHandlerManager::CommandHandler> handlers[] = {
-			{RSP_REGISTER_USER, read_handler},
-			{RSP_LOGIN_USER, read_handler},
-			{RSP_REMOVE_USER, read_handler},
+			{protocol::RSP_REGISTER_USER, read_handler},
+			{protocol::RSP_LOGIN_USER, read_handler},
+			{protocol::RSP_REMOVE_USER, read_handler},
+			{protocol::RSP_FIND_USER, read_handler},
 		};
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
@@ -99,10 +116,25 @@ int main(int argc, const char* argv[])
 			else if (func == "remove_user")
 			{
 				int uid;
-				std::string password;
 				std::cout << lights::format("Please input uid.\n");
 				std::cin >> uid;
 				UserManager::instance()->remove_user(uid);
+			}
+			else if (func == "find_user")
+			{
+
+				std::string input;
+				std::cout << lights::format("Please input uid or username.\n");
+				std::cin >> input;
+				try
+				{
+					int uid = std::stoi(input);
+					UserManager::instance()->find_user(uid);
+				}
+				catch (const std::exception&)
+				{
+					UserManager::instance()->find_user(input); // Make input as username.
+				}
 			}
 		}
 	}
