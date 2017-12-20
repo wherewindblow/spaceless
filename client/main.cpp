@@ -16,7 +16,7 @@ const int MODULE_CLIENT = 1100;
 
 namespace client {
 
-void read_handler(NetworkConnection& conn, const ProtocolBuffer& package)
+void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 {
 	switch (package.header().command)
 	{
@@ -138,11 +138,11 @@ int main(int argc, const char* argv[])
 			}
 		}
 	}
-	catch (const Exception& ex)
+	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_CLIENT, ex);
 	}
-	catch (const std::exception& ex)
+	catch (std::exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_CLIENT, ex.what());
 	}

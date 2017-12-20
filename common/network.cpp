@@ -14,6 +14,47 @@ namespace spaceless {
 
 using Poco::Net::SocketAddress;
 
+PackageBuffer& PackageBufferManager::register_package()
+{
+	auto pair = m_package_list.emplace(m_next_id, PackageBuffer(m_next_id));
+	++m_next_id;
+	if (pair.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_REGISTER);
+	}
+	return pair.first->second;
+}
+
+
+void PackageBufferManager::remove_package(int package_id)
+{
+	m_package_list.erase(package_id);
+}
+
+
+PackageBuffer* PackageBufferManager::find_package(int package_id)
+{
+	auto itr = m_package_list.find(package_id);
+	if (itr == m_package_list.end())
+	{
+		return nullptr;
+	}
+
+	return &itr->second;
+}
+
+
+PackageBuffer& PackageBufferManager::get_package(int package_id)
+{
+	PackageBuffer* package = find_package(package_id);
+	if (package == nullptr)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_NOT_EXIST);
+	}
+
+	return *package;
+}
+
 
 void CommandHandlerManager::register_command(int cmd, CommandHandlerManager::CommandHandler callback)
 {
@@ -41,10 +82,14 @@ CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cm
 NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor) :
 	m_socket(socket),
 	m_reactor(reactor),
+	m_read_buffer(0),
 	m_readed_len(0),
 	m_read_state(ReadState::READ_HEADER)
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
+
+	m_socket.setBlocking(false);
+
 	NetworkConnectionManager::instance()->m_conn_list.emplace_back(this);
 	m_id = NetworkConnectionManager::instance()->m_next_id;
 	++NetworkConnectionManager::instance()->m_next_id;
@@ -53,8 +98,8 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	m_reactor.addEventHandler(m_socket, readable_observer);
 	Poco::Observer<NetworkConnection, ShutdownNotification> shutdown_observer(*this, &NetworkConnection::on_shutdown);
 	m_reactor.addEventHandler(m_socket, shutdown_observer);
-	Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
-	m_reactor.addEventHandler(m_socket, timeout_observer);
+//	Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
+//	m_reactor.addEventHandler(m_socket, timeout_observer);
 	Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
 	m_reactor.addEventHandler(m_socket, error_observer);
 }
@@ -62,7 +107,7 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 
 NetworkConnection::~NetworkConnection()
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
+	SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a network connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
 	try
 	{
 		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
@@ -76,15 +121,15 @@ NetworkConnection::~NetworkConnection()
 		m_reactor.removeEventHandler(m_socket, readable_observer);
 		Poco::Observer<NetworkConnection, ShutdownNotification> shutdown_observer(*this, &NetworkConnection::on_shutdown);
 		m_reactor.removeEventHandler(m_socket, shutdown_observer);
-		Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
-		m_reactor.removeEventHandler(m_socket, timeout_observer);
+//		Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
+//		m_reactor.removeEventHandler(m_socket, timeout_observer);
 		Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
 		m_reactor.removeEventHandler(m_socket, error_observer);
 
 		m_socket.shutdown();
 		m_socket.close();
 	}
-	catch (const std::exception& ex)
+	catch (std::exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}", m_socket.peerAddress(), ex.what());
 	}
@@ -108,28 +153,86 @@ void NetworkConnection::on_readable(ReadableNotification* notification)
 }
 
 
-void NetworkConnection::on_shutdown(ShutdownNotification* /*notification*/)
+void NetworkConnection::on_writable(WritableNotification* notification)
 {
+	notification->release();
+	const PackageBuffer* package = nullptr;
+	while (!m_send_list.empty())
+	{
+		package = PackageBufferManager::instance()->find_package(m_send_list.front());
+		if (package == nullptr)
+		{
+			m_send_list.pop();
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if (package == nullptr)
+	{
+		return;
+	}
+
+	int len = static_cast<int>(package->total_length());
+	m_sended_len += m_socket.sendBytes(package->data() + m_sended_len, len - m_sended_len);
+
+	if (m_sended_len == len)
+	{
+		m_sended_len = 0;
+		m_send_list.pop();
+		PackageBufferManager::instance()->remove_package(package->package_id());
+	}
+
+	if (m_send_list.empty())
+	{
+		Poco::Observer<NetworkConnection, WritableNotification> writable_observer(*this, &NetworkConnection::on_writable);
+		m_reactor.removeEventHandler(m_socket, writable_observer);
+	}
+}
+
+
+void NetworkConnection::on_shutdown(ShutdownNotification* notification)
+{
+	notification->release();
 	close();
 }
 
 
-void NetworkConnection::on_timeout(TimeoutNotification* /*notification*/)
+void NetworkConnection::on_timeout(TimeoutNotification* notification)
 {
+	notification->release();
 	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On time out.", m_socket.peerAddress());
 }
 
 
-void NetworkConnection::on_error(ErrorNotification* /*notification*/)
+void NetworkConnection::on_error(ErrorNotification* notification)
 {
+	notification->release();
 	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On error.", m_socket.peerAddress());
 }
 
 
-void NetworkConnection::send_package(const ProtocolPackageBuffer& package)
+void NetworkConnection::send_package(const PackageBuffer& package)
 {
-	int len = static_cast<int>(ProtocolPackageBuffer::MAX_HEADER_LEN + package.header().content_length);
-	m_socket.sendBytes(package.data(), len);
+	if (!m_send_list.empty())
+	{
+		m_send_list.push(package.package_id());
+	}
+
+	int len = static_cast<int>(package.total_length());
+	m_sended_len = m_socket.sendBytes(package.data(), len);
+	if (m_sended_len == len)
+	{
+		m_sended_len = 0;
+	}
+	else if (m_sended_len < len)
+	{
+		m_send_list.push(package.package_id());
+		Poco::Observer<NetworkConnection, WritableNotification> writable_observer(*this, &NetworkConnection::on_writable);
+		m_reactor.addEventHandler(m_socket, writable_observer);
+	}
 }
 
 
@@ -168,8 +271,14 @@ void NetworkConnection::read_for_state(int deep)
 	{
 		case ReadState::READ_HEADER:
 		{
-			int len = m_socket.receiveBytes(m_buffer.data() + m_readed_len,
-											static_cast<int>(ProtocolPackageBuffer::MAX_HEADER_LEN) - m_readed_len);
+			int len = m_socket.receiveBytes(m_read_buffer.data() + m_readed_len,
+											static_cast<int>(PackageBuffer::MAX_HEADER_LEN) - m_readed_len);
+
+			if (len == -1)
+			{
+				return;
+			}
+
 			if (len == 0 && deep == 0)
 			{
 				close();
@@ -177,7 +286,7 @@ void NetworkConnection::read_for_state(int deep)
 			}
 
 			m_readed_len += len;
-			if (m_readed_len == ProtocolPackageBuffer::MAX_HEADER_LEN)
+			if (m_readed_len == PackageBuffer::MAX_HEADER_LEN)
 			{
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_CONTENT;
@@ -187,8 +296,14 @@ void NetworkConnection::read_for_state(int deep)
 
 		case ReadState::READ_CONTENT:
 		{
-			int len = m_socket.receiveBytes(m_buffer.data() + ProtocolPackageBuffer::MAX_HEADER_LEN + m_readed_len,
-											m_buffer.header().content_length - m_readed_len);
+			int len = m_socket.receiveBytes(m_read_buffer.data() + PackageBuffer::MAX_HEADER_LEN + m_readed_len,
+											m_read_buffer.header().content_length - m_readed_len);
+
+			if (len == -1)
+			{
+				return;
+			}
+
 			if (len == 0 && deep == 0)
 			{
 				close();
@@ -196,21 +311,21 @@ void NetworkConnection::read_for_state(int deep)
 			}
 
 			m_readed_len += len;
-			if (m_readed_len == m_buffer.header().content_length)
+			if (m_readed_len == m_read_buffer.header().content_length)
 			{
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				auto handler = CommandHandlerManager::instance()->find_handler(m_buffer.header().command);
+				auto handler = CommandHandlerManager::instance()->find_handler(m_read_buffer.header().command);
 				if (handler)
 				{
 					try
 					{
-						handler(*this, m_buffer);
+						handler(*this, m_read_buffer);
 					}
 					catch (const Exception& ex)
 					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}.", m_socket.peerAddress(), ex);
+						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}/{}.", m_socket.peerAddress(), ex.code(),ex);
 					}
 					catch (const std::exception& ex)
 					{
@@ -224,7 +339,7 @@ void NetworkConnection::read_for_state(int deep)
 				else
 				{
 					SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown command {}.",
-									m_socket.peerAddress(), m_buffer.header().command);
+									m_socket.peerAddress(), m_read_buffer.header().command);
 				}
 			}
 			break;
@@ -241,7 +356,7 @@ NetworkConnectionManager::~NetworkConnectionManager()
 	{
 		stop_all();
 	}
-	catch (const std::exception& ex)
+	catch (std::exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_NETWORK, ex.what());
 	}
@@ -264,7 +379,7 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 {
 	ServerSocket serve_socket(SocketAddress(host, port));
 	m_acceptor_list.emplace_back(serve_socket, m_reactor);
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a listener: {}.", serve_socket.address());
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network listener: {}.", serve_socket.address());
 }
 
 

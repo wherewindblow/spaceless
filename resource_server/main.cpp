@@ -27,7 +27,7 @@ void convert_user(User& server_user, protocol::User& proto_user)
 	}
 }
 
-void on_register_user(NetworkConnection& conn, const ProtocolBuffer& package)
+void on_register_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	protocol::ReqRegisterUser request;
 	package.parse_as_protobuf(request);
@@ -49,7 +49,7 @@ void on_register_user(NetworkConnection& conn, const ProtocolBuffer& package)
 }
 
 
-void on_login_user(NetworkConnection& conn, const ProtocolBuffer& package)
+void on_login_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	protocol::ReqLoginUser request;
 	package.parse_as_protobuf(request);
@@ -60,18 +60,18 @@ void on_login_user(NetworkConnection& conn, const ProtocolBuffer& package)
 }
 
 
-void on_remove_user(NetworkConnection& conn, const ProtocolBuffer& package)
+void on_remove_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	protocol::ReqRemoveUser request;
 	package.parse_as_protobuf(request);
 	UserManager::instance()->remove_user(request.uid());
 	protocol::RspRemoveUser rsponse;
 	rsponse.set_result(true);
-	conn.send_protobuf(protocol::RSP_LOGIN_USER, rsponse);
+	conn.send_protobuf(protocol::RSP_REMOVE_USER, rsponse);
 }
 
 
-void on_find_user(NetworkConnection& conn, const ProtocolBuffer& package)
+void on_find_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	protocol::ReqFindUser request;
 	package.parse_as_protobuf(request);
@@ -103,12 +103,6 @@ void on_find_user(NetworkConnection& conn, const ProtocolBuffer& package)
 
 int main(int argc, const char* argv[])
 {
-	for (protocol::CommandType type = protocol::CommandType_MIN;
-		 type <= protocol::CommandType_MAX;
-		 type = static_cast<protocol::CommandType>(static_cast<int>(type) + 1))
-	{
-		std::cout << protocol::CommandType_Name(type) << ":" << type << std::endl;
-	}
 	try
 	{
 		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
@@ -127,11 +121,11 @@ int main(int argc, const char* argv[])
 
 		NetworkConnectionManager::instance()->run();
 	}
-	catch (const Exception& ex)
+	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, ex);
 	}
-	catch (const std::exception& ex)
+	catch (std::exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, ex.what());
 	}

@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <list>
+#include <queue>
 #include <lights/sequence.h>
 
 #include <Poco/Net/SocketAcceptor.h>
@@ -45,6 +46,7 @@ using Poco::Net::SocketReactor;
 using Poco::Net::ServerSocket;
 using Poco::Net::StreamSocket;
 using Poco::Net::ReadableNotification;
+using Poco::Net::WritableNotification;
 using Poco::Net::ShutdownNotification;
 using Poco::Net::TimeoutNotification;
 using Poco::Net::ErrorNotification;
@@ -56,12 +58,13 @@ enum
 {
 	ERR_NETWORK_PACKAGE_CANNOT_REGISTER = 100,
 	ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF = 101,
+	ERR_NETWORK_PACKAGE_NOT_EXIST = 102,
 };
 
 
 const int PROTOCOL_PACKAGE_VERSION = 1;
 
-struct ProtocolPackageHeader
+struct ProtocolHeader
 {
 	short version;
 	int command;
@@ -72,35 +75,41 @@ struct ProtocolPackageHeader
 /**
  * Network data package to seperate message.
  */
-class ProtocolPackageBuffer
+class PackageBuffer
 {
 public:
 	static const std::size_t MAX_BUFFER_LEN = 65536;
-	static const std::size_t MAX_HEADER_LEN = sizeof(ProtocolPackageHeader);
+	static const std::size_t MAX_HEADER_LEN = sizeof(ProtocolHeader);
 	static const std::size_t MAX_CONTENT_LEN = MAX_BUFFER_LEN - MAX_HEADER_LEN;
 
 	/**
-	 * Creates the NetworkConnection and init package version.
+	 * Creates the PackageBuffer.
 	 */
-	ProtocolPackageBuffer()
+	PackageBuffer(int package_id):
+		m_id(package_id)
 	{
 		header().version = PROTOCOL_PACKAGE_VERSION;
 	}
 
-	/**
-	 * Returns package header of buffer.
-	 */
-	ProtocolPackageHeader& header()
+	int package_id() const
 	{
-		return *reinterpret_cast<ProtocolPackageHeader*>(m_buffer);
+		return m_id;
 	}
 
 	/**
 	 * Returns package header of buffer.
 	 */
-	const ProtocolPackageHeader& header() const
+	ProtocolHeader& header()
 	{
-		return *reinterpret_cast<const ProtocolPackageHeader*>(m_buffer);
+		return *reinterpret_cast<ProtocolHeader*>(m_buffer);
+	}
+
+	/**
+	 * Returns package header of buffer.
+	 */
+	const ProtocolHeader& header() const
+	{
+		return *reinterpret_cast<const ProtocolHeader*>(m_buffer);
 	}
 
 	/**
@@ -154,18 +163,27 @@ public:
 	}
 
 	/**
+	 * Returns header and content length.
+	 */
+	std::size_t total_length() const
+	{
+		return PackageBuffer::MAX_HEADER_LEN + header().content_length;
+	}
+
+	/**
 	 * Parses package content as a protobuf.
 	 */
 	template <typename T>
 	void parse_as_protobuf(T& msg) const;
 
 private:
+	int m_id;
 	char m_buffer[MAX_BUFFER_LEN];
 };
 
 
 template <typename T>
-void ProtocolPackageBuffer::parse_as_protobuf(T& msg) const
+void PackageBuffer::parse_as_protobuf(T& msg) const
 {
 	lights::SequenceView storage = content();
 	bool ok = msg.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
@@ -174,6 +192,29 @@ void ProtocolPackageBuffer::parse_as_protobuf(T& msg) const
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF);
 	}
 }
+
+
+/**
+ * Manage package buffer and guarantee they are valid when connetion underlying write is call.
+ */
+class PackageBufferManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(PackageBufferManager);
+
+	PackageBuffer& register_package();
+
+	void remove_package(int package_id);
+
+	PackageBuffer* find_package(int package_id);
+
+	PackageBuffer& get_package(int package_id);
+
+private:
+	int m_next_id = 1;
+	std::map<int, PackageBuffer> m_package_list;
+};
+
 
 
 class NetworkConnection;
@@ -187,7 +228,7 @@ class CommandHandlerManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(CommandHandlerManager);
 
-	using CommandHandler = std::function<void(NetworkConnection&, const ProtocolPackageBuffer&)>;
+	using CommandHandler = std::function<void(NetworkConnection&, const PackageBuffer&)>;
 
 	/**
 	 * Registers associate a command with handler.
@@ -244,6 +285,11 @@ public:
 	void on_readable(ReadableNotification* notification);
 
 	/**
+	 * Handlers writable notification (send buffer is not full).
+	 */
+	void on_writable(WritableNotification* notification);
+
+	/**
 	 * Handlers shutdown notification.
 	 */
 	void on_shutdown(ShutdownNotification* notification);
@@ -261,7 +307,7 @@ public:
 	/**
 	 * Sends a package to remote.
 	 */
-	void send_package(const ProtocolPackageBuffer& package);
+	void send_package(const PackageBuffer& package);
 
 	/**
 	 * Parses a protobuf as package buffer and send to remote.
@@ -296,9 +342,11 @@ private:
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
-	ProtocolPackageBuffer m_buffer;
+	PackageBuffer m_read_buffer;
 	int m_readed_len;
 	ReadState m_read_state;
+	std::queue<int> m_send_list;
+	int m_sended_len;
 	void* m_attachment;
 };
 
@@ -307,14 +355,14 @@ template <typename ProtobufType>
 void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg)
 {
 	int size = msg.ByteSize();
-	if (static_cast<std::size_t>(size) > ProtocolPackageBuffer::MAX_CONTENT_LEN)
+	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
 		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Content length {} is too large.",
 						stream_socket().peerAddress(), size)
 		return;
 	}
 
-	ProtocolPackageBuffer package;
+	PackageBuffer& package = PackageBufferManager::instance()->register_package();
 	package.header().command = cmd;
 	package.header().content_length = size;
 	lights::Sequence storage = package.content_buffer();
