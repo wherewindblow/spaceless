@@ -19,6 +19,7 @@
 namespace spaceless {
 namespace resource_server {
 
+const int MODULE_RESOURCE_SERVER = 1000;
 
 enum
 {
@@ -90,6 +91,8 @@ private:
 class SharingGroup
 {
 public:
+	using UserList = std::vector<int>;
+
 	SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id);
 
 	int group_id() const;
@@ -120,13 +123,17 @@ public:
 
 	void kick_out(int uid);
 
+	const UserList& manager_list() const;
+
+	const UserList& member_list() const;
+
 private:
 	int m_group_id;
 	std::string m_group_name;
 	int m_owner_id;
 	int m_root_dir_id;
-	std::vector<int> m_manager_list;
-	std::vector<int> m_member_list;
+	UserList m_manager_list;
+	UserList m_member_list;
 };
 
 

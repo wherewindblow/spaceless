@@ -6,6 +6,9 @@
 
 #include "network.h"
 
+#include <execinfo.h>
+
+#include <Poco/Net/NetException.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Observer.h>
 
@@ -84,15 +87,11 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	m_reactor(reactor),
 	m_read_buffer(0),
 	m_readed_len(0),
-	m_read_state(ReadState::READ_HEADER)
+	m_read_state(ReadState::READ_HEADER),
+	m_sended_len(0),
+	m_attachment(nullptr)
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
-
 	m_socket.setBlocking(false);
-
-	NetworkConnectionManager::instance()->m_conn_list.emplace_back(this);
-	m_id = NetworkConnectionManager::instance()->m_next_id;
-	++NetworkConnectionManager::instance()->m_next_id;
 
 	Poco::Observer<NetworkConnection, ReadableNotification> readable_observer(*this, &NetworkConnection::on_readable);
 	m_reactor.addEventHandler(m_socket, readable_observer);
@@ -102,14 +101,30 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 //	m_reactor.addEventHandler(m_socket, timeout_observer);
 	Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
 	m_reactor.addEventHandler(m_socket, error_observer);
+
+	NetworkConnectionManager::instance()->m_conn_list.emplace_back(this);
+	m_id = NetworkConnectionManager::instance()->m_next_id;
+	++NetworkConnectionManager::instance()->m_next_id;
+
+	try
+	{
+		std::string address = m_socket.address().toString();
+		std::string peer_address = m_socket.peerAddress().toString();
+		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: id:{}, address:{}/{}.",
+						m_id, address, peer_address);
+	}
+	catch (Poco::Exception& ex)
+	{
+		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: id:{}, address:unkown/unkown.", m_id);
+	}
 }
 
 
 NetworkConnection::~NetworkConnection()
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a network connection: {}/{}.", m_socket.address(), m_socket.peerAddress())
 	try
 	{
+		SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a network connection: id:{}.", m_id);
 		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
 		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
 		{
@@ -117,25 +132,31 @@ NetworkConnection::~NetworkConnection()
 		});
 		conn_list.erase(need_delete);
 
-		Poco::Observer<NetworkConnection, ReadableNotification> readable_observer(*this, &NetworkConnection::on_readable);
-		m_reactor.removeEventHandler(m_socket, readable_observer);
-		Poco::Observer<NetworkConnection, ShutdownNotification> shutdown_observer(*this, &NetworkConnection::on_shutdown);
-		m_reactor.removeEventHandler(m_socket, shutdown_observer);
-//		Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
-//		m_reactor.removeEventHandler(m_socket, timeout_observer);
-		Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
-		m_reactor.removeEventHandler(m_socket, error_observer);
+		Poco::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable);
+		m_reactor.removeEventHandler(m_socket, readable);
+		Poco::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown);
+		m_reactor.removeEventHandler(m_socket, shutdown);
+		//	Poco::Observer<NetworkConnection, TimeoutNotification> timeout(*this, &NetworkConnection::on_timeout);
+		//	m_reactor.removeEventHandler(m_socket, timeout);
+		Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
+		m_reactor.removeEventHandler(m_socket, error);
 
-		m_socket.shutdown();
-		m_socket.close();
+		try
+		{
+			m_socket.shutdown();
+			m_socket.close();
+		}
+		catch (Poco::Net::NetException&)
+		{
+		}
 	}
 	catch (std::exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}", m_socket.peerAddress(), ex.what());
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}", m_id, ex.what());
 	}
 	catch (...)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown error", m_socket.peerAddress());
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error", m_id);
 	}
 }
 
@@ -203,14 +224,14 @@ void NetworkConnection::on_shutdown(ShutdownNotification* notification)
 void NetworkConnection::on_timeout(TimeoutNotification* notification)
 {
 	notification->release();
-	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On time out.", m_socket.peerAddress());
+	SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: On time out.", m_id);
 }
 
 
 void NetworkConnection::on_error(ErrorNotification* notification)
 {
 	notification->release();
-	SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: On error.", m_socket.peerAddress());
+	SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: On error.", m_id);
 }
 
 
@@ -279,7 +300,7 @@ void NetworkConnection::read_for_state(int deep)
 				return;
 			}
 
-			if (len == 0 && deep == 0)
+			if (len == 0 && deep == 0) // Closes by peer.
 			{
 				close();
 				return;
@@ -304,12 +325,6 @@ void NetworkConnection::read_for_state(int deep)
 				return;
 			}
 
-			if (len == 0 && deep == 0)
-			{
-				close();
-				return;
-			}
-
 			m_readed_len += len;
 			if (m_readed_len == m_read_buffer.header().content_length)
 			{
@@ -319,27 +334,29 @@ void NetworkConnection::read_for_state(int deep)
 				auto handler = CommandHandlerManager::instance()->find_handler(m_read_buffer.header().command);
 				if (handler)
 				{
+					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}.",
+									m_id, m_read_buffer.header().command);
 					try
 					{
 						handler(*this, m_read_buffer);
 					}
 					catch (const Exception& ex)
 					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}/{}.", m_socket.peerAddress(), ex.code(),ex);
+						SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}/{}.", m_id, ex.code(), ex);
 					}
 					catch (const std::exception& ex)
 					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: {}.", m_socket.peerAddress(), ex.what());
+						SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}.", m_id, ex.what());
 					}
 					catch (...)
 					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown error.", m_socket.peerAddress());
+						SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error.", m_id);
 					}
 				}
 				else
 				{
-					SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Unkown command {}.",
-									m_socket.peerAddress(), m_read_buffer.header().command);
+					SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown command {}.",
+									m_id, m_read_buffer.header().command);
 				}
 			}
 			break;

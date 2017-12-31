@@ -3,10 +3,9 @@
 
 #include <lights/ostream.h>
 #include <protocol/all.h>
+#include <common/network.h>
+#include <common/log.h>
 
-#include "common/network.h"
-#include "common/log.h"
-#include "protocol/protocol.pb.h"
 #include "client.h"
 
 
@@ -15,6 +14,16 @@ namespace spaceless {
 const int MODULE_CLIENT = 1100;
 
 namespace client {
+
+template <typename ProtoBuffer>
+void report_error(const ProtoBuffer& proto_buffer)
+{
+	if (proto_buffer.result())
+	{
+		std::cout << lights::format("Failure {}.", proto_buffer.result()) << std::endl;
+	}
+}
+
 
 void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 {
@@ -26,7 +35,7 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			package.parse_as_protobuf(rsponse);
 			if (rsponse.result())
 			{
-				std::cout << lights::format("Register failure {}.", rsponse.result()) << std::endl;
+				report_error(rsponse);
 			}
 			else
 			{
@@ -38,14 +47,20 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 		{
 			protocol::RspLoginUser rsponse;
 			package.parse_as_protobuf(rsponse);
-			std::cout << lights::format("Login result:{}.", rsponse.result()) << std::endl;
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
 			break;
 		}
 		case protocol::RSP_REMOVE_USER:
 		{
 			protocol::RspRemoveUser rsponse;
 			package.parse_as_protobuf(rsponse);
-			std::cout << lights::format("Remove result:{}.", rsponse.result()) << std::endl;
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
 			break;
 		}
 		case protocol::RSP_FIND_USER:
@@ -54,7 +69,7 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			package.parse_as_protobuf(rsponse);
 			if (rsponse.result())
 			{
-				std::cout << lights::format("Remove result:{}.", rsponse.result()) << std::endl;
+				report_error(rsponse);
 			}
 			else
 			{
@@ -64,7 +79,100 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			}
 			break;
 		}
-		default:break;
+		case protocol::RSP_REGISTER_GROUP:
+		{
+			protocol::RspRegisterGroup rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
+			else
+			{
+				std::cout << lights::format("Group id is {}.", rsponse.group_id()) << std::endl;
+			}
+			break;
+		}
+		case protocol::RSP_REMOVE_GROUP:
+		{
+			protocol::RspRemoveGroup rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
+			break;
+		}
+		case protocol::RSP_FIND_GROUP:
+		{
+			protocol::RspFindGroup rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
+			else
+			{
+				std::string msg;
+				auto sink = lights::make_format_sink_adapter(msg);
+
+				lights::write(sink,
+							  "group_id = {};\n"
+								  "group_name = {};\n"
+								  "owner_id = {};\n",
+							  rsponse.group().group_id(),
+							  rsponse.group().group_name(),
+							  rsponse.group().owner_id()
+				);
+
+				lights::write(sink, "manager_list = ");
+				for (int i = 0; i < rsponse.group().manager_list().size(); ++i)
+				{
+					if (i != 0)
+					{
+						lights::write(sink, ", ");
+					}
+					lights::write(sink, "{}", rsponse.group().manager_list()[i]);
+				}
+				lights::write(sink, ";\n");
+
+				lights::write(sink, "member_list = ");
+				for (int i = 0; i < rsponse.group().member_list().size(); ++i)
+				{
+					if (i != 0)
+					{
+						lights::write(sink, ", ");
+					}
+					lights::write(sink, "{}", rsponse.group().member_list()[i]);
+				}
+				lights::write(sink, ";\n");
+
+				std::cout << msg << std::endl;
+			}
+			break;
+		}
+		case protocol::RSP_JOIN_GROUP:
+		{
+			protocol::RspJoinGroup rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
+			break;
+		}
+		case protocol::RSP_KICK_OUT_USER:
+		{
+			protocol::RspKickOutUser rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse);
+			}
+			break;
+		}
+		default:
+			break;
 	}
 }
 
@@ -73,11 +181,18 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
+		logger.set_level(lights::LogLevel::DEBUG);
+
 		std::pair<int, CommandHandlerManager::CommandHandler> handlers[] = {
 			{protocol::RSP_REGISTER_USER, read_handler},
 			{protocol::RSP_LOGIN_USER, read_handler},
 			{protocol::RSP_REMOVE_USER, read_handler},
 			{protocol::RSP_FIND_USER, read_handler},
+			{protocol::RSP_REGISTER_GROUP, read_handler},
+			{protocol::RSP_REMOVE_GROUP, read_handler},
+			{protocol::RSP_FIND_GROUP, read_handler},
+			{protocol::RSP_JOIN_GROUP, read_handler},
+			{protocol::RSP_KICK_OUT_USER, read_handler},
 		};
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
@@ -96,6 +211,7 @@ int main(int argc, const char* argv[])
 		while (true)
 		{
 			std::string func;
+			std::cin.clear();
 			std::cin >> func;
 			if (func == "register_user")
 			{
@@ -122,7 +238,6 @@ int main(int argc, const char* argv[])
 			}
 			else if (func == "find_user")
 			{
-
 				std::string input;
 				std::cout << lights::format("Please input uid or username.\n");
 				std::cin >> input;
@@ -135,6 +250,49 @@ int main(int argc, const char* argv[])
 				{
 					UserManager::instance()->find_user(input); // Make input as username.
 				}
+			}
+			else if (func == "register_group")
+			{
+				std::string group_name;
+				std::cout << lights::format("Please input group name.\n");
+				std::cin >> group_name;
+				SharingGroupManager::instance()->register_group(group_name);
+			}
+			else if (func == "remove_group")
+			{
+				int group_id;
+				std::cout << lights::format("Please input group id.\n");
+				std::cin >> group_id;
+				SharingGroupManager::instance()->remove_group(group_id);
+			}
+			else if (func == "find_group")
+			{
+				std::string input;
+				std::cout << lights::format("Please input group id or group name.\n");
+				std::cin >> input;
+				try
+				{
+					int group_id = std::stoi(input);
+					SharingGroupManager::instance()->find_group(group_id);
+				}
+				catch (const std::exception&)
+				{
+					SharingGroupManager::instance()->find_group(input); // Make input as name.
+				}
+			}
+			else if (func == "join_group")
+			{
+				int group_id;
+				std::cout << lights::format("Please input group id.\n");
+				std::cin >> group_id;
+				SharingGroupManager::instance()->join_group(group_id);
+			}
+			else if (func == "kick_out_user")
+			{
+				int group_id, uid;
+				std::cout << lights::format("Please input group id.\n");
+				std::cin >> group_id >> uid;
+				SharingGroupManager::instance()->kick_out_user(group_id, uid);
 			}
 		}
 	}

@@ -35,6 +35,12 @@ namespace resource_server {
 
 User& UserManager::register_user(const std::string& username, const std::string& password)
 {
+	User* user = find_user(username);
+	if (user)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
+	}
+
 	User new_user = { m_next_id, username, password };
 	++m_next_id;
 	auto itr = m_user_list.insert(std::make_pair(new_user.uid, new_user));
@@ -61,7 +67,7 @@ bool UserManager::login_user(int uid, const std::string& password, NetworkConnec
 	}
 
 	user->conn_id = conn.connection_id();
-	conn.set_attachment(&user);
+	conn.set_attachment(user);
 	return true;
 }
 
@@ -319,8 +325,26 @@ void SharingGroup::kick_out(int uid)
 }
 
 
+const SharingGroup::UserList& SharingGroup::manager_list() const
+{
+	return m_manager_list;
+}
+
+
+const SharingGroup::UserList& SharingGroup::member_list() const
+{
+	return m_member_list;
+}
+
+
 SharingGroup& SharingGroupManager::register_group(int uid, const std::string& group_name)
 {
+	SharingGroup* old_group = find_group(group_name);
+	if (old_group)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
+	}
+
 	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
 	SharingGroup new_group(m_next_id, group_name, uid, root_dir.file_id);
 

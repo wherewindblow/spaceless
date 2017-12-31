@@ -5,27 +5,41 @@ package spaceless.protocol;
 enum CommandType
 {
     INVALID_COMMAND = 0;
-    REQ_REGISTER_USER = 1;
-    RSP_REGISTER_USER = 2;
-    REQ_LOGIN_USER = 3;
-    RSP_LOGIN_USER = 4;
-    REQ_REMOVE_USER = 5;
-    RSP_REMOVE_USER = 6;
-    REQ_FIND_USER = 7;
-    RSP_FIND_USER = 8;
-};
 
-message ReqRegisterUser
-{
-    string username = 1;
-    string password = 2;
-}
+    // User operation.
+    REQ_REGISTER_USER = 1000;
+    RSP_REGISTER_USER = 1002;
+    REQ_LOGIN_USER = 1003;
+    RSP_LOGIN_USER = 1004;
+    REQ_REMOVE_USER = 1005;
+    RSP_REMOVE_USER = 1006;
+    REQ_FIND_USER = 1007;
+    RSP_FIND_USER = 1008;
+
+    // Group operation.
+    REQ_REGISTER_GROUP = 1009;
+    RSP_REGISTER_GROUP = 1010;
+    REQ_REMOVE_GROUP = 1011;
+    RSP_REMOVE_GROUP = 1012;
+    REQ_FIND_GROUP = 1013;
+    RSP_FIND_GROUP = 1014;
+    REQ_JOIN_GROUP = 1015;
+    RSP_JOIN_GROUP = 1016;
+    REQ_KICK_OUT_USER = 1017;
+    RSP_KICK_OUT_USER = 1018;
+};
 
 message User
 {
     int32 uid = 1;
     string username = 2;
     repeated int32 group_list = 3;
+}
+
+message ReqRegisterUser
+{
+    string username = 1;
+    string password = 2;
 }
 
 message RspRegisterUser
@@ -42,7 +56,7 @@ message ReqLoginUser
 
 message RspLoginUser
 {
-    bool result = 1;
+    int32 result = 1;
 }
 
 message ReqRemoveUser
@@ -52,7 +66,7 @@ message ReqRemoveUser
 
 message RspRemoveUser
 {
-    bool result = 1;
+    int32 result = 1;
 }
 
 message ReqFindUser
@@ -65,4 +79,68 @@ message RspFindUser
 {
     int32 result = 1;
     User user = 2;
+}
+
+message SharingGroup
+{
+    int32 group_id = 1;
+    string group_name = 2;
+    int32 owner_id = 3;
+    int32 root_dir_id = 4;
+    repeated int32 manager_list = 5;
+    repeated int32 member_list = 6;
+}
+
+message ReqRegisterGroup
+{
+    string group_name = 1;
+}
+
+message RspRegisterGroup
+{
+    int32 result = 1;
+    int32 group_id = 2;
+}
+
+message ReqRemoveGroup
+{
+    int32 group_id = 1;
+}
+
+message RspRemoveGroup
+{
+    bool result = 1;
+}
+
+message ReqFindGroup
+{
+    int32 group_id = 1;
+    string group_name = 2;
+}
+
+message RspFindGroup
+{
+    int32 result = 1;
+    SharingGroup group = 2;
+}
+
+message ReqJoinGroup
+{
+    int32 group_id = 1;
+}
+
+message RspJoinGroup
+{
+    int32 result = 1;
+}
+
+message ReqKickOutUser
+{
+    int32 group_id = 1;
+    int32 uid = 2;
+}
+
+message RspKickOutUser
+{
+    int32 result = 1;
 }

@@ -357,8 +357,7 @@ void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg)
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Remote address {}: Content length {} is too large.",
-						stream_socket().peerAddress(), size)
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Content length {} is too large.", m_id, size)
 		return;
 	}
 

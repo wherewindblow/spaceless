@@ -47,6 +47,7 @@ void UserManager::find_user(int uid)
 	network_conn->send_protobuf(protocol::REQ_FIND_USER, request);
 }
 
+
 void UserManager::find_user(const std::string& username)
 {
 	protocol::ReqFindUser request;
@@ -54,6 +55,54 @@ void UserManager::find_user(const std::string& username)
 	network_conn->send_protobuf(protocol::REQ_FIND_USER, request);
 }
 
+
+void SharingGroupManager::register_group(const std::string& group_name)
+{
+	protocol::ReqRegisterGroup request;
+	request.set_group_name(group_name);
+	network_conn->send_protobuf(protocol::REQ_REGISTER_GROUP, request);
+}
+
+
+void SharingGroupManager::remove_group(int group_id)
+{
+	protocol::ReqRemoveGroup request;
+	request.set_group_id(group_id);
+	network_conn->send_protobuf(protocol::REQ_REMOVE_GROUP, request);
+}
+
+
+void SharingGroupManager::find_group(int group_id)
+{
+	protocol::ReqFindGroup request;
+	request.set_group_id(group_id);
+	network_conn->send_protobuf(protocol::REQ_FIND_GROUP, request);
+}
+
+
+void SharingGroupManager::find_group(const std::string& group_name)
+{
+	protocol::ReqFindGroup request;
+	request.set_group_name(group_name);
+	network_conn->send_protobuf(protocol::REQ_FIND_GROUP, request);
+}
+
+
+void SharingGroupManager::join_group(int group_id)
+{
+	protocol::ReqJoinGroup request;
+	request.set_group_id(group_id);
+	network_conn->send_protobuf(protocol::REQ_JOIN_GROUP, request);
+}
+
+
+void SharingGroupManager::kick_out_user(int group_id, int uid)
+{
+	protocol::ReqKickOutUser request;
+	request.set_group_id(group_id);
+	request.set_uid(uid);
+	network_conn->send_protobuf(protocol::REQ_KICK_OUT_USER, request);
+}
 
 } // namespace client
 } // namespace spaceless
