@@ -336,6 +336,11 @@ public:
 	 */
 	StreamSocket& stream_socket();
 
+	/**
+	 * Returns underlying stream socket.
+	 */
+	const StreamSocket& stream_socket() const;
+
 private:
 	void read_for_state(int deep = 0);
 
@@ -380,22 +385,33 @@ public:
 	SPACELESS_SINGLETON_INSTANCE(NetworkConnectionManager);
 
 	/**
-	 * Destroys the connection manager.
+	 * Destroys the network connection manager.
 	 */
 	~NetworkConnectionManager();
 
 	/**
-	 * Registers a connection with host and port.
+	 * Registers a network connection with host and port.
 	 */
-	NetworkConnection& register_connection(const std::string& address, unsigned short port);
+	NetworkConnection& register_connection(const std::string& host, unsigned short port);
 
 	/**
-	 * Registers a listener with host and port.
+	 * Registers a network listener with host and port.
 	 */
-	void register_listener(const std::string& address, unsigned short port);
+	void register_listener(const std::string& host, unsigned short port);
 
 	/**
-	 * Stop all connection and listener.
+	 * Removes a network connection.
+	 */
+	void remove_connection(int conn_id);
+
+	/**
+	 * Finds a network connection.
+	 * @note Returns nullptr when cannot find connection.
+	 */
+	NetworkConnection* find_connection(int conn_id);
+
+	/**
+	 * Stop all network connection and listener.
 	 */
 	void stop_all();
 

@@ -93,14 +93,14 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 {
 	m_socket.setBlocking(false);
 
-	Poco::Observer<NetworkConnection, ReadableNotification> readable_observer(*this, &NetworkConnection::on_readable);
-	m_reactor.addEventHandler(m_socket, readable_observer);
-	Poco::Observer<NetworkConnection, ShutdownNotification> shutdown_observer(*this, &NetworkConnection::on_shutdown);
-	m_reactor.addEventHandler(m_socket, shutdown_observer);
-//	Poco::Observer<NetworkConnection, TimeoutNotification> timeout_observer(*this, &NetworkConnection::on_timeout);
-//	m_reactor.addEventHandler(m_socket, timeout_observer);
-	Poco::Observer<NetworkConnection, ErrorNotification> error_observer(*this, &NetworkConnection::on_error);
-	m_reactor.addEventHandler(m_socket, error_observer);
+	Poco::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable);
+	m_reactor.addEventHandler(m_socket, readable);
+	Poco::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown);
+	m_reactor.addEventHandler(m_socket, shutdown);
+//	Poco::Observer<NetworkConnection, TimeoutNotification> timeout(*this, &NetworkConnection::on_timeout);
+//	m_reactor.addEventHandler(m_socket, timeout);
+	Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
+	m_reactor.addEventHandler(m_socket, error);
 
 	NetworkConnectionManager::instance()->m_conn_list.emplace_back(this);
 	m_id = NetworkConnectionManager::instance()->m_next_id;
@@ -208,8 +208,8 @@ void NetworkConnection::on_writable(WritableNotification* notification)
 
 	if (m_send_list.empty())
 	{
-		Poco::Observer<NetworkConnection, WritableNotification> writable_observer(*this, &NetworkConnection::on_writable);
-		m_reactor.removeEventHandler(m_socket, writable_observer);
+		Poco::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable);
+		m_reactor.removeEventHandler(m_socket, observer);
 	}
 }
 
@@ -276,6 +276,12 @@ void* NetworkConnection::get_attachment()
 
 
 StreamSocket& NetworkConnection::stream_socket()
+{
+	return m_socket;
+}
+
+
+const StreamSocket& NetworkConnection::stream_socket() const
 {
 	return m_socket;
 }
@@ -400,11 +406,36 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 }
 
 
+void NetworkConnectionManager::remove_connection(int conn_id)
+{
+	m_conn_list.remove_if([conn_id](const NetworkConnection* connection) {
+		return connection->connection_id() == conn_id;
+	});
+}
+
+
+NetworkConnection* NetworkConnectionManager::find_connection(int conn_id)
+{
+	auto itr = std::find_if(m_conn_list.begin(), m_conn_list.end(), [conn_id](const NetworkConnection* connection)
+	{
+		return connection->connection_id() == conn_id;
+	});
+
+	if (itr == m_conn_list.end())
+	{
+		return nullptr;
+	}
+
+	return *itr;
+}
+
+
 void NetworkConnectionManager::stop_all()
 {
-	for (NetworkConnection* conn: m_conn_list)
+	// Cannot use iterator to for each to close, becase close will erase itself on m_conn_list.
+	while (!m_conn_list.empty())
 	{
-		conn->close();
+		(*m_conn_list.begin())->close();
 	}
 	m_conn_list.clear();
 	m_acceptor_list.clear();
