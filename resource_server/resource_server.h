@@ -27,10 +27,10 @@ enum
 
 	ERR_GROUP_ALREADY_EXIST = 1100,
 	ERR_GROUP_NOT_EXIST = 1101,
-	ERR_GROUP_ONLY_ONWER_CAN_REMOVE = 1102,
-	ERR_GROUP_ONLY_MANAGER_CAN_CREATE_DIR = 1103,
-	ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR = 1104,
-	ERR_GROUP_ONLY_MANAGER_CAN_REMOVE_DIR = 1105,
+	ERR_GROUP_NOT_PERMIT_NEED_OWNER = 1102,
+	ERR_GROUP_NOT_PERMIT_NEED_MANAGER = 1103,
+	ERR_GROUP_NOT_PERMIT_NEED_MEMBER = 1104,
+	ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR = 1105,
 	ERR_GROUP_REMOVE_DIR_MUST_UNDER_DIR = 1106,
 	ERR_GROUP_CANNOT_REMOVE_ROOT_DIR = 1107,
 	ERR_GROUP_CANNOT_KICK_OUT_OWNER = 1110,
@@ -42,6 +42,10 @@ enum
 	ERR_NODE_ALREADY_EXIST = 1300,
 	ERR_NODE_CANNOT_CREATE = 1301,
 	ERR_NODE_NOT_EXIST = 1302,
+
+	ERR_TRANSFER_SESSION_ALREADY_EXIST = 5000,
+	ERR_TRANSFER_SESSION_CANNOT_CREATE = 5001,
+	ERR_TRANSFER_SESSION_NOT_EXIST = 5002,
 };
 
 
@@ -100,9 +104,9 @@ public:
 
 	int owner_id() const;
 
-	void put_file(int uid, const std::string& target_name, lights::SequenceView file_content);
+	void put_file(int uid, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
 
-	void get_file(int uid, const std::string& target_name, lights::Sequence file_content);
+	std::size_t get_file(int uid, const std::string& target_name, lights::Sequence file_content);
 
 	/**
 	 * Create all directory by directory path. If a parent directory is not create will automatically create.
@@ -120,19 +124,23 @@ public:
 
 	void join_group(int uid);
 
-	void kick_out(int uid);
+	void kick_out_user(int uid);
 
 	const UserList& manager_list() const;
 
 	const UserList& member_list() const;
+
+	bool is_manager(int uid);
+
+	bool is_member(int uid);
 
 private:
 	int m_group_id;
 	std::string m_group_name;
 	int m_owner_id;
 	int m_root_dir_id;
-	UserList m_manager_list;
-	UserList m_member_list;
+	UserList m_manager_list; // Manager list include owner and general managers.
+	UserList m_member_list; // Member list include all members in group.
 };
 
 
@@ -162,6 +170,36 @@ public:
 private:
 	using GroupList = std::map<int, SharingGroup>;
 	GroupList m_group_list;
+	int m_next_id = 1;
+};
+
+
+struct FileTransferSession
+{
+	int session_id;
+	int group_id;
+	std::string filename;
+	int max_fragment_index;
+	int process_fragment_index;
+};
+
+
+class FileTransferSessionManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(FileTransferSessionManager);
+
+	FileTransferSession& register_transfer_session(int group_id, const std::string& filename);
+
+	void remove_transfer_session(int session_id);
+
+	FileTransferSession* find_transfer_session(int session_id);
+
+	FileTransferSession* find_transfer_session(int group_id, const std::string& filename);
+
+private:
+	using SessionList = std::map<int, FileTransferSession>;
+	SessionList m_session_list;
 	int m_next_id = 1;
 };
 

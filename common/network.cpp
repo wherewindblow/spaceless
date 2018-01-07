@@ -301,7 +301,7 @@ void NetworkConnection::read_for_state(int deep)
 			int len = m_socket.receiveBytes(m_read_buffer.data() + m_readed_len,
 											static_cast<int>(PackageBuffer::MAX_HEADER_LEN) - m_readed_len);
 
-			if (len == -1)
+			if (len == -1) // Not available bytes in buffer.
 			{
 				return;
 			}
@@ -323,15 +323,17 @@ void NetworkConnection::read_for_state(int deep)
 
 		case ReadState::READ_CONTENT:
 		{
-			int len = m_socket.receiveBytes(m_read_buffer.data() + PackageBuffer::MAX_HEADER_LEN + m_readed_len,
-											m_read_buffer.header().content_length - m_readed_len);
-
-			if (len == -1)
+			if (m_read_buffer.header().content_length != 0)
 			{
-				return;
+				int len = m_socket.receiveBytes(m_read_buffer.data() + PackageBuffer::MAX_HEADER_LEN + m_readed_len,
+												m_read_buffer.header().content_length - m_readed_len);
+				if (len == -1) // Not available bytes in buffer.
+				{
+					return;
+				}
+				m_readed_len += len;
 			}
 
-			m_readed_len += len;
 			if (m_readed_len == m_read_buffer.header().content_length)
 			{
 				m_readed_len = 0;

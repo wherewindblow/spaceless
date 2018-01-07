@@ -31,6 +31,8 @@ int main(int argc, const char* argv[])
 			{protocol::REQ_FIND_GROUP, transcation::on_find_group},
 			{protocol::REQ_JOIN_GROUP, transcation::on_join_group},
 			{protocol::REQ_KICK_OUT_USER, transcation::on_kick_out_user},
+			{protocol::REQ_PUT_FILE, transcation::on_put_file},
+			{protocol::REQ_GET_FILE, transcation::on_get_file},
 		};
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)

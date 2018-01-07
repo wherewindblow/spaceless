@@ -30,6 +30,10 @@ void on_join_group(NetworkConnection& conn, const PackageBuffer& package);
 
 void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package);
 
+void on_put_file(NetworkConnection& conn, const PackageBuffer& package);
+
+void on_get_file(NetworkConnection& conn, const PackageBuffer& package);
+
 } // namespace transcation
 } // namespace resource_server
 } // namespace spaceless

@@ -17,17 +17,29 @@ enum CommandType
     RSP_FIND_USER = 1008;
 
     // Group operation.
-    REQ_REGISTER_GROUP = 1009;
-    RSP_REGISTER_GROUP = 1010;
-    REQ_REMOVE_GROUP = 1011;
-    RSP_REMOVE_GROUP = 1012;
-    REQ_FIND_GROUP = 1013;
-    RSP_FIND_GROUP = 1014;
-    REQ_JOIN_GROUP = 1015;
-    RSP_JOIN_GROUP = 1016;
-    REQ_KICK_OUT_USER = 1017;
-    RSP_KICK_OUT_USER = 1018;
+    REQ_REGISTER_GROUP = 1109;
+    RSP_REGISTER_GROUP = 1110;
+    REQ_REMOVE_GROUP = 1111;
+    RSP_REMOVE_GROUP = 1112;
+    REQ_FIND_GROUP = 1113;
+    RSP_FIND_GROUP = 1114;
+    REQ_JOIN_GROUP = 1115;
+    RSP_JOIN_GROUP = 1116;
+    REQ_KICK_OUT_USER = 1117;
+    RSP_KICK_OUT_USER = 1118;
+
+    // Group file operation.
+    REQ_PUT_FILE = 1151;
+    RSP_PUT_FILE = 1152;
+    REQ_GET_FILE = 1153;
+    RSP_GET_FILE = 1154;
 };
+
+enum MiscellaneousType
+{
+    INVALID_MISCELLANEOUS = 0;
+    MAX_FILE_CONTENT_LEN = 50000;
+}
 
 message User
 {
@@ -143,4 +155,35 @@ message ReqKickOutUser
 message RspKickOutUser
 {
     int32 result = 1;
+}
+
+message FileFragment
+{
+    int32 max_fragment_index = 1;
+    int32 process_fragment_index = 2;
+    string fragment_content = 3;
+}
+
+message ReqPutFile
+{
+    int32 group_id = 1;
+    string filename = 2;
+    FileFragment fragment = 3;
+}
+
+message RspPutFile
+{
+    int32 result = 1;
+}
+
+message ReqGetFile
+{
+    int32 group_id = 1;
+    string filename = 2;
+}
+
+message RspGetFile
+{
+    int32 result = 1;
+    FileFragment fragment = 2;
 }

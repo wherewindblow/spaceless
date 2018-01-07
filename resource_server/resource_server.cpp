@@ -136,6 +136,7 @@ SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower
 	m_root_dir_id(root_dir_id)
 {
 	m_manager_list.push_back(ower_id);
+	m_member_list.push_back(ower_id);
 }
 
 
@@ -157,24 +158,42 @@ int SharingGroup::owner_id() const
 }
 
 
-void SharingGroup::put_file(int uid, const std::string& target_name, lights::SequenceView file_content)
+const char* group_file_path = "/tmp/";
+
+void SharingGroup::put_file(int uid, const std::string& filename, lights::SequenceView file_content, bool is_append)
 {
-	// TODO
+	if (!is_manager(uid))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+	}
+
+	std::string local_filename = group_file_path + filename;
+	const char* mode = is_append ? "a" : "w";
+	lights::FileStream file(local_filename, mode);
+	file.write(file_content);
+	// TODO Need to optimize.
 }
 
 
-void SharingGroup::get_file(int uid, const std::string& target_name, lights::Sequence file_content)
+std::size_t SharingGroup::get_file(int uid, const std::string& target_name, lights::Sequence file_content)
 {
+	if (!is_member(uid))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+	}
+
+	std::string filename = group_file_path + target_name;
+	lights::FileStream file(filename, "r");
+	return file.read(file_content);
 	// TODO
 }
 
 
 void SharingGroup::create_directory(int uid, const std::string& full_dir_path)
 {
-	auto manager_itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
-	if (manager_itr == m_manager_list.end())
+	if (!is_manager(uid))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ONLY_MANAGER_CAN_CREATE_DIR);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	std::vector<std::string> result;
@@ -227,10 +246,9 @@ void SharingGroup::create_directory(int uid, const std::string& full_dir_path)
 
 void SharingGroup::remove_directory(int uid, const std::string& full_dir_path)
 {
-	auto manager_itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
-	if (manager_itr == m_manager_list.end())
+	if (!is_manager(uid))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ONLY_MANAGER_CAN_REMOVE_DIR);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	std::vector<std::string> result;
@@ -294,17 +312,11 @@ void SharingGroup::join_group(int uid)
 		return;
 	}
 
-	itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
-	if (itr != m_manager_list.end())
-	{
-		return;
-	}
-
 	m_member_list.push_back(uid);
 }
 
 
-void SharingGroup::kick_out(int uid)
+void SharingGroup::kick_out_user(int uid)
 {
 	if (uid == owner_id())
 	{
@@ -337,6 +349,20 @@ const SharingGroup::UserList& SharingGroup::member_list() const
 }
 
 
+bool SharingGroup::is_manager(int uid)
+{
+	auto itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
+	return itr != m_manager_list.end();
+}
+
+
+bool SharingGroup::is_member(int uid)
+{
+	auto itr = std::find(m_member_list.begin(), m_member_list.end(), uid);
+	return itr != m_member_list.end();
+}
+
+
 SharingGroup& SharingGroupManager::register_group(int uid, const std::string& group_name)
 {
 	SharingGroup* old_group = find_group(group_name);
@@ -347,6 +373,7 @@ SharingGroup& SharingGroupManager::register_group(int uid, const std::string& gr
 
 	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
 	SharingGroup new_group(m_next_id, group_name, uid, root_dir.file_id);
+	++m_next_id;
 
 	auto itr = m_group_list.insert(std::make_pair(new_group.group_id(), new_group));
 	if (itr.second == false)
@@ -354,7 +381,6 @@ SharingGroup& SharingGroupManager::register_group(int uid, const std::string& gr
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
 
-	++m_next_id;
 	return itr.first->second;
 }
 
@@ -364,7 +390,7 @@ void SharingGroupManager::remove_group(int uid, int group_id)
 	SharingGroup& group = get_group(group_id);
 	if (group.owner_id() != uid)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ONLY_ONWER_CAN_REMOVE);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_OWNER);
 	}
 
 	m_group_list.erase(group_id);
@@ -508,6 +534,7 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 StorageNode& StorageNodeManager::register_node(const std::string& node_ip, short node_port)
 {
 	StorageNode new_node = { m_next_id, node_ip, node_port };
+	++m_next_id;
 	auto itr = m_node_list.insert(std::make_pair(new_node.node_id, new_node));
 	if (itr.second == false)
 	{
@@ -572,6 +599,66 @@ StorageNode& StorageNodeManager::get_node(const std::string& node_ip, short node
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_NOT_EXIST);
 	}
 	return *node;
+}
+
+
+FileTransferSession& FileTransferSessionManager::register_transfer_session(int group_id, const std::string& filename)
+{
+	FileTransferSession* session = find_transfer_session(group_id, filename);
+	if (session)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
+	}
+
+	FileTransferSession new_session;
+	new_session.session_id = m_next_id;
+	new_session.group_id = group_id;
+	new_session.filename = filename;
+	new_session.max_fragment_index = 0;
+	new_session.process_fragment_index = 0;
+	++m_next_id;
+
+	auto itr = m_session_list.insert(std::make_pair(new_session.session_id, new_session));
+	if (itr.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
+	}
+
+	return itr.first->second;
+}
+
+
+void FileTransferSessionManager::remove_transfer_session(int session_id)
+{
+	m_session_list.erase(session_id);
+}
+
+
+FileTransferSession* FileTransferSessionManager::find_transfer_session(int session_id)
+{
+	auto itr = m_session_list.find(session_id);
+	if (itr == m_session_list.end())
+	{
+		return nullptr;
+	}
+	return &itr->second;
+}
+
+
+FileTransferSession* FileTransferSessionManager::find_transfer_session(int group_id, const std::string& filename)
+{
+	auto itr = std::find_if(m_session_list.begin(), m_session_list.end(),
+							[&](const SessionList::value_type& value_type)
+	{
+		return value_type.second.group_id == group_id && value_type.second.filename == filename;
+	});
+
+	if (itr == m_session_list.end())
+	{
+		return nullptr;
+	}
+
+	return &(itr->second);
 }
 
 } // namespace resource_server

@@ -25,73 +25,123 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 }
 
 
+#define SPACELESS_COMMAND_HANDLER_BEGIN(RequestType, RsponseType) \
+	RequestType request; \
+	RsponseType rsponse; \
+	\
+	bool log_error = true; \
+	try \
+    { \
+		package.parse_as_protobuf(request); \
+
+#define SPACELESS_COMMAND_HANDLER_END(rsponse_cmd) \
+	} \
+	catch (Exception& ex) \
+	{ \
+		rsponse.set_result(ex.code()); \
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), ex); \
+		log_error = false; \
+	} \
+	\
+	send_back_msg: \
+	conn.send_protobuf(rsponse_cmd, rsponse); \
+	if (rsponse.result() && log_error) \
+	{ \
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), rsponse.result()); \
+	} \
+
+
+#define SPACELESS_COMMAND_HANDLER_USER_BEGIN(RequestType, RsponseType) \
+	RequestType request; \
+	RsponseType rsponse; \
+	\
+	bool log_error = true; \
+	User* user = static_cast<User*>(conn.get_attachment()); \
+	if (user == nullptr) \
+	{ \
+		rsponse.set_result(-1); \
+		goto send_back_msg; \
+	} \
+	\
+	try \
+    { \
+		package.parse_as_protobuf(request); \
+
+
+#define SPACELESS_COMMAND_HANDLER_USER_END(rsponse_cmd) \
+	} \
+	catch (Exception& ex) \
+	{ \
+		rsponse.set_result(ex.code()); \
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", conn.connection_id(), user->uid, ex); \
+		log_error = false; \
+	} \
+	\
+	send_back_msg: \
+	conn.send_protobuf(rsponse_cmd, rsponse); \
+	if (rsponse.result() && log_error) \
+	{ \
+		if (user == nullptr) \
+		{ \
+			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), rsponse.result()); \
+		} \
+		else \
+		{ \
+			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", \
+				conn.connection_id(), user->uid, rsponse.result()); \
+		} \
+	} \
+
+
 void on_register_user(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqRegisterUser request;
-	package.parse_as_protobuf(request);
-	protocol::RspRegisterUser rsponse;
-
-	try
-	{
+	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqRegisterUser, protocol::RspRegisterUser);
 		User& user = UserManager::instance()->register_user(request.username(), request.password());
 		convert_user(user, *rsponse.mutable_user());
-	}
-	catch (const Exception& ex)
-	{
-		rsponse.set_result(ex.code());
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), ex);
-	}
-	conn.send_protobuf(protocol::RSP_REGISTER_USER, rsponse);
+	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_REGISTER_USER);
 }
 
 
 void on_login_user(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqLoginUser request;
-	package.parse_as_protobuf(request);
-	protocol::RspLoginUser rsponse;
-	bool pass = UserManager::instance()->login_user(request.uid(), request.password(), conn);
-	rsponse.set_result(pass ? 0 : -1);
-	conn.send_protobuf(protocol::RSP_LOGIN_USER, rsponse);
+	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqLoginUser, protocol::RspLoginUser);
+		bool pass = UserManager::instance()->login_user(request.uid(), request.password(), conn);
+		rsponse.set_result(pass ? 0 : -1);
+	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_LOGIN_USER);
 }
 
 
 void on_remove_user(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqRemoveUser request;
-	package.parse_as_protobuf(request);
-	protocol::RspRemoveUser rsponse;
-	UserManager::instance()->remove_user(request.uid());
-	rsponse.set_result(0);
-	conn.send_protobuf(protocol::RSP_REMOVE_USER, rsponse);
+	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqRemoveUser, protocol::RspRemoveUser);
+		UserManager::instance()->remove_user(request.uid());
+		rsponse.set_result(0);
+	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_REMOVE_USER);
 }
 
 
 void on_find_user(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqFindUser request;
-	package.parse_as_protobuf(request);
-	protocol::RspFindUser rsponse;
+	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqFindUser, protocol::RspFindUser);
+		User* user = nullptr;
+		if (request.uid())
+		{
+			user = UserManager::instance()->find_user(request.uid());
+		}
+		else
+		{
+			user = UserManager::instance()->find_user(request.username());
+		}
 
-	User* user = nullptr;
-	if (request.uid())
-	{
-		user = UserManager::instance()->find_user(request.uid());
-	}
-	else
-	{
-		user = UserManager::instance()->find_user(request.username());
-	}
-
-	if (user)
-	{
-		convert_user(*user, *rsponse.mutable_user());
-	}
-	else
-	{
-		rsponse.set_result(-1);
-	}
-	conn.send_protobuf(protocol::RSP_FIND_USER, rsponse);
+		if (user)
+		{
+			convert_user(*user, *rsponse.mutable_user());
+		}
+		else
+		{
+			rsponse.set_result(-1);
+		}
+	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_FIND_USER);
 }
 
 
@@ -113,66 +163,24 @@ void convert_group(const SharingGroup& server_group, protocol::SharingGroup& rsp
 
 void on_register_group(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqRegisterGroup request;
-	package.parse_as_protobuf(request);
-	protocol::RspRegisterGroup rsponse;
-
-	User* user = static_cast<User*>(conn.get_attachment());
-	if (user == nullptr)
-	{
-		rsponse.set_result(-1);
-		goto send_back_msg;
-	}
-
-	try
-	{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqRegisterGroup, protocol::RspRegisterGroup);
 		SharingGroup& group = SharingGroupManager::instance()->register_group(user->uid, request.group_name());
 		rsponse.set_group_id(group.group_id());
-	}
-	catch (Exception& e)
-	{
-		rsponse.set_result(e.code());
-	}
-
-	send_back_msg:
-	conn.send_protobuf(protocol::RSP_REGISTER_GROUP, rsponse);
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_REGISTER_GROUP);
 }
 
 
 void on_remove_group(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqRemoveGroup request;
-	package.parse_as_protobuf(request);
-	protocol::RspRemoveGroup rsponse;
-
-	User* user = static_cast<User*>(conn.get_attachment());
-	if (user == nullptr)
-	{
-		rsponse.set_result(-1);
-		goto send_back_msg;
-	}
-
-	SharingGroupManager::instance()->remove_group(user->uid, request.group_id());
-
-	send_back_msg:
-	conn.send_protobuf(protocol::RSP_REMOVE_GROUP, rsponse);
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqRemoveGroup, protocol::RspRemoveGroup);
+		SharingGroupManager::instance()->remove_group(user->uid, request.group_id());
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_REMOVE_GROUP);
 }
 
 
 void on_find_group(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqFindGroup request;
-	package.parse_as_protobuf(request);
-	protocol::RspFindGroup rsponse;
-
-	{
-		User* user = static_cast<User*>(conn.get_attachment());
-		if (user == nullptr)
-		{
-			rsponse.set_result(-1);
-			goto send_back_msg;
-		}
-
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqFindGroup, protocol::RspFindGroup);
 		SharingGroup* group = nullptr;
 		if (request.group_id())
 		{
@@ -191,56 +199,22 @@ void on_find_group(NetworkConnection& conn, const PackageBuffer& package)
 		{
 			rsponse.set_result(-1);
 		}
-	}
-
-	send_back_msg:
-	conn.send_protobuf(protocol::RSP_FIND_GROUP, rsponse);
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_FIND_GROUP);
 }
 
 
 void on_join_group(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqJoinGroup request;
-	package.parse_as_protobuf(request);
-	protocol::RspJoinGroup rsponse;
-
-	User* user = static_cast<User*>(conn.get_attachment());
-	if (user == nullptr)
-	{
-		rsponse.set_result(-1);
-		goto send_back_msg;
-	}
-
-	try
-	{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqJoinGroup, protocol::RspJoinGroup);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 		group.join_group(user->uid);
-	}
-	catch (Exception& ex)
-	{
-		rsponse.set_result(ex.code());
-	}
-
-	send_back_msg:
-	conn.send_protobuf(protocol::RSP_JOIN_GROUP, rsponse);
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_JOIN_GROUP);
 }
 
 
 void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 {
-	protocol::ReqKickOutUser request;
-	package.parse_as_protobuf(request);
-	protocol::RspKickOutUser rsponse;
-
-	User* user = static_cast<User*>(conn.get_attachment());
-	if (user == nullptr)
-	{
-		rsponse.set_result(-1);
-		goto send_back_msg;
-	}
-
-	try
-	{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqKickOutUser, protocol::RspKickOutUser);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 		if (request.uid() != user->uid) // Only manager can kick out other user.
 		{
@@ -251,15 +225,54 @@ void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 				goto send_back_msg;
 			}
 		}
-		group.kick_out(request.uid());
-	}
-	catch (Exception& ex)
-	{
-		rsponse.set_result(ex.code());
-	}
+		group.kick_out_user(request.uid());
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_KICK_OUT_USER);
+}
 
-	send_back_msg:
-	conn.send_protobuf(protocol::RSP_KICK_OUT_USER, rsponse);
+
+void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
+{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqPutFile, protocol::RspPutFile);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+		FileTransferSession* session = nullptr;
+		if (request.fragment().process_fragment_index() == 0)
+		{
+			session =
+				&FileTransferSessionManager::instance()->register_transfer_session(group.group_id(), request.filename());
+			session->max_fragment_index = request.fragment().max_fragment_index();
+			session->process_fragment_index = request.fragment().process_fragment_index();
+		}
+		else
+		{
+			session =
+				FileTransferSessionManager::instance()->find_transfer_session(group.group_id(), request.filename());
+			if (request.fragment().max_fragment_index() != session->max_fragment_index ||
+				request.fragment().process_fragment_index() != session->process_fragment_index + 1)
+			{
+				rsponse.set_result(-1);
+				goto send_back_msg;
+			}
+			++session->process_fragment_index;
+		}
+
+		lights::SequenceView content(request.fragment().fragment_content());
+		bool is_append = request.fragment().process_fragment_index() != 0;
+		group.put_file(user->uid, request.filename(), content, is_append);
+
+		if (request.fragment().process_fragment_index() + 1 == request.fragment().max_fragment_index())
+		{
+			FileTransferSessionManager::instance()->remove_transfer_session(session->session_id);
+		}
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_PUT_FILE);
+}
+
+
+void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
+{
+//	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqJoinGroup, protocol::RspJoinGroup);
+//		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+//		group.join_group(user->uid);
+//	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_JOIN_GROUP);
 }
 
 } // namespace transcation

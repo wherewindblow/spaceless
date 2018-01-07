@@ -4,8 +4,12 @@
  * @date   Nov 20, 2017
  */
 
+
 #include "client.h"
-#include "protocol/all.h"
+
+#include <cmath>
+#include <protocol/all.h>
+
 
 
 namespace spaceless {
@@ -102,6 +106,46 @@ void SharingGroupManager::kick_out_user(int group_id, int uid)
 	request.set_group_id(group_id);
 	request.set_uid(uid);
 	network_conn->send_protobuf(protocol::REQ_KICK_OUT_USER, request);
+}
+
+
+void SharingGroupManager::put_file(int group_id, const std::string& local_filename, const std::string& remote_filename, int index)
+{
+	if (index == 0)
+	{
+		m_putting_file_session.local_filename = local_filename;
+		m_putting_file_session.group_id = group_id;
+		m_putting_file_session.remote_filename = remote_filename;
+	}
+
+	protocol::ReqPutFile request;
+	request.set_group_id(group_id);
+	request.set_filename(remote_filename);
+
+	lights::FileStream file(local_filename, "r");
+	int max_fragment = static_cast<int>(std::ceil(static_cast<float>(file.size()) / protocol::MAX_FILE_CONTENT_LEN));
+	m_putting_file_session.max_fragment_index = max_fragment;
+	request.mutable_fragment()->set_max_fragment_index(max_fragment);
+
+	char content[protocol::MAX_FILE_CONTENT_LEN];
+	file.seek(index * protocol::MAX_FILE_CONTENT_LEN, lights::FileSeekWhence::BEGIN);
+	std::size_t content_len = file.read({content, protocol::MAX_FILE_CONTENT_LEN});
+	m_putting_file_session.process_fragment_index = index;
+	request.mutable_fragment()->set_process_fragment_index(index);
+	request.mutable_fragment()->set_fragment_content(content, content_len);
+	network_conn->send_protobuf(protocol::REQ_PUT_FILE, request);
+}
+
+
+void SharingGroupManager::get_file(int group_id, const std::string& remote_filename, const std::string& local_filename)
+{
+
+}
+
+
+FileTransferSession& SharingGroupManager::putting_file_session()
+{
+	return m_putting_file_session;
 }
 
 } // namespace client

@@ -47,6 +47,8 @@ int main(int argc, const char* argv[])
 			{protocol::RSP_FIND_GROUP, read_handler},
 			{protocol::RSP_JOIN_GROUP, read_handler},
 			{protocol::RSP_KICK_OUT_USER, read_handler},
+			{protocol::RSP_PUT_FILE, read_handler},
+			{protocol::RSP_GET_FILE, read_handler},
 		};
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
@@ -89,7 +91,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		{
 			std::string username;
 			std::string password;
-			std::cout << lights::format("Please input username and password.\n");
+			std::cout << "Please input username and password" << std::endl;
 			std::cin >> username >> password;
 			UserManager::instance()->register_user(username, password);
 		}
@@ -97,21 +99,21 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		{
 			int uid;
 			std::string password;
-			std::cout << lights::format("Please input uid and password.\n");
+			std::cout << "Please input uid and password." << std::endl;
 			std::cin >> uid >> password;
 			UserManager::instance()->login_user(uid, password);
 		}
 		else if (func == "remove_user")
 		{
 			int uid;
-			std::cout << lights::format("Please input uid.\n");
+			std::cout << "Please input uid." << std::endl;
 			std::cin >> uid;
 			UserManager::instance()->remove_user(uid);
 		}
 		else if (func == "find_user")
 		{
 			std::string input;
-			std::cout << lights::format("Please input uid or username.\n");
+			std::cout << "Please input uid or username." << std::endl;
 			std::cin >> input;
 			try
 			{
@@ -126,21 +128,21 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		else if (func == "register_group")
 		{
 			std::string group_name;
-			std::cout << lights::format("Please input group name.\n");
+			std::cout << "Please input group name." << std::endl;
 			std::cin >> group_name;
 			SharingGroupManager::instance()->register_group(group_name);
 		}
 		else if (func == "remove_group")
 		{
 			int group_id;
-			std::cout << lights::format("Please input group id.\n");
+			std::cout << "Please input group id." << std::endl;
 			std::cin >> group_id;
 			SharingGroupManager::instance()->remove_group(group_id);
 		}
 		else if (func == "find_group")
 		{
 			std::string input;
-			std::cout << lights::format("Please input group id or group name.\n");
+			std::cout << "Please input group id or group name." << std::endl;
 			std::cin >> input;
 			try
 			{
@@ -155,19 +157,28 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		else if (func == "join_group")
 		{
 			int group_id;
-			std::cout << lights::format("Please input group id.\n");
+			std::cout << "Please input group id." << std::endl;
 			std::cin >> group_id;
 			SharingGroupManager::instance()->join_group(group_id);
 		}
 		else if (func == "kick_out_user")
 		{
 			int group_id, uid;
-			std::cout << lights::format("Please input group id.\n");
+			std::cout << "Please input group id and user id." << std::endl;
 			std::cin >> group_id >> uid;
 			SharingGroupManager::instance()->kick_out_user(group_id, uid);
 		}
+		else if (func == "put_file")
+		{
+			std::cout << "Please input group id, local filename and remote filename." << std::endl;
+			int group_id;
+			std::string local_filename, remote_filename;
+			std::cin >> local_filename >> group_id >> remote_filename;
+			SharingGroupManager::instance()->put_file(group_id, local_filename, remote_filename);
+		}
 		else if (func == "register_connection")
 		{
+			std::cout << "Please input host and port." << std::endl;
 			std::string host;
 			unsigned short port;
 			std::cin >> host >> port;
@@ -177,6 +188,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		}
 		else if (func == "switch_connection")
 		{
+			std::cout << "Please input connection index." << std::endl;
 			std::size_t index;
 			std::cin >> index;
 			try
@@ -353,6 +365,36 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			{
 				report_error(rsponse.result());
 			}
+			break;
+		}
+		case protocol::RSP_PUT_FILE:
+		{
+			protocol::RspPutFile rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse.result());
+			}
+			else
+			{
+				FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
+				if (session.process_fragment_index + 1 >= session.max_fragment_index)
+				{
+					std::cout << lights::format("Put file {} finish.", session.remote_filename) << std::endl;
+				}
+				else
+				{
+					++session.process_fragment_index;
+					SharingGroupManager::instance()->put_file(session.group_id,
+															  session.local_filename,
+															  session.remote_filename,
+															  session.process_fragment_index);
+				}
+			}
+			break;
+		}
+		case protocol::RSP_GET_FILE:
+		{
 			break;
 		}
 		default:

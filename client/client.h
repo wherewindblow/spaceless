@@ -91,6 +91,14 @@ private:
 	std::vector<int> m_member_list;
 };
 
+struct FileTransferSession
+{
+	std::string local_filename;
+	int group_id;
+	std::string remote_filename;
+	int max_fragment_index;
+	int process_fragment_index;
+};
 
 class SharingGroupManager
 {
@@ -109,10 +117,17 @@ public:
 
 	void kick_out_user(int group_id, int uid);
 
+	void put_file(int group_id, const std::string& local_filename, const std::string& remote_filename, int index = 0);
+
+	void get_file(int group_id, const std::string& remote_filename, const std::string& local_filename);
+
+	FileTransferSession& putting_file_session();
+
 private:
 	using GroupList = std::map<int, SharingGroup>;
 	GroupList m_group_list;
 	int m_next_id = 1;
+	FileTransferSession m_putting_file_session;
 };
 
 
