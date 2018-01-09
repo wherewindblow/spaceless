@@ -386,17 +386,17 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			else
 			{
 				FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
-				if (session.process_fragment_index + 1 >= session.max_fragment_index)
+				if (session.fragment_index + 1 >= session.max_fragment)
 				{
 					std::cout << lights::format("Put file {} finish.", session.remote_filename) << std::endl;
 				}
 				else
 				{
-					++session.process_fragment_index;
+					++session.fragment_index;
 					SharingGroupManager::instance()->put_file(session.group_id,
 															  session.local_filename,
 															  session.remote_filename,
-															  session.process_fragment_index);
+															  session.fragment_index);
 				}
 			}
 			break;
@@ -413,15 +413,19 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			{
 				FileTransferSession& session = SharingGroupManager::instance()->getting_file_session();
 				lights::FileStream file(session.local_filename, "a");
-				int offset = rsponse.fragment().process_fragment_index() * protocol::MAX_FILE_CONTENT_LEN;
+				int offset = rsponse.fragment().fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;
 				file.seek(offset, lights::FileSeekWhence::BEGIN);
 				file.write({rsponse.fragment().fragment_content()});
 
-				if (rsponse.fragment().process_fragment_index() + 1 < rsponse.fragment().max_fragment_index())
+				if (rsponse.fragment().fragment_index() + 1 < rsponse.fragment().max_fragment())
 				{
 					SharingGroupManager::instance()->get_file(session.group_id,
 															  session.remote_filename,
 															  session.local_filename);
+				}
+				else
+				{
+					std::cout << lights::format("Get file {} finish.", session.remote_filename) << std::endl;
 				}
 			}
 			break;

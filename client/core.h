@@ -64,8 +64,8 @@ struct FileTransferSession
 	std::string local_filename;
 	int group_id;
 	std::string remote_filename;
-	int max_fragment_index;
-	int process_fragment_index;
+	int max_fragment;
+	int fragment_index;
 };
 
 class SharingGroupManager

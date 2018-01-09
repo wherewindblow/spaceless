@@ -12,6 +12,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <lights/exception.h>
 #include <common/exception.h>
+#include <cmath>
 
 
 namespace lights {
@@ -601,9 +602,9 @@ StorageNode& StorageNodeManager::get_node(const std::string& node_ip, short node
 }
 
 
-FileTransferSession& FileTransferSessionManager::register_transfer_session(int group_id, const std::string& filename)
+FileTransferSession& FileTransferSessionManager::register_session(int group_id, const std::string& filename)
 {
-	FileTransferSession* session = find_transfer_session(group_id, filename);
+	FileTransferSession* session = find_session(group_id, filename);
 	if (session)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
@@ -613,8 +614,8 @@ FileTransferSession& FileTransferSessionManager::register_transfer_session(int g
 	new_session.session_id = m_next_id;
 	new_session.group_id = group_id;
 	new_session.filename = filename;
-	new_session.max_fragment_index = 0;
-	new_session.process_fragment_index = 0;
+	new_session.max_fragment = 0;
+	new_session.fragment_index = 0;
 	++m_next_id;
 
 	auto itr = m_session_list.insert(std::make_pair(new_session.session_id, new_session));
@@ -627,13 +628,36 @@ FileTransferSession& FileTransferSessionManager::register_transfer_session(int g
 }
 
 
-void FileTransferSessionManager::remove_transfer_session(int session_id)
+FileTransferSession& FileTransferSessionManager::register_put_session(int group_id,
+																	  const std::string& filename,
+																	  int max_fragment)
+{
+	FileTransferSession& session = register_session(group_id, filename);
+	session.max_fragment = max_fragment;
+	return session;
+}
+
+FileTransferSession& FileTransferSessionManager::register_get_session(int group_id,
+																	  const std::string& filename,
+																	  int fragment_content_len)
+{
+	FileTransferSession& session = register_session(group_id, filename);
+
+	std::string local_filename = group_file_path + filename;
+	lights::FileStream file(local_filename, "r");
+	float file_size = static_cast<float>(file.size());
+	int max_fragment = static_cast<int>(std::ceil(file_size / fragment_content_len));
+	session.max_fragment = max_fragment;
+	return session;
+}
+
+void FileTransferSessionManager::remove_session(int session_id)
 {
 	m_session_list.erase(session_id);
 }
 
 
-FileTransferSession* FileTransferSessionManager::find_transfer_session(int session_id)
+FileTransferSession* FileTransferSessionManager::find_session(int session_id)
 {
 	auto itr = m_session_list.find(session_id);
 	if (itr == m_session_list.end())
@@ -644,7 +668,7 @@ FileTransferSession* FileTransferSessionManager::find_transfer_session(int sessi
 }
 
 
-FileTransferSession* FileTransferSessionManager::find_transfer_session(int group_id, const std::string& filename)
+FileTransferSession* FileTransferSessionManager::find_session(int group_id, const std::string& filename)
 {
 	auto itr = std::find_if(m_session_list.begin(), m_session_list.end(),
 							[&](const SessionList::value_type& value_type)
@@ -659,6 +683,7 @@ FileTransferSession* FileTransferSessionManager::find_transfer_session(int group
 
 	return &(itr->second);
 }
+
 
 } // namespace resource_server
 } // namespace spaceless

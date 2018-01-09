@@ -242,39 +242,38 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 		}
 
 		FileTransferSession* session = nullptr;
-		if (request.fragment().process_fragment_index() == 0)
+		if (request.fragment().fragment_index() == 0)
 		{
 			session =
-				&FileTransferSessionManager::instance()->register_transfer_session(group.group_id(), request.filename());
-			session->max_fragment_index = request.fragment().max_fragment_index();
-			session->process_fragment_index = request.fragment().process_fragment_index();
+				&FileTransferSessionManager::instance()->register_put_session(group.group_id(),
+																			  request.filename(),
+																			  request.fragment().max_fragment());
 		}
 		else
 		{
-			session =
-				FileTransferSessionManager::instance()->find_transfer_session(group.group_id(), request.filename());
+			session = FileTransferSessionManager::instance()->find_session(group.group_id(), request.filename());
 			if (session == nullptr)
 			{
 				rsponse.set_result(-1);
 				goto send_back_msg;
 			}
 
-			if (request.fragment().max_fragment_index() != session->max_fragment_index ||
-				request.fragment().process_fragment_index() != session->process_fragment_index + 1)
+			if (request.fragment().max_fragment() != session->max_fragment ||
+				request.fragment().fragment_index() != session->fragment_index + 1)
 			{
 				rsponse.set_result(-1);
 				goto send_back_msg;
 			}
-			++session->process_fragment_index;
+			++session->fragment_index;
 		}
 
 		lights::SequenceView content(request.fragment().fragment_content());
-		bool is_append = request.fragment().process_fragment_index() != 0;
+		bool is_append = request.fragment().fragment_index() != 0;
 		group.put_file(user->uid, request.filename(), content, is_append);
 
-		if (request.fragment().process_fragment_index() + 1 == request.fragment().max_fragment_index())
+		if (request.fragment().fragment_index() + 1 == request.fragment().max_fragment())
 		{
-			FileTransferSessionManager::instance()->remove_transfer_session(session->session_id);
+			FileTransferSessionManager::instance()->remove_session(session->session_id);
 		}
 	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_PUT_FILE);
 }
@@ -291,32 +290,28 @@ void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
 		}
 
 		FileTransferSession* session =
-			FileTransferSessionManager::instance()->find_transfer_session(group.group_id(), request.filename());
+			FileTransferSessionManager::instance()->find_session(group.group_id(), request.filename());
 		if (session == nullptr)
 		{
-			session = &FileTransferSessionManager::instance()->register_transfer_session(request.group_id(),
-																						request.filename());
-			std::string local_filename = group_file_path + request.filename();
-			lights::FileStream file(local_filename, "r");
-			float file_size = static_cast<float>(file.size());
-			int max_fragment = static_cast<int>(std::ceil(file_size / protocol::MAX_FILE_CONTENT_LEN));
-			session->max_fragment_index = max_fragment;
+			session = &FileTransferSessionManager::instance()->register_put_session(request.group_id(),
+																					request.filename(),
+																					protocol::MAX_FRAGMENT_CONTENT_LEN);
 		}
 
-		rsponse.mutable_fragment()->set_max_fragment_index(session->max_fragment_index);
-		rsponse.mutable_fragment()->set_process_fragment_index(session->process_fragment_index);
+		rsponse.mutable_fragment()->set_max_fragment(session->max_fragment);
+		rsponse.mutable_fragment()->set_fragment_index(session->fragment_index);
 
-		char content[protocol::MAX_FILE_CONTENT_LEN];
+		char content[protocol::MAX_FRAGMENT_CONTENT_LEN];
 		std::size_t content_len = group.get_file(user->uid,
 					   request.filename(),
-					   {content, protocol::MAX_FILE_CONTENT_LEN},
-					   session->process_fragment_index * protocol::MAX_FILE_CONTENT_LEN);
+					   {content, protocol::MAX_FRAGMENT_CONTENT_LEN},
+					   session->fragment_index * protocol::MAX_FRAGMENT_CONTENT_LEN);
 		rsponse.mutable_fragment()->set_fragment_content(content, content_len);
 
-		++session->process_fragment_index;
-		if (session->process_fragment_index >= session->max_fragment_index)
+		++session->fragment_index;
+		if (session->fragment_index >= session->max_fragment)
 		{
-			FileTransferSessionManager::instance()->remove_transfer_session(session->session_id);
+			FileTransferSessionManager::instance()->remove_session(session->session_id);
 		}
 	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_GET_FILE);
 }

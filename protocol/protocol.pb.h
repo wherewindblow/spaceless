@@ -168,13 +168,13 @@ inline bool CommandType_Parse(
 }
 enum MiscellaneousType {
   INVALID_MISCELLANEOUS = 0,
-  MAX_FILE_CONTENT_LEN = 50000,
+  MAX_FRAGMENT_CONTENT_LEN = 50000,
   MiscellaneousType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   MiscellaneousType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
 bool MiscellaneousType_IsValid(int value);
 const MiscellaneousType MiscellaneousType_MIN = INVALID_MISCELLANEOUS;
-const MiscellaneousType MiscellaneousType_MAX = MAX_FILE_CONTENT_LEN;
+const MiscellaneousType MiscellaneousType_MAX = MAX_FRAGMENT_CONTENT_LEN;
 const int MiscellaneousType_ARRAYSIZE = MiscellaneousType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* MiscellaneousType_descriptor();
@@ -2136,25 +2136,25 @@ class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::std::string* release_fragment_content();
   void set_allocated_fragment_content(::std::string* fragment_content);
 
-  // int32 max_fragment_index = 1;
-  void clear_max_fragment_index();
-  static const int kMaxFragmentIndexFieldNumber = 1;
-  ::google::protobuf::int32 max_fragment_index() const;
-  void set_max_fragment_index(::google::protobuf::int32 value);
+  // int32 max_fragment = 1;
+  void clear_max_fragment();
+  static const int kMaxFragmentFieldNumber = 1;
+  ::google::protobuf::int32 max_fragment() const;
+  void set_max_fragment(::google::protobuf::int32 value);
 
-  // int32 process_fragment_index = 2;
-  void clear_process_fragment_index();
-  static const int kProcessFragmentIndexFieldNumber = 2;
-  ::google::protobuf::int32 process_fragment_index() const;
-  void set_process_fragment_index(::google::protobuf::int32 value);
+  // int32 fragment_index = 2;
+  void clear_fragment_index();
+  static const int kFragmentIndexFieldNumber = 2;
+  ::google::protobuf::int32 fragment_index() const;
+  void set_fragment_index(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.FileFragment)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr fragment_content_;
-  ::google::protobuf::int32 max_fragment_index_;
-  ::google::protobuf::int32 process_fragment_index_;
+  ::google::protobuf::int32 max_fragment_;
+  ::google::protobuf::int32 fragment_index_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
@@ -3559,32 +3559,32 @@ inline void RspKickOutUser::set_result(::google::protobuf::int32 value) {
 
 // FileFragment
 
-// int32 max_fragment_index = 1;
-inline void FileFragment::clear_max_fragment_index() {
-  max_fragment_index_ = 0;
+// int32 max_fragment = 1;
+inline void FileFragment::clear_max_fragment() {
+  max_fragment_ = 0;
 }
-inline ::google::protobuf::int32 FileFragment::max_fragment_index() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.max_fragment_index)
-  return max_fragment_index_;
+inline ::google::protobuf::int32 FileFragment::max_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.max_fragment)
+  return max_fragment_;
 }
-inline void FileFragment::set_max_fragment_index(::google::protobuf::int32 value) {
+inline void FileFragment::set_max_fragment(::google::protobuf::int32 value) {
   
-  max_fragment_index_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.max_fragment_index)
+  max_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.max_fragment)
 }
 
-// int32 process_fragment_index = 2;
-inline void FileFragment::clear_process_fragment_index() {
-  process_fragment_index_ = 0;
+// int32 fragment_index = 2;
+inline void FileFragment::clear_fragment_index() {
+  fragment_index_ = 0;
 }
-inline ::google::protobuf::int32 FileFragment::process_fragment_index() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.process_fragment_index)
-  return process_fragment_index_;
+inline ::google::protobuf::int32 FileFragment::fragment_index() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.fragment_index)
+  return fragment_index_;
 }
-inline void FileFragment::set_process_fragment_index(::google::protobuf::int32 value) {
+inline void FileFragment::set_fragment_index(::google::protobuf::int32 value) {
   
-  process_fragment_index_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.process_fragment_index)
+  fragment_index_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.fragment_index)
 }
 
 // string fragment_content = 3;

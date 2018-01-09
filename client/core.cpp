@@ -124,18 +124,18 @@ void SharingGroupManager::put_file(int group_id,
 	protocol::ReqPutFile request;
 	request.set_group_id(group_id);
 	request.set_filename(remote_filename);
+	request.mutable_fragment()->set_fragment_index(fragment_index);
+	m_putting_file_session.fragment_index = fragment_index;
 
 	lights::FileStream file(local_filename, "r");
 	float file_size = static_cast<float>(file.size());
-	int max_fragment = static_cast<int>(std::ceil(file_size / protocol::MAX_FILE_CONTENT_LEN));
-	m_putting_file_session.max_fragment_index = max_fragment;
-	m_putting_file_session.process_fragment_index = fragment_index;
-	request.mutable_fragment()->set_max_fragment_index(max_fragment);
-	request.mutable_fragment()->set_process_fragment_index(fragment_index);
+	int max_fragment = static_cast<int>(std::ceil(file_size / protocol::MAX_FRAGMENT_CONTENT_LEN));
+	m_putting_file_session.max_fragment = max_fragment;
+	request.mutable_fragment()->set_max_fragment(max_fragment);
 
-	char content[protocol::MAX_FILE_CONTENT_LEN];
-	file.seek(fragment_index * protocol::MAX_FILE_CONTENT_LEN, lights::FileSeekWhence::BEGIN);
-	std::size_t content_len = file.read({content, protocol::MAX_FILE_CONTENT_LEN});
+	char content[protocol::MAX_FRAGMENT_CONTENT_LEN];
+	file.seek(fragment_index * protocol::MAX_FRAGMENT_CONTENT_LEN, lights::FileSeekWhence::BEGIN);
+	std::size_t content_len = file.read({content, protocol::MAX_FRAGMENT_CONTENT_LEN});
 	request.mutable_fragment()->set_fragment_content(content, content_len);
 	network_conn->send_protobuf(protocol::REQ_PUT_FILE, request);
 }

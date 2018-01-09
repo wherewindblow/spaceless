@@ -201,8 +201,8 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileFragment, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileFragment, max_fragment_index_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileFragment, process_fragment_index_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileFragment, max_fragment_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileFragment, fragment_index_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileFragment, fragment_content_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqPutFile, _internal_metadata_),
@@ -436,34 +436,34 @@ void AddDescriptorsImpl() {
       "\" \n\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\"\036\n\014Rs"
       "pJoinGroup\022\016\n\006result\030\001 \001(\005\"/\n\016ReqKickOut"
       "User\022\020\n\010group_id\030\001 \001(\005\022\013\n\003uid\030\002 \001(\005\" \n\016R"
-      "spKickOutUser\022\016\n\006result\030\001 \001(\005\"d\n\014FileFra"
-      "gment\022\032\n\022max_fragment_index\030\001 \001(\005\022\036\n\026pro"
-      "cess_fragment_index\030\002 \001(\005\022\030\n\020fragment_co"
-      "ntent\030\003 \001(\t\"d\n\nReqPutFile\022\020\n\010group_id\030\001 "
-      "\001(\005\022\020\n\010filename\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132"
-      " .spaceless.protocol.FileFragment\"\034\n\nRsp"
-      "PutFile\022\016\n\006result\030\001 \001(\005\"0\n\nReqGetFile\022\020\n"
-      "\010group_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\"P\n\nRsp"
-      "GetFile\022\016\n\006result\030\001 \001(\005\0222\n\010fragment\030\002 \001("
-      "\0132 .spaceless.protocol.FileFragment*\200\004\n\013"
-      "CommandType\022\023\n\017INVALID_COMMAND\020\000\022\026\n\021REQ_"
-      "REGISTER_USER\020\350\007\022\026\n\021RSP_REGISTER_USER\020\352\007"
-      "\022\023\n\016REQ_LOGIN_USER\020\353\007\022\023\n\016RSP_LOGIN_USER\020"
-      "\354\007\022\024\n\017REQ_REMOVE_USER\020\355\007\022\024\n\017RSP_REMOVE_U"
-      "SER\020\356\007\022\022\n\rREQ_FIND_USER\020\357\007\022\022\n\rRSP_FIND_U"
-      "SER\020\360\007\022\027\n\022REQ_REGISTER_GROUP\020\325\010\022\027\n\022RSP_R"
-      "EGISTER_GROUP\020\326\010\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022"
-      "\025\n\020RSP_REMOVE_GROUP\020\330\010\022\023\n\016REQ_FIND_GROUP"
-      "\020\331\010\022\023\n\016RSP_FIND_GROUP\020\332\010\022\023\n\016REQ_JOIN_GRO"
-      "UP\020\333\010\022\023\n\016RSP_JOIN_GROUP\020\334\010\022\026\n\021REQ_KICK_O"
-      "UT_USER\020\335\010\022\026\n\021RSP_KICK_OUT_USER\020\336\010\022\021\n\014RE"
-      "Q_PUT_FILE\020\377\010\022\021\n\014RSP_PUT_FILE\020\200\t\022\021\n\014REQ_"
-      "GET_FILE\020\201\t\022\021\n\014RSP_GET_FILE\020\202\t*J\n\021Miscel"
-      "laneousType\022\031\n\025INVALID_MISCELLANEOUS\020\000\022\032"
-      "\n\024MAX_FILE_CONTENT_LEN\020\320\206\003b\006proto3"
+      "spKickOutUser\022\016\n\006result\030\001 \001(\005\"V\n\014FileFra"
+      "gment\022\024\n\014max_fragment\030\001 \001(\005\022\026\n\016fragment_"
+      "index\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\t\"d\n"
+      "\nReqPutFile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filenam"
+      "e\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .spaceless.pr"
+      "otocol.FileFragment\"\034\n\nRspPutFile\022\016\n\006res"
+      "ult\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010group_id\030\001 \001("
+      "\005\022\020\n\010filename\030\002 \001(\t\"P\n\nRspGetFile\022\016\n\006res"
+      "ult\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 .spaceless."
+      "protocol.FileFragment*\200\004\n\013CommandType\022\023\n"
+      "\017INVALID_COMMAND\020\000\022\026\n\021REQ_REGISTER_USER\020"
+      "\350\007\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016REQ_LOGIN_"
+      "USER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024\n\017REQ_REMO"
+      "VE_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020\356\007\022\022\n\rREQ_"
+      "FIND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020\360\007\022\027\n\022REQ_"
+      "REGISTER_GROUP\020\325\010\022\027\n\022RSP_REGISTER_GROUP\020"
+      "\326\010\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020RSP_REMOVE_"
+      "GROUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022\023\n\016RSP_FIN"
+      "D_GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333\010\022\023\n\016RSP_J"
+      "OIN_GROUP\020\334\010\022\026\n\021REQ_KICK_OUT_USER\020\335\010\022\026\n\021"
+      "RSP_KICK_OUT_USER\020\336\010\022\021\n\014REQ_PUT_FILE\020\377\010\022"
+      "\021\n\014RSP_PUT_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022\021\n"
+      "\014RSP_GET_FILE\020\202\t*N\n\021MiscellaneousType\022\031\n"
+      "\025INVALID_MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT"
+      "_CONTENT_LEN\020\320\206\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2034);
+      descriptor, 2024);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -6535,8 +6535,8 @@ void RspKickOutUser::set_result(::google::protobuf::int32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int FileFragment::kMaxFragmentIndexFieldNumber;
-const int FileFragment::kProcessFragmentIndexFieldNumber;
+const int FileFragment::kMaxFragmentFieldNumber;
+const int FileFragment::kFragmentIndexFieldNumber;
 const int FileFragment::kFragmentContentFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -6557,16 +6557,16 @@ FileFragment::FileFragment(const FileFragment& from)
   if (from.fragment_content().size() > 0) {
     fragment_content_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.fragment_content_);
   }
-  ::memcpy(&max_fragment_index_, &from.max_fragment_index_,
-    reinterpret_cast<char*>(&process_fragment_index_) -
-    reinterpret_cast<char*>(&max_fragment_index_) + sizeof(process_fragment_index_));
+  ::memcpy(&max_fragment_, &from.max_fragment_,
+    reinterpret_cast<char*>(&fragment_index_) -
+    reinterpret_cast<char*>(&max_fragment_) + sizeof(fragment_index_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.FileFragment)
 }
 
 void FileFragment::SharedCtor() {
   fragment_content_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&max_fragment_index_, 0, reinterpret_cast<char*>(&process_fragment_index_) -
-    reinterpret_cast<char*>(&max_fragment_index_) + sizeof(process_fragment_index_));
+  ::memset(&max_fragment_, 0, reinterpret_cast<char*>(&fragment_index_) -
+    reinterpret_cast<char*>(&max_fragment_) + sizeof(fragment_index_));
   _cached_size_ = 0;
 }
 
@@ -6605,8 +6605,8 @@ FileFragment* FileFragment::New(::google::protobuf::Arena* arena) const {
 void FileFragment::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.FileFragment)
   fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&max_fragment_index_, 0, reinterpret_cast<char*>(&process_fragment_index_) -
-    reinterpret_cast<char*>(&max_fragment_index_) + sizeof(process_fragment_index_));
+  ::memset(&max_fragment_, 0, reinterpret_cast<char*>(&fragment_index_) -
+    reinterpret_cast<char*>(&max_fragment_) + sizeof(fragment_index_));
 }
 
 bool FileFragment::MergePartialFromCodedStream(
@@ -6619,26 +6619,26 @@ bool FileFragment::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 max_fragment_index = 1;
+      // int32 max_fragment = 1;
       case 1: {
         if (tag == 8u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &max_fragment_index_)));
+                 input, &max_fragment_)));
         } else {
           goto handle_unusual;
         }
         break;
       }
 
-      // int32 process_fragment_index = 2;
+      // int32 fragment_index = 2;
       case 2: {
         if (tag == 16u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &process_fragment_index_)));
+                 input, &fragment_index_)));
         } else {
           goto handle_unusual;
         }
@@ -6684,14 +6684,14 @@ failure:
 void FileFragment::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:spaceless.protocol.FileFragment)
-  // int32 max_fragment_index = 1;
-  if (this->max_fragment_index() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->max_fragment_index(), output);
+  // int32 max_fragment = 1;
+  if (this->max_fragment() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->max_fragment(), output);
   }
 
-  // int32 process_fragment_index = 2;
-  if (this->process_fragment_index() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->process_fragment_index(), output);
+  // int32 fragment_index = 2;
+  if (this->fragment_index() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->fragment_index(), output);
   }
 
   // string fragment_content = 3;
@@ -6711,14 +6711,14 @@ void FileFragment::SerializeWithCachedSizes(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.FileFragment)
-  // int32 max_fragment_index = 1;
-  if (this->max_fragment_index() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->max_fragment_index(), target);
+  // int32 max_fragment = 1;
+  if (this->max_fragment() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->max_fragment(), target);
   }
 
-  // int32 process_fragment_index = 2;
-  if (this->process_fragment_index() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->process_fragment_index(), target);
+  // int32 fragment_index = 2;
+  if (this->fragment_index() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->fragment_index(), target);
   }
 
   // string fragment_content = 3;
@@ -6747,18 +6747,18 @@ size_t FileFragment::ByteSizeLong() const {
         this->fragment_content());
   }
 
-  // int32 max_fragment_index = 1;
-  if (this->max_fragment_index() != 0) {
+  // int32 max_fragment = 1;
+  if (this->max_fragment() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->max_fragment_index());
+        this->max_fragment());
   }
 
-  // int32 process_fragment_index = 2;
-  if (this->process_fragment_index() != 0) {
+  // int32 fragment_index = 2;
+  if (this->fragment_index() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->process_fragment_index());
+        this->fragment_index());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -6791,11 +6791,11 @@ void FileFragment::MergeFrom(const FileFragment& from) {
 
     fragment_content_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.fragment_content_);
   }
-  if (from.max_fragment_index() != 0) {
-    set_max_fragment_index(from.max_fragment_index());
+  if (from.max_fragment() != 0) {
+    set_max_fragment(from.max_fragment());
   }
-  if (from.process_fragment_index() != 0) {
-    set_process_fragment_index(from.process_fragment_index());
+  if (from.fragment_index() != 0) {
+    set_fragment_index(from.fragment_index());
   }
 }
 
@@ -6823,8 +6823,8 @@ void FileFragment::Swap(FileFragment* other) {
 }
 void FileFragment::InternalSwap(FileFragment* other) {
   fragment_content_.Swap(&other->fragment_content_);
-  std::swap(max_fragment_index_, other->max_fragment_index_);
-  std::swap(process_fragment_index_, other->process_fragment_index_);
+  std::swap(max_fragment_, other->max_fragment_);
+  std::swap(fragment_index_, other->fragment_index_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -6836,32 +6836,32 @@ void FileFragment::InternalSwap(FileFragment* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // FileFragment
 
-// int32 max_fragment_index = 1;
-void FileFragment::clear_max_fragment_index() {
-  max_fragment_index_ = 0;
+// int32 max_fragment = 1;
+void FileFragment::clear_max_fragment() {
+  max_fragment_ = 0;
 }
-::google::protobuf::int32 FileFragment::max_fragment_index() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.max_fragment_index)
-  return max_fragment_index_;
+::google::protobuf::int32 FileFragment::max_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.max_fragment)
+  return max_fragment_;
 }
-void FileFragment::set_max_fragment_index(::google::protobuf::int32 value) {
+void FileFragment::set_max_fragment(::google::protobuf::int32 value) {
   
-  max_fragment_index_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.max_fragment_index)
+  max_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.max_fragment)
 }
 
-// int32 process_fragment_index = 2;
-void FileFragment::clear_process_fragment_index() {
-  process_fragment_index_ = 0;
+// int32 fragment_index = 2;
+void FileFragment::clear_fragment_index() {
+  fragment_index_ = 0;
 }
-::google::protobuf::int32 FileFragment::process_fragment_index() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.process_fragment_index)
-  return process_fragment_index_;
+::google::protobuf::int32 FileFragment::fragment_index() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.fragment_index)
+  return fragment_index_;
 }
-void FileFragment::set_process_fragment_index(::google::protobuf::int32 value) {
+void FileFragment::set_fragment_index(::google::protobuf::int32 value) {
   
-  process_fragment_index_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.process_fragment_index)
+  fragment_index_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.fragment_index)
 }
 
 // string fragment_content = 3;

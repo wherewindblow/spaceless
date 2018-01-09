@@ -180,8 +180,8 @@ struct FileTransferSession
 	int session_id;
 	int group_id;
 	std::string filename;
-	int max_fragment_index;
-	int process_fragment_index;
+	int max_fragment;
+	int fragment_index;
 };
 
 
@@ -190,13 +190,17 @@ class FileTransferSessionManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(FileTransferSessionManager);
 
-	FileTransferSession& register_transfer_session(int group_id, const std::string& filename);
+	FileTransferSession& register_session(int group_id, const std::string& filename);
 
-	void remove_transfer_session(int session_id);
+	FileTransferSession& register_put_session(int group_id, const std::string& filename, int max_fragment);
 
-	FileTransferSession* find_transfer_session(int session_id);
+	FileTransferSession& register_get_session(int group_id, const std::string& filename, int fragment_content_len);
 
-	FileTransferSession* find_transfer_session(int group_id, const std::string& filename);
+	void remove_session(int session_id);
+
+	FileTransferSession* find_session(int session_id);
+
+	FileTransferSession* find_session(int group_id, const std::string& filename);
 
 private:
 	using SessionList = std::map<int, FileTransferSession>;
