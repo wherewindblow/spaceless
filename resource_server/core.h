@@ -1,5 +1,5 @@
 /**
- * resource_server.h
+ * core.h
  * @author wherewindblow
  * @date   Oct 26, 2017
  */
@@ -106,7 +106,7 @@ public:
 
 	void put_file(int uid, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
 
-	std::size_t get_file(int uid, const std::string& target_name, lights::Sequence file_content);
+	std::size_t get_file(int uid, const std::string& filename, lights::Sequence file_content, int start_pos = 0);
 
 	/**
 	 * Create all directory by directory path. If a parent directory is not create will automatically create.
@@ -149,6 +149,7 @@ inline bool operator== (const SharingGroup& lhs, const SharingGroup& rhs)
 	return lhs.group_id() == rhs.group_id();
 }
 
+extern const char* group_file_path;
 
 class SharingGroupManager
 {

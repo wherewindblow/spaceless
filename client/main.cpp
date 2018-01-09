@@ -6,7 +6,7 @@
 #include <common/network.h>
 #include <common/log.h>
 
-#include "client.h"
+#include "core.h"
 
 
 namespace spaceless {
@@ -173,8 +173,16 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cout << "Please input group id, local filename and remote filename." << std::endl;
 			int group_id;
 			std::string local_filename, remote_filename;
-			std::cin >> local_filename >> group_id >> remote_filename;
+			std::cin >> group_id >> local_filename >> remote_filename;
 			SharingGroupManager::instance()->put_file(group_id, local_filename, remote_filename);
+		}
+		else if (func == "get_file")
+		{
+			std::cout << "Please input group id, local filename and remote filename." << std::endl;
+			int group_id;
+			std::string local_filename, remote_filename;
+			std::cin >> group_id >> remote_filename >> local_filename;
+			SharingGroupManager::instance()->get_file(group_id, remote_filename, local_filename);
 		}
 		else if (func == "register_connection")
 		{
@@ -395,6 +403,27 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 		}
 		case protocol::RSP_GET_FILE:
 		{
+			protocol::RspGetFile rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse.result());
+			}
+			else
+			{
+				FileTransferSession& session = SharingGroupManager::instance()->getting_file_session();
+				lights::FileStream file(session.local_filename, "a");
+				int offset = rsponse.fragment().process_fragment_index() * protocol::MAX_FILE_CONTENT_LEN;
+				file.seek(offset, lights::FileSeekWhence::BEGIN);
+				file.write({rsponse.fragment().fragment_content()});
+
+				if (rsponse.fragment().process_fragment_index() + 1 < rsponse.fragment().max_fragment_index())
+				{
+					SharingGroupManager::instance()->get_file(session.group_id,
+															  session.remote_filename,
+															  session.local_filename);
+				}
+			}
 			break;
 		}
 		default:

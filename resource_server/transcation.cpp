@@ -5,9 +5,11 @@
  */
 
 #include "transcation.h"
-#include "resource_server.h"
 
+#include <cmath>
 #include <protocol/all.h>
+
+#include "core.h"
 
 
 namespace spaceless {
@@ -218,8 +220,7 @@ void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 		if (request.uid() != user->uid) // Only manager can kick out other user.
 		{
-			auto itr = std::find(group.manager_list().begin(), group.manager_list().end(), user->uid);
-			if (itr == group.manager_list().end())
+			if (!group.is_manager(user->uid))
 			{
 				rsponse.set_result(-1);
 				goto send_back_msg;
@@ -234,6 +235,12 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqPutFile, protocol::RspPutFile);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+		if (!group.is_manager(user->uid))
+		{
+			rsponse.set_result(-1);
+			goto send_back_msg;
+		}
+
 		FileTransferSession* session = nullptr;
 		if (request.fragment().process_fragment_index() == 0)
 		{
@@ -246,6 +253,12 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 		{
 			session =
 				FileTransferSessionManager::instance()->find_transfer_session(group.group_id(), request.filename());
+			if (session == nullptr)
+			{
+				rsponse.set_result(-1);
+				goto send_back_msg;
+			}
+
 			if (request.fragment().max_fragment_index() != session->max_fragment_index ||
 				request.fragment().process_fragment_index() != session->process_fragment_index + 1)
 			{
@@ -269,10 +282,43 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 
 void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
 {
-//	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqJoinGroup, protocol::RspJoinGroup);
-//		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
-//		group.join_group(user->uid);
-//	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_JOIN_GROUP);
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqGetFile, protocol::RspGetFile);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+		if (!group.is_member(user->uid))
+		{
+			rsponse.set_result(-1);
+			goto send_back_msg;
+		}
+
+		FileTransferSession* session =
+			FileTransferSessionManager::instance()->find_transfer_session(group.group_id(), request.filename());
+		if (session == nullptr)
+		{
+			session = &FileTransferSessionManager::instance()->register_transfer_session(request.group_id(),
+																						request.filename());
+			std::string local_filename = group_file_path + request.filename();
+			lights::FileStream file(local_filename, "r");
+			float file_size = static_cast<float>(file.size());
+			int max_fragment = static_cast<int>(std::ceil(file_size / protocol::MAX_FILE_CONTENT_LEN));
+			session->max_fragment_index = max_fragment;
+		}
+
+		rsponse.mutable_fragment()->set_max_fragment_index(session->max_fragment_index);
+		rsponse.mutable_fragment()->set_process_fragment_index(session->process_fragment_index);
+
+		char content[protocol::MAX_FILE_CONTENT_LEN];
+		std::size_t content_len = group.get_file(user->uid,
+					   request.filename(),
+					   {content, protocol::MAX_FILE_CONTENT_LEN},
+					   session->process_fragment_index * protocol::MAX_FILE_CONTENT_LEN);
+		rsponse.mutable_fragment()->set_fragment_content(content, content_len);
+
+		++session->process_fragment_index;
+		if (session->process_fragment_index >= session->max_fragment_index)
+		{
+			FileTransferSessionManager::instance()->remove_transfer_session(session->session_id);
+		}
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_GET_FILE);
 }
 
 } // namespace transcation

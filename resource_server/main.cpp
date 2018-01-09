@@ -6,7 +6,7 @@
 #include <common/network.h>
 #include <common/log.h>
 
-#include "resource_server.h"
+#include "core.h"
 #include "transcation.h"
 
 

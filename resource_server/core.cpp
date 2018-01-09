@@ -1,18 +1,17 @@
 /*
- * resource_server.cpp
+ * core.cpp
  * @author wherewindblow
  * @date   Oct 26, 2017
  */
 
-#include "resource_server.h"
+#include "core.h"
 
 #include <algorithm>
 #include <utility>
 
 #include <boost/algorithm/string/split.hpp>
 #include <lights/exception.h>
-
-#include "common/exception.h"
+#include <common/exception.h>
 
 
 namespace lights {
@@ -158,8 +157,6 @@ int SharingGroup::owner_id() const
 }
 
 
-const char* group_file_path = "/tmp/";
-
 void SharingGroup::put_file(int uid, const std::string& filename, lights::SequenceView file_content, bool is_append)
 {
 	if (!is_manager(uid))
@@ -175,17 +172,18 @@ void SharingGroup::put_file(int uid, const std::string& filename, lights::Sequen
 }
 
 
-std::size_t SharingGroup::get_file(int uid, const std::string& target_name, lights::Sequence file_content)
+std::size_t SharingGroup::get_file(int uid, const std::string& filename, lights::Sequence file_content, int start_pos)
 {
 	if (!is_member(uid))
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
 	}
 
-	std::string filename = group_file_path + target_name;
-	lights::FileStream file(filename, "r");
+	std::string local_filename = group_file_path + filename;
+	lights::FileStream file(local_filename, "r");
+	file.seek(start_pos, lights::FileSeekWhence::BEGIN);
 	return file.read(file_content);
-	// TODO
+	// TODO Need to optimize.
 }
 
 
@@ -362,6 +360,7 @@ bool SharingGroup::is_member(int uid)
 	return itr != m_member_list.end();
 }
 
+const char* group_file_path = "/tmp/";
 
 SharingGroup& SharingGroupManager::register_group(int uid, const std::string& group_name)
 {
