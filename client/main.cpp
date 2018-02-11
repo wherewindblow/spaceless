@@ -37,7 +37,7 @@ int main(int argc, const char* argv[])
 	{
 		logger.set_level(lights::LogLevel::DEBUG);
 
-		std::pair<int, CommandHandlerManager::CommandHandler> handlers[] = {
+		std::pair<int, OnePhaseTrancation> handlers[] = {
 			{protocol::RSP_REGISTER_USER, read_handler},
 			{protocol::RSP_LOGIN_USER, read_handler},
 			{protocol::RSP_REMOVE_USER, read_handler},
@@ -53,7 +53,7 @@ int main(int argc, const char* argv[])
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
 		{
-			CommandHandlerManager::instance()->register_command(handlers[i].first, handlers[i].second);
+			TranscationManager::instance()->register_one_phase_transcation(handlers[i].first, handlers[i].second);
 		}
 
 		network_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);

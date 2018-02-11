@@ -66,8 +66,15 @@ const int PROTOCOL_PACKAGE_VERSION = 1;
 
 struct ProtocolHeader
 {
+	// Version of protocol.
 	short version;
+	// Indicates how of use content.
 	int command;
+	// Recieves side will transfer as trigger_trans_id when send back message.
+	int self_trans_id;
+	// self_trans_id of request.
+	int trigger_trans_id;
+	// The length of content.
 	int content_length;
 } SPACELESS_POD_PACKED_ATTRIBUTE;
 
@@ -216,41 +223,6 @@ private:
 };
 
 
-
-class NetworkConnection;
-
-/**
- * CommandHandlerManager manages all command and handler. When recieve a command will trigger associated handler.
- * @note A command only can associate one handler.
- */
-class CommandHandlerManager
-{
-public:
-	SPACELESS_SINGLETON_INSTANCE(CommandHandlerManager);
-
-	using CommandHandler = std::function<void(NetworkConnection&, const PackageBuffer&)>;
-
-	/**
-	 * Registers associate a command with handler.
-	 */
-	void register_command(int cmd, CommandHandler callback);
-
-	/**
-	 * Removes associate a command with handler.
-	 */
-	void remove_command(int cmd);
-
-	/**
-	 * Finds the associate handler of command.
-	 * @note If cannot found command will return nullptr.
-	 */
-	CommandHandler find_handler(int cmd);
-
-private:
-	std::map<int, CommandHandler> m_handler_list;
-};
-
-
 /**
  * NetworkConnection handler socket notification and cache receive message.
  */
@@ -313,7 +285,10 @@ public:
 	 * Parses a protobuf as package buffer and send to remote.
 	 */
 	template <typename ProtobufType>
-	void send_protobuf(int cmd, const ProtobufType& msg);
+	void send_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0, bool is_send_back = false);
+
+	template <typename ProtobufType>
+	void send_back_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0);
 
 	/**
 	 * Destroys connection.
@@ -344,6 +319,8 @@ public:
 private:
 	void read_for_state(int deep = 0);
 
+	void trigger_transcation();
+
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
@@ -357,7 +334,7 @@ private:
 
 
 template <typename ProtobufType>
-void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg)
+void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id, bool is_send_back)
 {
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
@@ -368,11 +345,20 @@ void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg)
 
 	PackageBuffer& package = PackageBufferManager::instance()->register_package();
 	package.header().command = cmd;
+	package.header().self_trans_id  = bind_trans_id;
+	package.header().trigger_trans_id = is_send_back ? m_read_buffer.header().self_trans_id : 0;
 	package.header().content_length = size;
 	lights::Sequence storage = package.content_buffer();
 	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
 
 	send_package(package);
+}
+
+
+template <typename ProtobufType>
+void NetworkConnection::send_back_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id)
+{
+	send_protobuf(cmd, msg, bind_trans_id, true);
 }
 
 
@@ -427,6 +413,136 @@ private:
 	std::list<NetworkConnection*> m_conn_list;
 	std::list<SocketAcceptor<NetworkConnection>> m_acceptor_list;
 	SocketReactor m_reactor;
+};
+
+
+enum class TranscationType
+{
+	ONE_PHASE_TRANSCATION,
+	MULTIPLY_PHASE_TRANSCATION,
+};
+
+
+struct Transcation
+{
+	TranscationType trans_type;
+	void *trans_handler;
+};
+
+
+class MultiplyPhaseTranscation
+{
+public:
+	enum PhaseResult
+	{
+		EXIT_TRANCATION,
+		WAIT_NEXT_PHASE,
+	};
+
+	static MultiplyPhaseTranscation* register_transcation(int trans_id);
+
+	MultiplyPhaseTranscation(int trans_id);
+
+	virtual ~MultiplyPhaseTranscation() = default;
+
+	void pre_on_init(NetworkConnection& conn, const PackageBuffer& package);
+
+	virtual PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) = 0;
+
+	virtual PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) = 0;
+
+	virtual PhaseResult on_timeout();
+
+	PhaseResult wait_next_phase(NetworkConnection& conn, int cmd, int current_phase, int timeout);
+
+	template <typename T>
+	void send_back_message(int cmd, T& msg);
+
+	int transcation_id() const;
+
+	int current_phase() const;
+
+	NetworkConnection* first_connection();
+
+	NetworkConnection* wait_connection();
+
+	int wait_command() const;
+
+private:
+	int m_id;
+	int m_current_phase = 0;
+	NetworkConnection* m_first_conn = nullptr;
+	NetworkConnection* m_wait_conn = nullptr;
+	int m_wait_cmd = 0;
+};
+
+
+template <typename T>
+void MultiplyPhaseTranscation::send_back_message(int cmd, T& msg)
+{
+	first_connection()->send_back_protobuf(cmd, msg);
+}
+
+
+using TranscationFatory = MultiplyPhaseTranscation* (*)(int);
+
+class MultiplyPhaseTranscationManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(MultiplyPhaseTranscationManager);
+
+	MultiplyPhaseTranscation& register_transcation(TranscationFatory trans_fatory);
+
+	void remove_transcation(int trans_id);
+
+	MultiplyPhaseTranscation* find_transcation(int trans_id);
+
+private:
+	int m_next_id = 1;
+	std::map<int, MultiplyPhaseTranscation*> m_trans_list;
+};
+
+
+using OnePhaseTrancation = void(*)(NetworkConnection&, const PackageBuffer&);
+
+/**
+ * TranscationManager manages all command and transcation. When recieve a command will trigger associated transcation.
+ * @note A command only can associate one transcation.
+ */
+class TranscationManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(TranscationManager);
+
+	/**
+	 * Registers associate a command with transcation.
+	 */
+	void register_transcation(int cmd, TranscationType trans_type, void *handler);
+
+	/**
+	 * Registers associate a command with transcation.
+	 */
+	void register_one_phase_transcation(int cmd, OnePhaseTrancation trancation);
+
+	/**
+	 * Registers associate a command with transcation.
+	 * @param trans_fatory  Fatory of transcation.
+	 */
+	void register_multiply_phase_transcation(int cmd, TranscationFatory trans_fatory);
+
+	/**
+	 * Removes associate a command with transcation.
+	 */
+	void remove_transcation(int cmd);
+
+	/**
+	 * Finds the associate transcation of command.
+	 * @note If cannot found command will return nullptr.
+	 */
+	Transcation* find_transcation(int cmd);
+
+private:
+	std::map<int, Transcation> m_trans_list;
 };
 
 

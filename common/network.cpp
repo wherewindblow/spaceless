@@ -59,26 +59,141 @@ PackageBuffer& PackageBufferManager::get_package(int package_id)
 }
 
 
-void CommandHandlerManager::register_command(int cmd, CommandHandlerManager::CommandHandler callback)
+MultiplyPhaseTranscation::MultiplyPhaseTranscation(int trans_id):
+	m_id(trans_id)
 {
-	m_handler_list.insert(std::make_pair(cmd, callback));
 }
 
 
-void CommandHandlerManager::remove_command(int cmd)
+MultiplyPhaseTranscation* MultiplyPhaseTranscation::register_transcation(int trans_id)
 {
-	m_handler_list.erase(cmd);
+	return nullptr;
 }
 
 
-CommandHandlerManager::CommandHandler CommandHandlerManager::find_handler(int cmd)
+void MultiplyPhaseTranscation::pre_on_init(NetworkConnection& conn, const PackageBuffer& package)
 {
-	auto itr = m_handler_list.find(cmd);
-	if (itr == m_handler_list.end())
+	m_first_conn = &conn;
+}
+
+
+MultiplyPhaseTranscation::PhaseResult MultiplyPhaseTranscation::on_timeout()
+{
+	return EXIT_TRANCATION;
+}
+
+
+MultiplyPhaseTranscation::PhaseResult MultiplyPhaseTranscation::wait_next_phase(NetworkConnection& conn,
+																				int cmd,
+																				int current_phase,
+																				int timeout)
+{
+	m_wait_conn = &conn;
+	m_wait_cmd = cmd;
+	m_current_phase = current_phase;
+	// TODO: How to implement timeout of transcation.
+	return WAIT_NEXT_PHASE;
+}
+
+
+int MultiplyPhaseTranscation::transcation_id() const
+{
+	return m_id;
+}
+
+
+int MultiplyPhaseTranscation::current_phase() const
+{
+	return m_current_phase;
+}
+
+
+NetworkConnection* MultiplyPhaseTranscation::first_connection()
+{
+	return m_first_conn;
+}
+
+
+NetworkConnection* MultiplyPhaseTranscation::wait_connection()
+{
+	return m_wait_conn;
+}
+
+
+int MultiplyPhaseTranscation::wait_command() const
+{
+	return m_wait_cmd;
+}
+
+
+MultiplyPhaseTranscation& MultiplyPhaseTranscationManager::register_transcation(TranscationFatory trans_fatory)
+{
+	MultiplyPhaseTranscation* trans = trans_fatory(m_next_id);
+	++m_next_id;
+	m_trans_list.insert(std::make_pair(trans->transcation_id(), trans));
+	return *trans;
+}
+
+
+void MultiplyPhaseTranscationManager::remove_transcation(int trans_id)
+{
+	MultiplyPhaseTranscation* trans = find_transcation(trans_id);
+	if (trans)
+	{
+		delete trans;
+	}
+
+	m_trans_list.erase(trans_id);
+}
+
+
+MultiplyPhaseTranscation* MultiplyPhaseTranscationManager::find_transcation(int trans_id)
+{
+	auto itr = m_trans_list.find(trans_id);
+	if (itr == m_trans_list.end())
 	{
 		return nullptr;
 	}
+
 	return itr->second;
+}
+
+
+void TranscationManager::register_transcation(int cmd, TranscationType trans_type, void* handler)
+{
+	auto pair = std::make_pair(cmd, Transcation {trans_type, handler});
+	m_trans_list.insert(pair);
+}
+
+
+void TranscationManager::register_one_phase_transcation(int cmd, OnePhaseTrancation trancation)
+{
+	void* handler = reinterpret_cast<void*>(trancation);
+	register_transcation(cmd, TranscationType::ONE_PHASE_TRANSCATION, handler);
+}
+
+
+void TranscationManager::register_multiply_phase_transcation(int cmd, TranscationFatory trans_fatory)
+{
+	void* handler = reinterpret_cast<void*>(trans_fatory);
+	register_transcation(cmd, TranscationType::MULTIPLY_PHASE_TRANSCATION, handler);
+}
+
+
+void TranscationManager::remove_transcation(int cmd)
+{
+	m_trans_list.erase(cmd);
+}
+
+
+Transcation* TranscationManager::find_transcation(int cmd)
+{
+	auto itr = m_trans_list.find(cmd);
+	if (itr == m_trans_list.end())
+	{
+		return nullptr;
+	}
+	return &itr->second;
 }
 
 
@@ -110,12 +225,12 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	{
 		std::string address = m_socket.address().toString();
 		std::string peer_address = m_socket.peerAddress().toString();
-		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: id:{}, address:{}/{}.",
+		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: {}, address {}/{}.",
 						m_id, address, peer_address);
 	}
 	catch (Poco::Exception& ex)
 	{
-		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: id:{}, address:unkown/unkown.", m_id);
+		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: {}, address unkown/unkown.", m_id);
 	}
 }
 
@@ -124,7 +239,7 @@ NetworkConnection::~NetworkConnection()
 {
 	try
 	{
-		SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a network connection: id:{}.", m_id);
+		SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a network connection: {}.", m_id);
 		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
 		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
 		{
@@ -339,39 +454,113 @@ void NetworkConnection::read_for_state(int deep)
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				auto handler = CommandHandlerManager::instance()->find_handler(m_read_buffer.header().command);
-				if (handler)
-				{
-					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}.",
-									m_id, m_read_buffer.header().command);
-					try
-					{
-						handler(*this, m_read_buffer);
-					}
-					catch (const Exception& ex)
-					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}/{}.", m_id, ex.code(), ex);
-					}
-					catch (const std::exception& ex)
-					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}.", m_id, ex.what());
-					}
-					catch (...)
-					{
-						SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error.", m_id);
-					}
-				}
-				else
-				{
-					SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown command {}.",
-									m_id, m_read_buffer.header().command);
-				}
+				trigger_transcation();
 			}
 			break;
 		}
 	}
 
 	read_for_state(++deep);
+}
+
+
+void NetworkConnection::trigger_transcation()
+{
+	try
+	{
+		int trans_id = m_read_buffer.header().trigger_trans_id;
+		int command = m_read_buffer.header().command;
+
+		if (trans_id != 0)
+		{
+			MultiplyPhaseTranscation* trans_handler =
+				MultiplyPhaseTranscationManager::instance()->find_transcation(trans_id);
+			if (trans_handler)
+			{
+				// Check the send rsponse connection is same as send request connection. Don't give change to
+				// other to interrupt not self transcation.
+				if (this == trans_handler->wait_connection() && command == trans_handler->wait_command())
+				{
+					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
+									m_id, command, trans_id, trans_handler->current_phase());
+					MultiplyPhaseTranscation::PhaseResult result = trans_handler->on_active(*this, m_read_buffer);
+					if (result == MultiplyPhaseTranscation::EXIT_TRANCATION)
+					{
+						MultiplyPhaseTranscationManager::instance()->remove_transcation(trans_id);
+						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", m_id, trans_id);
+					}
+				}
+				else
+				{
+					SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: cmd {} not fit with conn_id {}, cmd {}.",
+									m_id,
+									command,
+									trans_handler->wait_connection()->connection_id(),
+									trans_handler->wait_command());
+				}
+			}
+			else
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown trans_id {}.", m_id, trans_id);
+			}
+		}
+		else
+		{
+			auto transcation = TranscationManager::instance()->find_transcation(command);
+			if (transcation)
+			{
+				switch (transcation->trans_type)
+				{
+					case TranscationType::ONE_PHASE_TRANSCATION:
+					{
+						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}.", m_id, command);
+						OnePhaseTrancation trans_handler =
+							reinterpret_cast<OnePhaseTrancation>(transcation->trans_handler);
+						trans_handler(*this, m_read_buffer);
+						break;
+					}
+					case TranscationType::MULTIPLY_PHASE_TRANSCATION:
+					{
+						TranscationFatory trans_factory = reinterpret_cast<TranscationFatory>(transcation->trans_handler);
+						MultiplyPhaseTranscation& trans_handler =
+							MultiplyPhaseTranscationManager::instance()->register_transcation(trans_factory);
+
+						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Start trans_id {}.",
+										m_id, command, trans_handler.transcation_id());
+						trans_handler.pre_on_init(*this, m_read_buffer);
+						MultiplyPhaseTranscation::PhaseResult result = trans_handler.on_init(*this, m_read_buffer);
+						if (result == MultiplyPhaseTranscation::EXIT_TRANCATION)
+						{
+							MultiplyPhaseTranscationManager::instance()->remove_transcation(trans_handler.transcation_id());
+							SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.",
+											m_id, trans_handler.transcation_id());
+						}
+
+						break;
+					}
+					default:
+						LIGHTS_ASSERT(false && "Invalid TranscationType");
+						break;
+				}
+			}
+			else
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown command {}.", m_id, command);
+			}
+		}
+	}
+	catch (const Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}/{}.", m_id, ex.code(), ex);
+	}
+	catch (const std::exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}.", m_id, ex.what());
+	}
+	catch (...)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error.", m_id);
+	}
 }
 
 

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include <boost/algorithm/string/split.hpp>
-#include <lights/exception.h>
 #include <common/exception.h>
 #include <cmath>
 
@@ -684,6 +683,7 @@ FileTransferSession* FileTransferSessionManager::find_session(int group_id, cons
 	return &(itr->second);
 }
 
+NetworkConnection* storage_node_conn = nullptr;
 
 } // namespace resource_server
 } // namespace spaceless

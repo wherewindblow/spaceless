@@ -287,5 +287,7 @@ private:
 	int m_next_id = 1;
 };
 
+extern NetworkConnection* storage_node_conn;
+
 } // namespace resource_server
 } // namespace spaceless

@@ -16,17 +16,6 @@ namespace spaceless {
 namespace resource_server {
 namespace transcation {
 
-void convert_user(const User& server_user, protocol::User& proto_user)
-{
-	proto_user.set_uid(server_user.uid);
-	proto_user.set_username(server_user.username);
-	for (auto& group_id : server_user.group_list)
-	{
-		*proto_user.mutable_group_list()->Add() = group_id;
-	}
-}
-
-
 #define SPACELESS_COMMAND_HANDLER_BEGIN(RequestType, RsponseType) \
 	RequestType request; \
 	RsponseType rsponse; \
@@ -46,7 +35,7 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 	} \
 	\
 	send_back_msg: \
-	conn.send_protobuf(rsponse_cmd, rsponse); \
+	conn.send_back_protobuf(rsponse_cmd, rsponse); \
 	if (rsponse.result() && log_error) \
 	{ \
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), rsponse.result()); \
@@ -80,7 +69,7 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 	} \
 	\
 	send_back_msg: \
-	conn.send_protobuf(rsponse_cmd, rsponse); \
+	conn.send_back_protobuf(rsponse_cmd, rsponse); \
 	if (rsponse.result() && log_error) \
 	{ \
 		if (user == nullptr) \
@@ -93,6 +82,17 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 				conn.connection_id(), user->uid, rsponse.result()); \
 		} \
 	} \
+
+
+void convert_user(const User& server_user, protocol::User& proto_user)
+{
+	proto_user.set_uid(server_user.uid);
+	proto_user.set_username(server_user.username);
+	for (auto& group_id : server_user.group_list)
+	{
+		*proto_user.mutable_group_list()->Add() = group_id;
+	}
+}
 
 
 void on_register_user(NetworkConnection& conn, const PackageBuffer& package)
@@ -241,40 +241,7 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 			goto send_back_msg;
 		}
 
-		FileTransferSession* session = nullptr;
-		if (request.fragment().fragment_index() == 0)
-		{
-			session =
-				&FileTransferSessionManager::instance()->register_put_session(group.group_id(),
-																			  request.filename(),
-																			  request.fragment().max_fragment());
-		}
-		else
-		{
-			session = FileTransferSessionManager::instance()->find_session(group.group_id(), request.filename());
-			if (session == nullptr)
-			{
-				rsponse.set_result(-1);
-				goto send_back_msg;
-			}
-
-			if (request.fragment().max_fragment() != session->max_fragment ||
-				request.fragment().fragment_index() != session->fragment_index + 1)
-			{
-				rsponse.set_result(-1);
-				goto send_back_msg;
-			}
-			++session->fragment_index;
-		}
-
-		lights::SequenceView content(request.fragment().fragment_content());
-		bool is_append = request.fragment().fragment_index() != 0;
-		group.put_file(user->uid, request.filename(), content, is_append);
-
-		if (request.fragment().fragment_index() + 1 == request.fragment().max_fragment())
-		{
-			FileTransferSessionManager::instance()->remove_session(session->session_id);
-		}
+		storage_node_conn->send_protobuf(protocol::REQ_PUT_FILE, request);
 	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_PUT_FILE);
 }
 
@@ -289,31 +256,160 @@ void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
 			goto send_back_msg;
 		}
 
-		FileTransferSession* session =
-			FileTransferSessionManager::instance()->find_session(group.group_id(), request.filename());
-		if (session == nullptr)
-		{
-			session = &FileTransferSessionManager::instance()->register_put_session(request.group_id(),
-																					request.filename(),
-																					protocol::MAX_FRAGMENT_CONTENT_LEN);
-		}
-
-		rsponse.mutable_fragment()->set_max_fragment(session->max_fragment);
-		rsponse.mutable_fragment()->set_fragment_index(session->fragment_index);
-
-		char content[protocol::MAX_FRAGMENT_CONTENT_LEN];
-		std::size_t content_len = group.get_file(user->uid,
-					   request.filename(),
-					   {content, protocol::MAX_FRAGMENT_CONTENT_LEN},
-					   session->fragment_index * protocol::MAX_FRAGMENT_CONTENT_LEN);
-		rsponse.mutable_fragment()->set_fragment_content(content, content_len);
-
-		++session->fragment_index;
-		if (session->fragment_index >= session->max_fragment)
-		{
-			FileTransferSessionManager::instance()->remove_session(session->session_id);
-		}
+		storage_node_conn->send_protobuf(protocol::REQ_GET_FILE, request);
 	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_GET_FILE);
+}
+
+
+MultiplyPhaseTranscation* PutFileTranscation::register_transcation(int trans_id)
+{
+	return new PutFileTranscation(trans_id);
+}
+
+
+PutFileTranscation::PutFileTranscation(int trans_id) :
+	MultiplyPhaseTranscation(trans_id) {}
+
+
+MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnection& conn, const PackageBuffer& package)
+{
+	User* user = static_cast<User*>(first_connection()->get_attachment());
+	if (user == nullptr)
+	{
+		return send_back_error(-1);
+	}
+
+	try
+    {
+		package.parse_as_protobuf(m_request);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
+		if (!group.is_manager(user->uid))
+		{
+			return send_back_error(-1);
+		}
+
+		storage_node_conn->send_protobuf(protocol::REQ_PUT_FILE, m_request, transcation_id());
+		wait_next_phase(*storage_node_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
+		return WAIT_NEXT_PHASE;
+	}
+	catch (Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+						first_connection()->connection_id(), user->uid, ex);
+		return send_back_error(ex.code());
+	}
+}
+
+
+MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+{
+	User* user = static_cast<User*>(first_connection()->get_attachment());
+	if (user == nullptr)
+	{
+		return send_back_error(-1);
+	}
+
+	try
+	{
+		package.parse_as_protobuf(m_rsponse);
+		if (m_rsponse.result())
+		{
+			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+							first_connection()->connection_id(), user->uid, m_rsponse.result());
+		}
+		send_back_message(protocol::RSP_PUT_FILE, m_rsponse);
+		return EXIT_TRANCATION;
+	}
+	catch (Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+						first_connection()->connection_id(), user->uid, ex);
+		return send_back_error(ex.code());
+	}
+}
+
+
+MultiplyPhaseTranscation::PhaseResult PutFileTranscation::send_back_error(int error_code)
+{
+	m_rsponse.set_result(error_code);
+	send_back_message(protocol::RSP_PUT_FILE, m_rsponse);
+	return EXIT_TRANCATION;
+}
+
+
+MultiplyPhaseTranscation* GetFileTranscation::register_transcation(int trans_id)
+{
+	return new GetFileTranscation(trans_id);
+}
+
+
+GetFileTranscation::GetFileTranscation(int trans_id) :
+	MultiplyPhaseTranscation(trans_id) {}
+
+
+MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnection& conn, const PackageBuffer& package)
+{
+	User* user = static_cast<User*>(first_connection()->get_attachment());
+	if (user == nullptr)
+	{
+		return send_back_error(-1);
+	}
+
+	try
+	{
+		package.parse_as_protobuf(m_request);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
+		if (!group.is_member(user->uid))
+		{
+			return send_back_error(-1);
+		}
+
+		storage_node_conn->send_protobuf(protocol::REQ_GET_FILE, m_request, transcation_id());
+		wait_next_phase(*storage_node_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
+		return WAIT_NEXT_PHASE;
+	}
+	catch (Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+						first_connection()->connection_id(), user->uid, ex);
+		return send_back_error(ex.code());
+	}
+}
+
+
+MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+{
+	User* user = static_cast<User*>(first_connection()->get_attachment());
+	if (user == nullptr)
+	{
+		return send_back_error(-1);
+	}
+
+	try
+	{
+		package.parse_as_protobuf(m_rsponse);
+		if (m_rsponse.result())
+		{
+			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+							first_connection()->connection_id(), user->uid, m_rsponse.result());
+		}
+		send_back_message(protocol::RSP_GET_FILE, m_rsponse);
+		return EXIT_TRANCATION;
+	}
+	catch (Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+						first_connection()->connection_id(), user->uid, ex);
+		return send_back_error(ex.code());
+	}
+}
+
+
+MultiplyPhaseTranscation::PhaseResult GetFileTranscation::send_back_error(int error_code)
+{
+	m_rsponse.set_result(error_code);
+	send_back_message(protocol::RSP_GET_FILE, m_rsponse);
+	return EXIT_TRANCATION;
 }
 
 } // namespace transcation
