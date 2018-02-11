@@ -42,7 +42,7 @@ User& UserManager::register_user(const std::string& username, const std::string&
 
 	User new_user = { m_next_id, username, password };
 	++m_next_id;
-	auto itr = m_user_list.insert(std::make_pair(new_user.uid, new_user));
+	auto itr = m_user_list.insert(std::make_pair(new_user.user_id, new_user));
 	if (itr.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
@@ -52,9 +52,9 @@ User& UserManager::register_user(const std::string& username, const std::string&
 }
 
 
-bool UserManager::login_user(int uid, const std::string& password, NetworkConnection& conn)
+bool UserManager::login_user(int user_id, const std::string& password, NetworkConnection& conn)
 {
-	User* user = find_user(uid);
+	User* user = find_user(user_id);
 	if (!user)
 	{
 		return false;
@@ -71,15 +71,15 @@ bool UserManager::login_user(int uid, const std::string& password, NetworkConnec
 }
 
 
-void UserManager::remove_user(int uid)
+void UserManager::remove_user(int user_id)
 {
-	m_user_list.erase(uid);
+	m_user_list.erase(user_id);
 }
 
 
-User* UserManager::find_user(int uid)
+User* UserManager::find_user(int user_id)
 {
-	auto itr = m_user_list.find(uid);
+	auto itr = m_user_list.find(user_id);
 	if (itr == m_user_list.end())
 	{
 		return nullptr;
@@ -106,9 +106,9 @@ User* UserManager::find_user(const std::string& username)
 }
 
 
-User& UserManager::get_user(int uid)
+User& UserManager::get_user(int user_id)
 {
-	User* user = find_user(uid);
+	User* user = find_user(user_id);
 	if (user == nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_EXIST);
@@ -157,9 +157,9 @@ int SharingGroup::owner_id() const
 }
 
 
-void SharingGroup::put_file(int uid, const std::string& filename, lights::SequenceView file_content, bool is_append)
+void SharingGroup::put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append)
 {
-	if (!is_manager(uid))
+	if (!is_manager(user_id))
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
@@ -172,9 +172,9 @@ void SharingGroup::put_file(int uid, const std::string& filename, lights::Sequen
 }
 
 
-std::size_t SharingGroup::get_file(int uid, const std::string& filename, lights::Sequence file_content, int start_pos)
+std::size_t SharingGroup::get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos)
 {
-	if (!is_member(uid))
+	if (!is_member(user_id))
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
 	}
@@ -187,9 +187,9 @@ std::size_t SharingGroup::get_file(int uid, const std::string& filename, lights:
 }
 
 
-void SharingGroup::create_directory(int uid, const std::string& full_dir_path)
+void SharingGroup::create_directory(int user_id, const std::string& full_dir_path)
 {
-	if (!is_manager(uid))
+	if (!is_manager(user_id))
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
@@ -242,9 +242,9 @@ void SharingGroup::create_directory(int uid, const std::string& full_dir_path)
 }
 
 
-void SharingGroup::remove_directory(int uid, const std::string& full_dir_path)
+void SharingGroup::remove_directory(int user_id, const std::string& full_dir_path)
 {
-	if (!is_manager(uid))
+	if (!is_manager(user_id))
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
@@ -302,32 +302,32 @@ void SharingGroup::remove_directory(int uid, const std::string& full_dir_path)
 }
 
 
-void SharingGroup::join_group(int uid)
+void SharingGroup::join_group(int user_id)
 {
-	auto itr = std::find(m_member_list.begin(), m_member_list.end(), uid);
+	auto itr = std::find(m_member_list.begin(), m_member_list.end(), user_id);
 	if (itr != m_member_list.end())
 	{
 		return;
 	}
 
-	m_member_list.push_back(uid);
+	m_member_list.push_back(user_id);
 }
 
 
-void SharingGroup::kick_out_user(int uid)
+void SharingGroup::kick_out_user(int user_id)
 {
-	if (uid == owner_id())
+	if (user_id == owner_id())
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CANNOT_KICK_OUT_OWNER);
 	}
 
-	auto itr = std::find(m_member_list.begin(), m_member_list.end(), uid);
+	auto itr = std::find(m_member_list.begin(), m_member_list.end(), user_id);
 	if (itr != m_member_list.end())
 	{
 		m_member_list.erase(itr);
 	}
 
-	itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
+	itr = std::find(m_manager_list.begin(), m_manager_list.end(), user_id);
 	if (itr != m_manager_list.end())
 	{
 		m_manager_list.erase(itr);
@@ -347,22 +347,22 @@ const SharingGroup::UserList& SharingGroup::member_list() const
 }
 
 
-bool SharingGroup::is_manager(int uid)
+bool SharingGroup::is_manager(int user_id)
 {
-	auto itr = std::find(m_manager_list.begin(), m_manager_list.end(), uid);
+	auto itr = std::find(m_manager_list.begin(), m_manager_list.end(), user_id);
 	return itr != m_manager_list.end();
 }
 
 
-bool SharingGroup::is_member(int uid)
+bool SharingGroup::is_member(int user_id)
 {
-	auto itr = std::find(m_member_list.begin(), m_member_list.end(), uid);
+	auto itr = std::find(m_member_list.begin(), m_member_list.end(), user_id);
 	return itr != m_member_list.end();
 }
 
 const char* group_file_path = "/tmp/";
 
-SharingGroup& SharingGroupManager::register_group(int uid, const std::string& group_name)
+SharingGroup& SharingGroupManager::register_group(int user_id, const std::string& group_name)
 {
 	SharingGroup* old_group = find_group(group_name);
 	if (old_group)
@@ -371,7 +371,7 @@ SharingGroup& SharingGroupManager::register_group(int uid, const std::string& gr
 	}
 
 	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
-	SharingGroup new_group(m_next_id, group_name, uid, root_dir.file_id);
+	SharingGroup new_group(m_next_id, group_name, user_id, root_dir.file_id);
 	++m_next_id;
 
 	auto itr = m_group_list.insert(std::make_pair(new_group.group_id(), new_group));
@@ -384,10 +384,10 @@ SharingGroup& SharingGroupManager::register_group(int uid, const std::string& gr
 }
 
 
-void SharingGroupManager::remove_group(int uid, int group_id)
+void SharingGroupManager::remove_group(int user_id, int group_id)
 {
 	SharingGroup& group = get_group(group_id);
-	if (group.owner_id() != uid)
+	if (group.owner_id() != user_id)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_OWNER);
 	}

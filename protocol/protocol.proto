@@ -43,7 +43,7 @@ enum MiscellaneousType
 
 message User
 {
-    int32 uid = 1;
+    int32 user_id = 1;
     string username = 2;
     repeated int32 group_list = 3;
 }
@@ -62,7 +62,7 @@ message RspRegisterUser
 
 message ReqLoginUser
 {
-    int32 uid = 1;
+    int32 user_id = 1;
     string password = 2;
 }
 
@@ -73,7 +73,7 @@ message RspLoginUser
 
 message ReqRemoveUser
 {
-    int32 uid = 1;
+    int32 user_id = 1;
 }
 
 message RspRemoveUser
@@ -83,7 +83,7 @@ message RspRemoveUser
 
 message ReqFindUser
 {
-    int32 uid = 1;
+    int32 user_id = 1;
     string username = 2;
 }
 
@@ -149,7 +149,7 @@ message RspJoinGroup
 message ReqKickOutUser
 {
     int32 group_id = 1;
-    int32 uid = 2;
+    int32 user_id = 2;
 }
 
 message RspKickOutUser

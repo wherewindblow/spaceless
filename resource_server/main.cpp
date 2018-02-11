@@ -27,7 +27,7 @@ int main(int argc, const char* argv[])
 		storage_node_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10241);
 
 		User& root = UserManager::instance()->register_user(ROOT_USER_NAME, ROOT_USER_PWD);
-		ROOT_USER_UID = root.uid;
+		ROOT_USER_UID = root.user_id;
 
 		std::pair<int, OnePhaseTrancation> handlers[] = {
 			{protocol::REQ_REGISTER_USER, transcation::on_register_user},

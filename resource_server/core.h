@@ -51,7 +51,7 @@ enum
 
 struct User
 {
-	int uid;
+	int user_id;
 	std::string username;
 	std::string password;
 	std::vector<int> group_list;
@@ -61,7 +61,7 @@ struct User
 
 inline bool operator== (const User& lhs, const User& rhs)
 {
-	return lhs.uid == rhs.uid;
+	return lhs.user_id == rhs.user_id;
 }
 
 
@@ -72,15 +72,15 @@ public:
 
 	User& register_user(const std::string& username, const std::string& password);
 
-	bool login_user(int uid, const std::string& password, NetworkConnection& conn);
+	bool login_user(int user_id, const std::string& password, NetworkConnection& conn);
 
-	void remove_user(int uid);
+	void remove_user(int user_id);
 
-	User* find_user(int uid);
+	User* find_user(int user_id);
 
 	User* find_user(const std::string& username);
 
-	User& get_user(int uid);
+	User& get_user(int user_id);
 
 	User& get_user(const std::string& username);
 
@@ -104,35 +104,35 @@ public:
 
 	int owner_id() const;
 
-	void put_file(int uid, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
+	void put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
 
-	std::size_t get_file(int uid, const std::string& filename, lights::Sequence file_content, int start_pos = 0);
+	std::size_t get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos = 0);
 
 	/**
 	 * Create all directory by directory path. If a parent directory is not create will automatically create.
-	 * @param uid  User id.
+	 * @param user_id  User id.
 	 * @param full_dir_path Full path of directory. Like "this/is/a/path".
 	 */
-	void create_directory(int uid, const std::string& full_dir_path);
+	void create_directory(int user_id, const std::string& full_dir_path);
 
 	/**
 	 * Remove last directory of directory path.
-	 * @param uid User id.
+	 * @param user_id User id.
 	 * @param full_dir_path Full path of directory. Like "this/is/a/path".
 	 */
-	void remove_directory(int uid, const std::string& full_dir_path);
+	void remove_directory(int user_id, const std::string& full_dir_path);
 
-	void join_group(int uid);
+	void join_group(int user_id);
 
-	void kick_out_user(int uid);
+	void kick_out_user(int user_id);
 
 	const UserList& manager_list() const;
 
 	const UserList& member_list() const;
 
-	bool is_manager(int uid);
+	bool is_manager(int user_id);
 
-	bool is_member(int uid);
+	bool is_member(int user_id);
 
 private:
 	int m_group_id;
@@ -156,9 +156,9 @@ class SharingGroupManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(SharingGroupManager);
 
-	SharingGroup& register_group(int uid, const std::string& group_name);
+	SharingGroup& register_group(int user_id, const std::string& group_name);
 
-	void remove_group(int uid, int group_id);
+	void remove_group(int user_id, int group_id);
 
 	SharingGroup* find_group(int group_id);
 

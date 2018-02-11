@@ -282,11 +282,11 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::std::string* release_username();
   void set_allocated_username(::std::string* username);
 
-  // int32 uid = 1;
-  void clear_uid();
-  static const int kUidFieldNumber = 1;
-  ::google::protobuf::int32 uid() const;
-  void set_uid(::google::protobuf::int32 value);
+  // int32 user_id = 1;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.User)
  private:
@@ -295,7 +295,7 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 > group_list_;
   mutable int _group_list_cached_byte_size_;
   ::google::protobuf::internal::ArenaStringPtr username_;
-  ::google::protobuf::int32 uid_;
+  ::google::protobuf::int32 user_id_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
@@ -581,18 +581,18 @@ class ReqLoginUser : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::std::string* release_password();
   void set_allocated_password(::std::string* password);
 
-  // int32 uid = 1;
-  void clear_uid();
-  static const int kUidFieldNumber = 1;
-  ::google::protobuf::int32 uid() const;
-  void set_uid(::google::protobuf::int32 value);
+  // int32 user_id = 1;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqLoginUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr password_;
-  ::google::protobuf::int32 uid_;
+  ::google::protobuf::int32 user_id_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
@@ -748,17 +748,17 @@ class ReqRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // int32 uid = 1;
-  void clear_uid();
-  static const int kUidFieldNumber = 1;
-  ::google::protobuf::int32 uid() const;
-  void set_uid(::google::protobuf::int32 value);
+  // int32 user_id = 1;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqRemoveUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 uid_;
+  ::google::protobuf::int32 user_id_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
@@ -928,18 +928,18 @@ class ReqFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::std::string* release_username();
   void set_allocated_username(::std::string* username);
 
-  // int32 uid = 1;
-  void clear_uid();
-  static const int kUidFieldNumber = 1;
-  ::google::protobuf::int32 uid() const;
-  void set_uid(::google::protobuf::int32 value);
+  // int32 user_id = 1;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 1;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqFindUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr username_;
-  ::google::protobuf::int32 uid_;
+  ::google::protobuf::int32 user_id_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
@@ -1955,18 +1955,18 @@ class ReqKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
   ::google::protobuf::int32 group_id() const;
   void set_group_id(::google::protobuf::int32 value);
 
-  // int32 uid = 2;
-  void clear_uid();
-  static const int kUidFieldNumber = 2;
-  ::google::protobuf::int32 uid() const;
-  void set_uid(::google::protobuf::int32 value);
+  // int32 user_id = 2;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 2;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqKickOutUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::int32 group_id_;
-  ::google::protobuf::int32 uid_;
+  ::google::protobuf::int32 user_id_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
 };
@@ -2548,18 +2548,18 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // User
 
-// int32 uid = 1;
-inline void User::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+inline void User::clear_user_id() {
+  user_id_ = 0;
 }
-inline ::google::protobuf::int32 User::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.User.uid)
-  return uid_;
+inline ::google::protobuf::int32 User::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.User.user_id)
+  return user_id_;
 }
-inline void User::set_uid(::google::protobuf::int32 value) {
+inline void User::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.User.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.User.user_id)
 }
 
 // string username = 2;
@@ -2813,18 +2813,18 @@ inline void RspRegisterUser::set_allocated_user(::spaceless::protocol::User* use
 
 // ReqLoginUser
 
-// int32 uid = 1;
-inline void ReqLoginUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+inline void ReqLoginUser::clear_user_id() {
+  user_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqLoginUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqLoginUser.uid)
-  return uid_;
+inline ::google::protobuf::int32 ReqLoginUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqLoginUser.user_id)
+  return user_id_;
 }
-inline void ReqLoginUser::set_uid(::google::protobuf::int32 value) {
+inline void ReqLoginUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqLoginUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqLoginUser.user_id)
 }
 
 // string password = 2;
@@ -2901,18 +2901,18 @@ inline void RspLoginUser::set_result(::google::protobuf::int32 value) {
 
 // ReqRemoveUser
 
-// int32 uid = 1;
-inline void ReqRemoveUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+inline void ReqRemoveUser::clear_user_id() {
+  user_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqRemoveUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqRemoveUser.uid)
-  return uid_;
+inline ::google::protobuf::int32 ReqRemoveUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqRemoveUser.user_id)
+  return user_id_;
 }
-inline void ReqRemoveUser::set_uid(::google::protobuf::int32 value) {
+inline void ReqRemoveUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqRemoveUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqRemoveUser.user_id)
 }
 
 // -------------------------------------------------------------------
@@ -2937,18 +2937,18 @@ inline void RspRemoveUser::set_result(::google::protobuf::int32 value) {
 
 // ReqFindUser
 
-// int32 uid = 1;
-inline void ReqFindUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+inline void ReqFindUser::clear_user_id() {
+  user_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqFindUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqFindUser.uid)
-  return uid_;
+inline ::google::protobuf::int32 ReqFindUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqFindUser.user_id)
+  return user_id_;
 }
-inline void ReqFindUser::set_uid(::google::protobuf::int32 value) {
+inline void ReqFindUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqFindUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqFindUser.user_id)
 }
 
 // string username = 2;
@@ -3523,18 +3523,18 @@ inline void ReqKickOutUser::set_group_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.ReqKickOutUser.group_id)
 }
 
-// int32 uid = 2;
-inline void ReqKickOutUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 2;
+inline void ReqKickOutUser::clear_user_id() {
+  user_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqKickOutUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqKickOutUser.uid)
-  return uid_;
+inline ::google::protobuf::int32 ReqKickOutUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqKickOutUser.user_id)
+  return user_id_;
 }
-inline void ReqKickOutUser::set_uid(::google::protobuf::int32 value) {
+inline void ReqKickOutUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqKickOutUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqKickOutUser.user_id)
 }
 
 // -------------------------------------------------------------------

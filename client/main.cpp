@@ -97,28 +97,28 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		}
 		else if (func == "login_user")
 		{
-			int uid;
+			int user_id;
 			std::string password;
-			std::cout << "Please input uid and password." << std::endl;
-			std::cin >> uid >> password;
-			UserManager::instance()->login_user(uid, password);
+			std::cout << "Please input user id and password." << std::endl;
+			std::cin >> user_id >> password;
+			UserManager::instance()->login_user(user_id, password);
 		}
 		else if (func == "remove_user")
 		{
-			int uid;
-			std::cout << "Please input uid." << std::endl;
-			std::cin >> uid;
-			UserManager::instance()->remove_user(uid);
+			int user_id;
+			std::cout << "Please input user_id." << std::endl;
+			std::cin >> user_id;
+			UserManager::instance()->remove_user(user_id);
 		}
 		else if (func == "find_user")
 		{
 			std::string input;
-			std::cout << "Please input uid or username." << std::endl;
+			std::cout << "Please input user id or username." << std::endl;
 			std::cin >> input;
 			try
 			{
-				int uid = stoi(input);
-				UserManager::instance()->find_user(uid);
+				int user_id = stoi(input);
+				UserManager::instance()->find_user(user_id);
 			}
 			catch (const std::exception&)
 			{
@@ -163,10 +163,10 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		}
 		else if (func == "kick_out_user")
 		{
-			int group_id, uid;
+			int group_id, user_id;
 			std::cout << "Please input group id and user id." << std::endl;
-			std::cin >> group_id >> uid;
-			SharingGroupManager::instance()->kick_out_user(group_id, uid);
+			std::cin >> group_id >> user_id;
+			SharingGroupManager::instance()->kick_out_user(group_id, user_id);
 		}
 		else if (func == "put_file")
 		{
@@ -243,7 +243,7 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			}
 			else
 			{
-				std::cout << lights::format("Your uid is {}.", rsponse.user().uid()) << std::endl;
+				std::cout << lights::format("Your user id is {}.", rsponse.user().user_id()) << std::endl;
 			}
 			break;
 		}
@@ -277,8 +277,8 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			}
 			else
 			{
-				std::cout << lights::format("Your uid is {} and username is {}.",
-											rsponse.user().uid(), rsponse.user().username())
+				std::cout << lights::format("Your user id is {} and username is {}.",
+											rsponse.user().user_id(), rsponse.user().username())
 						  << std::endl;
 			}
 			break;

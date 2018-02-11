@@ -32,7 +32,7 @@ SharingFileManager::FileList SharingFileManager::list_file(const std::string& pa
 	{
 		file_list.push_back(itr.name());
 	}
-	return spaceless::storage_node::SharingFileManager::FileList();
+	return file_list;
 }
 
 
@@ -46,6 +46,7 @@ void SharingFileManager::remove_diretory(const std::string& path)
 {
 
 }
+
 
 void SharingFileManager::put_file(const std::string& filename, lights::SequenceView file_content, bool is_append)
 {
@@ -63,6 +64,7 @@ std::size_t SharingFileManager::get_file(const std::string& filename, lights::Se
 	return file.read(file_content);
 	// TODO Need to optimize.
 }
+
 
 const std::string& SharingFileManager::get_sharing_file_path() const
 {
@@ -117,19 +119,21 @@ FileTransferSession& FileTransferSessionManager::register_put_session(int group_
 	return session;
 }
 
+
 FileTransferSession& FileTransferSessionManager::register_get_session(int group_id,
 																	  const std::string& filename,
 																	  int fragment_content_len)
 {
 	FileTransferSession& session = register_session(group_id, filename);
 
-	std::string local_filename = SharingFileManager::instance()->get_sharing_file_path() + filename;
+	std::string local_filename = SharingFileManager::instance()->get_absolute_path(filename);
 	lights::FileStream file(local_filename, "r");
 	float file_size = static_cast<float>(file.size());
 	int max_fragment = static_cast<int>(std::ceil(file_size / fragment_content_len));
 	session.max_fragment = max_fragment;
 	return session;
 }
+
 
 void FileTransferSessionManager::remove_session(int session_id)
 {

@@ -27,27 +27,27 @@ void UserManager::register_user(const std::string& username, const std::string& 
 }
 
 
-void UserManager::login_user(int uid, const std::string& password)
+void UserManager::login_user(int user_id, const std::string& password)
 {
 	protocol::ReqLoginUser request;
-	request.set_uid(uid);
+	request.set_user_id(user_id);
 	request.set_password(password);
 	network_conn->send_protobuf(protocol::REQ_LOGIN_USER, request);
 }
 
 
-void UserManager::remove_user(int uid)
+void UserManager::remove_user(int user_id)
 {
 	protocol::ReqRemoveUser request;
-	request.set_uid(uid);
+	request.set_user_id(user_id);
 	network_conn->send_protobuf(protocol::REQ_REMOVE_USER, request);
 }
 
 
-void UserManager::find_user(int uid)
+void UserManager::find_user(int user_id)
 {
 	protocol::ReqFindUser request;
-	request.set_uid(uid);
+	request.set_user_id(user_id);
 	network_conn->send_protobuf(protocol::REQ_FIND_USER, request);
 }
 
@@ -100,11 +100,11 @@ void SharingGroupManager::join_group(int group_id)
 }
 
 
-void SharingGroupManager::kick_out_user(int group_id, int uid)
+void SharingGroupManager::kick_out_user(int group_id, int user_id)
 {
 	protocol::ReqKickOutUser request;
 	request.set_group_id(group_id);
-	request.set_uid(uid);
+	request.set_user_id(user_id);
 	network_conn->send_protobuf(protocol::REQ_KICK_OUT_USER, request);
 }
 

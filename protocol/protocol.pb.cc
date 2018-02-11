@@ -85,7 +85,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, uid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, user_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, username_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, group_list_),
   ~0u,  // no _has_bits_
@@ -104,7 +104,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqLoginUser, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqLoginUser, uid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqLoginUser, user_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqLoginUser, password_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspLoginUser, _internal_metadata_),
@@ -115,7 +115,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqRemoveUser, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqRemoveUser, uid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqRemoveUser, user_id_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspRemoveUser, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -125,7 +125,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqFindUser, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqFindUser, uid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqFindUser, user_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqFindUser, username_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspFindUser, _internal_metadata_),
@@ -191,7 +191,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqKickOutUser, group_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqKickOutUser, uid_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqKickOutUser, user_id_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspKickOutUser, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -410,60 +410,61 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\016protocol.proto\022\022spaceless.protocol\"9\n\004"
-      "User\022\013\n\003uid\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\022\n\ng"
-      "roup_list\030\003 \003(\005\"5\n\017ReqRegisterUser\022\020\n\010us"
-      "ername\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\"I\n\017RspReg"
-      "isterUser\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 \001(\0132"
-      "\030.spaceless.protocol.User\"-\n\014ReqLoginUse"
-      "r\022\013\n\003uid\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"\036\n\014RspL"
-      "oginUser\022\016\n\006result\030\001 \001(\005\"\034\n\rReqRemoveUse"
-      "r\022\013\n\003uid\030\001 \001(\005\"\037\n\rRspRemoveUser\022\016\n\006resul"
-      "t\030\001 \001(\005\",\n\013ReqFindUser\022\013\n\003uid\030\001 \001(\005\022\020\n\010u"
-      "sername\030\002 \001(\t\"E\n\013RspFindUser\022\016\n\006result\030\001"
-      " \001(\005\022&\n\004user\030\002 \001(\0132\030.spaceless.protocol."
-      "User\"\206\001\n\014SharingGroup\022\020\n\010group_id\030\001 \001(\005\022"
-      "\022\n\ngroup_name\030\002 \001(\t\022\020\n\010owner_id\030\003 \001(\005\022\023\n"
-      "\013root_dir_id\030\004 \001(\005\022\024\n\014manager_list\030\005 \003(\005"
-      "\022\023\n\013member_list\030\006 \003(\005\"&\n\020ReqRegisterGrou"
-      "p\022\022\n\ngroup_name\030\001 \001(\t\"4\n\020RspRegisterGrou"
-      "p\022\016\n\006result\030\001 \001(\005\022\020\n\010group_id\030\002 \001(\005\"\"\n\016R"
-      "eqRemoveGroup\022\020\n\010group_id\030\001 \001(\005\" \n\016RspRe"
-      "moveGroup\022\016\n\006result\030\001 \001(\010\"4\n\014ReqFindGrou"
-      "p\022\020\n\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 \001(\t\""
-      "O\n\014RspFindGroup\022\016\n\006result\030\001 \001(\005\022/\n\005group"
-      "\030\002 \001(\0132 .spaceless.protocol.SharingGroup"
-      "\" \n\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\"\036\n\014Rs"
-      "pJoinGroup\022\016\n\006result\030\001 \001(\005\"/\n\016ReqKickOut"
-      "User\022\020\n\010group_id\030\001 \001(\005\022\013\n\003uid\030\002 \001(\005\" \n\016R"
-      "spKickOutUser\022\016\n\006result\030\001 \001(\005\"V\n\014FileFra"
-      "gment\022\024\n\014max_fragment\030\001 \001(\005\022\026\n\016fragment_"
-      "index\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\t\"d\n"
-      "\nReqPutFile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filenam"
-      "e\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .spaceless.pr"
-      "otocol.FileFragment\"\034\n\nRspPutFile\022\016\n\006res"
-      "ult\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010group_id\030\001 \001("
-      "\005\022\020\n\010filename\030\002 \001(\t\"P\n\nRspGetFile\022\016\n\006res"
-      "ult\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 .spaceless."
-      "protocol.FileFragment*\200\004\n\013CommandType\022\023\n"
-      "\017INVALID_COMMAND\020\000\022\026\n\021REQ_REGISTER_USER\020"
-      "\350\007\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016REQ_LOGIN_"
-      "USER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024\n\017REQ_REMO"
-      "VE_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020\356\007\022\022\n\rREQ_"
-      "FIND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020\360\007\022\027\n\022REQ_"
-      "REGISTER_GROUP\020\325\010\022\027\n\022RSP_REGISTER_GROUP\020"
-      "\326\010\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020RSP_REMOVE_"
-      "GROUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022\023\n\016RSP_FIN"
-      "D_GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333\010\022\023\n\016RSP_J"
-      "OIN_GROUP\020\334\010\022\026\n\021REQ_KICK_OUT_USER\020\335\010\022\026\n\021"
-      "RSP_KICK_OUT_USER\020\336\010\022\021\n\014REQ_PUT_FILE\020\377\010\022"
-      "\021\n\014RSP_PUT_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022\021\n"
-      "\014RSP_GET_FILE\020\202\t*N\n\021MiscellaneousType\022\031\n"
-      "\025INVALID_MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT"
-      "_CONTENT_LEN\020\320\206\003b\006proto3"
+      "\n\016protocol.proto\022\022spaceless.protocol\"=\n\004"
+      "User\022\017\n\007user_id\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022"
+      "\022\n\ngroup_list\030\003 \003(\005\"5\n\017ReqRegisterUser\022\020"
+      "\n\010username\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\"I\n\017Rs"
+      "pRegisterUser\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 "
+      "\001(\0132\030.spaceless.protocol.User\"1\n\014ReqLogi"
+      "nUser\022\017\n\007user_id\030\001 \001(\005\022\020\n\010password\030\002 \001(\t"
+      "\"\036\n\014RspLoginUser\022\016\n\006result\030\001 \001(\005\" \n\rReqR"
+      "emoveUser\022\017\n\007user_id\030\001 \001(\005\"\037\n\rRspRemoveU"
+      "ser\022\016\n\006result\030\001 \001(\005\"0\n\013ReqFindUser\022\017\n\007us"
+      "er_id\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\"E\n\013RspFind"
+      "User\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spa"
+      "celess.protocol.User\"\206\001\n\014SharingGroup\022\020\n"
+      "\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 \001(\t\022\020\n\010o"
+      "wner_id\030\003 \001(\005\022\023\n\013root_dir_id\030\004 \001(\005\022\024\n\014ma"
+      "nager_list\030\005 \003(\005\022\023\n\013member_list\030\006 \003(\005\"&\n"
+      "\020ReqRegisterGroup\022\022\n\ngroup_name\030\001 \001(\t\"4\n"
+      "\020RspRegisterGroup\022\016\n\006result\030\001 \001(\005\022\020\n\010gro"
+      "up_id\030\002 \001(\005\"\"\n\016ReqRemoveGroup\022\020\n\010group_i"
+      "d\030\001 \001(\005\" \n\016RspRemoveGroup\022\016\n\006result\030\001 \001("
+      "\010\"4\n\014ReqFindGroup\022\020\n\010group_id\030\001 \001(\005\022\022\n\ng"
+      "roup_name\030\002 \001(\t\"O\n\014RspFindGroup\022\016\n\006resul"
+      "t\030\001 \001(\005\022/\n\005group\030\002 \001(\0132 .spaceless.proto"
+      "col.SharingGroup\" \n\014ReqJoinGroup\022\020\n\010grou"
+      "p_id\030\001 \001(\005\"\036\n\014RspJoinGroup\022\016\n\006result\030\001 \001"
+      "(\005\"3\n\016ReqKickOutUser\022\020\n\010group_id\030\001 \001(\005\022\017"
+      "\n\007user_id\030\002 \001(\005\" \n\016RspKickOutUser\022\016\n\006res"
+      "ult\030\001 \001(\005\"V\n\014FileFragment\022\024\n\014max_fragmen"
+      "t\030\001 \001(\005\022\026\n\016fragment_index\030\002 \001(\005\022\030\n\020fragm"
+      "ent_content\030\003 \001(\t\"d\n\nReqPutFile\022\020\n\010group"
+      "_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\0222\n\010fragment\030"
+      "\003 \001(\0132 .spaceless.protocol.FileFragment\""
+      "\034\n\nRspPutFile\022\016\n\006result\030\001 \001(\005\"0\n\nReqGetF"
+      "ile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\""
+      "P\n\nRspGetFile\022\016\n\006result\030\001 \001(\005\0222\n\010fragmen"
+      "t\030\002 \001(\0132 .spaceless.protocol.FileFragmen"
+      "t*\200\004\n\013CommandType\022\023\n\017INVALID_COMMAND\020\000\022\026"
+      "\n\021REQ_REGISTER_USER\020\350\007\022\026\n\021RSP_REGISTER_U"
+      "SER\020\352\007\022\023\n\016REQ_LOGIN_USER\020\353\007\022\023\n\016RSP_LOGIN"
+      "_USER\020\354\007\022\024\n\017REQ_REMOVE_USER\020\355\007\022\024\n\017RSP_RE"
+      "MOVE_USER\020\356\007\022\022\n\rREQ_FIND_USER\020\357\007\022\022\n\rRSP_"
+      "FIND_USER\020\360\007\022\027\n\022REQ_REGISTER_GROUP\020\325\010\022\027\n"
+      "\022RSP_REGISTER_GROUP\020\326\010\022\025\n\020REQ_REMOVE_GRO"
+      "UP\020\327\010\022\025\n\020RSP_REMOVE_GROUP\020\330\010\022\023\n\016REQ_FIND"
+      "_GROUP\020\331\010\022\023\n\016RSP_FIND_GROUP\020\332\010\022\023\n\016REQ_JO"
+      "IN_GROUP\020\333\010\022\023\n\016RSP_JOIN_GROUP\020\334\010\022\026\n\021REQ_"
+      "KICK_OUT_USER\020\335\010\022\026\n\021RSP_KICK_OUT_USER\020\336\010"
+      "\022\021\n\014REQ_PUT_FILE\020\377\010\022\021\n\014RSP_PUT_FILE\020\200\t\022\021"
+      "\n\014REQ_GET_FILE\020\201\t\022\021\n\014RSP_GET_FILE\020\202\t*N\n\021"
+      "MiscellaneousType\022\031\n\025INVALID_MISCELLANEO"
+      "US\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_LEN\020\320\206\003b\006pr"
+      "oto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2024);
+      descriptor, 2044);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -535,7 +536,7 @@ bool MiscellaneousType_IsValid(int value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int User::kUidFieldNumber;
+const int User::kUserIdFieldNumber;
 const int User::kUsernameFieldNumber;
 const int User::kGroupListFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -558,13 +559,13 @@ User::User(const User& from)
   if (from.username().size() > 0) {
     username_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.username_);
   }
-  uid_ = from.uid_;
+  user_id_ = from.user_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.User)
 }
 
 void User::SharedCtor() {
   username_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  uid_ = 0;
+  user_id_ = 0;
   _cached_size_ = 0;
 }
 
@@ -604,7 +605,7 @@ void User::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.User)
   group_list_.Clear();
   username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  uid_ = 0;
+  user_id_ = 0;
 }
 
 bool User::MergePartialFromCodedStream(
@@ -617,13 +618,13 @@ bool User::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 uid = 1;
+      // int32 user_id = 1;
       case 1: {
         if (tag == 8u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &uid_)));
+                 input, &user_id_)));
         } else {
           goto handle_unusual;
         }
@@ -685,9 +686,9 @@ failure:
 void User::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:spaceless.protocol.User)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->user_id(), output);
   }
 
   // string username = 2;
@@ -717,9 +718,9 @@ void User::SerializeWithCachedSizes(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.User)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->user_id(), target);
   }
 
   // string username = 2;
@@ -777,11 +778,11 @@ size_t User::ByteSizeLong() const {
         this->username());
   }
 
-  // int32 uid = 1;
-  if (this->uid() != 0) {
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->uid());
+        this->user_id());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -815,8 +816,8 @@ void User::MergeFrom(const User& from) {
 
     username_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.username_);
   }
-  if (from.uid() != 0) {
-    set_uid(from.uid());
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
   }
 }
 
@@ -845,7 +846,7 @@ void User::Swap(User* other) {
 void User::InternalSwap(User* other) {
   group_list_.UnsafeArenaSwap(&other->group_list_);
   username_.Swap(&other->username_);
-  std::swap(uid_, other->uid_);
+  std::swap(user_id_, other->user_id_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -857,18 +858,18 @@ void User::InternalSwap(User* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // User
 
-// int32 uid = 1;
-void User::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+void User::clear_user_id() {
+  user_id_ = 0;
 }
-::google::protobuf::int32 User::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.User.uid)
-  return uid_;
+::google::protobuf::int32 User::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.User.user_id)
+  return user_id_;
 }
-void User::set_uid(::google::protobuf::int32 value) {
+void User::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.User.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.User.user_id)
 }
 
 // string username = 2;
@@ -1660,7 +1661,7 @@ void RspRegisterUser::set_allocated_user(::spaceless::protocol::User* user) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ReqLoginUser::kUidFieldNumber;
+const int ReqLoginUser::kUserIdFieldNumber;
 const int ReqLoginUser::kPasswordFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -1681,13 +1682,13 @@ ReqLoginUser::ReqLoginUser(const ReqLoginUser& from)
   if (from.password().size() > 0) {
     password_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.password_);
   }
-  uid_ = from.uid_;
+  user_id_ = from.user_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ReqLoginUser)
 }
 
 void ReqLoginUser::SharedCtor() {
   password_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  uid_ = 0;
+  user_id_ = 0;
   _cached_size_ = 0;
 }
 
@@ -1726,7 +1727,7 @@ ReqLoginUser* ReqLoginUser::New(::google::protobuf::Arena* arena) const {
 void ReqLoginUser::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.ReqLoginUser)
   password_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  uid_ = 0;
+  user_id_ = 0;
 }
 
 bool ReqLoginUser::MergePartialFromCodedStream(
@@ -1739,13 +1740,13 @@ bool ReqLoginUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 uid = 1;
+      // int32 user_id = 1;
       case 1: {
         if (tag == 8u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &uid_)));
+                 input, &user_id_)));
         } else {
           goto handle_unusual;
         }
@@ -1791,9 +1792,9 @@ failure:
 void ReqLoginUser::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:spaceless.protocol.ReqLoginUser)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->user_id(), output);
   }
 
   // string password = 2;
@@ -1813,9 +1814,9 @@ void ReqLoginUser::SerializeWithCachedSizes(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.ReqLoginUser)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->user_id(), target);
   }
 
   // string password = 2;
@@ -1844,11 +1845,11 @@ size_t ReqLoginUser::ByteSizeLong() const {
         this->password());
   }
 
-  // int32 uid = 1;
-  if (this->uid() != 0) {
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->uid());
+        this->user_id());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -1881,8 +1882,8 @@ void ReqLoginUser::MergeFrom(const ReqLoginUser& from) {
 
     password_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.password_);
   }
-  if (from.uid() != 0) {
-    set_uid(from.uid());
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
   }
 }
 
@@ -1910,7 +1911,7 @@ void ReqLoginUser::Swap(ReqLoginUser* other) {
 }
 void ReqLoginUser::InternalSwap(ReqLoginUser* other) {
   password_.Swap(&other->password_);
-  std::swap(uid_, other->uid_);
+  std::swap(user_id_, other->user_id_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -1922,18 +1923,18 @@ void ReqLoginUser::InternalSwap(ReqLoginUser* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // ReqLoginUser
 
-// int32 uid = 1;
-void ReqLoginUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+void ReqLoginUser::clear_user_id() {
+  user_id_ = 0;
 }
-::google::protobuf::int32 ReqLoginUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqLoginUser.uid)
-  return uid_;
+::google::protobuf::int32 ReqLoginUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqLoginUser.user_id)
+  return user_id_;
 }
-void ReqLoginUser::set_uid(::google::protobuf::int32 value) {
+void ReqLoginUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqLoginUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqLoginUser.user_id)
 }
 
 // string password = 2;
@@ -2218,7 +2219,7 @@ void RspLoginUser::set_result(::google::protobuf::int32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ReqRemoveUser::kUidFieldNumber;
+const int ReqRemoveUser::kUserIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 ReqRemoveUser::ReqRemoveUser()
@@ -2234,12 +2235,12 @@ ReqRemoveUser::ReqRemoveUser(const ReqRemoveUser& from)
       _internal_metadata_(NULL),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  uid_ = from.uid_;
+  user_id_ = from.user_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ReqRemoveUser)
 }
 
 void ReqRemoveUser::SharedCtor() {
-  uid_ = 0;
+  user_id_ = 0;
   _cached_size_ = 0;
 }
 
@@ -2276,7 +2277,7 @@ ReqRemoveUser* ReqRemoveUser::New(::google::protobuf::Arena* arena) const {
 
 void ReqRemoveUser::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.ReqRemoveUser)
-  uid_ = 0;
+  user_id_ = 0;
 }
 
 bool ReqRemoveUser::MergePartialFromCodedStream(
@@ -2289,13 +2290,13 @@ bool ReqRemoveUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 uid = 1;
+      // int32 user_id = 1;
       case 1: {
         if (tag == 8u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &uid_)));
+                 input, &user_id_)));
         } else {
           goto handle_unusual;
         }
@@ -2326,9 +2327,9 @@ failure:
 void ReqRemoveUser::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:spaceless.protocol.ReqRemoveUser)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->user_id(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:spaceless.protocol.ReqRemoveUser)
@@ -2338,9 +2339,9 @@ void ReqRemoveUser::SerializeWithCachedSizes(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.ReqRemoveUser)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->user_id(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.ReqRemoveUser)
@@ -2351,11 +2352,11 @@ size_t ReqRemoveUser::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.ReqRemoveUser)
   size_t total_size = 0;
 
-  // int32 uid = 1;
-  if (this->uid() != 0) {
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->uid());
+        this->user_id());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -2384,8 +2385,8 @@ void ReqRemoveUser::MergeFrom(const ReqRemoveUser& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.ReqRemoveUser)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  if (from.uid() != 0) {
-    set_uid(from.uid());
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
   }
 }
 
@@ -2412,7 +2413,7 @@ void ReqRemoveUser::Swap(ReqRemoveUser* other) {
   InternalSwap(other);
 }
 void ReqRemoveUser::InternalSwap(ReqRemoveUser* other) {
-  std::swap(uid_, other->uid_);
+  std::swap(user_id_, other->user_id_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -2424,18 +2425,18 @@ void ReqRemoveUser::InternalSwap(ReqRemoveUser* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // ReqRemoveUser
 
-// int32 uid = 1;
-void ReqRemoveUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+void ReqRemoveUser::clear_user_id() {
+  user_id_ = 0;
 }
-::google::protobuf::int32 ReqRemoveUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqRemoveUser.uid)
-  return uid_;
+::google::protobuf::int32 ReqRemoveUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqRemoveUser.user_id)
+  return user_id_;
 }
-void ReqRemoveUser::set_uid(::google::protobuf::int32 value) {
+void ReqRemoveUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqRemoveUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqRemoveUser.user_id)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2668,7 +2669,7 @@ void RspRemoveUser::set_result(::google::protobuf::int32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ReqFindUser::kUidFieldNumber;
+const int ReqFindUser::kUserIdFieldNumber;
 const int ReqFindUser::kUsernameFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -2689,13 +2690,13 @@ ReqFindUser::ReqFindUser(const ReqFindUser& from)
   if (from.username().size() > 0) {
     username_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.username_);
   }
-  uid_ = from.uid_;
+  user_id_ = from.user_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ReqFindUser)
 }
 
 void ReqFindUser::SharedCtor() {
   username_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  uid_ = 0;
+  user_id_ = 0;
   _cached_size_ = 0;
 }
 
@@ -2734,7 +2735,7 @@ ReqFindUser* ReqFindUser::New(::google::protobuf::Arena* arena) const {
 void ReqFindUser::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.ReqFindUser)
   username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  uid_ = 0;
+  user_id_ = 0;
 }
 
 bool ReqFindUser::MergePartialFromCodedStream(
@@ -2747,13 +2748,13 @@ bool ReqFindUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 uid = 1;
+      // int32 user_id = 1;
       case 1: {
         if (tag == 8u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &uid_)));
+                 input, &user_id_)));
         } else {
           goto handle_unusual;
         }
@@ -2799,9 +2800,9 @@ failure:
 void ReqFindUser::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:spaceless.protocol.ReqFindUser)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->uid(), output);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->user_id(), output);
   }
 
   // string username = 2;
@@ -2821,9 +2822,9 @@ void ReqFindUser::SerializeWithCachedSizes(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic;  // Unused
   // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.ReqFindUser)
-  // int32 uid = 1;
-  if (this->uid() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->uid(), target);
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->user_id(), target);
   }
 
   // string username = 2;
@@ -2852,11 +2853,11 @@ size_t ReqFindUser::ByteSizeLong() const {
         this->username());
   }
 
-  // int32 uid = 1;
-  if (this->uid() != 0) {
+  // int32 user_id = 1;
+  if (this->user_id() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->uid());
+        this->user_id());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -2889,8 +2890,8 @@ void ReqFindUser::MergeFrom(const ReqFindUser& from) {
 
     username_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.username_);
   }
-  if (from.uid() != 0) {
-    set_uid(from.uid());
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
   }
 }
 
@@ -2918,7 +2919,7 @@ void ReqFindUser::Swap(ReqFindUser* other) {
 }
 void ReqFindUser::InternalSwap(ReqFindUser* other) {
   username_.Swap(&other->username_);
-  std::swap(uid_, other->uid_);
+  std::swap(user_id_, other->user_id_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -2930,18 +2931,18 @@ void ReqFindUser::InternalSwap(ReqFindUser* other) {
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // ReqFindUser
 
-// int32 uid = 1;
-void ReqFindUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 1;
+void ReqFindUser::clear_user_id() {
+  user_id_ = 0;
 }
-::google::protobuf::int32 ReqFindUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqFindUser.uid)
-  return uid_;
+::google::protobuf::int32 ReqFindUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqFindUser.user_id)
+  return user_id_;
 }
-void ReqFindUser::set_uid(::google::protobuf::int32 value) {
+void ReqFindUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqFindUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqFindUser.user_id)
 }
 
 // string username = 2;
@@ -6033,7 +6034,7 @@ void RspJoinGroup::set_result(::google::protobuf::int32 value) {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int ReqKickOutUser::kGroupIdFieldNumber;
-const int ReqKickOutUser::kUidFieldNumber;
+const int ReqKickOutUser::kUserIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 ReqKickOutUser::ReqKickOutUser()
@@ -6050,14 +6051,14 @@ ReqKickOutUser::ReqKickOutUser(const ReqKickOutUser& from)
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&group_id_, &from.group_id_,
-    reinterpret_cast<char*>(&uid_) -
-    reinterpret_cast<char*>(&group_id_) + sizeof(uid_));
+    reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ReqKickOutUser)
 }
 
 void ReqKickOutUser::SharedCtor() {
-  ::memset(&group_id_, 0, reinterpret_cast<char*>(&uid_) -
-    reinterpret_cast<char*>(&group_id_) + sizeof(uid_));
+  ::memset(&group_id_, 0, reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
   _cached_size_ = 0;
 }
 
@@ -6094,8 +6095,8 @@ ReqKickOutUser* ReqKickOutUser::New(::google::protobuf::Arena* arena) const {
 
 void ReqKickOutUser::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.ReqKickOutUser)
-  ::memset(&group_id_, 0, reinterpret_cast<char*>(&uid_) -
-    reinterpret_cast<char*>(&group_id_) + sizeof(uid_));
+  ::memset(&group_id_, 0, reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
 }
 
 bool ReqKickOutUser::MergePartialFromCodedStream(
@@ -6121,13 +6122,13 @@ bool ReqKickOutUser::MergePartialFromCodedStream(
         break;
       }
 
-      // int32 uid = 2;
+      // int32 user_id = 2;
       case 2: {
         if (tag == 16u) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &uid_)));
+                 input, &user_id_)));
         } else {
           goto handle_unusual;
         }
@@ -6163,9 +6164,9 @@ void ReqKickOutUser::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->group_id(), output);
   }
 
-  // int32 uid = 2;
-  if (this->uid() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->uid(), output);
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->user_id(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:spaceless.protocol.ReqKickOutUser)
@@ -6180,9 +6181,9 @@ void ReqKickOutUser::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->group_id(), target);
   }
 
-  // int32 uid = 2;
-  if (this->uid() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->uid(), target);
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->user_id(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.ReqKickOutUser)
@@ -6200,11 +6201,11 @@ size_t ReqKickOutUser::ByteSizeLong() const {
         this->group_id());
   }
 
-  // int32 uid = 2;
-  if (this->uid() != 0) {
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->uid());
+        this->user_id());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -6236,8 +6237,8 @@ void ReqKickOutUser::MergeFrom(const ReqKickOutUser& from) {
   if (from.group_id() != 0) {
     set_group_id(from.group_id());
   }
-  if (from.uid() != 0) {
-    set_uid(from.uid());
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
   }
 }
 
@@ -6265,7 +6266,7 @@ void ReqKickOutUser::Swap(ReqKickOutUser* other) {
 }
 void ReqKickOutUser::InternalSwap(ReqKickOutUser* other) {
   std::swap(group_id_, other->group_id_);
-  std::swap(uid_, other->uid_);
+  std::swap(user_id_, other->user_id_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -6291,18 +6292,18 @@ void ReqKickOutUser::set_group_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.ReqKickOutUser.group_id)
 }
 
-// int32 uid = 2;
-void ReqKickOutUser::clear_uid() {
-  uid_ = 0;
+// int32 user_id = 2;
+void ReqKickOutUser::clear_user_id() {
+  user_id_ = 0;
 }
-::google::protobuf::int32 ReqKickOutUser::uid() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqKickOutUser.uid)
-  return uid_;
+::google::protobuf::int32 ReqKickOutUser::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqKickOutUser.user_id)
+  return user_id_;
 }
-void ReqKickOutUser::set_uid(::google::protobuf::int32 value) {
+void ReqKickOutUser::set_user_id(::google::protobuf::int32 value) {
   
-  uid_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqKickOutUser.uid)
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqKickOutUser.user_id)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

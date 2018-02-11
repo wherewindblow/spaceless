@@ -21,7 +21,7 @@ extern NetworkConnection* network_conn;
 
 struct User
 {
-	int uid;
+	int user_id;
 	std::string username;
 	std::vector<int> group_list;
 };
@@ -34,11 +34,11 @@ public:
 
 	void register_user(const std::string& username, const std::string& password);
 
-	void login_user(int uid, const std::string& password);
+	void login_user(int user_id, const std::string& password);
 
-	void remove_user(int uid);
+	void remove_user(int user_id);
 
-	void find_user(int uid);
+	void find_user(int user_id);
 
 	void find_user(const std::string& username);
 
@@ -83,7 +83,7 @@ public:
 
 	void join_group(int group_id);
 
-	void kick_out_user(int group_id, int uid);
+	void kick_out_user(int group_id, int user_id);
 
 	void put_file(int group_id,
 			 const std::string& local_filename,
