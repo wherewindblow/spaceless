@@ -599,9 +599,11 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 
 void NetworkConnectionManager::remove_connection(int conn_id)
 {
-	m_conn_list.remove_if([conn_id](const NetworkConnection* connection) {
-		return connection->connection_id() == conn_id;
-	});
+	NetworkConnection* conn = find_connection(conn_id);
+	if (conn)
+	{
+		conn->close();
+	}
 }
 
 
