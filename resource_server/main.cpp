@@ -13,6 +13,10 @@
 namespace spaceless {
 namespace resource_server {
 
+const std::string ROOT_USER_NAME = "root";
+const std::string ROOT_USER_PWD = "pwd";
+int ROOT_USER_UID = 1;
+
 int main(int argc, const char* argv[])
 {
 	try
@@ -21,6 +25,9 @@ int main(int argc, const char* argv[])
 
 		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
 		storage_node_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10241);
+
+		User& root = UserManager::instance()->register_user(ROOT_USER_NAME, ROOT_USER_PWD);
+		ROOT_USER_UID = root.uid;
 
 		std::pair<int, OnePhaseTrancation> handlers[] = {
 			{protocol::REQ_REGISTER_USER, transcation::on_register_user},
