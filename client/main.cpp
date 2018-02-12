@@ -46,6 +46,8 @@ int main(int argc, const char* argv[])
 			{protocol::RSP_REMOVE_GROUP, read_handler},
 			{protocol::RSP_FIND_GROUP, read_handler},
 			{protocol::RSP_JOIN_GROUP, read_handler},
+			{protocol::RSP_ASSIGN_AS_MANAGER, read_handler},
+			{protocol::RSP_ASSIGN_AS_MEMEBER, read_handler},
 			{protocol::RSP_KICK_OUT_USER, read_handler},
 			{protocol::RSP_PUT_FILE, read_handler},
 			{protocol::RSP_GET_FILE, read_handler},
@@ -160,6 +162,20 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cout << "Please input group id." << std::endl;
 			std::cin >> group_id;
 			SharingGroupManager::instance()->join_group(group_id);
+		}
+		else if (func == "assign_as_manager")
+		{
+			int group_id, user_id;
+			std::cout << "Please input group id and user id." << std::endl;
+			std::cin >> group_id >> user_id;
+			SharingGroupManager::instance()->assign_as_manager(group_id, user_id);
+		}
+		else if (func == "assign_as_memeber")
+		{
+			int group_id, user_id;
+			std::cout << "Please input group id and user id." << std::endl;
+			std::cin >> group_id >> user_id;
+			SharingGroupManager::instance()->assign_as_memeber(group_id, user_id);
 		}
 		else if (func == "kick_out_user")
 		{
@@ -358,6 +374,26 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 		case protocol::RSP_JOIN_GROUP:
 		{
 			protocol::RspJoinGroup rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse.result());
+			}
+			break;
+		}
+		case protocol::RSP_ASSIGN_AS_MANAGER:
+		{
+			protocol::RspAssignAsManager rsponse;
+			package.parse_as_protobuf(rsponse);
+			if (rsponse.result())
+			{
+				report_error(rsponse.result());
+			}
+			break;
+		}
+		case protocol::RSP_ASSIGN_AS_MEMEBER:
+		{
+			protocol::RspAssignAsMemeber rsponse;
 			package.parse_as_protobuf(rsponse);
 			if (rsponse.result())
 			{

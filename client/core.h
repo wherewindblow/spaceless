@@ -83,6 +83,10 @@ public:
 
 	void join_group(int group_id);
 
+	void assign_as_manager(int group_id, int user_id);
+
+	void assign_as_memeber(int group_id, int user_id);
+
 	void kick_out_user(int group_id, int user_id);
 
 	void put_file(int group_id,

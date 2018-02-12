@@ -100,6 +100,24 @@ void SharingGroupManager::join_group(int group_id)
 }
 
 
+void SharingGroupManager::assign_as_manager(int group_id, int user_id)
+{
+	protocol::ReqAssignAsManager request;
+	request.set_group_id(group_id);
+	request.set_user_id(user_id);
+	network_conn->send_protobuf(protocol::REQ_ASSIGN_AS_MANAGER, request);
+}
+
+
+void SharingGroupManager::assign_as_memeber(int group_id, int user_id)
+{
+	protocol::ReqAssignAsMemeber request;
+	request.set_group_id(group_id);
+	request.set_user_id(user_id);
+	network_conn->send_protobuf(protocol::REQ_ASSIGN_AS_MEMEBER, request);
+}
+
+
 void SharingGroupManager::kick_out_user(int group_id, int user_id)
 {
 	protocol::ReqKickOutUser request;

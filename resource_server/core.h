@@ -32,8 +32,11 @@ enum
 	ERR_GROUP_NOT_PERMIT_NEED_MEMBER = 1104,
 	ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR = 1105,
 	ERR_GROUP_REMOVE_DIR_MUST_UNDER_DIR = 1106,
-	ERR_GROUP_CANNOT_REMOVE_ROOT_DIR = 1107,
-	ERR_GROUP_CANNOT_KICK_OUT_OWNER = 1110,
+	ERR_GROUP_USER_NOT_JOIN = 1107,
+	ERR_GROUP_ALREADY_IS_MANAGER = 1108,
+	ERR_GROUP_ALREADY_IS_MEMEBER = 1109,
+	ERR_GROUP_CANNOT_REMOVE_ROOT_DIR = 1110,
+	ERR_GROUP_CANNOT_KICK_OUT_OWNER = 1111,
 
 	ERR_FILE_ALREADY_EXIST = 1200,
 	ERR_FILE_CANNOT_CREATE = 1201,
@@ -123,6 +126,10 @@ public:
 	void remove_directory(int user_id, const std::string& full_dir_path);
 
 	void join_group(int user_id);
+
+	void assign_as_manager(int user_id);
+
+	void assign_as_memeber(int user_id);
 
 	void kick_out_user(int user_id);
 

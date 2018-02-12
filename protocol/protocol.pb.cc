@@ -55,6 +55,14 @@ class ReqJoinGroupDefaultTypeInternal : public ::google::protobuf::internal::Exp
 } _ReqJoinGroup_default_instance_;
 class RspJoinGroupDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<RspJoinGroup> {
 } _RspJoinGroup_default_instance_;
+class ReqAssignAsManagerDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<ReqAssignAsManager> {
+} _ReqAssignAsManager_default_instance_;
+class RspAssignAsManagerDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<RspAssignAsManager> {
+} _RspAssignAsManager_default_instance_;
+class ReqAssignAsMemeberDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<ReqAssignAsMemeber> {
+} _ReqAssignAsMemeber_default_instance_;
+class RspAssignAsMemeberDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<RspAssignAsMemeber> {
+} _RspAssignAsMemeber_default_instance_;
 class ReqKickOutUserDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<ReqKickOutUser> {
 } _ReqKickOutUser_default_instance_;
 class RspKickOutUserDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<RspKickOutUser> {
@@ -75,7 +83,7 @@ namespace protobuf_protocol_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[25];
+::google::protobuf::Metadata file_level_metadata[29];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
 
 }  // namespace
@@ -187,6 +195,28 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   ~0u,  // no _oneof_case_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspJoinGroup, result_),
   ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqAssignAsManager, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqAssignAsManager, group_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqAssignAsManager, user_id_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspAssignAsManager, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspAssignAsManager, result_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqAssignAsMemeber, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqAssignAsMemeber, group_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqAssignAsMemeber, user_id_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspAssignAsMemeber, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspAssignAsMemeber, result_),
+  ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqKickOutUser, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -249,13 +279,17 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] = {
   { 89, -1, sizeof(RspFindGroup)},
   { 95, -1, sizeof(ReqJoinGroup)},
   { 100, -1, sizeof(RspJoinGroup)},
-  { 105, -1, sizeof(ReqKickOutUser)},
-  { 111, -1, sizeof(RspKickOutUser)},
-  { 116, -1, sizeof(FileFragment)},
-  { 123, -1, sizeof(ReqPutFile)},
-  { 130, -1, sizeof(RspPutFile)},
-  { 135, -1, sizeof(ReqGetFile)},
-  { 141, -1, sizeof(RspGetFile)},
+  { 105, -1, sizeof(ReqAssignAsManager)},
+  { 111, -1, sizeof(RspAssignAsManager)},
+  { 116, -1, sizeof(ReqAssignAsMemeber)},
+  { 122, -1, sizeof(RspAssignAsMemeber)},
+  { 127, -1, sizeof(ReqKickOutUser)},
+  { 133, -1, sizeof(RspKickOutUser)},
+  { 138, -1, sizeof(FileFragment)},
+  { 145, -1, sizeof(ReqPutFile)},
+  { 152, -1, sizeof(RspPutFile)},
+  { 157, -1, sizeof(ReqGetFile)},
+  { 163, -1, sizeof(RspGetFile)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -277,6 +311,10 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_RspFindGroup_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_ReqJoinGroup_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_RspJoinGroup_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_ReqAssignAsManager_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_RspAssignAsManager_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_ReqAssignAsMemeber_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_RspAssignAsMemeber_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_ReqKickOutUser_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_RspKickOutUser_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_FileFragment_default_instance_),
@@ -304,7 +342,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 25);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 29);
 }
 
 }  // namespace
@@ -346,20 +384,28 @@ void TableStruct::Shutdown() {
   delete file_level_metadata[16].reflection;
   _RspJoinGroup_default_instance_.Shutdown();
   delete file_level_metadata[17].reflection;
-  _ReqKickOutUser_default_instance_.Shutdown();
+  _ReqAssignAsManager_default_instance_.Shutdown();
   delete file_level_metadata[18].reflection;
-  _RspKickOutUser_default_instance_.Shutdown();
+  _RspAssignAsManager_default_instance_.Shutdown();
   delete file_level_metadata[19].reflection;
-  _FileFragment_default_instance_.Shutdown();
+  _ReqAssignAsMemeber_default_instance_.Shutdown();
   delete file_level_metadata[20].reflection;
-  _ReqPutFile_default_instance_.Shutdown();
+  _RspAssignAsMemeber_default_instance_.Shutdown();
   delete file_level_metadata[21].reflection;
-  _RspPutFile_default_instance_.Shutdown();
+  _ReqKickOutUser_default_instance_.Shutdown();
   delete file_level_metadata[22].reflection;
-  _ReqGetFile_default_instance_.Shutdown();
+  _RspKickOutUser_default_instance_.Shutdown();
   delete file_level_metadata[23].reflection;
-  _RspGetFile_default_instance_.Shutdown();
+  _FileFragment_default_instance_.Shutdown();
   delete file_level_metadata[24].reflection;
+  _ReqPutFile_default_instance_.Shutdown();
+  delete file_level_metadata[25].reflection;
+  _RspPutFile_default_instance_.Shutdown();
+  delete file_level_metadata[26].reflection;
+  _ReqGetFile_default_instance_.Shutdown();
+  delete file_level_metadata[27].reflection;
+  _RspGetFile_default_instance_.Shutdown();
+  delete file_level_metadata[28].reflection;
 }
 
 void TableStruct::InitDefaultsImpl() {
@@ -384,6 +430,10 @@ void TableStruct::InitDefaultsImpl() {
   _RspFindGroup_default_instance_.DefaultConstruct();
   _ReqJoinGroup_default_instance_.DefaultConstruct();
   _RspJoinGroup_default_instance_.DefaultConstruct();
+  _ReqAssignAsManager_default_instance_.DefaultConstruct();
+  _RspAssignAsManager_default_instance_.DefaultConstruct();
+  _ReqAssignAsMemeber_default_instance_.DefaultConstruct();
+  _RspAssignAsMemeber_default_instance_.DefaultConstruct();
   _ReqKickOutUser_default_instance_.DefaultConstruct();
   _RspKickOutUser_default_instance_.DefaultConstruct();
   _FileFragment_default_instance_.DefaultConstruct();
@@ -435,36 +485,43 @@ void AddDescriptorsImpl() {
       "t\030\001 \001(\005\022/\n\005group\030\002 \001(\0132 .spaceless.proto"
       "col.SharingGroup\" \n\014ReqJoinGroup\022\020\n\010grou"
       "p_id\030\001 \001(\005\"\036\n\014RspJoinGroup\022\016\n\006result\030\001 \001"
-      "(\005\"3\n\016ReqKickOutUser\022\020\n\010group_id\030\001 \001(\005\022\017"
-      "\n\007user_id\030\002 \001(\005\" \n\016RspKickOutUser\022\016\n\006res"
-      "ult\030\001 \001(\005\"V\n\014FileFragment\022\024\n\014max_fragmen"
-      "t\030\001 \001(\005\022\026\n\016fragment_index\030\002 \001(\005\022\030\n\020fragm"
-      "ent_content\030\003 \001(\t\"d\n\nReqPutFile\022\020\n\010group"
-      "_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\0222\n\010fragment\030"
-      "\003 \001(\0132 .spaceless.protocol.FileFragment\""
-      "\034\n\nRspPutFile\022\016\n\006result\030\001 \001(\005\"0\n\nReqGetF"
-      "ile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\""
-      "P\n\nRspGetFile\022\016\n\006result\030\001 \001(\005\0222\n\010fragmen"
-      "t\030\002 \001(\0132 .spaceless.protocol.FileFragmen"
-      "t*\200\004\n\013CommandType\022\023\n\017INVALID_COMMAND\020\000\022\026"
-      "\n\021REQ_REGISTER_USER\020\350\007\022\026\n\021RSP_REGISTER_U"
-      "SER\020\352\007\022\023\n\016REQ_LOGIN_USER\020\353\007\022\023\n\016RSP_LOGIN"
-      "_USER\020\354\007\022\024\n\017REQ_REMOVE_USER\020\355\007\022\024\n\017RSP_RE"
-      "MOVE_USER\020\356\007\022\022\n\rREQ_FIND_USER\020\357\007\022\022\n\rRSP_"
-      "FIND_USER\020\360\007\022\027\n\022REQ_REGISTER_GROUP\020\325\010\022\027\n"
-      "\022RSP_REGISTER_GROUP\020\326\010\022\025\n\020REQ_REMOVE_GRO"
-      "UP\020\327\010\022\025\n\020RSP_REMOVE_GROUP\020\330\010\022\023\n\016REQ_FIND"
-      "_GROUP\020\331\010\022\023\n\016RSP_FIND_GROUP\020\332\010\022\023\n\016REQ_JO"
-      "IN_GROUP\020\333\010\022\023\n\016RSP_JOIN_GROUP\020\334\010\022\026\n\021REQ_"
-      "KICK_OUT_USER\020\335\010\022\026\n\021RSP_KICK_OUT_USER\020\336\010"
-      "\022\021\n\014REQ_PUT_FILE\020\377\010\022\021\n\014RSP_PUT_FILE\020\200\t\022\021"
-      "\n\014REQ_GET_FILE\020\201\t\022\021\n\014RSP_GET_FILE\020\202\t*N\n\021"
-      "MiscellaneousType\022\031\n\025INVALID_MISCELLANEO"
-      "US\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_LEN\020\320\206\003b\006pr"
-      "oto3"
+      "(\005\"7\n\022ReqAssignAsManager\022\020\n\010group_id\030\001 \001"
+      "(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022RspAssignAsManage"
+      "r\022\016\n\006result\030\001 \001(\005\"7\n\022ReqAssignAsMemeber\022"
+      "\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022Rs"
+      "pAssignAsMemeber\022\016\n\006result\030\001 \001(\005\"3\n\016ReqK"
+      "ickOutUser\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030"
+      "\002 \001(\005\" \n\016RspKickOutUser\022\016\n\006result\030\001 \001(\005\""
+      "V\n\014FileFragment\022\024\n\014max_fragment\030\001 \001(\005\022\026\n"
+      "\016fragment_index\030\002 \001(\005\022\030\n\020fragment_conten"
+      "t\030\003 \001(\t\"d\n\nReqPutFile\022\020\n\010group_id\030\001 \001(\005\022"
+      "\020\n\010filename\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .sp"
+      "aceless.protocol.FileFragment\"\034\n\nRspPutF"
+      "ile\022\016\n\006result\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010gro"
+      "up_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\"P\n\nRspGetF"
+      "ile\022\016\n\006result\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 ."
+      "spaceless.protocol.FileFragment*\360\004\n\013Comm"
+      "andType\022\023\n\017INVALID_COMMAND\020\000\022\026\n\021REQ_REGI"
+      "STER_USER\020\350\007\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016"
+      "REQ_LOGIN_USER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024"
+      "\n\017REQ_REMOVE_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020"
+      "\356\007\022\022\n\rREQ_FIND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020"
+      "\360\007\022\027\n\022REQ_REGISTER_GROUP\020\325\010\022\027\n\022RSP_REGIS"
+      "TER_GROUP\020\326\010\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020R"
+      "SP_REMOVE_GROUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022"
+      "\023\n\016RSP_FIND_GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333"
+      "\010\022\023\n\016RSP_JOIN_GROUP\020\334\010\022\032\n\025REQ_ASSIGN_AS_"
+      "MANAGER\020\335\010\022\032\n\025RSP_ASSIGN_AS_MANAGER\020\336\010\022\032"
+      "\n\025REQ_ASSIGN_AS_MEMEBER\020\337\010\022\032\n\025RSP_ASSIGN"
+      "_AS_MEMEBER\020\340\010\022\026\n\021REQ_KICK_OUT_USER\020\341\010\022\026"
+      "\n\021RSP_KICK_OUT_USER\020\342\010\022\021\n\014REQ_PUT_FILE\020\377"
+      "\010\022\021\n\014RSP_PUT_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022"
+      "\021\n\014RSP_GET_FILE\020\202\t*N\n\021MiscellaneousType\022"
+      "\031\n\025INVALID_MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGME"
+      "NT_CONTENT_LEN\020\320\206\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2044);
+      descriptor, 2346);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -508,6 +565,10 @@ bool CommandType_IsValid(int value) {
     case 1116:
     case 1117:
     case 1118:
+    case 1119:
+    case 1120:
+    case 1121:
+    case 1122:
     case 1151:
     case 1152:
     case 1153:
@@ -6033,6 +6094,1012 @@ void RspJoinGroup::set_result(::google::protobuf::int32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int ReqAssignAsManager::kGroupIdFieldNumber;
+const int ReqAssignAsManager::kUserIdFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+ReqAssignAsManager::ReqAssignAsManager()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_protocol_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:spaceless.protocol.ReqAssignAsManager)
+}
+ReqAssignAsManager::ReqAssignAsManager(const ReqAssignAsManager& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&group_id_, &from.group_id_,
+    reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
+  // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ReqAssignAsManager)
+}
+
+void ReqAssignAsManager::SharedCtor() {
+  ::memset(&group_id_, 0, reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
+  _cached_size_ = 0;
+}
+
+ReqAssignAsManager::~ReqAssignAsManager() {
+  // @@protoc_insertion_point(destructor:spaceless.protocol.ReqAssignAsManager)
+  SharedDtor();
+}
+
+void ReqAssignAsManager::SharedDtor() {
+}
+
+void ReqAssignAsManager::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ReqAssignAsManager::descriptor() {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[18].descriptor;
+}
+
+const ReqAssignAsManager& ReqAssignAsManager::default_instance() {
+  protobuf_protocol_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+ReqAssignAsManager* ReqAssignAsManager::New(::google::protobuf::Arena* arena) const {
+  ReqAssignAsManager* n = new ReqAssignAsManager;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void ReqAssignAsManager::Clear() {
+// @@protoc_insertion_point(message_clear_start:spaceless.protocol.ReqAssignAsManager)
+  ::memset(&group_id_, 0, reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
+}
+
+bool ReqAssignAsManager::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:spaceless.protocol.ReqAssignAsManager)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 group_id = 1;
+      case 1: {
+        if (tag == 8u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &group_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 user_id = 2;
+      case 2: {
+        if (tag == 16u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &user_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:spaceless.protocol.ReqAssignAsManager)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:spaceless.protocol.ReqAssignAsManager)
+  return false;
+#undef DO_
+}
+
+void ReqAssignAsManager::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:spaceless.protocol.ReqAssignAsManager)
+  // int32 group_id = 1;
+  if (this->group_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->group_id(), output);
+  }
+
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->user_id(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:spaceless.protocol.ReqAssignAsManager)
+}
+
+::google::protobuf::uint8* ReqAssignAsManager::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.ReqAssignAsManager)
+  // int32 group_id = 1;
+  if (this->group_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->group_id(), target);
+  }
+
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->user_id(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.ReqAssignAsManager)
+  return target;
+}
+
+size_t ReqAssignAsManager::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.ReqAssignAsManager)
+  size_t total_size = 0;
+
+  // int32 group_id = 1;
+  if (this->group_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->group_id());
+  }
+
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->user_id());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ReqAssignAsManager::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:spaceless.protocol.ReqAssignAsManager)
+  GOOGLE_DCHECK_NE(&from, this);
+  const ReqAssignAsManager* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const ReqAssignAsManager>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:spaceless.protocol.ReqAssignAsManager)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:spaceless.protocol.ReqAssignAsManager)
+    MergeFrom(*source);
+  }
+}
+
+void ReqAssignAsManager::MergeFrom(const ReqAssignAsManager& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.ReqAssignAsManager)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.group_id() != 0) {
+    set_group_id(from.group_id());
+  }
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
+  }
+}
+
+void ReqAssignAsManager::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:spaceless.protocol.ReqAssignAsManager)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ReqAssignAsManager::CopyFrom(const ReqAssignAsManager& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:spaceless.protocol.ReqAssignAsManager)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ReqAssignAsManager::IsInitialized() const {
+  return true;
+}
+
+void ReqAssignAsManager::Swap(ReqAssignAsManager* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void ReqAssignAsManager::InternalSwap(ReqAssignAsManager* other) {
+  std::swap(group_id_, other->group_id_);
+  std::swap(user_id_, other->user_id_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata ReqAssignAsManager::GetMetadata() const {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[18];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// ReqAssignAsManager
+
+// int32 group_id = 1;
+void ReqAssignAsManager::clear_group_id() {
+  group_id_ = 0;
+}
+::google::protobuf::int32 ReqAssignAsManager::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsManager.group_id)
+  return group_id_;
+}
+void ReqAssignAsManager::set_group_id(::google::protobuf::int32 value) {
+  
+  group_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsManager.group_id)
+}
+
+// int32 user_id = 2;
+void ReqAssignAsManager::clear_user_id() {
+  user_id_ = 0;
+}
+::google::protobuf::int32 ReqAssignAsManager::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsManager.user_id)
+  return user_id_;
+}
+void ReqAssignAsManager::set_user_id(::google::protobuf::int32 value) {
+  
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsManager.user_id)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int RspAssignAsManager::kResultFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+RspAssignAsManager::RspAssignAsManager()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_protocol_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:spaceless.protocol.RspAssignAsManager)
+}
+RspAssignAsManager::RspAssignAsManager(const RspAssignAsManager& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  result_ = from.result_;
+  // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspAssignAsManager)
+}
+
+void RspAssignAsManager::SharedCtor() {
+  result_ = 0;
+  _cached_size_ = 0;
+}
+
+RspAssignAsManager::~RspAssignAsManager() {
+  // @@protoc_insertion_point(destructor:spaceless.protocol.RspAssignAsManager)
+  SharedDtor();
+}
+
+void RspAssignAsManager::SharedDtor() {
+}
+
+void RspAssignAsManager::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* RspAssignAsManager::descriptor() {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[19].descriptor;
+}
+
+const RspAssignAsManager& RspAssignAsManager::default_instance() {
+  protobuf_protocol_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+RspAssignAsManager* RspAssignAsManager::New(::google::protobuf::Arena* arena) const {
+  RspAssignAsManager* n = new RspAssignAsManager;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void RspAssignAsManager::Clear() {
+// @@protoc_insertion_point(message_clear_start:spaceless.protocol.RspAssignAsManager)
+  result_ = 0;
+}
+
+bool RspAssignAsManager::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:spaceless.protocol.RspAssignAsManager)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 result = 1;
+      case 1: {
+        if (tag == 8u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &result_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:spaceless.protocol.RspAssignAsManager)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:spaceless.protocol.RspAssignAsManager)
+  return false;
+#undef DO_
+}
+
+void RspAssignAsManager::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:spaceless.protocol.RspAssignAsManager)
+  // int32 result = 1;
+  if (this->result() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:spaceless.protocol.RspAssignAsManager)
+}
+
+::google::protobuf::uint8* RspAssignAsManager::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.RspAssignAsManager)
+  // int32 result = 1;
+  if (this->result() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.RspAssignAsManager)
+  return target;
+}
+
+size_t RspAssignAsManager::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.RspAssignAsManager)
+  size_t total_size = 0;
+
+  // int32 result = 1;
+  if (this->result() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->result());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void RspAssignAsManager::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:spaceless.protocol.RspAssignAsManager)
+  GOOGLE_DCHECK_NE(&from, this);
+  const RspAssignAsManager* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const RspAssignAsManager>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:spaceless.protocol.RspAssignAsManager)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:spaceless.protocol.RspAssignAsManager)
+    MergeFrom(*source);
+  }
+}
+
+void RspAssignAsManager::MergeFrom(const RspAssignAsManager& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.RspAssignAsManager)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.result() != 0) {
+    set_result(from.result());
+  }
+}
+
+void RspAssignAsManager::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:spaceless.protocol.RspAssignAsManager)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void RspAssignAsManager::CopyFrom(const RspAssignAsManager& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:spaceless.protocol.RspAssignAsManager)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RspAssignAsManager::IsInitialized() const {
+  return true;
+}
+
+void RspAssignAsManager::Swap(RspAssignAsManager* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void RspAssignAsManager::InternalSwap(RspAssignAsManager* other) {
+  std::swap(result_, other->result_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata RspAssignAsManager::GetMetadata() const {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[19];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// RspAssignAsManager
+
+// int32 result = 1;
+void RspAssignAsManager::clear_result() {
+  result_ = 0;
+}
+::google::protobuf::int32 RspAssignAsManager::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsManager.result)
+  return result_;
+}
+void RspAssignAsManager::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsManager.result)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int ReqAssignAsMemeber::kGroupIdFieldNumber;
+const int ReqAssignAsMemeber::kUserIdFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+ReqAssignAsMemeber::ReqAssignAsMemeber()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_protocol_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:spaceless.protocol.ReqAssignAsMemeber)
+}
+ReqAssignAsMemeber::ReqAssignAsMemeber(const ReqAssignAsMemeber& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&group_id_, &from.group_id_,
+    reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
+  // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ReqAssignAsMemeber)
+}
+
+void ReqAssignAsMemeber::SharedCtor() {
+  ::memset(&group_id_, 0, reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
+  _cached_size_ = 0;
+}
+
+ReqAssignAsMemeber::~ReqAssignAsMemeber() {
+  // @@protoc_insertion_point(destructor:spaceless.protocol.ReqAssignAsMemeber)
+  SharedDtor();
+}
+
+void ReqAssignAsMemeber::SharedDtor() {
+}
+
+void ReqAssignAsMemeber::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* ReqAssignAsMemeber::descriptor() {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[20].descriptor;
+}
+
+const ReqAssignAsMemeber& ReqAssignAsMemeber::default_instance() {
+  protobuf_protocol_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+ReqAssignAsMemeber* ReqAssignAsMemeber::New(::google::protobuf::Arena* arena) const {
+  ReqAssignAsMemeber* n = new ReqAssignAsMemeber;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void ReqAssignAsMemeber::Clear() {
+// @@protoc_insertion_point(message_clear_start:spaceless.protocol.ReqAssignAsMemeber)
+  ::memset(&group_id_, 0, reinterpret_cast<char*>(&user_id_) -
+    reinterpret_cast<char*>(&group_id_) + sizeof(user_id_));
+}
+
+bool ReqAssignAsMemeber::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:spaceless.protocol.ReqAssignAsMemeber)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 group_id = 1;
+      case 1: {
+        if (tag == 8u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &group_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 user_id = 2;
+      case 2: {
+        if (tag == 16u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &user_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:spaceless.protocol.ReqAssignAsMemeber)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:spaceless.protocol.ReqAssignAsMemeber)
+  return false;
+#undef DO_
+}
+
+void ReqAssignAsMemeber::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:spaceless.protocol.ReqAssignAsMemeber)
+  // int32 group_id = 1;
+  if (this->group_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->group_id(), output);
+  }
+
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->user_id(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:spaceless.protocol.ReqAssignAsMemeber)
+}
+
+::google::protobuf::uint8* ReqAssignAsMemeber::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.ReqAssignAsMemeber)
+  // int32 group_id = 1;
+  if (this->group_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->group_id(), target);
+  }
+
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->user_id(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.ReqAssignAsMemeber)
+  return target;
+}
+
+size_t ReqAssignAsMemeber::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.ReqAssignAsMemeber)
+  size_t total_size = 0;
+
+  // int32 group_id = 1;
+  if (this->group_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->group_id());
+  }
+
+  // int32 user_id = 2;
+  if (this->user_id() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->user_id());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void ReqAssignAsMemeber::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:spaceless.protocol.ReqAssignAsMemeber)
+  GOOGLE_DCHECK_NE(&from, this);
+  const ReqAssignAsMemeber* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const ReqAssignAsMemeber>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:spaceless.protocol.ReqAssignAsMemeber)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:spaceless.protocol.ReqAssignAsMemeber)
+    MergeFrom(*source);
+  }
+}
+
+void ReqAssignAsMemeber::MergeFrom(const ReqAssignAsMemeber& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.ReqAssignAsMemeber)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.group_id() != 0) {
+    set_group_id(from.group_id());
+  }
+  if (from.user_id() != 0) {
+    set_user_id(from.user_id());
+  }
+}
+
+void ReqAssignAsMemeber::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:spaceless.protocol.ReqAssignAsMemeber)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ReqAssignAsMemeber::CopyFrom(const ReqAssignAsMemeber& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:spaceless.protocol.ReqAssignAsMemeber)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ReqAssignAsMemeber::IsInitialized() const {
+  return true;
+}
+
+void ReqAssignAsMemeber::Swap(ReqAssignAsMemeber* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void ReqAssignAsMemeber::InternalSwap(ReqAssignAsMemeber* other) {
+  std::swap(group_id_, other->group_id_);
+  std::swap(user_id_, other->user_id_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata ReqAssignAsMemeber::GetMetadata() const {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[20];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// ReqAssignAsMemeber
+
+// int32 group_id = 1;
+void ReqAssignAsMemeber::clear_group_id() {
+  group_id_ = 0;
+}
+::google::protobuf::int32 ReqAssignAsMemeber::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMemeber.group_id)
+  return group_id_;
+}
+void ReqAssignAsMemeber::set_group_id(::google::protobuf::int32 value) {
+  
+  group_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMemeber.group_id)
+}
+
+// int32 user_id = 2;
+void ReqAssignAsMemeber::clear_user_id() {
+  user_id_ = 0;
+}
+::google::protobuf::int32 ReqAssignAsMemeber::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMemeber.user_id)
+  return user_id_;
+}
+void ReqAssignAsMemeber::set_user_id(::google::protobuf::int32 value) {
+  
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMemeber.user_id)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int RspAssignAsMemeber::kResultFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+RspAssignAsMemeber::RspAssignAsMemeber()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_protocol_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:spaceless.protocol.RspAssignAsMemeber)
+}
+RspAssignAsMemeber::RspAssignAsMemeber(const RspAssignAsMemeber& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  result_ = from.result_;
+  // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspAssignAsMemeber)
+}
+
+void RspAssignAsMemeber::SharedCtor() {
+  result_ = 0;
+  _cached_size_ = 0;
+}
+
+RspAssignAsMemeber::~RspAssignAsMemeber() {
+  // @@protoc_insertion_point(destructor:spaceless.protocol.RspAssignAsMemeber)
+  SharedDtor();
+}
+
+void RspAssignAsMemeber::SharedDtor() {
+}
+
+void RspAssignAsMemeber::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* RspAssignAsMemeber::descriptor() {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[21].descriptor;
+}
+
+const RspAssignAsMemeber& RspAssignAsMemeber::default_instance() {
+  protobuf_protocol_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+RspAssignAsMemeber* RspAssignAsMemeber::New(::google::protobuf::Arena* arena) const {
+  RspAssignAsMemeber* n = new RspAssignAsMemeber;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void RspAssignAsMemeber::Clear() {
+// @@protoc_insertion_point(message_clear_start:spaceless.protocol.RspAssignAsMemeber)
+  result_ = 0;
+}
+
+bool RspAssignAsMemeber::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:spaceless.protocol.RspAssignAsMemeber)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 result = 1;
+      case 1: {
+        if (tag == 8u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &result_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:spaceless.protocol.RspAssignAsMemeber)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:spaceless.protocol.RspAssignAsMemeber)
+  return false;
+#undef DO_
+}
+
+void RspAssignAsMemeber::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:spaceless.protocol.RspAssignAsMemeber)
+  // int32 result = 1;
+  if (this->result() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:spaceless.protocol.RspAssignAsMemeber)
+}
+
+::google::protobuf::uint8* RspAssignAsMemeber::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.RspAssignAsMemeber)
+  // int32 result = 1;
+  if (this->result() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.RspAssignAsMemeber)
+  return target;
+}
+
+size_t RspAssignAsMemeber::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.RspAssignAsMemeber)
+  size_t total_size = 0;
+
+  // int32 result = 1;
+  if (this->result() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->result());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void RspAssignAsMemeber::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:spaceless.protocol.RspAssignAsMemeber)
+  GOOGLE_DCHECK_NE(&from, this);
+  const RspAssignAsMemeber* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const RspAssignAsMemeber>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:spaceless.protocol.RspAssignAsMemeber)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:spaceless.protocol.RspAssignAsMemeber)
+    MergeFrom(*source);
+  }
+}
+
+void RspAssignAsMemeber::MergeFrom(const RspAssignAsMemeber& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.RspAssignAsMemeber)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.result() != 0) {
+    set_result(from.result());
+  }
+}
+
+void RspAssignAsMemeber::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:spaceless.protocol.RspAssignAsMemeber)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void RspAssignAsMemeber::CopyFrom(const RspAssignAsMemeber& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:spaceless.protocol.RspAssignAsMemeber)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RspAssignAsMemeber::IsInitialized() const {
+  return true;
+}
+
+void RspAssignAsMemeber::Swap(RspAssignAsMemeber* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void RspAssignAsMemeber::InternalSwap(RspAssignAsMemeber* other) {
+  std::swap(result_, other->result_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata RspAssignAsMemeber::GetMetadata() const {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[21];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// RspAssignAsMemeber
+
+// int32 result = 1;
+void RspAssignAsMemeber::clear_result() {
+  result_ = 0;
+}
+::google::protobuf::int32 RspAssignAsMemeber::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsMemeber.result)
+  return result_;
+}
+void RspAssignAsMemeber::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsMemeber.result)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int ReqKickOutUser::kGroupIdFieldNumber;
 const int ReqKickOutUser::kUserIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -6077,7 +7144,7 @@ void ReqKickOutUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqKickOutUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[18].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[22].descriptor;
 }
 
 const ReqKickOutUser& ReqKickOutUser::default_instance() {
@@ -6272,7 +7339,7 @@ void ReqKickOutUser::InternalSwap(ReqKickOutUser* other) {
 
 ::google::protobuf::Metadata ReqKickOutUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[18];
+  return protobuf_protocol_2eproto::file_level_metadata[22];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6351,7 +7418,7 @@ void RspKickOutUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspKickOutUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[19].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[23].descriptor;
 }
 
 const RspKickOutUser& RspKickOutUser::default_instance() {
@@ -6511,7 +7578,7 @@ void RspKickOutUser::InternalSwap(RspKickOutUser* other) {
 
 ::google::protobuf::Metadata RspKickOutUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[19];
+  return protobuf_protocol_2eproto::file_level_metadata[23];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6587,7 +7654,7 @@ void FileFragment::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* FileFragment::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[20].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[24].descriptor;
 }
 
 const FileFragment& FileFragment::default_instance() {
@@ -6831,7 +7898,7 @@ void FileFragment::InternalSwap(FileFragment* other) {
 
 ::google::protobuf::Metadata FileFragment::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[20];
+  return protobuf_protocol_2eproto::file_level_metadata[24];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6979,7 +8046,7 @@ void ReqPutFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqPutFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[21].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[25].descriptor;
 }
 
 const ReqPutFile& ReqPutFile::default_instance() {
@@ -7227,7 +8294,7 @@ void ReqPutFile::InternalSwap(ReqPutFile* other) {
 
 ::google::protobuf::Metadata ReqPutFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[21];
+  return protobuf_protocol_2eproto::file_level_metadata[25];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7383,7 +8450,7 @@ void RspPutFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspPutFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[22].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[26].descriptor;
 }
 
 const RspPutFile& RspPutFile::default_instance() {
@@ -7543,7 +8610,7 @@ void RspPutFile::InternalSwap(RspPutFile* other) {
 
 ::google::protobuf::Metadata RspPutFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[22];
+  return protobuf_protocol_2eproto::file_level_metadata[26];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7615,7 +8682,7 @@ void ReqGetFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqGetFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[23].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[27].descriptor;
 }
 
 const ReqGetFile& ReqGetFile::default_instance() {
@@ -7824,7 +8891,7 @@ void ReqGetFile::InternalSwap(ReqGetFile* other) {
 
 ::google::protobuf::Metadata ReqGetFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[23];
+  return protobuf_protocol_2eproto::file_level_metadata[27];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7951,7 +9018,7 @@ void RspGetFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspGetFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[24].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[28].descriptor;
 }
 
 const RspGetFile& RspGetFile::default_instance() {
@@ -8150,7 +9217,7 @@ void RspGetFile::InternalSwap(RspGetFile* other) {
 
 ::google::protobuf::Metadata RspGetFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[24];
+  return protobuf_protocol_2eproto::file_level_metadata[28];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS

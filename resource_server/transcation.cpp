@@ -214,6 +214,34 @@ void on_join_group(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
+void on_assign_as_manager(NetworkConnection& conn, const PackageBuffer& package)
+{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqAssignAsManager, protocol::RspAssignAsManager);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+		if (!group.is_manager(user->user_id))
+		{
+			rsponse.set_result(-1);
+			goto send_back_msg;
+		}
+		group.assign_as_manager(request.user_id());
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_ASSIGN_AS_MANAGER);
+}
+
+
+void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package)
+{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqAssignAsMemeber, protocol::RspAssignAsMemeber);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+		if (!group.is_manager(user->user_id))
+		{
+			rsponse.set_result(-1);
+			goto send_back_msg;
+		}
+		group.assign_as_memeber(request.user_id());
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_ASSIGN_AS_MEMEBER);
+}
+
+
 void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqKickOutUser, protocol::RspKickOutUser);

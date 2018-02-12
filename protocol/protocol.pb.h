@@ -35,6 +35,12 @@ namespace protocol {
 class FileFragment;
 class FileFragmentDefaultTypeInternal;
 extern FileFragmentDefaultTypeInternal _FileFragment_default_instance_;
+class ReqAssignAsManager;
+class ReqAssignAsManagerDefaultTypeInternal;
+extern ReqAssignAsManagerDefaultTypeInternal _ReqAssignAsManager_default_instance_;
+class ReqAssignAsMemeber;
+class ReqAssignAsMemeberDefaultTypeInternal;
+extern ReqAssignAsMemeberDefaultTypeInternal _ReqAssignAsMemeber_default_instance_;
 class ReqFindGroup;
 class ReqFindGroupDefaultTypeInternal;
 extern ReqFindGroupDefaultTypeInternal _ReqFindGroup_default_instance_;
@@ -68,6 +74,12 @@ extern ReqRemoveGroupDefaultTypeInternal _ReqRemoveGroup_default_instance_;
 class ReqRemoveUser;
 class ReqRemoveUserDefaultTypeInternal;
 extern ReqRemoveUserDefaultTypeInternal _ReqRemoveUser_default_instance_;
+class RspAssignAsManager;
+class RspAssignAsManagerDefaultTypeInternal;
+extern RspAssignAsManagerDefaultTypeInternal _RspAssignAsManager_default_instance_;
+class RspAssignAsMemeber;
+class RspAssignAsMemeberDefaultTypeInternal;
+extern RspAssignAsMemeberDefaultTypeInternal _RspAssignAsMemeber_default_instance_;
 class RspFindGroup;
 class RspFindGroupDefaultTypeInternal;
 extern RspFindGroupDefaultTypeInternal _RspFindGroup_default_instance_;
@@ -142,8 +154,12 @@ enum CommandType {
   RSP_FIND_GROUP = 1114,
   REQ_JOIN_GROUP = 1115,
   RSP_JOIN_GROUP = 1116,
-  REQ_KICK_OUT_USER = 1117,
-  RSP_KICK_OUT_USER = 1118,
+  REQ_ASSIGN_AS_MANAGER = 1117,
+  RSP_ASSIGN_AS_MANAGER = 1118,
+  REQ_ASSIGN_AS_MEMEBER = 1119,
+  RSP_ASSIGN_AS_MEMEBER = 1120,
+  REQ_KICK_OUT_USER = 1121,
+  RSP_KICK_OUT_USER = 1122,
   REQ_PUT_FILE = 1151,
   RSP_PUT_FILE = 1152,
   REQ_GET_FILE = 1153,
@@ -1882,6 +1898,352 @@ class RspJoinGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
 };
 // -------------------------------------------------------------------
 
+class ReqAssignAsManager : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqAssignAsManager) */ {
+ public:
+  ReqAssignAsManager();
+  virtual ~ReqAssignAsManager();
+
+  ReqAssignAsManager(const ReqAssignAsManager& from);
+
+  inline ReqAssignAsManager& operator=(const ReqAssignAsManager& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqAssignAsManager& default_instance();
+
+  static inline const ReqAssignAsManager* internal_default_instance() {
+    return reinterpret_cast<const ReqAssignAsManager*>(
+               &_ReqAssignAsManager_default_instance_);
+  }
+
+  void Swap(ReqAssignAsManager* other);
+
+  // implements Message ----------------------------------------------
+
+  inline ReqAssignAsManager* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  ReqAssignAsManager* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const ReqAssignAsManager& from);
+  void MergeFrom(const ReqAssignAsManager& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(ReqAssignAsManager* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 group_id = 1;
+  void clear_group_id();
+  static const int kGroupIdFieldNumber = 1;
+  ::google::protobuf::int32 group_id() const;
+  void set_group_id(::google::protobuf::int32 value);
+
+  // int32 user_id = 2;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 2;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqAssignAsManager)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 group_id_;
+  ::google::protobuf::int32 user_id_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspAssignAsManager : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspAssignAsManager) */ {
+ public:
+  RspAssignAsManager();
+  virtual ~RspAssignAsManager();
+
+  RspAssignAsManager(const RspAssignAsManager& from);
+
+  inline RspAssignAsManager& operator=(const RspAssignAsManager& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspAssignAsManager& default_instance();
+
+  static inline const RspAssignAsManager* internal_default_instance() {
+    return reinterpret_cast<const RspAssignAsManager*>(
+               &_RspAssignAsManager_default_instance_);
+  }
+
+  void Swap(RspAssignAsManager* other);
+
+  // implements Message ----------------------------------------------
+
+  inline RspAssignAsManager* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  RspAssignAsManager* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const RspAssignAsManager& from);
+  void MergeFrom(const RspAssignAsManager& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(RspAssignAsManager* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspAssignAsManager)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqAssignAsMemeber) */ {
+ public:
+  ReqAssignAsMemeber();
+  virtual ~ReqAssignAsMemeber();
+
+  ReqAssignAsMemeber(const ReqAssignAsMemeber& from);
+
+  inline ReqAssignAsMemeber& operator=(const ReqAssignAsMemeber& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqAssignAsMemeber& default_instance();
+
+  static inline const ReqAssignAsMemeber* internal_default_instance() {
+    return reinterpret_cast<const ReqAssignAsMemeber*>(
+               &_ReqAssignAsMemeber_default_instance_);
+  }
+
+  void Swap(ReqAssignAsMemeber* other);
+
+  // implements Message ----------------------------------------------
+
+  inline ReqAssignAsMemeber* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  ReqAssignAsMemeber* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const ReqAssignAsMemeber& from);
+  void MergeFrom(const ReqAssignAsMemeber& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(ReqAssignAsMemeber* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 group_id = 1;
+  void clear_group_id();
+  static const int kGroupIdFieldNumber = 1;
+  ::google::protobuf::int32 group_id() const;
+  void set_group_id(::google::protobuf::int32 value);
+
+  // int32 user_id = 2;
+  void clear_user_id();
+  static const int kUserIdFieldNumber = 2;
+  ::google::protobuf::int32 user_id() const;
+  void set_user_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqAssignAsMemeber)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 group_id_;
+  ::google::protobuf::int32 user_id_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspAssignAsMemeber) */ {
+ public:
+  RspAssignAsMemeber();
+  virtual ~RspAssignAsMemeber();
+
+  RspAssignAsMemeber(const RspAssignAsMemeber& from);
+
+  inline RspAssignAsMemeber& operator=(const RspAssignAsMemeber& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspAssignAsMemeber& default_instance();
+
+  static inline const RspAssignAsMemeber* internal_default_instance() {
+    return reinterpret_cast<const RspAssignAsMemeber*>(
+               &_RspAssignAsMemeber_default_instance_);
+  }
+
+  void Swap(RspAssignAsMemeber* other);
+
+  // implements Message ----------------------------------------------
+
+  inline RspAssignAsMemeber* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  RspAssignAsMemeber* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const RspAssignAsMemeber& from);
+  void MergeFrom(const RspAssignAsMemeber& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(RspAssignAsMemeber* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspAssignAsMemeber)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class ReqKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqKickOutUser) */ {
  public:
   ReqKickOutUser();
@@ -3507,6 +3869,106 @@ inline void RspJoinGroup::set_result(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
+// ReqAssignAsManager
+
+// int32 group_id = 1;
+inline void ReqAssignAsManager::clear_group_id() {
+  group_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqAssignAsManager::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsManager.group_id)
+  return group_id_;
+}
+inline void ReqAssignAsManager::set_group_id(::google::protobuf::int32 value) {
+  
+  group_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsManager.group_id)
+}
+
+// int32 user_id = 2;
+inline void ReqAssignAsManager::clear_user_id() {
+  user_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqAssignAsManager::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsManager.user_id)
+  return user_id_;
+}
+inline void ReqAssignAsManager::set_user_id(::google::protobuf::int32 value) {
+  
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsManager.user_id)
+}
+
+// -------------------------------------------------------------------
+
+// RspAssignAsManager
+
+// int32 result = 1;
+inline void RspAssignAsManager::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspAssignAsManager::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsManager.result)
+  return result_;
+}
+inline void RspAssignAsManager::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsManager.result)
+}
+
+// -------------------------------------------------------------------
+
+// ReqAssignAsMemeber
+
+// int32 group_id = 1;
+inline void ReqAssignAsMemeber::clear_group_id() {
+  group_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqAssignAsMemeber::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMemeber.group_id)
+  return group_id_;
+}
+inline void ReqAssignAsMemeber::set_group_id(::google::protobuf::int32 value) {
+  
+  group_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMemeber.group_id)
+}
+
+// int32 user_id = 2;
+inline void ReqAssignAsMemeber::clear_user_id() {
+  user_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqAssignAsMemeber::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMemeber.user_id)
+  return user_id_;
+}
+inline void ReqAssignAsMemeber::set_user_id(::google::protobuf::int32 value) {
+  
+  user_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMemeber.user_id)
+}
+
+// -------------------------------------------------------------------
+
+// RspAssignAsMemeber
+
+// int32 result = 1;
+inline void RspAssignAsMemeber::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspAssignAsMemeber::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsMemeber.result)
+  return result_;
+}
+inline void RspAssignAsMemeber::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsMemeber.result)
+}
+
+// -------------------------------------------------------------------
+
 // ReqKickOutUser
 
 // int32 group_id = 1;
@@ -3894,6 +4356,14 @@ inline void RspGetFile::set_allocated_fragment(::spaceless::protocol::FileFragme
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

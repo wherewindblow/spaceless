@@ -314,6 +314,42 @@ void SharingGroup::join_group(int user_id)
 }
 
 
+void SharingGroup::assign_as_manager(int user_id)
+{
+	if (is_member(user_id))
+	{
+		kick_out_user(user_id);
+		m_manager_list.push_back(user_id);
+	}
+	else if (is_manager(user_id))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_IS_MANAGER);
+	}
+	else
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_USER_NOT_JOIN);
+	}
+}
+
+
+void SharingGroup::assign_as_memeber(int user_id)
+{
+	if (is_manager(user_id))
+	{
+		kick_out_user(user_id);
+		m_member_list.push_back(user_id);
+	}
+	else if (is_member(user_id))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_IS_MEMEBER);
+	}
+	else
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_USER_NOT_JOIN);
+	}
+}
+
+
 void SharingGroup::kick_out_user(int user_id)
 {
 	if (user_id == owner_id())

@@ -38,6 +38,8 @@ int main(int argc, const char* argv[])
 			{protocol::REQ_REMOVE_GROUP, transcation::on_remove_group},
 			{protocol::REQ_FIND_GROUP, transcation::on_find_group},
 			{protocol::REQ_JOIN_GROUP, transcation::on_join_group},
+			{protocol::REQ_ASSIGN_AS_MANAGER, transcation::on_assign_as_manager},
+			{protocol::REQ_ASSIGN_AS_MEMEBER, transcation::on_assign_as_memeber},
 			{protocol::REQ_KICK_OUT_USER, transcation::on_kick_out_user}
 		};
 

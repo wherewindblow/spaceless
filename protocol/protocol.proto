@@ -25,8 +25,12 @@ enum CommandType
     RSP_FIND_GROUP = 1114;
     REQ_JOIN_GROUP = 1115;
     RSP_JOIN_GROUP = 1116;
-    REQ_KICK_OUT_USER = 1117;
-    RSP_KICK_OUT_USER = 1118;
+    REQ_ASSIGN_AS_MANAGER = 1117;
+    RSP_ASSIGN_AS_MANAGER = 1118;
+    REQ_ASSIGN_AS_MEMEBER = 1119;
+    RSP_ASSIGN_AS_MEMEBER = 1120;
+    REQ_KICK_OUT_USER = 1121;
+    RSP_KICK_OUT_USER = 1122;
 
     // Group file operation.
     REQ_PUT_FILE = 1151;
@@ -142,6 +146,28 @@ message ReqJoinGroup
 }
 
 message RspJoinGroup
+{
+    int32 result = 1;
+}
+
+message ReqAssignAsManager
+{
+    int32 group_id = 1;
+    int32 user_id = 2;
+}
+
+message RspAssignAsManager
+{
+    int32 result = 1;
+}
+
+message ReqAssignAsMemeber
+{
+    int32 group_id = 1;
+    int32 user_id = 2;
+}
+
+message RspAssignAsMemeber
 {
     int32 result = 1;
 }

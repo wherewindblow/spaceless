@@ -30,6 +30,10 @@ void on_find_group(NetworkConnection& conn, const PackageBuffer& package);
 
 void on_join_group(NetworkConnection& conn, const PackageBuffer& package);
 
+void on_assign_as_manager(NetworkConnection& conn, const PackageBuffer& package);
+
+void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package);
+
 void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package);
 
 
