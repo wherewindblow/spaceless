@@ -80,6 +80,9 @@ extern RspAssignAsManagerDefaultTypeInternal _RspAssignAsManager_default_instanc
 class RspAssignAsMemeber;
 class RspAssignAsMemeberDefaultTypeInternal;
 extern RspAssignAsMemeberDefaultTypeInternal _RspAssignAsMemeber_default_instance_;
+class RspError;
+class RspErrorDefaultTypeInternal;
+extern RspErrorDefaultTypeInternal _RspError_default_instance_;
 class RspFindGroup;
 class RspFindGroupDefaultTypeInternal;
 extern RspFindGroupDefaultTypeInternal _RspFindGroup_default_instance_;
@@ -204,6 +207,89 @@ inline bool MiscellaneousType_Parse(
     MiscellaneousType_descriptor(), name, value);
 }
 // ===================================================================
+
+class RspError : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspError) */ {
+ public:
+  RspError();
+  virtual ~RspError();
+
+  RspError(const RspError& from);
+
+  inline RspError& operator=(const RspError& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspError& default_instance();
+
+  static inline const RspError* internal_default_instance() {
+    return reinterpret_cast<const RspError*>(
+               &_RspError_default_instance_);
+  }
+
+  void Swap(RspError* other);
+
+  // implements Message ----------------------------------------------
+
+  inline RspError* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  RspError* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const RspError& from);
+  void MergeFrom(const RspError& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output)
+      const PROTOBUF_FINAL {
+    return InternalSerializeWithCachedSizesToArray(
+        ::google::protobuf::io::CodedOutputStream::IsDefaultSerializationDeterministic(), output);
+  }
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(RspError* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspError)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  mutable int _cached_size_;
+  friend struct  protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
 
 class User : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.User) */ {
  public:
@@ -2908,6 +2994,24 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 // ===================================================================
 
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
+// RspError
+
+// int32 result = 1;
+inline void RspError::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspError::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspError.result)
+  return result_;
+}
+inline void RspError::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspError.result)
+}
+
+// -------------------------------------------------------------------
+
 // User
 
 // int32 user_id = 1;
@@ -4356,6 +4460,8 @@ inline void RspGetFile::set_allocated_fragment(::spaceless::protocol::FileFragme
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -45,6 +45,11 @@ enum MiscellaneousType
     MAX_FRAGMENT_CONTENT_LEN = 50000;
 }
 
+message RspError
+{
+    int32 result = 1;
+}
+
 message User
 {
     int32 user_id = 1;

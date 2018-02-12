@@ -19,6 +19,8 @@
 
 namespace spaceless {
 namespace protocol {
+class RspErrorDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<RspError> {
+} _RspError_default_instance_;
 class UserDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<User> {
 } _User_default_instance_;
 class ReqRegisterUserDefaultTypeInternal : public ::google::protobuf::internal::ExplicitlyConstructed<ReqRegisterUser> {
@@ -83,12 +85,17 @@ namespace protobuf_protocol_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[29];
+::google::protobuf::Metadata file_level_metadata[30];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
 
 }  // namespace
 
 const ::google::protobuf::uint32 TableStruct::offsets[] = {
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspError, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(RspError, result_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -261,38 +268,40 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
 };
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
-  { 0, -1, sizeof(User)},
-  { 7, -1, sizeof(ReqRegisterUser)},
-  { 13, -1, sizeof(RspRegisterUser)},
-  { 19, -1, sizeof(ReqLoginUser)},
-  { 25, -1, sizeof(RspLoginUser)},
-  { 30, -1, sizeof(ReqRemoveUser)},
-  { 35, -1, sizeof(RspRemoveUser)},
-  { 40, -1, sizeof(ReqFindUser)},
-  { 46, -1, sizeof(RspFindUser)},
-  { 52, -1, sizeof(SharingGroup)},
-  { 62, -1, sizeof(ReqRegisterGroup)},
-  { 67, -1, sizeof(RspRegisterGroup)},
-  { 73, -1, sizeof(ReqRemoveGroup)},
-  { 78, -1, sizeof(RspRemoveGroup)},
-  { 83, -1, sizeof(ReqFindGroup)},
-  { 89, -1, sizeof(RspFindGroup)},
-  { 95, -1, sizeof(ReqJoinGroup)},
-  { 100, -1, sizeof(RspJoinGroup)},
-  { 105, -1, sizeof(ReqAssignAsManager)},
-  { 111, -1, sizeof(RspAssignAsManager)},
-  { 116, -1, sizeof(ReqAssignAsMemeber)},
-  { 122, -1, sizeof(RspAssignAsMemeber)},
-  { 127, -1, sizeof(ReqKickOutUser)},
-  { 133, -1, sizeof(RspKickOutUser)},
-  { 138, -1, sizeof(FileFragment)},
-  { 145, -1, sizeof(ReqPutFile)},
-  { 152, -1, sizeof(RspPutFile)},
-  { 157, -1, sizeof(ReqGetFile)},
-  { 163, -1, sizeof(RspGetFile)},
+  { 0, -1, sizeof(RspError)},
+  { 5, -1, sizeof(User)},
+  { 12, -1, sizeof(ReqRegisterUser)},
+  { 18, -1, sizeof(RspRegisterUser)},
+  { 24, -1, sizeof(ReqLoginUser)},
+  { 30, -1, sizeof(RspLoginUser)},
+  { 35, -1, sizeof(ReqRemoveUser)},
+  { 40, -1, sizeof(RspRemoveUser)},
+  { 45, -1, sizeof(ReqFindUser)},
+  { 51, -1, sizeof(RspFindUser)},
+  { 57, -1, sizeof(SharingGroup)},
+  { 67, -1, sizeof(ReqRegisterGroup)},
+  { 72, -1, sizeof(RspRegisterGroup)},
+  { 78, -1, sizeof(ReqRemoveGroup)},
+  { 83, -1, sizeof(RspRemoveGroup)},
+  { 88, -1, sizeof(ReqFindGroup)},
+  { 94, -1, sizeof(RspFindGroup)},
+  { 100, -1, sizeof(ReqJoinGroup)},
+  { 105, -1, sizeof(RspJoinGroup)},
+  { 110, -1, sizeof(ReqAssignAsManager)},
+  { 116, -1, sizeof(RspAssignAsManager)},
+  { 121, -1, sizeof(ReqAssignAsMemeber)},
+  { 127, -1, sizeof(RspAssignAsMemeber)},
+  { 132, -1, sizeof(ReqKickOutUser)},
+  { 138, -1, sizeof(RspKickOutUser)},
+  { 143, -1, sizeof(FileFragment)},
+  { 150, -1, sizeof(ReqPutFile)},
+  { 157, -1, sizeof(RspPutFile)},
+  { 162, -1, sizeof(ReqGetFile)},
+  { 168, -1, sizeof(RspGetFile)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::google::protobuf::Message*>(&_RspError_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_User_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_ReqRegisterUser_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_RspRegisterUser_default_instance_),
@@ -342,76 +351,79 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 29);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 30);
 }
 
 }  // namespace
 
 void TableStruct::Shutdown() {
-  _User_default_instance_.Shutdown();
+  _RspError_default_instance_.Shutdown();
   delete file_level_metadata[0].reflection;
-  _ReqRegisterUser_default_instance_.Shutdown();
+  _User_default_instance_.Shutdown();
   delete file_level_metadata[1].reflection;
-  _RspRegisterUser_default_instance_.Shutdown();
+  _ReqRegisterUser_default_instance_.Shutdown();
   delete file_level_metadata[2].reflection;
-  _ReqLoginUser_default_instance_.Shutdown();
+  _RspRegisterUser_default_instance_.Shutdown();
   delete file_level_metadata[3].reflection;
-  _RspLoginUser_default_instance_.Shutdown();
+  _ReqLoginUser_default_instance_.Shutdown();
   delete file_level_metadata[4].reflection;
-  _ReqRemoveUser_default_instance_.Shutdown();
+  _RspLoginUser_default_instance_.Shutdown();
   delete file_level_metadata[5].reflection;
-  _RspRemoveUser_default_instance_.Shutdown();
+  _ReqRemoveUser_default_instance_.Shutdown();
   delete file_level_metadata[6].reflection;
-  _ReqFindUser_default_instance_.Shutdown();
+  _RspRemoveUser_default_instance_.Shutdown();
   delete file_level_metadata[7].reflection;
-  _RspFindUser_default_instance_.Shutdown();
+  _ReqFindUser_default_instance_.Shutdown();
   delete file_level_metadata[8].reflection;
-  _SharingGroup_default_instance_.Shutdown();
+  _RspFindUser_default_instance_.Shutdown();
   delete file_level_metadata[9].reflection;
-  _ReqRegisterGroup_default_instance_.Shutdown();
+  _SharingGroup_default_instance_.Shutdown();
   delete file_level_metadata[10].reflection;
-  _RspRegisterGroup_default_instance_.Shutdown();
+  _ReqRegisterGroup_default_instance_.Shutdown();
   delete file_level_metadata[11].reflection;
-  _ReqRemoveGroup_default_instance_.Shutdown();
+  _RspRegisterGroup_default_instance_.Shutdown();
   delete file_level_metadata[12].reflection;
-  _RspRemoveGroup_default_instance_.Shutdown();
+  _ReqRemoveGroup_default_instance_.Shutdown();
   delete file_level_metadata[13].reflection;
-  _ReqFindGroup_default_instance_.Shutdown();
+  _RspRemoveGroup_default_instance_.Shutdown();
   delete file_level_metadata[14].reflection;
-  _RspFindGroup_default_instance_.Shutdown();
+  _ReqFindGroup_default_instance_.Shutdown();
   delete file_level_metadata[15].reflection;
-  _ReqJoinGroup_default_instance_.Shutdown();
+  _RspFindGroup_default_instance_.Shutdown();
   delete file_level_metadata[16].reflection;
-  _RspJoinGroup_default_instance_.Shutdown();
+  _ReqJoinGroup_default_instance_.Shutdown();
   delete file_level_metadata[17].reflection;
-  _ReqAssignAsManager_default_instance_.Shutdown();
+  _RspJoinGroup_default_instance_.Shutdown();
   delete file_level_metadata[18].reflection;
-  _RspAssignAsManager_default_instance_.Shutdown();
+  _ReqAssignAsManager_default_instance_.Shutdown();
   delete file_level_metadata[19].reflection;
-  _ReqAssignAsMemeber_default_instance_.Shutdown();
+  _RspAssignAsManager_default_instance_.Shutdown();
   delete file_level_metadata[20].reflection;
-  _RspAssignAsMemeber_default_instance_.Shutdown();
+  _ReqAssignAsMemeber_default_instance_.Shutdown();
   delete file_level_metadata[21].reflection;
-  _ReqKickOutUser_default_instance_.Shutdown();
+  _RspAssignAsMemeber_default_instance_.Shutdown();
   delete file_level_metadata[22].reflection;
-  _RspKickOutUser_default_instance_.Shutdown();
+  _ReqKickOutUser_default_instance_.Shutdown();
   delete file_level_metadata[23].reflection;
-  _FileFragment_default_instance_.Shutdown();
+  _RspKickOutUser_default_instance_.Shutdown();
   delete file_level_metadata[24].reflection;
-  _ReqPutFile_default_instance_.Shutdown();
+  _FileFragment_default_instance_.Shutdown();
   delete file_level_metadata[25].reflection;
-  _RspPutFile_default_instance_.Shutdown();
+  _ReqPutFile_default_instance_.Shutdown();
   delete file_level_metadata[26].reflection;
-  _ReqGetFile_default_instance_.Shutdown();
+  _RspPutFile_default_instance_.Shutdown();
   delete file_level_metadata[27].reflection;
-  _RspGetFile_default_instance_.Shutdown();
+  _ReqGetFile_default_instance_.Shutdown();
   delete file_level_metadata[28].reflection;
+  _RspGetFile_default_instance_.Shutdown();
+  delete file_level_metadata[29].reflection;
 }
 
 void TableStruct::InitDefaultsImpl() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::internal::InitProtobufDefaults();
+  _RspError_default_instance_.DefaultConstruct();
   _User_default_instance_.DefaultConstruct();
   _ReqRegisterUser_default_instance_.DefaultConstruct();
   _RspRegisterUser_default_instance_.DefaultConstruct();
@@ -460,68 +472,69 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\016protocol.proto\022\022spaceless.protocol\"=\n\004"
-      "User\022\017\n\007user_id\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022"
-      "\022\n\ngroup_list\030\003 \003(\005\"5\n\017ReqRegisterUser\022\020"
-      "\n\010username\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\"I\n\017Rs"
-      "pRegisterUser\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 "
-      "\001(\0132\030.spaceless.protocol.User\"1\n\014ReqLogi"
-      "nUser\022\017\n\007user_id\030\001 \001(\005\022\020\n\010password\030\002 \001(\t"
-      "\"\036\n\014RspLoginUser\022\016\n\006result\030\001 \001(\005\" \n\rReqR"
-      "emoveUser\022\017\n\007user_id\030\001 \001(\005\"\037\n\rRspRemoveU"
-      "ser\022\016\n\006result\030\001 \001(\005\"0\n\013ReqFindUser\022\017\n\007us"
-      "er_id\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\"E\n\013RspFind"
-      "User\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spa"
-      "celess.protocol.User\"\206\001\n\014SharingGroup\022\020\n"
-      "\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 \001(\t\022\020\n\010o"
-      "wner_id\030\003 \001(\005\022\023\n\013root_dir_id\030\004 \001(\005\022\024\n\014ma"
-      "nager_list\030\005 \003(\005\022\023\n\013member_list\030\006 \003(\005\"&\n"
-      "\020ReqRegisterGroup\022\022\n\ngroup_name\030\001 \001(\t\"4\n"
-      "\020RspRegisterGroup\022\016\n\006result\030\001 \001(\005\022\020\n\010gro"
-      "up_id\030\002 \001(\005\"\"\n\016ReqRemoveGroup\022\020\n\010group_i"
-      "d\030\001 \001(\005\" \n\016RspRemoveGroup\022\016\n\006result\030\001 \001("
-      "\010\"4\n\014ReqFindGroup\022\020\n\010group_id\030\001 \001(\005\022\022\n\ng"
-      "roup_name\030\002 \001(\t\"O\n\014RspFindGroup\022\016\n\006resul"
-      "t\030\001 \001(\005\022/\n\005group\030\002 \001(\0132 .spaceless.proto"
-      "col.SharingGroup\" \n\014ReqJoinGroup\022\020\n\010grou"
-      "p_id\030\001 \001(\005\"\036\n\014RspJoinGroup\022\016\n\006result\030\001 \001"
-      "(\005\"7\n\022ReqAssignAsManager\022\020\n\010group_id\030\001 \001"
-      "(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022RspAssignAsManage"
-      "r\022\016\n\006result\030\001 \001(\005\"7\n\022ReqAssignAsMemeber\022"
-      "\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022Rs"
-      "pAssignAsMemeber\022\016\n\006result\030\001 \001(\005\"3\n\016ReqK"
-      "ickOutUser\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030"
-      "\002 \001(\005\" \n\016RspKickOutUser\022\016\n\006result\030\001 \001(\005\""
-      "V\n\014FileFragment\022\024\n\014max_fragment\030\001 \001(\005\022\026\n"
-      "\016fragment_index\030\002 \001(\005\022\030\n\020fragment_conten"
-      "t\030\003 \001(\t\"d\n\nReqPutFile\022\020\n\010group_id\030\001 \001(\005\022"
-      "\020\n\010filename\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .sp"
-      "aceless.protocol.FileFragment\"\034\n\nRspPutF"
-      "ile\022\016\n\006result\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010gro"
-      "up_id\030\001 \001(\005\022\020\n\010filename\030\002 \001(\t\"P\n\nRspGetF"
-      "ile\022\016\n\006result\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 ."
-      "spaceless.protocol.FileFragment*\360\004\n\013Comm"
-      "andType\022\023\n\017INVALID_COMMAND\020\000\022\026\n\021REQ_REGI"
-      "STER_USER\020\350\007\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016"
-      "REQ_LOGIN_USER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024"
-      "\n\017REQ_REMOVE_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020"
-      "\356\007\022\022\n\rREQ_FIND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020"
-      "\360\007\022\027\n\022REQ_REGISTER_GROUP\020\325\010\022\027\n\022RSP_REGIS"
-      "TER_GROUP\020\326\010\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020R"
-      "SP_REMOVE_GROUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022"
-      "\023\n\016RSP_FIND_GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333"
-      "\010\022\023\n\016RSP_JOIN_GROUP\020\334\010\022\032\n\025REQ_ASSIGN_AS_"
-      "MANAGER\020\335\010\022\032\n\025RSP_ASSIGN_AS_MANAGER\020\336\010\022\032"
-      "\n\025REQ_ASSIGN_AS_MEMEBER\020\337\010\022\032\n\025RSP_ASSIGN"
-      "_AS_MEMEBER\020\340\010\022\026\n\021REQ_KICK_OUT_USER\020\341\010\022\026"
-      "\n\021RSP_KICK_OUT_USER\020\342\010\022\021\n\014REQ_PUT_FILE\020\377"
-      "\010\022\021\n\014RSP_PUT_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022"
-      "\021\n\014RSP_GET_FILE\020\202\t*N\n\021MiscellaneousType\022"
-      "\031\n\025INVALID_MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGME"
-      "NT_CONTENT_LEN\020\320\206\003b\006proto3"
+      "\n\016protocol.proto\022\022spaceless.protocol\"\032\n\010"
+      "RspError\022\016\n\006result\030\001 \001(\005\"=\n\004User\022\017\n\007user"
+      "_id\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\022\n\ngroup_lis"
+      "t\030\003 \003(\005\"5\n\017ReqRegisterUser\022\020\n\010username\030\001"
+      " \001(\t\022\020\n\010password\030\002 \001(\t\"I\n\017RspRegisterUse"
+      "r\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spacel"
+      "ess.protocol.User\"1\n\014ReqLoginUser\022\017\n\007use"
+      "r_id\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"\036\n\014RspLogin"
+      "User\022\016\n\006result\030\001 \001(\005\" \n\rReqRemoveUser\022\017\n"
+      "\007user_id\030\001 \001(\005\"\037\n\rRspRemoveUser\022\016\n\006resul"
+      "t\030\001 \001(\005\"0\n\013ReqFindUser\022\017\n\007user_id\030\001 \001(\005\022"
+      "\020\n\010username\030\002 \001(\t\"E\n\013RspFindUser\022\016\n\006resu"
+      "lt\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spaceless.proto"
+      "col.User\"\206\001\n\014SharingGroup\022\020\n\010group_id\030\001 "
+      "\001(\005\022\022\n\ngroup_name\030\002 \001(\t\022\020\n\010owner_id\030\003 \001("
+      "\005\022\023\n\013root_dir_id\030\004 \001(\005\022\024\n\014manager_list\030\005"
+      " \003(\005\022\023\n\013member_list\030\006 \003(\005\"&\n\020ReqRegister"
+      "Group\022\022\n\ngroup_name\030\001 \001(\t\"4\n\020RspRegister"
+      "Group\022\016\n\006result\030\001 \001(\005\022\020\n\010group_id\030\002 \001(\005\""
+      "\"\n\016ReqRemoveGroup\022\020\n\010group_id\030\001 \001(\005\" \n\016R"
+      "spRemoveGroup\022\016\n\006result\030\001 \001(\010\"4\n\014ReqFind"
+      "Group\022\020\n\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 "
+      "\001(\t\"O\n\014RspFindGroup\022\016\n\006result\030\001 \001(\005\022/\n\005g"
+      "roup\030\002 \001(\0132 .spaceless.protocol.SharingG"
+      "roup\" \n\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\"\036"
+      "\n\014RspJoinGroup\022\016\n\006result\030\001 \001(\005\"7\n\022ReqAss"
+      "ignAsManager\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_i"
+      "d\030\002 \001(\005\"$\n\022RspAssignAsManager\022\016\n\006result\030"
+      "\001 \001(\005\"7\n\022ReqAssignAsMemeber\022\020\n\010group_id\030"
+      "\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022RspAssignAsMem"
+      "eber\022\016\n\006result\030\001 \001(\005\"3\n\016ReqKickOutUser\022\020"
+      "\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\" \n\016Rsp"
+      "KickOutUser\022\016\n\006result\030\001 \001(\005\"V\n\014FileFragm"
+      "ent\022\024\n\014max_fragment\030\001 \001(\005\022\026\n\016fragment_in"
+      "dex\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\t\"d\n\nR"
+      "eqPutFile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filename\030"
+      "\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .spaceless.prot"
+      "ocol.FileFragment\"\034\n\nRspPutFile\022\016\n\006resul"
+      "t\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010group_id\030\001 \001(\005\022"
+      "\020\n\010filename\030\002 \001(\t\"P\n\nRspGetFile\022\016\n\006resul"
+      "t\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 .spaceless.pr"
+      "otocol.FileFragment*\360\004\n\013CommandType\022\023\n\017I"
+      "NVALID_COMMAND\020\000\022\026\n\021REQ_REGISTER_USER\020\350\007"
+      "\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016REQ_LOGIN_US"
+      "ER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024\n\017REQ_REMOVE"
+      "_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020\356\007\022\022\n\rREQ_FI"
+      "ND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020\360\007\022\027\n\022REQ_RE"
+      "GISTER_GROUP\020\325\010\022\027\n\022RSP_REGISTER_GROUP\020\326\010"
+      "\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020RSP_REMOVE_GR"
+      "OUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022\023\n\016RSP_FIND_"
+      "GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333\010\022\023\n\016RSP_JOI"
+      "N_GROUP\020\334\010\022\032\n\025REQ_ASSIGN_AS_MANAGER\020\335\010\022\032"
+      "\n\025RSP_ASSIGN_AS_MANAGER\020\336\010\022\032\n\025REQ_ASSIGN"
+      "_AS_MEMEBER\020\337\010\022\032\n\025RSP_ASSIGN_AS_MEMEBER\020"
+      "\340\010\022\026\n\021REQ_KICK_OUT_USER\020\341\010\022\026\n\021RSP_KICK_O"
+      "UT_USER\020\342\010\022\021\n\014REQ_PUT_FILE\020\377\010\022\021\n\014RSP_PUT"
+      "_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022\021\n\014RSP_GET_F"
+      "ILE\020\202\t*N\n\021MiscellaneousType\022\031\n\025INVALID_M"
+      "ISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_L"
+      "EN\020\320\206\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2346);
+      descriptor, 2374);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -597,6 +610,231 @@ bool MiscellaneousType_IsValid(int value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int RspError::kResultFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+RspError::RspError()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_protocol_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:spaceless.protocol.RspError)
+}
+RspError::RspError(const RspError& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _cached_size_(0) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  result_ = from.result_;
+  // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspError)
+}
+
+void RspError::SharedCtor() {
+  result_ = 0;
+  _cached_size_ = 0;
+}
+
+RspError::~RspError() {
+  // @@protoc_insertion_point(destructor:spaceless.protocol.RspError)
+  SharedDtor();
+}
+
+void RspError::SharedDtor() {
+}
+
+void RspError::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* RspError::descriptor() {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[0].descriptor;
+}
+
+const RspError& RspError::default_instance() {
+  protobuf_protocol_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+RspError* RspError::New(::google::protobuf::Arena* arena) const {
+  RspError* n = new RspError;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void RspError::Clear() {
+// @@protoc_insertion_point(message_clear_start:spaceless.protocol.RspError)
+  result_ = 0;
+}
+
+bool RspError::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:spaceless.protocol.RspError)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 result = 1;
+      case 1: {
+        if (tag == 8u) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &result_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:spaceless.protocol.RspError)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:spaceless.protocol.RspError)
+  return false;
+#undef DO_
+}
+
+void RspError::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:spaceless.protocol.RspError)
+  // int32 result = 1;
+  if (this->result() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:spaceless.protocol.RspError)
+}
+
+::google::protobuf::uint8* RspError::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic;  // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.RspError)
+  // int32 result = 1;
+  if (this->result() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.RspError)
+  return target;
+}
+
+size_t RspError::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.RspError)
+  size_t total_size = 0;
+
+  // int32 result = 1;
+  if (this->result() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->result());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void RspError::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:spaceless.protocol.RspError)
+  GOOGLE_DCHECK_NE(&from, this);
+  const RspError* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const RspError>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:spaceless.protocol.RspError)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:spaceless.protocol.RspError)
+    MergeFrom(*source);
+  }
+}
+
+void RspError::MergeFrom(const RspError& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.RspError)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.result() != 0) {
+    set_result(from.result());
+  }
+}
+
+void RspError::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:spaceless.protocol.RspError)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void RspError::CopyFrom(const RspError& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:spaceless.protocol.RspError)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool RspError::IsInitialized() const {
+  return true;
+}
+
+void RspError::Swap(RspError* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void RspError::InternalSwap(RspError* other) {
+  std::swap(result_, other->result_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata RspError::GetMetadata() const {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_protocol_2eproto::file_level_metadata[0];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// RspError
+
+// int32 result = 1;
+void RspError::clear_result() {
+  result_ = 0;
+}
+::google::protobuf::int32 RspError::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspError.result)
+  return result_;
+}
+void RspError::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspError.result)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int User::kUserIdFieldNumber;
 const int User::kUsernameFieldNumber;
 const int User::kGroupListFieldNumber;
@@ -646,7 +884,7 @@ void User::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* User::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[0].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[1].descriptor;
 }
 
 const User& User::default_instance() {
@@ -913,7 +1151,7 @@ void User::InternalSwap(User* other) {
 
 ::google::protobuf::Metadata User::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[0];
+  return protobuf_protocol_2eproto::file_level_metadata[1];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1071,7 +1309,7 @@ void ReqRegisterUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqRegisterUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[1].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[2].descriptor;
 }
 
 const ReqRegisterUser& ReqRegisterUser::default_instance() {
@@ -1294,7 +1532,7 @@ void ReqRegisterUser::InternalSwap(ReqRegisterUser* other) {
 
 ::google::protobuf::Metadata ReqRegisterUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[1];
+  return protobuf_protocol_2eproto::file_level_metadata[2];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1459,7 +1697,7 @@ void RspRegisterUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspRegisterUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[2].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[3].descriptor;
 }
 
 const RspRegisterUser& RspRegisterUser::default_instance() {
@@ -1658,7 +1896,7 @@ void RspRegisterUser::InternalSwap(RspRegisterUser* other) {
 
 ::google::protobuf::Metadata RspRegisterUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[2];
+  return protobuf_protocol_2eproto::file_level_metadata[3];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1769,7 +2007,7 @@ void ReqLoginUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqLoginUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[3].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[4].descriptor;
 }
 
 const ReqLoginUser& ReqLoginUser::default_instance() {
@@ -1978,7 +2216,7 @@ void ReqLoginUser::InternalSwap(ReqLoginUser* other) {
 
 ::google::protobuf::Metadata ReqLoginUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[3];
+  return protobuf_protocol_2eproto::file_level_metadata[4];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2095,7 +2333,7 @@ void RspLoginUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspLoginUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[4].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[5].descriptor;
 }
 
 const RspLoginUser& RspLoginUser::default_instance() {
@@ -2255,7 +2493,7 @@ void RspLoginUser::InternalSwap(RspLoginUser* other) {
 
 ::google::protobuf::Metadata RspLoginUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[4];
+  return protobuf_protocol_2eproto::file_level_metadata[5];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2320,7 +2558,7 @@ void ReqRemoveUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqRemoveUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[5].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[6].descriptor;
 }
 
 const ReqRemoveUser& ReqRemoveUser::default_instance() {
@@ -2480,7 +2718,7 @@ void ReqRemoveUser::InternalSwap(ReqRemoveUser* other) {
 
 ::google::protobuf::Metadata ReqRemoveUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[5];
+  return protobuf_protocol_2eproto::file_level_metadata[6];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2545,7 +2783,7 @@ void RspRemoveUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspRemoveUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[6].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[7].descriptor;
 }
 
 const RspRemoveUser& RspRemoveUser::default_instance() {
@@ -2705,7 +2943,7 @@ void RspRemoveUser::InternalSwap(RspRemoveUser* other) {
 
 ::google::protobuf::Metadata RspRemoveUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[6];
+  return protobuf_protocol_2eproto::file_level_metadata[7];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -2777,7 +3015,7 @@ void ReqFindUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqFindUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[7].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[8].descriptor;
 }
 
 const ReqFindUser& ReqFindUser::default_instance() {
@@ -2986,7 +3224,7 @@ void ReqFindUser::InternalSwap(ReqFindUser* other) {
 
 ::google::protobuf::Metadata ReqFindUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[7];
+  return protobuf_protocol_2eproto::file_level_metadata[8];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -3113,7 +3351,7 @@ void RspFindUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspFindUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[8].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[9].descriptor;
 }
 
 const RspFindUser& RspFindUser::default_instance() {
@@ -3312,7 +3550,7 @@ void RspFindUser::InternalSwap(RspFindUser* other) {
 
 ::google::protobuf::Metadata RspFindUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[8];
+  return protobuf_protocol_2eproto::file_level_metadata[9];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -3432,7 +3670,7 @@ void SharingGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* SharingGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[9].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[10].descriptor;
 }
 
 const SharingGroup& SharingGroup::default_instance() {
@@ -3826,7 +4064,7 @@ void SharingGroup::InternalSwap(SharingGroup* other) {
 
 ::google::protobuf::Metadata SharingGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[9];
+  return protobuf_protocol_2eproto::file_level_metadata[10];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -4035,7 +4273,7 @@ void ReqRegisterGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqRegisterGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[10].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[11].descriptor;
 }
 
 const ReqRegisterGroup& ReqRegisterGroup::default_instance() {
@@ -4209,7 +4447,7 @@ void ReqRegisterGroup::InternalSwap(ReqRegisterGroup* other) {
 
 ::google::protobuf::Metadata ReqRegisterGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[10];
+  return protobuf_protocol_2eproto::file_level_metadata[11];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -4316,7 +4554,7 @@ void RspRegisterGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspRegisterGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[11].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[12].descriptor;
 }
 
 const RspRegisterGroup& RspRegisterGroup::default_instance() {
@@ -4511,7 +4749,7 @@ void RspRegisterGroup::InternalSwap(RspRegisterGroup* other) {
 
 ::google::protobuf::Metadata RspRegisterGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[11];
+  return protobuf_protocol_2eproto::file_level_metadata[12];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -4590,7 +4828,7 @@ void ReqRemoveGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqRemoveGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[12].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[13].descriptor;
 }
 
 const ReqRemoveGroup& ReqRemoveGroup::default_instance() {
@@ -4750,7 +4988,7 @@ void ReqRemoveGroup::InternalSwap(ReqRemoveGroup* other) {
 
 ::google::protobuf::Metadata ReqRemoveGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[12];
+  return protobuf_protocol_2eproto::file_level_metadata[13];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -4815,7 +5053,7 @@ void RspRemoveGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspRemoveGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[13].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[14].descriptor;
 }
 
 const RspRemoveGroup& RspRemoveGroup::default_instance() {
@@ -4973,7 +5211,7 @@ void RspRemoveGroup::InternalSwap(RspRemoveGroup* other) {
 
 ::google::protobuf::Metadata RspRemoveGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[13];
+  return protobuf_protocol_2eproto::file_level_metadata[14];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -5045,7 +5283,7 @@ void ReqFindGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqFindGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[14].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[15].descriptor;
 }
 
 const ReqFindGroup& ReqFindGroup::default_instance() {
@@ -5254,7 +5492,7 @@ void ReqFindGroup::InternalSwap(ReqFindGroup* other) {
 
 ::google::protobuf::Metadata ReqFindGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[14];
+  return protobuf_protocol_2eproto::file_level_metadata[15];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -5381,7 +5619,7 @@ void RspFindGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspFindGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[15].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[16].descriptor;
 }
 
 const RspFindGroup& RspFindGroup::default_instance() {
@@ -5580,7 +5818,7 @@ void RspFindGroup::InternalSwap(RspFindGroup* other) {
 
 ::google::protobuf::Metadata RspFindGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[15];
+  return protobuf_protocol_2eproto::file_level_metadata[16];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -5684,7 +5922,7 @@ void ReqJoinGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqJoinGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[16].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[17].descriptor;
 }
 
 const ReqJoinGroup& ReqJoinGroup::default_instance() {
@@ -5844,7 +6082,7 @@ void ReqJoinGroup::InternalSwap(ReqJoinGroup* other) {
 
 ::google::protobuf::Metadata ReqJoinGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[16];
+  return protobuf_protocol_2eproto::file_level_metadata[17];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -5909,7 +6147,7 @@ void RspJoinGroup::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspJoinGroup::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[17].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[18].descriptor;
 }
 
 const RspJoinGroup& RspJoinGroup::default_instance() {
@@ -6069,7 +6307,7 @@ void RspJoinGroup::InternalSwap(RspJoinGroup* other) {
 
 ::google::protobuf::Metadata RspJoinGroup::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[17];
+  return protobuf_protocol_2eproto::file_level_metadata[18];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6138,7 +6376,7 @@ void ReqAssignAsManager::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqAssignAsManager::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[18].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[19].descriptor;
 }
 
 const ReqAssignAsManager& ReqAssignAsManager::default_instance() {
@@ -6333,7 +6571,7 @@ void ReqAssignAsManager::InternalSwap(ReqAssignAsManager* other) {
 
 ::google::protobuf::Metadata ReqAssignAsManager::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[18];
+  return protobuf_protocol_2eproto::file_level_metadata[19];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6412,7 +6650,7 @@ void RspAssignAsManager::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspAssignAsManager::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[19].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[20].descriptor;
 }
 
 const RspAssignAsManager& RspAssignAsManager::default_instance() {
@@ -6572,7 +6810,7 @@ void RspAssignAsManager::InternalSwap(RspAssignAsManager* other) {
 
 ::google::protobuf::Metadata RspAssignAsManager::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[19];
+  return protobuf_protocol_2eproto::file_level_metadata[20];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6641,7 +6879,7 @@ void ReqAssignAsMemeber::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqAssignAsMemeber::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[20].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[21].descriptor;
 }
 
 const ReqAssignAsMemeber& ReqAssignAsMemeber::default_instance() {
@@ -6836,7 +7074,7 @@ void ReqAssignAsMemeber::InternalSwap(ReqAssignAsMemeber* other) {
 
 ::google::protobuf::Metadata ReqAssignAsMemeber::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[20];
+  return protobuf_protocol_2eproto::file_level_metadata[21];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -6915,7 +7153,7 @@ void RspAssignAsMemeber::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspAssignAsMemeber::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[21].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[22].descriptor;
 }
 
 const RspAssignAsMemeber& RspAssignAsMemeber::default_instance() {
@@ -7075,7 +7313,7 @@ void RspAssignAsMemeber::InternalSwap(RspAssignAsMemeber* other) {
 
 ::google::protobuf::Metadata RspAssignAsMemeber::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[21];
+  return protobuf_protocol_2eproto::file_level_metadata[22];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7144,7 +7382,7 @@ void ReqKickOutUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqKickOutUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[22].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[23].descriptor;
 }
 
 const ReqKickOutUser& ReqKickOutUser::default_instance() {
@@ -7339,7 +7577,7 @@ void ReqKickOutUser::InternalSwap(ReqKickOutUser* other) {
 
 ::google::protobuf::Metadata ReqKickOutUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[22];
+  return protobuf_protocol_2eproto::file_level_metadata[23];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7418,7 +7656,7 @@ void RspKickOutUser::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspKickOutUser::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[23].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[24].descriptor;
 }
 
 const RspKickOutUser& RspKickOutUser::default_instance() {
@@ -7578,7 +7816,7 @@ void RspKickOutUser::InternalSwap(RspKickOutUser* other) {
 
 ::google::protobuf::Metadata RspKickOutUser::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[23];
+  return protobuf_protocol_2eproto::file_level_metadata[24];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -7654,7 +7892,7 @@ void FileFragment::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* FileFragment::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[24].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[25].descriptor;
 }
 
 const FileFragment& FileFragment::default_instance() {
@@ -7898,7 +8136,7 @@ void FileFragment::InternalSwap(FileFragment* other) {
 
 ::google::protobuf::Metadata FileFragment::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[24];
+  return protobuf_protocol_2eproto::file_level_metadata[25];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -8046,7 +8284,7 @@ void ReqPutFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqPutFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[25].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[26].descriptor;
 }
 
 const ReqPutFile& ReqPutFile::default_instance() {
@@ -8294,7 +8532,7 @@ void ReqPutFile::InternalSwap(ReqPutFile* other) {
 
 ::google::protobuf::Metadata ReqPutFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[25];
+  return protobuf_protocol_2eproto::file_level_metadata[26];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -8450,7 +8688,7 @@ void RspPutFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspPutFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[26].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[27].descriptor;
 }
 
 const RspPutFile& RspPutFile::default_instance() {
@@ -8610,7 +8848,7 @@ void RspPutFile::InternalSwap(RspPutFile* other) {
 
 ::google::protobuf::Metadata RspPutFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[26];
+  return protobuf_protocol_2eproto::file_level_metadata[27];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -8682,7 +8920,7 @@ void ReqGetFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* ReqGetFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[27].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[28].descriptor;
 }
 
 const ReqGetFile& ReqGetFile::default_instance() {
@@ -8891,7 +9129,7 @@ void ReqGetFile::InternalSwap(ReqGetFile* other) {
 
 ::google::protobuf::Metadata ReqGetFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[27];
+  return protobuf_protocol_2eproto::file_level_metadata[28];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -9018,7 +9256,7 @@ void RspGetFile::SetCachedSize(int size) const {
 }
 const ::google::protobuf::Descriptor* RspGetFile::descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[28].descriptor;
+  return protobuf_protocol_2eproto::file_level_metadata[29].descriptor;
 }
 
 const RspGetFile& RspGetFile::default_instance() {
@@ -9217,7 +9455,7 @@ void RspGetFile::InternalSwap(RspGetFile* other) {
 
 ::google::protobuf::Metadata RspGetFile::GetMetadata() const {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_metadata[28];
+  return protobuf_protocol_2eproto::file_level_metadata[29];
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
