@@ -64,7 +64,7 @@ enum
 
 const int PROTOCOL_PACKAGE_VERSION = 1;
 
-struct ProtocolHeader
+struct PackageHeader
 {
 	// Version of protocol.
 	short version;
@@ -86,7 +86,7 @@ class PackageBuffer
 {
 public:
 	static const std::size_t MAX_BUFFER_LEN = 65536;
-	static const std::size_t MAX_HEADER_LEN = sizeof(ProtocolHeader);
+	static const std::size_t MAX_HEADER_LEN = sizeof(PackageHeader);
 	static const std::size_t MAX_CONTENT_LEN = MAX_BUFFER_LEN - MAX_HEADER_LEN;
 
 	/**
@@ -106,17 +106,17 @@ public:
 	/**
 	 * Returns package header of buffer.
 	 */
-	ProtocolHeader& header()
+	PackageHeader& header()
 	{
-		return *reinterpret_cast<ProtocolHeader*>(m_buffer);
+		return *reinterpret_cast<PackageHeader*>(m_buffer);
 	}
 
 	/**
 	 * Returns package header of buffer.
 	 */
-	const ProtocolHeader& header() const
+	const PackageHeader& header() const
 	{
-		return *reinterpret_cast<const ProtocolHeader*>(m_buffer);
+		return *reinterpret_cast<const PackageHeader*>(m_buffer);
 	}
 
 	/**
@@ -277,12 +277,12 @@ public:
 	void on_error(ErrorNotification* notification);
 
 	/**
-	 * Sends a package to remote.
+	 * Sends a package to remote on asynchronization.
 	 */
 	void send_package(const PackageBuffer& package);
 
 	/**
-	 * Parses a protobuf as package buffer and send to remote.
+	 * Parses a protobuf as package buffer and send to remote on asynchronization.
 	 */
 	template <typename ProtobufType>
 	void send_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0, bool is_send_back = false);
@@ -344,10 +344,11 @@ void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg, int bind
 	}
 
 	PackageBuffer& package = PackageBufferManager::instance()->register_package();
-	package.header().command = cmd;
-	package.header().self_trans_id  = bind_trans_id;
-	package.header().trigger_trans_id = is_send_back ? m_read_buffer.header().self_trans_id : 0;
-	package.header().content_length = size;
+	PackageHeader& header = package.header();
+	header.command = cmd;
+	header.self_trans_id  = bind_trans_id;
+	header.trigger_trans_id = is_send_back ? m_read_buffer.header().self_trans_id : 0;
+	header.content_length = size;
 	lights::Sequence storage = package.content_buffer();
 	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
 

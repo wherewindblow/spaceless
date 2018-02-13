@@ -355,6 +355,7 @@ void NetworkConnection::send_package(const PackageBuffer& package)
 	if (!m_send_list.empty())
 	{
 		m_send_list.push(package.package_id());
+		return;
 	}
 
 	int len = static_cast<int>(package.total_length());
@@ -366,8 +367,8 @@ void NetworkConnection::send_package(const PackageBuffer& package)
 	else if (m_sended_len < len)
 	{
 		m_send_list.push(package.package_id());
-		Poco::Observer<NetworkConnection, WritableNotification> writable_observer(*this, &NetworkConnection::on_writable);
-		m_reactor.addEventHandler(m_socket, writable_observer);
+		Poco::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable);
+		m_reactor.addEventHandler(m_socket, observer);
 	}
 }
 
