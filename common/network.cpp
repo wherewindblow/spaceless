@@ -114,13 +114,13 @@ NetworkConnection* MultiplyPhaseTranscation::first_connection()
 }
 
 
-NetworkConnection* MultiplyPhaseTranscation::wait_connection()
+NetworkConnection* MultiplyPhaseTranscation::waiting_connection()
 {
 	return m_wait_conn;
 }
 
 
-int MultiplyPhaseTranscation::wait_command() const
+int MultiplyPhaseTranscation::waiting_command() const
 {
 	return m_wait_cmd;
 }
@@ -480,7 +480,7 @@ void NetworkConnection::trigger_transcation()
 			{
 				// Check the send rsponse connection is same as send request connection. Don't give change to
 				// other to interrupt not self transcation.
-				if (this == trans_handler->wait_connection() && command == trans_handler->wait_command())
+				if (this == trans_handler->waiting_connection() && command == trans_handler->waiting_command())
 				{
 					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
 									m_id, command, trans_id, trans_handler->current_phase());
@@ -496,8 +496,8 @@ void NetworkConnection::trigger_transcation()
 					SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: cmd {} not fit with conn_id {}, cmd {}.",
 									m_id,
 									command,
-									trans_handler->wait_connection()->connection_id(),
-									trans_handler->wait_command());
+									trans_handler->waiting_connection()->connection_id(),
+									trans_handler->waiting_command());
 				}
 			}
 			else

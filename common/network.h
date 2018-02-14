@@ -64,6 +64,9 @@ enum
 
 const int PROTOCOL_PACKAGE_VERSION = 1;
 
+/**
+ * Network package header include some common data of each package.
+ */
 struct PackageHeader
 {
 	// Version of protocol.
@@ -80,7 +83,7 @@ struct PackageHeader
 
 
 /**
- * Network data package to seperate message.
+ * Network package buffer include header and content.
  */
 class PackageBuffer
 {
@@ -202,19 +205,33 @@ void PackageBuffer::parse_as_protobuf(T& msg) const
 
 
 /**
- * Manage package buffer and guarantee they are valid when connetion underlying write is call.
+ * Manager of package buffer and guarantee package are valid when connetion underlying write is call.
  */
 class PackageBufferManager
 {
 public:
 	SPACELESS_SINGLETON_INSTANCE(PackageBufferManager);
 
+	/**
+	 * Registers package buffer.
+	 */
 	PackageBuffer& register_package();
 
+	/**
+	 * Removes package buffer.
+	 */
 	void remove_package(int package_id);
 
+	/**
+	 * Finds package buffer.
+	 * @note Returns nullptr if cannot find package.
+	 */
 	PackageBuffer* find_package(int package_id);
 
+	/**
+	 * Get package buffer.
+	 * @throw Throws exception if cannot find package.
+	 */
 	PackageBuffer& get_package(int package_id);
 
 private:
@@ -277,16 +294,26 @@ public:
 	void on_error(ErrorNotification* notification);
 
 	/**
-	 * Sends a package to remote on asynchronization.
+	 * Sends package to remote on asynchronization.
 	 */
 	void send_package(const PackageBuffer& package);
 
 	/**
 	 * Parses a protobuf as package buffer and send to remote on asynchronization.
+	 * @param cmd            Identifies package content type.
+	 * @param msg            Message of protobuff type.
+	 * @param bind_trans_id  Specific transcation that trigger by rsponse.
+	 * @param is_send_back   Is need to return last request associate transcation.
 	 */
 	template <typename ProtobufType>
 	void send_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0, bool is_send_back = false);
 
+	/**
+	 * Parses a protobuf as package buffer and send to remote on asynchronization and send back request transcation id.
+	 * @param cmd            Identifies package content type.
+	 * @param msg            Message of protobuff type.
+	 * @param bind_trans_id  Specific transcation that trigger by rsponse.
+	 */
 	template <typename ProtobufType>
 	void send_back_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0);
 
@@ -364,7 +391,7 @@ void NetworkConnection::send_back_protobuf(int cmd, const ProtobufType& msg, int
 
 
 /**
- * NetworkConnectionManager manages all network connection and listener.
+ * Manager of all network connection and listener.
  */
 class NetworkConnectionManager
 {
@@ -377,12 +404,12 @@ public:
 	~NetworkConnectionManager();
 
 	/**
-	 * Registers a network connection with host and port.
+	 * Registers network connection.
 	 */
 	NetworkConnection& register_connection(const std::string& host, unsigned short port);
 
 	/**
-	 * Registers a network listener with host and port.
+	 * Registers network listener.
 	 */
 	void register_listener(const std::string& host, unsigned short port);
 
@@ -393,7 +420,7 @@ public:
 
 	/**
 	 * Finds a network connection.
-	 * @note Returns nullptr when cannot find connection.
+	 * @note Returns nullptr if cannot find connection.
 	 */
 	NetworkConnection* find_connection(int conn_id);
 
@@ -417,6 +444,9 @@ private:
 };
 
 
+/**
+ * Transcation type.
+ */
 enum class TranscationType
 {
 	ONE_PHASE_TRANSCATION,
@@ -424,6 +454,9 @@ enum class TranscationType
 };
 
 
+/**
+ * General transcation type.
+ */
 struct Transcation
 {
 	TranscationType trans_type;
@@ -431,6 +464,9 @@ struct Transcation
 };
 
 
+/**
+ * Multiply phase transcation allow to save transcation session in time range.
+ */
 class MultiplyPhaseTranscation
 {
 public:
@@ -440,34 +476,82 @@ public:
 		WAIT_NEXT_PHASE,
 	};
 
+	/**
+	 * Factory of this type transcation. Just simply call contructor.
+	 * @note This function is only a example.
+	 */
 	static MultiplyPhaseTranscation* register_transcation(int trans_id);
 
+	/**
+	 * Creates a transcation by trans_id.
+	 */
 	MultiplyPhaseTranscation(int trans_id);
 
+	/**
+	 * Destroys a transcation.
+	 */
 	virtual ~MultiplyPhaseTranscation() = default;
 
+	/**
+	 * Initializes this base class interal variables.
+	 */
 	void pre_on_init(NetworkConnection& conn, const PackageBuffer& package);
 
+	/**
+	 * Processes the package that trigger by associate command.
+	 * @param conn     Network connection of send package.
+	 * @param package  Pakcage of trigger this function.
+	 */
 	virtual PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) = 0;
 
+	/**
+	 * Processes the package of wait phase.
+	 * @param conn     Network connection of send package.
+	 * @param package  Pakcage of trigger this function.
+	 */
 	virtual PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) = 0;
 
+	/**
+	 * Processes wait time out.
+	 */
 	virtual PhaseResult on_timeout();
 
+	/**
+	 * Sets wait package info.
+	 * @param conn          Network connection that send indicate package.
+	 * @param cmd           Waits command.
+	 * @param current_phase Current phase.
+	 * @param timeout       Time out of waiting next package.
+	 */
 	PhaseResult wait_next_phase(NetworkConnection& conn, int cmd, int current_phase, int timeout);
 
 	template <typename T>
 	void send_back_message(int cmd, T& msg);
 
+	/**
+	 * Returns tranascation id.
+	 */
 	int transcation_id() const;
 
+	/**
+	 * Returns current phase.
+	 */
 	int current_phase() const;
 
+	/**
+	 * Returns connection that first start this transcation.
+	 */
 	NetworkConnection* first_connection();
 
-	NetworkConnection* wait_connection();
+	/**
+	 * Returns waiting connection that set by @c wait_next_phase
+	 */
+	NetworkConnection* waiting_connection();
 
-	int wait_command() const;
+	/**
+	 * Returns waiting command that set by @c wait_next_phase.
+	 */
+	int waiting_command() const;
 
 private:
 	int m_id;
@@ -485,17 +569,34 @@ void MultiplyPhaseTranscation::send_back_message(int cmd, T& msg)
 }
 
 
+/**
+ * Transcation factory function of multiply phase transcation.
+ */
 using TranscationFatory = MultiplyPhaseTranscation* (*)(int);
 
+
+/**
+ * Manager of multiply phase transcation.
+ */
 class MultiplyPhaseTranscationManager
 {
 public:
 	SPACELESS_SINGLETON_INSTANCE(MultiplyPhaseTranscationManager);
 
+	/**
+	 * Registers a multiply phase transcation.
+	 */
 	MultiplyPhaseTranscation& register_transcation(TranscationFatory trans_fatory);
 
+	/**
+	 * Removes a multiply phase transcation.
+	 */
 	void remove_transcation(int trans_id);
 
+	/**
+	 * Finds a multiply phase transcation.
+	 * @note Returns nullptr if cannot find multiply phase transcation.
+	 */
 	MultiplyPhaseTranscation* find_transcation(int trans_id);
 
 private:
@@ -507,8 +608,7 @@ private:
 using OnePhaseTrancation = void(*)(NetworkConnection&, const PackageBuffer&);
 
 /**
- * TranscationManager manages all command and transcation. When recieve a command will trigger associated transcation.
- * @note A command only can associate one transcation.
+ * Manager of transcation. When recieve a command will trigger associated transcation.
  */
 class TranscationManager
 {
@@ -516,29 +616,32 @@ public:
 	SPACELESS_SINGLETON_INSTANCE(TranscationManager);
 
 	/**
-	 * Registers associate a command with transcation.
+	 * Registers association of command with transcation.
+     * @note A command only can associate one transcation.
 	 */
 	void register_transcation(int cmd, TranscationType trans_type, void *handler);
 
 	/**
-	 * Registers associate a command with transcation.
+	 * Registers association of command with one phase transcation.
+	 * @note A command only can associate one transcation.
 	 */
 	void register_one_phase_transcation(int cmd, OnePhaseTrancation trancation);
 
 	/**
-	 * Registers associate a command with transcation.
-	 * @param trans_fatory  Fatory of transcation.
+	 * Registers association of command with multiply phase transcation.
+ 	 * @param trans_fatory  Fatory of multiply phase transcation.
+     * @note A command only can associate one transcation.
 	 */
 	void register_multiply_phase_transcation(int cmd, TranscationFatory trans_fatory);
 
 	/**
-	 * Removes associate a command with transcation.
+	 * Removes association of command with transcation.
 	 */
 	void remove_transcation(int cmd);
 
 	/**
-	 * Finds the associate transcation of command.
-	 * @note If cannot found command will return nullptr.
+	 * Finds transcation that associate with command.
+	 * @note Return nullptr if cannot find command.
 	 */
 	Transcation* find_transcation(int cmd);
 
