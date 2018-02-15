@@ -53,7 +53,7 @@ message RspError
 message User
 {
     int32 user_id = 1;
-    string username = 2;
+    string user_name = 2;
     repeated int32 group_list = 3;
 }
 

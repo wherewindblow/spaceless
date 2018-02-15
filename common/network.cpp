@@ -19,13 +19,16 @@ using Poco::Net::SocketAddress;
 
 PackageBuffer& PackageBufferManager::register_package()
 {
-	auto pair = m_package_list.emplace(m_next_id, PackageBuffer(m_next_id));
+	auto value = std::make_pair(m_next_id, PackageBuffer(m_next_id));
 	++m_next_id;
-	if (pair.second == false)
+
+	auto result = m_package_list.insert(value);
+	if (result.second == false)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_REGISTER);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
 	}
-	return pair.first->second;
+
+	return result.first->second;
 }
 
 
@@ -130,7 +133,14 @@ MultiplyPhaseTranscation& MultiplyPhaseTranscationManager::register_transcation(
 {
 	MultiplyPhaseTranscation* trans = trans_fatory(m_next_id);
 	++m_next_id;
-	m_trans_list.insert(std::make_pair(trans->transcation_id(), trans));
+
+	auto value = std::make_pair(trans->transcation_id(), trans);
+	auto result = m_trans_list.insert(value);
+	if (result.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_MULTIPLY_PHASE_TRANSCATION_ALREADY_EXIST);
+	}
+
 	return *trans;
 }
 
@@ -161,8 +171,12 @@ MultiplyPhaseTranscation* MultiplyPhaseTranscationManager::find_transcation(int 
 
 void TranscationManager::register_transcation(int cmd, TranscationType trans_type, void* handler)
 {
-	auto pair = std::make_pair(cmd, Transcation {trans_type, handler});
-	m_trans_list.insert(pair);
+	auto value = std::make_pair(cmd, Transcation {trans_type, handler});
+	auto result = m_trans_list.insert(value);
+	if (result.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSCATION_ALREADY_EXIST);
+	}
 }
 
 
@@ -217,7 +231,7 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
 	m_reactor.addEventHandler(m_socket, error);
 
-	NetworkConnectionManager::instance()->m_conn_list.emplace_back(this);
+	NetworkConnectionManager::instance()->m_conn_list.push_back(this);
 	m_id = NetworkConnectionManager::instance()->m_next_id;
 	++NetworkConnectionManager::instance()->m_next_id;
 
@@ -478,7 +492,7 @@ void NetworkConnection::trigger_transcation()
 				MultiplyPhaseTranscationManager::instance()->find_transcation(trans_id);
 			if (trans_handler)
 			{
-				// Check the send rsponse connection is same as send request connection. Don't give change to
+				// Check the send rsponse connection is same as send request connection. Don't give chance to
 				// other to interrupt not self transcation.
 				if (this == trans_handler->waiting_connection() && command == trans_handler->waiting_command())
 				{
@@ -536,7 +550,6 @@ void NetworkConnection::trigger_transcation()
 							SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.",
 											m_id, trans_handler.transcation_id());
 						}
-
 						break;
 					}
 					default:

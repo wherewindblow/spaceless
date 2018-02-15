@@ -15,7 +15,7 @@ namespace resource_server {
 
 const std::string ROOT_USER_NAME = "root";
 const std::string ROOT_USER_PWD = "pwd";
-int ROOT_USER_UID = 1;
+int ROOT_USER_ID = 1;
 
 int main(int argc, const char* argv[])
 {
@@ -24,10 +24,11 @@ int main(int argc, const char* argv[])
 		logger.set_level(lights::LogLevel::DEBUG);
 
 		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
-		storage_node_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10241);
+		default_storage_node = &StorageNodeManager::instance()->register_node("127.0.0.1", 10241);
+		default_storage_conn = NetworkConnectionManager::instance()->find_connection(default_storage_node->conn_id);
 
 		User& root = UserManager::instance()->register_user(ROOT_USER_NAME, ROOT_USER_PWD);
-		ROOT_USER_UID = root.user_id;
+		ROOT_USER_ID = root.user_id;
 
 		std::pair<int, OnePhaseTrancation> handlers[] = {
 			{protocol::REQ_REGISTER_USER, transcation::on_register_user},

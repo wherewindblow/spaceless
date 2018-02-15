@@ -42,13 +42,15 @@ User& UserManager::register_user(const std::string& username, const std::string&
 
 	User new_user = { m_next_id, username, password };
 	++m_next_id;
-	auto itr = m_user_list.insert(std::make_pair(new_user.user_id, new_user));
-	if (itr.second == false)
+
+	auto value = std::make_pair(new_user.user_id, new_user);
+	auto result = m_user_list.insert(value);
+	if (result.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
 	}
 
-	return itr.first->second;
+	return result.first->second;
 }
 
 
@@ -89,12 +91,12 @@ User* UserManager::find_user(int user_id)
 }
 
 
-User* UserManager::find_user(const std::string& username)
+User* UserManager::find_user(const std::string& user_name)
 {
 	auto itr = std::find_if(m_user_list.begin(), m_user_list.end(),
-							[&username](const UserList::value_type& value_type)
+							[&user_name](const UserList::value_type& value_type)
 	{
-		return value_type.second.username == username;
+		return value_type.second.user_name == user_name;
 	});
 
 	if (itr == m_user_list.end())
@@ -154,6 +156,24 @@ const std::string& SharingGroup::group_name() const
 int SharingGroup::owner_id() const
 {
 	return m_owner_id;
+}
+
+
+int SharingGroup::root_dir_id() const
+{
+	return m_root_dir_id;
+}
+
+
+const SharingGroup::UserList& SharingGroup::manager_list() const
+{
+	return m_manager_list;
+}
+
+
+const SharingGroup::UserList& SharingGroup::member_list() const
+{
+	return m_member_list;
 }
 
 
@@ -371,18 +391,6 @@ void SharingGroup::kick_out_user(int user_id)
 }
 
 
-const SharingGroup::UserList& SharingGroup::manager_list() const
-{
-	return m_manager_list;
-}
-
-
-const SharingGroup::UserList& SharingGroup::member_list() const
-{
-	return m_member_list;
-}
-
-
 bool SharingGroup::is_manager(int user_id)
 {
 	auto itr = std::find(m_manager_list.begin(), m_manager_list.end(), user_id);
@@ -410,13 +418,14 @@ SharingGroup& SharingGroupManager::register_group(int user_id, const std::string
 	SharingGroup new_group(m_next_id, group_name, user_id, root_dir.file_id);
 	++m_next_id;
 
-	auto itr = m_group_list.insert(std::make_pair(new_group.group_id(), new_group));
-	if (itr.second == false)
+	auto value = std::make_pair(new_group.group_id(), new_group);
+	auto result = m_group_list.insert(value);
+	if (result.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
 
-	return itr.first->second;
+	return result.first->second;
 }
 
 
@@ -462,6 +471,7 @@ SharingGroup* SharingGroupManager::find_group(const std::string& group_name)
 	return &(itr->second);
 }
 
+
 SharingGroup& SharingGroupManager::get_group(int group_id)
 {
 	SharingGroup* group = find_group(group_id);
@@ -471,6 +481,7 @@ SharingGroup& SharingGroupManager::get_group(int group_id)
 	}
 	return *group;
 }
+
 
 SharingGroup& SharingGroupManager::get_group(const std::string& group_name)
 {
@@ -499,15 +510,16 @@ SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type,
 	};
 	++m_next_id;
 
-	auto new_itr = m_sharing_file_list.insert(std::make_pair(sharing_file.file_id, sharing_file));
-	if (new_itr.second == false)
+	auto value = std::make_pair(sharing_file.file_id, sharing_file);
+	auto result = m_sharing_file_list.insert(value);
+	if (result.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_ALREADY_EXIST);
 	}
 
 	m_storage_file_list.insert(std::make_pair(storage_file, sharing_file.file_id));
 
-	return new_itr.first->second;
+	return result.first->second;
 }
 
 
@@ -566,23 +578,32 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 }
 
 
-StorageNode& StorageNodeManager::register_node(const std::string& node_ip, short node_port)
+StorageNode& StorageNodeManager::register_node(const std::string& node_ip, unsigned short node_port)
 {
-	StorageNode new_node = { m_next_id, node_ip, node_port };
+	NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection(node_ip, node_port);
+	StorageNode node = { m_next_id, node_ip, node_port, conn.connection_id() };
 	++m_next_id;
-	auto itr = m_node_list.insert(std::make_pair(new_node.node_id, new_node));
-	if (itr.second == false)
+
+	auto value = std::make_pair(node.node_id, node);
+	auto result = m_node_list.insert(value);
+	if (result.second == false)
 	{
+		NetworkConnectionManager::instance()->remove_connection(conn.connection_id());
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_ALREADY_EXIST);
 	}
 
-	return itr.first->second;
+	return result.first->second;
 }
 
 
 void StorageNodeManager::remove_node(int node_id)
 {
-	m_node_list.erase(node_id);
+	StorageNode* node = find_node(node_id);
+	if (node)
+	{
+		NetworkConnectionManager::instance()->remove_connection(node->conn_id);
+		m_node_list.erase(node_id);
+	}
 }
 
 
@@ -598,7 +619,7 @@ StorageNode* StorageNodeManager::find_node(int node_id)
 }
 
 
-StorageNode* StorageNodeManager::find_node(const std::string& node_ip, short node_port)
+StorageNode* StorageNodeManager::find_node(const std::string& node_ip, unsigned short node_port)
 {
 	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(),
 							[&](const StorageNodeList::value_type& value_type)
@@ -626,7 +647,7 @@ StorageNode& StorageNodeManager::get_node(int node_id)
 }
 
 
-StorageNode& StorageNodeManager::get_node(const std::string& node_ip, short node_port)
+StorageNode& StorageNodeManager::get_node(const std::string& node_ip, unsigned short node_port)
 {
 	StorageNode* node = find_node(node_ip, node_port);
 	if (node == nullptr)
@@ -636,90 +657,8 @@ StorageNode& StorageNodeManager::get_node(const std::string& node_ip, short node
 	return *node;
 }
 
-
-FileTransferSession& FileTransferSessionManager::register_session(int group_id, const std::string& filename)
-{
-	FileTransferSession* session = find_session(group_id, filename);
-	if (session)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
-	}
-
-	FileTransferSession new_session;
-	new_session.session_id = m_next_id;
-	new_session.group_id = group_id;
-	new_session.filename = filename;
-	new_session.max_fragment = 0;
-	new_session.fragment_index = 0;
-	++m_next_id;
-
-	auto itr = m_session_list.insert(std::make_pair(new_session.session_id, new_session));
-	if (itr.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
-	}
-
-	return itr.first->second;
-}
-
-
-FileTransferSession& FileTransferSessionManager::register_put_session(int group_id,
-																	  const std::string& filename,
-																	  int max_fragment)
-{
-	FileTransferSession& session = register_session(group_id, filename);
-	session.max_fragment = max_fragment;
-	return session;
-}
-
-FileTransferSession& FileTransferSessionManager::register_get_session(int group_id,
-																	  const std::string& filename,
-																	  int fragment_content_len)
-{
-	FileTransferSession& session = register_session(group_id, filename);
-
-	std::string local_filename = group_file_path + filename;
-	lights::FileStream file(local_filename, "r");
-	float file_size = static_cast<float>(file.size());
-	int max_fragment = static_cast<int>(std::ceil(file_size / fragment_content_len));
-	session.max_fragment = max_fragment;
-	return session;
-}
-
-void FileTransferSessionManager::remove_session(int session_id)
-{
-	m_session_list.erase(session_id);
-}
-
-
-FileTransferSession* FileTransferSessionManager::find_session(int session_id)
-{
-	auto itr = m_session_list.find(session_id);
-	if (itr == m_session_list.end())
-	{
-		return nullptr;
-	}
-	return &itr->second;
-}
-
-
-FileTransferSession* FileTransferSessionManager::find_session(int group_id, const std::string& filename)
-{
-	auto itr = std::find_if(m_session_list.begin(), m_session_list.end(),
-							[&](const SessionList::value_type& value_type)
-	{
-		return value_type.second.group_id == group_id && value_type.second.filename == filename;
-	});
-
-	if (itr == m_session_list.end())
-	{
-		return nullptr;
-	}
-
-	return &(itr->second);
-}
-
-NetworkConnection* storage_node_conn = nullptr;
+StorageNode* default_storage_node = nullptr;
+NetworkConnection* default_storage_conn = nullptr;
 
 } // namespace resource_server
 } // namespace spaceless

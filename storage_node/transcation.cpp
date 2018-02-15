@@ -47,7 +47,7 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqPutFile, protocol::RspPutFile);
 		FileTransferSession* session = nullptr;
-		if (request.fragment().fragment_index() == 0)
+		if (request.fragment().fragment_index() == 0) // First put request.
 		{
 			session =
 				&FileTransferSessionManager::instance()->register_put_session(request.group_id(),

@@ -101,7 +101,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, user_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, username_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, user_name_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, group_list_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReqRegisterUser, _internal_metadata_),
@@ -473,68 +473,68 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
       "\n\016protocol.proto\022\022spaceless.protocol\"\032\n\010"
-      "RspError\022\016\n\006result\030\001 \001(\005\"=\n\004User\022\017\n\007user"
-      "_id\030\001 \001(\005\022\020\n\010username\030\002 \001(\t\022\022\n\ngroup_lis"
-      "t\030\003 \003(\005\"5\n\017ReqRegisterUser\022\020\n\010username\030\001"
-      " \001(\t\022\020\n\010password\030\002 \001(\t\"I\n\017RspRegisterUse"
-      "r\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spacel"
-      "ess.protocol.User\"1\n\014ReqLoginUser\022\017\n\007use"
-      "r_id\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"\036\n\014RspLogin"
-      "User\022\016\n\006result\030\001 \001(\005\" \n\rReqRemoveUser\022\017\n"
-      "\007user_id\030\001 \001(\005\"\037\n\rRspRemoveUser\022\016\n\006resul"
-      "t\030\001 \001(\005\"0\n\013ReqFindUser\022\017\n\007user_id\030\001 \001(\005\022"
-      "\020\n\010username\030\002 \001(\t\"E\n\013RspFindUser\022\016\n\006resu"
-      "lt\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spaceless.proto"
-      "col.User\"\206\001\n\014SharingGroup\022\020\n\010group_id\030\001 "
-      "\001(\005\022\022\n\ngroup_name\030\002 \001(\t\022\020\n\010owner_id\030\003 \001("
-      "\005\022\023\n\013root_dir_id\030\004 \001(\005\022\024\n\014manager_list\030\005"
-      " \003(\005\022\023\n\013member_list\030\006 \003(\005\"&\n\020ReqRegister"
-      "Group\022\022\n\ngroup_name\030\001 \001(\t\"4\n\020RspRegister"
-      "Group\022\016\n\006result\030\001 \001(\005\022\020\n\010group_id\030\002 \001(\005\""
-      "\"\n\016ReqRemoveGroup\022\020\n\010group_id\030\001 \001(\005\" \n\016R"
-      "spRemoveGroup\022\016\n\006result\030\001 \001(\010\"4\n\014ReqFind"
-      "Group\022\020\n\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 "
-      "\001(\t\"O\n\014RspFindGroup\022\016\n\006result\030\001 \001(\005\022/\n\005g"
-      "roup\030\002 \001(\0132 .spaceless.protocol.SharingG"
-      "roup\" \n\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\"\036"
-      "\n\014RspJoinGroup\022\016\n\006result\030\001 \001(\005\"7\n\022ReqAss"
-      "ignAsManager\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_i"
-      "d\030\002 \001(\005\"$\n\022RspAssignAsManager\022\016\n\006result\030"
-      "\001 \001(\005\"7\n\022ReqAssignAsMemeber\022\020\n\010group_id\030"
-      "\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022RspAssignAsMem"
-      "eber\022\016\n\006result\030\001 \001(\005\"3\n\016ReqKickOutUser\022\020"
-      "\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\" \n\016Rsp"
-      "KickOutUser\022\016\n\006result\030\001 \001(\005\"V\n\014FileFragm"
-      "ent\022\024\n\014max_fragment\030\001 \001(\005\022\026\n\016fragment_in"
-      "dex\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\t\"d\n\nR"
-      "eqPutFile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filename\030"
-      "\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .spaceless.prot"
-      "ocol.FileFragment\"\034\n\nRspPutFile\022\016\n\006resul"
-      "t\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010group_id\030\001 \001(\005\022"
-      "\020\n\010filename\030\002 \001(\t\"P\n\nRspGetFile\022\016\n\006resul"
-      "t\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 .spaceless.pr"
-      "otocol.FileFragment*\360\004\n\013CommandType\022\023\n\017I"
-      "NVALID_COMMAND\020\000\022\026\n\021REQ_REGISTER_USER\020\350\007"
-      "\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016REQ_LOGIN_US"
-      "ER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024\n\017REQ_REMOVE"
-      "_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020\356\007\022\022\n\rREQ_FI"
-      "ND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020\360\007\022\027\n\022REQ_RE"
-      "GISTER_GROUP\020\325\010\022\027\n\022RSP_REGISTER_GROUP\020\326\010"
-      "\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020RSP_REMOVE_GR"
-      "OUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022\023\n\016RSP_FIND_"
-      "GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333\010\022\023\n\016RSP_JOI"
-      "N_GROUP\020\334\010\022\032\n\025REQ_ASSIGN_AS_MANAGER\020\335\010\022\032"
-      "\n\025RSP_ASSIGN_AS_MANAGER\020\336\010\022\032\n\025REQ_ASSIGN"
-      "_AS_MEMEBER\020\337\010\022\032\n\025RSP_ASSIGN_AS_MEMEBER\020"
-      "\340\010\022\026\n\021REQ_KICK_OUT_USER\020\341\010\022\026\n\021RSP_KICK_O"
-      "UT_USER\020\342\010\022\021\n\014REQ_PUT_FILE\020\377\010\022\021\n\014RSP_PUT"
-      "_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022\021\n\014RSP_GET_F"
-      "ILE\020\202\t*N\n\021MiscellaneousType\022\031\n\025INVALID_M"
-      "ISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_L"
-      "EN\020\320\206\003b\006proto3"
+      "RspError\022\016\n\006result\030\001 \001(\005\">\n\004User\022\017\n\007user"
+      "_id\030\001 \001(\005\022\021\n\tuser_name\030\002 \001(\t\022\022\n\ngroup_li"
+      "st\030\003 \003(\005\"5\n\017ReqRegisterUser\022\020\n\010username\030"
+      "\001 \001(\t\022\020\n\010password\030\002 \001(\t\"I\n\017RspRegisterUs"
+      "er\022\016\n\006result\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.space"
+      "less.protocol.User\"1\n\014ReqLoginUser\022\017\n\007us"
+      "er_id\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"\036\n\014RspLogi"
+      "nUser\022\016\n\006result\030\001 \001(\005\" \n\rReqRemoveUser\022\017"
+      "\n\007user_id\030\001 \001(\005\"\037\n\rRspRemoveUser\022\016\n\006resu"
+      "lt\030\001 \001(\005\"0\n\013ReqFindUser\022\017\n\007user_id\030\001 \001(\005"
+      "\022\020\n\010username\030\002 \001(\t\"E\n\013RspFindUser\022\016\n\006res"
+      "ult\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spaceless.prot"
+      "ocol.User\"\206\001\n\014SharingGroup\022\020\n\010group_id\030\001"
+      " \001(\005\022\022\n\ngroup_name\030\002 \001(\t\022\020\n\010owner_id\030\003 \001"
+      "(\005\022\023\n\013root_dir_id\030\004 \001(\005\022\024\n\014manager_list\030"
+      "\005 \003(\005\022\023\n\013member_list\030\006 \003(\005\"&\n\020ReqRegiste"
+      "rGroup\022\022\n\ngroup_name\030\001 \001(\t\"4\n\020RspRegiste"
+      "rGroup\022\016\n\006result\030\001 \001(\005\022\020\n\010group_id\030\002 \001(\005"
+      "\"\"\n\016ReqRemoveGroup\022\020\n\010group_id\030\001 \001(\005\" \n\016"
+      "RspRemoveGroup\022\016\n\006result\030\001 \001(\010\"4\n\014ReqFin"
+      "dGroup\022\020\n\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002"
+      " \001(\t\"O\n\014RspFindGroup\022\016\n\006result\030\001 \001(\005\022/\n\005"
+      "group\030\002 \001(\0132 .spaceless.protocol.Sharing"
+      "Group\" \n\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\""
+      "\036\n\014RspJoinGroup\022\016\n\006result\030\001 \001(\005\"7\n\022ReqAs"
+      "signAsManager\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_"
+      "id\030\002 \001(\005\"$\n\022RspAssignAsManager\022\016\n\006result"
+      "\030\001 \001(\005\"7\n\022ReqAssignAsMemeber\022\020\n\010group_id"
+      "\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\"$\n\022RspAssignAsMe"
+      "meber\022\016\n\006result\030\001 \001(\005\"3\n\016ReqKickOutUser\022"
+      "\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\" \n\016Rs"
+      "pKickOutUser\022\016\n\006result\030\001 \001(\005\"V\n\014FileFrag"
+      "ment\022\024\n\014max_fragment\030\001 \001(\005\022\026\n\016fragment_i"
+      "ndex\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\t\"d\n\n"
+      "ReqPutFile\022\020\n\010group_id\030\001 \001(\005\022\020\n\010filename"
+      "\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .spaceless.pro"
+      "tocol.FileFragment\"\034\n\nRspPutFile\022\016\n\006resu"
+      "lt\030\001 \001(\005\"0\n\nReqGetFile\022\020\n\010group_id\030\001 \001(\005"
+      "\022\020\n\010filename\030\002 \001(\t\"P\n\nRspGetFile\022\016\n\006resu"
+      "lt\030\001 \001(\005\0222\n\010fragment\030\002 \001(\0132 .spaceless.p"
+      "rotocol.FileFragment*\360\004\n\013CommandType\022\023\n\017"
+      "INVALID_COMMAND\020\000\022\026\n\021REQ_REGISTER_USER\020\350"
+      "\007\022\026\n\021RSP_REGISTER_USER\020\352\007\022\023\n\016REQ_LOGIN_U"
+      "SER\020\353\007\022\023\n\016RSP_LOGIN_USER\020\354\007\022\024\n\017REQ_REMOV"
+      "E_USER\020\355\007\022\024\n\017RSP_REMOVE_USER\020\356\007\022\022\n\rREQ_F"
+      "IND_USER\020\357\007\022\022\n\rRSP_FIND_USER\020\360\007\022\027\n\022REQ_R"
+      "EGISTER_GROUP\020\325\010\022\027\n\022RSP_REGISTER_GROUP\020\326"
+      "\010\022\025\n\020REQ_REMOVE_GROUP\020\327\010\022\025\n\020RSP_REMOVE_G"
+      "ROUP\020\330\010\022\023\n\016REQ_FIND_GROUP\020\331\010\022\023\n\016RSP_FIND"
+      "_GROUP\020\332\010\022\023\n\016REQ_JOIN_GROUP\020\333\010\022\023\n\016RSP_JO"
+      "IN_GROUP\020\334\010\022\032\n\025REQ_ASSIGN_AS_MANAGER\020\335\010\022"
+      "\032\n\025RSP_ASSIGN_AS_MANAGER\020\336\010\022\032\n\025REQ_ASSIG"
+      "N_AS_MEMEBER\020\337\010\022\032\n\025RSP_ASSIGN_AS_MEMEBER"
+      "\020\340\010\022\026\n\021REQ_KICK_OUT_USER\020\341\010\022\026\n\021RSP_KICK_"
+      "OUT_USER\020\342\010\022\021\n\014REQ_PUT_FILE\020\377\010\022\021\n\014RSP_PU"
+      "T_FILE\020\200\t\022\021\n\014REQ_GET_FILE\020\201\t\022\021\n\014RSP_GET_"
+      "FILE\020\202\t*N\n\021MiscellaneousType\022\031\n\025INVALID_"
+      "MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_"
+      "LEN\020\320\206\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2374);
+      descriptor, 2375);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -836,7 +836,7 @@ void RspError::set_result(::google::protobuf::int32 value) {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int User::kUserIdFieldNumber;
-const int User::kUsernameFieldNumber;
+const int User::kUserNameFieldNumber;
 const int User::kGroupListFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -854,16 +854,16 @@ User::User(const User& from)
       group_list_(from.group_list_),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  username_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.username().size() > 0) {
-    username_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.username_);
+  user_name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.user_name().size() > 0) {
+    user_name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.user_name_);
   }
   user_id_ = from.user_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.User)
 }
 
 void User::SharedCtor() {
-  username_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  user_name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   user_id_ = 0;
   _cached_size_ = 0;
 }
@@ -874,7 +874,7 @@ User::~User() {
 }
 
 void User::SharedDtor() {
-  username_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  user_name_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void User::SetCachedSize(int size) const {
@@ -903,7 +903,7 @@ User* User::New(::google::protobuf::Arena* arena) const {
 void User::Clear() {
 // @@protoc_insertion_point(message_clear_start:spaceless.protocol.User)
   group_list_.Clear();
-  username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  user_name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   user_id_ = 0;
 }
 
@@ -930,15 +930,15 @@ bool User::MergePartialFromCodedStream(
         break;
       }
 
-      // string username = 2;
+      // string user_name = 2;
       case 2: {
         if (tag == 18u) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_username()));
+                input, this->mutable_user_name()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->username().data(), this->username().length(),
+            this->user_name().data(), this->user_name().length(),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "spaceless.protocol.User.username"));
+            "spaceless.protocol.User.user_name"));
         } else {
           goto handle_unusual;
         }
@@ -990,14 +990,14 @@ void User::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->user_id(), output);
   }
 
-  // string username = 2;
-  if (this->username().size() > 0) {
+  // string user_name = 2;
+  if (this->user_name().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->username().data(), this->username().length(),
+      this->user_name().data(), this->user_name().length(),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "spaceless.protocol.User.username");
+      "spaceless.protocol.User.user_name");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->username(), output);
+      2, this->user_name(), output);
   }
 
   // repeated int32 group_list = 3;
@@ -1022,15 +1022,15 @@ void User::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->user_id(), target);
   }
 
-  // string username = 2;
-  if (this->username().size() > 0) {
+  // string user_name = 2;
+  if (this->user_name().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->username().data(), this->username().length(),
+      this->user_name().data(), this->user_name().length(),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "spaceless.protocol.User.username");
+      "spaceless.protocol.User.user_name");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->username(), target);
+        2, this->user_name(), target);
   }
 
   // repeated int32 group_list = 3;
@@ -1070,11 +1070,11 @@ size_t User::ByteSizeLong() const {
     total_size += data_size;
   }
 
-  // string username = 2;
-  if (this->username().size() > 0) {
+  // string user_name = 2;
+  if (this->user_name().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->username());
+        this->user_name());
   }
 
   // int32 user_id = 1;
@@ -1111,9 +1111,9 @@ void User::MergeFrom(const User& from) {
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   group_list_.MergeFrom(from.group_list_);
-  if (from.username().size() > 0) {
+  if (from.user_name().size() > 0) {
 
-    username_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.username_);
+    user_name_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.user_name_);
   }
   if (from.user_id() != 0) {
     set_user_id(from.user_id());
@@ -1144,7 +1144,7 @@ void User::Swap(User* other) {
 }
 void User::InternalSwap(User* other) {
   group_list_.UnsafeArenaSwap(&other->group_list_);
-  username_.Swap(&other->username_);
+  user_name_.Swap(&other->user_name_);
   std::swap(user_id_, other->user_id_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -1171,56 +1171,56 @@ void User::set_user_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.User.user_id)
 }
 
-// string username = 2;
-void User::clear_username() {
-  username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// string user_name = 2;
+void User::clear_user_name() {
+  user_name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& User::username() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.User.username)
-  return username_.GetNoArena();
+const ::std::string& User::user_name() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.User.user_name)
+  return user_name_.GetNoArena();
 }
-void User::set_username(const ::std::string& value) {
+void User::set_user_name(const ::std::string& value) {
   
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:spaceless.protocol.User.username)
+  user_name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.User.user_name)
 }
 #if LANG_CXX11
-void User::set_username(::std::string&& value) {
+void User::set_user_name(::std::string&& value) {
   
-  username_.SetNoArena(
+  user_name_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.User.username)
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.User.user_name)
 }
 #endif
-void User::set_username(const char* value) {
+void User::set_user_name(const char* value) {
   
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:spaceless.protocol.User.username)
+  user_name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.User.user_name)
 }
-void User::set_username(const char* value, size_t size) {
+void User::set_user_name(const char* value, size_t size) {
   
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  user_name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.User.username)
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.User.user_name)
 }
-::std::string* User::mutable_username() {
+::std::string* User::mutable_user_name() {
   
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.User.username)
-  return username_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.User.user_name)
+  return user_name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-::std::string* User::release_username() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.User.username)
+::std::string* User::release_user_name() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.User.user_name)
   
-  return username_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return user_name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void User::set_allocated_username(::std::string* username) {
-  if (username != NULL) {
+void User::set_allocated_user_name(::std::string* user_name) {
+  if (user_name != NULL) {
     
   } else {
     
   }
-  username_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), username);
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.User.username)
+  user_name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_name);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.User.user_name)
 }
 
 // repeated int32 group_list = 3;

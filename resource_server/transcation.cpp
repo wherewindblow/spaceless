@@ -87,7 +87,7 @@ namespace transcation {
 void convert_user(const User& server_user, protocol::User& proto_user)
 {
 	proto_user.set_user_id(server_user.user_id);
-	proto_user.set_username(server_user.username);
+	proto_user.set_user_name(server_user.user_name);
 	for (auto& group_id : server_user.group_list)
 	{
 		*proto_user.mutable_group_list()->Add() = group_id;
@@ -286,8 +286,34 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 			return send_back_error(-1);
 		}
 
-		storage_node_conn->send_protobuf(protocol::REQ_PUT_FILE, m_request, transcation_id());
-		wait_next_phase(*storage_node_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
+		if (m_request.fragment().fragment_index() == 0) // First put request.
+		{
+			SharingFile& group_root_dir = SharingFileManager::instance()->get_file(group.root_dir_id());
+			bool exist = false;
+			for (std::size_t i = 0; i < group_root_dir.inside_file_list.size(); ++i)
+			{
+				SharingFile& file = SharingFileManager::instance()->get_file(group_root_dir.inside_file_list[i]);
+				if (file.file_name == m_request.filename())
+				{
+					exist = true;
+					break;
+				}
+			}
+
+			if (exist)
+			{
+				return send_back_error(-1);
+			}
+
+			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
+																				  m_request.filename(),
+																				  default_storage_node->node_id,
+																				  m_request.filename());
+			group_root_dir.inside_file_list.push_back(new_file.file_id);
+		}
+
+		default_storage_conn->send_protobuf(protocol::REQ_PUT_FILE, m_request, transcation_id());
+		wait_next_phase(*default_storage_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
@@ -362,8 +388,25 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 			return send_back_error(-1);
 		}
 
-		storage_node_conn->send_protobuf(protocol::REQ_GET_FILE, m_request, transcation_id());
-		wait_next_phase(*storage_node_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
+		SharingFile& group_root_dir = SharingFileManager::instance()->get_file(group.root_dir_id());
+		bool exist = false;
+		for (std::size_t i = 0; i < group_root_dir.inside_file_list.size(); ++i)
+		{
+			SharingFile& file = SharingFileManager::instance()->get_file(group_root_dir.inside_file_list[i]);
+			if (file.file_name == m_request.filename())
+			{
+				exist = true;
+				break;
+			}
+		}
+
+		if (!exist)
+		{
+			return send_back_error(-1);
+		}
+
+		default_storage_conn->send_protobuf(protocol::REQ_GET_FILE, m_request, transcation_id());
+		wait_next_phase(*default_storage_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)

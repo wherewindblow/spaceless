@@ -45,17 +45,13 @@ enum
 	ERR_NODE_ALREADY_EXIST = 1300,
 	ERR_NODE_CANNOT_CREATE = 1301,
 	ERR_NODE_NOT_EXIST = 1302,
-
-	ERR_TRANSFER_SESSION_ALREADY_EXIST = 5000,
-	ERR_TRANSFER_SESSION_CANNOT_CREATE = 5001,
-	ERR_TRANSFER_SESSION_NOT_EXIST = 5002,
 };
 
 
 struct User
 {
 	int user_id;
-	std::string username;
+	std::string user_name;
 	std::string password;
 	std::vector<int> group_list;
 	int conn_id = 0;
@@ -81,7 +77,7 @@ public:
 
 	User* find_user(int user_id);
 
-	User* find_user(const std::string& username);
+	User* find_user(const std::string& user_name);
 
 	User& get_user(int user_id);
 
@@ -106,6 +102,12 @@ public:
 	const std::string& group_name() const;
 
 	int owner_id() const;
+
+	int root_dir_id() const;
+
+	const UserList& manager_list() const;
+
+	const UserList& member_list() const;
 
 	void put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
 
@@ -132,10 +134,6 @@ public:
 	void assign_as_memeber(int user_id);
 
 	void kick_out_user(int user_id);
-
-	const UserList& manager_list() const;
-
-	const UserList& member_list() const;
 
 	bool is_manager(int user_id);
 
@@ -178,40 +176,6 @@ public:
 private:
 	using GroupList = std::map<int, SharingGroup>;
 	GroupList m_group_list;
-	int m_next_id = 1;
-};
-
-
-struct FileTransferSession
-{
-	int session_id;
-	int group_id;
-	std::string filename;
-	int max_fragment;
-	int fragment_index;
-};
-
-
-class FileTransferSessionManager
-{
-public:
-	SPACELESS_SINGLETON_INSTANCE(FileTransferSessionManager);
-
-	FileTransferSession& register_session(int group_id, const std::string& filename);
-
-	FileTransferSession& register_put_session(int group_id, const std::string& filename, int max_fragment);
-
-	FileTransferSession& register_get_session(int group_id, const std::string& filename, int fragment_content_len);
-
-	void remove_session(int session_id);
-
-	FileTransferSession* find_session(int session_id);
-
-	FileTransferSession* find_session(int group_id, const std::string& filename);
-
-private:
-	using SessionList = std::map<int, FileTransferSession>;
-	SessionList m_session_list;
 	int m_next_id = 1;
 };
 
@@ -267,7 +231,8 @@ struct StorageNode
 {
 	int node_id;
 	std::string node_ip;
-	short node_port;
+	unsigned short node_port;
+	int conn_id;
 };
 
 
@@ -276,17 +241,17 @@ class StorageNodeManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(StorageNodeManager);
 
-	StorageNode& register_node(const std::string& node_ip, short node_port);
+	StorageNode& register_node(const std::string& node_ip, unsigned short node_port);
 
 	void remove_node(int node_id);
 
 	StorageNode* find_node(int node_id);
 
-	StorageNode* find_node(const std::string& node_ip, short node_port);
+	StorageNode* find_node(const std::string& node_ip, unsigned short node_port);
 
 	StorageNode& get_node(int node_id);
 
-	StorageNode& get_node(const std::string& node_ip, short node_port);
+	StorageNode& get_node(const std::string& node_ip, unsigned short node_port);
 
 private:
 	using StorageNodeList = std::map<int, StorageNode>;
@@ -294,7 +259,9 @@ private:
 	int m_next_id = 1;
 };
 
-extern NetworkConnection* storage_node_conn;
+
+extern StorageNode* default_storage_node;
+extern NetworkConnection* default_storage_conn;
 
 } // namespace resource_server
 } // namespace spaceless

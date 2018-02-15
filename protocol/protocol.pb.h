@@ -370,19 +370,19 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
       mutable_group_list();
 
-  // string username = 2;
-  void clear_username();
-  static const int kUsernameFieldNumber = 2;
-  const ::std::string& username() const;
-  void set_username(const ::std::string& value);
+  // string user_name = 2;
+  void clear_user_name();
+  static const int kUserNameFieldNumber = 2;
+  const ::std::string& user_name() const;
+  void set_user_name(const ::std::string& value);
   #if LANG_CXX11
-  void set_username(::std::string&& value);
+  void set_user_name(::std::string&& value);
   #endif
-  void set_username(const char* value);
-  void set_username(const char* value, size_t size);
-  ::std::string* mutable_username();
-  ::std::string* release_username();
-  void set_allocated_username(::std::string* username);
+  void set_user_name(const char* value);
+  void set_user_name(const char* value, size_t size);
+  ::std::string* mutable_user_name();
+  ::std::string* release_user_name();
+  void set_allocated_user_name(::std::string* user_name);
 
   // int32 user_id = 1;
   void clear_user_id();
@@ -396,7 +396,7 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedField< ::google::protobuf::int32 > group_list_;
   mutable int _group_list_cached_byte_size_;
-  ::google::protobuf::internal::ArenaStringPtr username_;
+  ::google::protobuf::internal::ArenaStringPtr user_name_;
   ::google::protobuf::int32 user_id_;
   mutable int _cached_size_;
   friend struct  protobuf_protocol_2eproto::TableStruct;
@@ -3028,56 +3028,56 @@ inline void User::set_user_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.User.user_id)
 }
 
-// string username = 2;
-inline void User::clear_username() {
-  username_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// string user_name = 2;
+inline void User::clear_user_name() {
+  user_name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& User::username() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.User.username)
-  return username_.GetNoArena();
+inline const ::std::string& User::user_name() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.User.user_name)
+  return user_name_.GetNoArena();
 }
-inline void User::set_username(const ::std::string& value) {
+inline void User::set_user_name(const ::std::string& value) {
   
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:spaceless.protocol.User.username)
+  user_name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.User.user_name)
 }
 #if LANG_CXX11
-inline void User::set_username(::std::string&& value) {
+inline void User::set_user_name(::std::string&& value) {
   
-  username_.SetNoArena(
+  user_name_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.User.username)
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.User.user_name)
 }
 #endif
-inline void User::set_username(const char* value) {
+inline void User::set_user_name(const char* value) {
   
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:spaceless.protocol.User.username)
+  user_name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.User.user_name)
 }
-inline void User::set_username(const char* value, size_t size) {
+inline void User::set_user_name(const char* value, size_t size) {
   
-  username_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  user_name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.User.username)
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.User.user_name)
 }
-inline ::std::string* User::mutable_username() {
+inline ::std::string* User::mutable_user_name() {
   
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.User.username)
-  return username_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.User.user_name)
+  return user_name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* User::release_username() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.User.username)
+inline ::std::string* User::release_user_name() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.User.user_name)
   
-  return username_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  return user_name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void User::set_allocated_username(::std::string* username) {
-  if (username != NULL) {
+inline void User::set_allocated_user_name(::std::string* user_name) {
+  if (user_name != NULL) {
     
   } else {
     
   }
-  username_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), username);
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.User.username)
+  user_name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), user_name);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.User.user_name)
 }
 
 // repeated int32 group_list = 3;

@@ -260,7 +260,7 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			protocol::RspFindUser rsponse;
 			package.parse_as_protobuf(rsponse);
 			std::cout << lights::format("Your user id is {} and username is {}.",
-									rsponse.user().user_id(), rsponse.user().username())
+									rsponse.user().user_id(), rsponse.user().user_name())
 					  << std::endl;
 			break;
 		}

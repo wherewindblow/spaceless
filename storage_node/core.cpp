@@ -100,13 +100,14 @@ FileTransferSession& FileTransferSessionManager::register_session(int group_id, 
 	new_session.fragment_index = 0;
 	++m_next_id;
 
-	auto itr = m_session_list.insert(std::make_pair(new_session.session_id, new_session));
-	if (itr.second == false)
+	auto value = std::make_pair(new_session.session_id, new_session);
+	auto result = m_session_list.insert(value);
+	if (result.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
 	}
 
-	return itr.first->second;
+	return result.first->second;
 }
 
 
