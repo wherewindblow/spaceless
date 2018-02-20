@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <utility>
 
-#include <boost/algorithm/string/split.hpp>
+#include <Poco/String.h>
+#include <Poco/StringTokenizer.h>
 #include <common/exception.h>
-#include <cmath>
 
 
 namespace lights {
@@ -130,6 +130,64 @@ User& UserManager::get_user(const std::string& username)
 }
 
 
+const char FilePath::SEPARATOR[] = "/";
+
+const char FilePath::ROOT[] = "";
+
+
+FilePath::FilePath(const std::string& path):
+	m_path(path)
+{
+	Poco::trimInPlace(m_path);
+	Poco::replaceInPlace(m_path, "\\", SEPARATOR);
+	Poco::replaceInPlace(m_path, "//", SEPARATOR);
+
+	if (m_path.front() == SEPARATOR[0])
+	{
+		m_path.erase(0, 1);
+	}
+
+	if (m_path.back() == SEPARATOR[0])
+	{
+		m_path.resize(m_path.size() - 1);
+	}
+}
+
+
+FilePath::SplitReult FilePath::split() const
+{
+	return SplitReult(new Poco::StringTokenizer(m_path, SEPARATOR));
+}
+
+
+std::string FilePath::directory_path() const
+{
+	std::size_t pos = m_path.rfind(SEPARATOR);
+	if (pos != std::string::npos)
+	{
+		return m_path.substr(0, pos);
+	}
+	else
+	{
+		return ROOT;
+	}
+}
+
+
+std::string FilePath::filename() const
+{
+	std::size_t pos = m_path.rfind(SEPARATOR);
+	if (pos != std::string::npos)
+	{
+		return m_path.substr(pos + 1, m_path.size() - pos - 1);
+	}
+	else
+	{
+		return m_path;
+	}
+}
+
+
 SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id):
 	m_group_id(group_id),
 	m_group_name(group_name),
@@ -177,148 +235,17 @@ const SharingGroup::UserList& SharingGroup::member_list() const
 }
 
 
-void SharingGroup::put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append)
+bool SharingGroup::is_manager(int user_id)
 {
-	if (!is_manager(user_id))
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
-	}
-
-	std::string local_filename = group_file_path + filename;
-	const char* mode = is_append ? "a" : "w";
-	lights::FileStream file(local_filename, mode);
-	file.write(file_content);
-	// TODO Need to optimize.
+	auto itr = std::find(m_manager_list.begin(), m_manager_list.end(), user_id);
+	return itr != m_manager_list.end();
 }
 
 
-std::size_t SharingGroup::get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos)
+bool SharingGroup::is_member(int user_id)
 {
-	if (!is_member(user_id))
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
-	}
-
-	std::string local_filename = group_file_path + filename;
-	lights::FileStream file(local_filename, "r");
-	file.seek(start_pos, lights::FileSeekWhence::BEGIN);
-	return file.read(file_content);
-	// TODO Need to optimize.
-}
-
-
-void SharingGroup::create_directory(int user_id, const std::string& full_dir_path)
-{
-	if (!is_manager(user_id))
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
-	}
-
-	std::vector<std::string> result;
-	boost::split(result, full_dir_path, [](char ch)
-	{
-		return ch == '/';
-	});
-
-	int parent_dir_id = m_root_dir_id;
-	for (auto& dir_name: result)
-	{
-		SharingFile* parent_dir = SharingFileManager::instance()->find_file(parent_dir_id);
-		if (parent_dir->file_type != SharingFile::DIRECTORY)
-		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
-		}
-
-		auto itr = std::find_if(parent_dir->inside_file_list.begin(), parent_dir->inside_file_list.end(),
-					 [&dir_name](int file_id)
-		{
-			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file && file->file_name == dir_name)
-			{
-				if (file->file_type == SharingFile::DIRECTORY)
-				{
-					return true;
-				}
-				else
-				{
-					LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
-				}
-			}
-
-			return false;
-		});
-
-		if (itr == parent_dir->inside_file_list.end())
-		{
-			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, dir_name);
-			parent_dir->inside_file_list.push_back(new_file.file_id);
-			parent_dir_id = new_file.file_id;
-		}
-		else
-		{
-			parent_dir_id = *itr;
-		}
-	}
-}
-
-
-void SharingGroup::remove_directory(int user_id, const std::string& full_dir_path)
-{
-	if (!is_manager(user_id))
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
-	}
-
-	std::vector<std::string> result;
-	boost::split(result, full_dir_path, [](char ch)
-	{
-		return ch == '/';
-	});
-
-	int parent_dir_id = m_root_dir_id;
-	for (auto& dir_name: result)
-	{
-		SharingFile* parent_dir = SharingFileManager::instance()->find_file(parent_dir_id);
-		if (parent_dir->file_type != SharingFile::DIRECTORY)
-		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_REMOVE_DIR_MUST_UNDER_DIR);
-		}
-
-		auto itr = std::find_if(parent_dir->inside_file_list.begin(), parent_dir->inside_file_list.end(),
-								[&dir_name](int file_id)
-		{
-			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file && file->file_name == dir_name)
-			{
-				if (file->file_type == SharingFile::DIRECTORY)
-				{
-					return true;
-				}
-				else
-				{
-					LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_REMOVE_DIR_MUST_UNDER_DIR);
-				}
-			}
-
-			return false;
-		});
-
-		if (itr == parent_dir->inside_file_list.end())
-		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
-		}
-		else
-		{
-			parent_dir_id = *itr;
-		}
-	}
-
-	if (parent_dir_id == m_root_dir_id)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CANNOT_REMOVE_ROOT_DIR);
-	}
-
-	SharingFileManager::instance()->remove_file(parent_dir_id);
+	auto itr = std::find(m_member_list.begin(), m_member_list.end(), user_id);
+	return itr != m_member_list.end();
 }
 
 
@@ -391,18 +318,191 @@ void SharingGroup::kick_out_user(int user_id)
 }
 
 
-bool SharingGroup::is_manager(int user_id)
+int SharingGroup::get_file_id(const FilePath& path)
 {
-	auto itr = std::find(m_manager_list.begin(), m_manager_list.end(), user_id);
-	return itr != m_manager_list.end();
+	int parent_dir_id = m_root_dir_id;
+	auto result = path.split();
+	for (auto& dir_name: *result)
+	{
+		SharingFile* parent_dir = SharingFileManager::instance()->find_file(parent_dir_id);
+		if (parent_dir->file_type != SharingFile::DIRECTORY)
+		{
+			return INVALID_ID;
+		}
+
+		auto itr = std::find_if(parent_dir->inside_file_list.begin(), parent_dir->inside_file_list.end(),
+								[&dir_name](int file_id)
+		{
+			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
+			if (file && file->file_name == dir_name)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		});
+
+		if (itr == parent_dir->inside_file_list.end())
+		{
+			return INVALID_ID;
+		}
+		else
+		{
+			parent_dir_id = *itr;
+		}
+	}
+
+	return parent_dir_id;
 }
 
 
-bool SharingGroup::is_member(int user_id)
+bool SharingGroup::exist_path(const FilePath& path)
 {
-	auto itr = std::find(m_member_list.begin(), m_member_list.end(), user_id);
-	return itr != m_member_list.end();
+	return get_file_id(path) != INVALID_ID;
 }
+
+
+void SharingGroup::add_file(const FilePath& path, int file_id)
+{
+	int dir_id = get_file_id(path);
+	SharingFile& dir = SharingFileManager::instance()->get_file(dir_id);
+	if (dir.file_type == SharingFile::DIRECTORY)
+	{
+		dir.inside_file_list.push_back(file_id);
+	}
+	else
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, -1);
+	}
+}
+
+
+void SharingGroup::put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append)
+{
+	if (!is_manager(user_id))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+	}
+
+	std::string local_filename = group_file_path + filename;
+	const char* mode = is_append ? "a" : "w";
+	lights::FileStream file(local_filename, mode);
+	file.write(file_content);
+	// TODO Need to optimize.
+}
+
+
+std::size_t SharingGroup::get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos)
+{
+	if (!is_member(user_id))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+	}
+
+	std::string local_filename = group_file_path + filename;
+	lights::FileStream file(local_filename, "r");
+	file.seek(start_pos, lights::FileSeekWhence::BEGIN);
+	return file.read(file_content);
+	// TODO Need to optimize.
+}
+
+
+void SharingGroup::create_path(const FilePath& path)
+{
+	int parent_id = m_root_dir_id;
+	auto result = path.split();
+	for (auto& dir_name: *result)
+	{
+		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
+		if (parent->file_type != SharingFile::DIRECTORY)
+		{
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
+		}
+
+		auto itr = std::find_if(parent->inside_file_list.begin(), parent->inside_file_list.end(),
+					 [&dir_name](int file_id)
+		{
+			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
+			if (file && file->file_name == dir_name)
+			{
+				if (file->file_type == SharingFile::DIRECTORY)
+				{
+					return true;
+				}
+				else
+				{
+					LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
+				}
+			}
+
+			return false;
+		});
+
+		if (itr == parent->inside_file_list.end())
+		{
+			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, dir_name);
+			parent->inside_file_list.push_back(new_file.file_id);
+			parent_id = new_file.file_id;
+		}
+		else
+		{
+			parent_id = *itr;
+		}
+	}
+}
+
+
+void SharingGroup::remove_path(const FilePath& path)
+{
+	int previous_parent_id = m_root_dir_id;
+	int parent_id = m_root_dir_id;
+	auto result = path.split();
+	for (auto& dir_name: *result)
+	{
+		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
+		if (parent->file_type != SharingFile::DIRECTORY)
+		{
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_REMOVE_DIR_MUST_UNDER_DIR);
+		}
+
+		auto itr = std::find_if(parent->inside_file_list.begin(), parent->inside_file_list.end(),
+								[&dir_name](int file_id)
+		{
+			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
+			if (file && file->file_name == dir_name)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		});
+
+		previous_parent_id = parent_id;
+		if (itr == parent->inside_file_list.end())
+		{
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
+		}
+		else
+		{
+			parent_id = *itr;
+		}
+	}
+
+	if (parent_id == m_root_dir_id)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CANNOT_REMOVE_ROOT_DIR);
+	}
+
+	SharingFileManager::instance()->remove_file(parent_id);
+	SharingFile* previous_parent = SharingFileManager::instance()->find_file(previous_parent_id);
+	auto itr = std::remove(previous_parent->inside_file_list.begin(), previous_parent->inside_file_list.end(), previous_parent_id);
+	previous_parent->inside_file_list.erase(itr, previous_parent->inside_file_list.end());
+}
+
 
 const char* group_file_path = "/tmp/";
 

@@ -51,12 +51,12 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 		{
 			session =
 				&FileTransferSessionManager::instance()->register_put_session(request.group_id(),
-																			  request.filename(),
+																			  request.file_path(),
 																			  request.fragment().max_fragment());
 		}
 		else
 		{
-			session = FileTransferSessionManager::instance()->find_session(request.group_id(), request.filename());
+			session = FileTransferSessionManager::instance()->find_session(request.group_id(), request.file_path());
 			if (session == nullptr)
 			{
 				rsponse.set_result(-1);
@@ -74,7 +74,7 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 
 		lights::SequenceView file_content(request.fragment().fragment_content());
 		bool is_append = request.fragment().fragment_index() != 0;
-		SharingFileManager::instance()->put_file(request.filename(), file_content, is_append);
+		SharingFileManager::instance()->put_file(request.file_path(), file_content, is_append);
 
 		if (request.fragment().fragment_index() + 1 == request.fragment().max_fragment())
 		{
@@ -88,11 +88,11 @@ void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqGetFile, protocol::RspGetFile);
 		FileTransferSession* session =
-			FileTransferSessionManager::instance()->find_session(request.group_id(), request.filename());
+			FileTransferSessionManager::instance()->find_session(request.group_id(), request.file_path());
 		if (session == nullptr)
 		{
 			session = &FileTransferSessionManager::instance()->register_get_session(request.group_id(),
-																					request.filename(),
+																					request.file_path(),
 																					protocol::MAX_FRAGMENT_CONTENT_LEN);
 		}
 
@@ -100,7 +100,7 @@ void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
 		rsponse.mutable_fragment()->set_fragment_index(session->fragment_index);
 
 		char file_content[protocol::MAX_FRAGMENT_CONTENT_LEN];
-		std::size_t content_len = SharingFileManager::instance()->get_file(request.filename(),
+		std::size_t content_len = SharingFileManager::instance()->get_file(request.file_path(),
 						{file_content, protocol::MAX_FRAGMENT_CONTENT_LEN},
 						session->fragment_index * protocol::MAX_FRAGMENT_CONTENT_LEN);
 		rsponse.mutable_fragment()->set_fragment_content(file_content, content_len);

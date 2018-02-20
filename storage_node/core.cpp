@@ -80,7 +80,7 @@ void SharingFileManager::set_sharing_file_path(const std::string& file_path)
 
 std::string SharingFileManager::get_absolute_path(const std::string path) const
 {
-	return m_file_path + "/" + path;
+	return m_file_path  + path;
 }
 
 

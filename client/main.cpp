@@ -42,6 +42,8 @@ int main(int argc, const char* argv[])
 			{protocol::RSP_KICK_OUT_USER, read_handler},
 			{protocol::RSP_PUT_FILE, read_handler},
 			{protocol::RSP_GET_FILE, read_handler},
+			{protocol::RSP_CREATE_PATH, read_handler},
+			{protocol::RSP_REMOVE_PATH, read_handler},
 		};
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
@@ -177,19 +179,36 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		}
 		else if (func == "put_file")
 		{
-			std::cout << "Please input group id, local filename and remote filename." << std::endl;
+			std::cout << "Please input group id, local file path and remote file path." << std::endl;
 			int group_id;
-			std::string local_filename, remote_filename;
-			std::cin >> group_id >> local_filename >> remote_filename;
-			SharingGroupManager::instance()->put_file(group_id, local_filename, remote_filename);
+			std::string local_file_path, remote_file_path;
+			std::cin >> group_id >> local_file_path >> remote_file_path;
+			SharingGroupManager::instance()->put_file(group_id, local_file_path, remote_file_path);
 		}
 		else if (func == "get_file")
 		{
-			std::cout << "Please input group id, local filename and remote filename." << std::endl;
+			std::cout << "Please input group id, local file path and remote file path." << std::endl;
 			int group_id;
-			std::string local_filename, remote_filename;
-			std::cin >> group_id >> remote_filename >> local_filename;
-			SharingGroupManager::instance()->get_file(group_id, remote_filename, local_filename);
+			std::string local_file_path, remote_file_path;
+			std::cin >> group_id >> remote_file_path >> local_file_path;
+			SharingGroupManager::instance()->get_file(group_id, remote_file_path, local_file_path);
+		}
+		else if (func == "create_path")
+		{
+			std::cout << "Please input group id and path." << std::endl;
+			int group_id;
+			std::string path;
+			std::cin >> group_id >> path;
+			SharingGroupManager::instance()->create_path(group_id, path);
+		}
+		else if (func == "remove_path")
+		{
+			std::cout << "Please input group id and path." << std::endl;
+			int group_id;
+			bool force_remove_all;
+			std::string path;
+			std::cin >> group_id >> path >> force_remove_all;
+			SharingGroupManager::instance()->remove_path(group_id, path, force_remove_all);
 		}
 		else if (func == "register_connection")
 		{
@@ -319,14 +338,14 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
 			if (session.fragment_index + 1 >= session.max_fragment)
 			{
-				std::cout << lights::format("Put file {} finish.", session.remote_filename) << std::endl;
+				std::cout << lights::format("Put file {} finish.", session.remote_file_path) << std::endl;
 			}
 			else
 			{
 				++session.fragment_index;
 				SharingGroupManager::instance()->put_file(session.group_id,
-														  session.local_filename,
-														  session.remote_filename,
+														  session.local_file_path,
+														  session.remote_file_path,
 														  session.fragment_index);
 			}
 			break;
@@ -336,7 +355,7 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			protocol::RspGetFile rsponse;
 			package.parse_as_protobuf(rsponse);
 			FileTransferSession& session = SharingGroupManager::instance()->getting_file_session();
-			lights::FileStream file(session.local_filename, "a");
+			lights::FileStream file(session.local_file_path, "a");
 			int offset = rsponse.fragment().fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;
 			file.seek(offset, lights::FileSeekWhence::BEGIN);
 			file.write({rsponse.fragment().fragment_content()});
@@ -344,12 +363,12 @@ void read_handler(NetworkConnection& conn, const PackageBuffer& package)
 			if (rsponse.fragment().fragment_index() + 1 < rsponse.fragment().max_fragment())
 			{
 				SharingGroupManager::instance()->get_file(session.group_id,
-														  session.remote_filename,
-														  session.local_filename);
+														  session.remote_file_path,
+														  session.local_file_path);
 			}
 			else
 			{
-				std::cout << lights::format("Get file {} finish.", session.remote_filename) << std::endl;
+				std::cout << lights::format("Get file {} finish.", session.remote_file_path) << std::endl;
 			}
 			break;
 		}

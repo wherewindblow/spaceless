@@ -9,6 +9,8 @@
 #include <vector>
 #include <set>
 #include <map>
+
+#include <Poco/StringTokenizer.h>
 #include <lights/sequence.h>
 #include <lights/exception.h>
 #include <common/network.h>
@@ -90,6 +92,28 @@ private:
 };
 
 
+class FilePath
+{
+public:
+	static const char SEPARATOR[];
+
+	static const char ROOT[];
+
+	using SplitReult = std::unique_ptr<Poco::StringTokenizer>;
+
+	FilePath(const std::string& path);
+
+	SplitReult split() const;
+
+	std::string directory_path() const;
+
+	std::string filename() const;
+
+private:
+	std::string m_path;
+};
+
+
 class SharingGroup
 {
 public:
@@ -109,23 +133,9 @@ public:
 
 	const UserList& member_list() const;
 
-	void put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
+	bool is_manager(int user_id);
 
-	std::size_t get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos = 0);
-
-	/**
-	 * Create all directory by directory path. If a parent directory is not create will automatically create.
-	 * @param user_id  User id.
-	 * @param full_dir_path Full path of directory. Like "this/is/a/path".
-	 */
-	void create_directory(int user_id, const std::string& full_dir_path);
-
-	/**
-	 * Remove last directory of directory path.
-	 * @param user_id User id.
-	 * @param full_dir_path Full path of directory. Like "this/is/a/path".
-	 */
-	void remove_directory(int user_id, const std::string& full_dir_path);
+	bool is_member(int user_id);
 
 	void join_group(int user_id);
 
@@ -135,9 +145,25 @@ public:
 
 	void kick_out_user(int user_id);
 
-	bool is_manager(int user_id);
+	int get_file_id(const FilePath& path);
 
-	bool is_member(int user_id);
+	bool exist_path(const FilePath& path);
+
+	void add_file(const FilePath& path, int file_id);
+
+	void put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
+
+	std::size_t get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos = 0);
+
+	/**
+	 * Creates all directory by path. If a parent directory is not create will automatically create.
+	 */
+	void create_path(const FilePath& path);
+
+	/**
+	 * Removes last file of path. Can remove directory and general file.
+	 */
+	void remove_path(const FilePath& path);
 
 private:
 	int m_group_id;

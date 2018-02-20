@@ -36,6 +36,8 @@ void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package)
 
 void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package);
 
+void on_create_path(NetworkConnection& conn, const PackageBuffer& package);
+
 
 class PutFileTranscation: public MultiplyPhaseTranscation
 {
@@ -49,9 +51,9 @@ public:
 
 	PutFileTranscation(int trans_id);
 
-	virtual PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
 
-	virtual PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
 
 	PhaseResult send_back_error(int error_code);
 
@@ -73,9 +75,9 @@ public:
 
 	GetFileTranscation(int trans_id);
 
-	virtual PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
 
-	virtual PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
 
 	PhaseResult send_back_error(int error_code);
 
@@ -84,6 +86,29 @@ private:
 	protocol::RspGetFile m_rsponse;
 };
 
+
+class RemovePathTranscation: public MultiplyPhaseTranscation
+{
+public:
+	enum
+	{
+		WAIT_STORAGE_NODE_GET_FILE,
+	};
+
+	static MultiplyPhaseTranscation* register_transcation(int trans_id);
+
+	RemovePathTranscation(int trans_id);
+
+	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
+
+	PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
+
+	PhaseResult send_back_error(int error_code);
+
+private:
+	protocol::ReqRemovePath m_request;
+	protocol::RspRemovePath m_rsponse;
+};
 
 } // namespace transcation
 } // namespace resource_server

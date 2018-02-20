@@ -259,6 +259,26 @@ void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
+void on_create_path(NetworkConnection& conn, const PackageBuffer& package)
+{
+	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqCreatePath, protocol::RspCreatePath);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+		if (!group.is_manager(user->user_id))
+		{
+			rsponse.set_result(-1);
+			goto send_back_msg;
+		}
+
+		if (!group.is_manager(user->user_id))
+		{
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		}
+
+		group.create_path(request.path());
+	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_CREATE_PATH);
+}
+
+
 MultiplyPhaseTranscation* PutFileTranscation::register_transcation(int trans_id)
 {
 	return new PutFileTranscation(trans_id);
@@ -286,33 +306,29 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 			return send_back_error(-1);
 		}
 
+		FilePath path = m_request.file_path();
 		if (m_request.fragment().fragment_index() == 0) // First put request.
 		{
-			SharingFile& group_root_dir = SharingFileManager::instance()->get_file(group.root_dir_id());
-			bool exist = false;
-			for (std::size_t i = 0; i < group_root_dir.inside_file_list.size(); ++i)
+			if (!group.exist_path(path.directory_path()))
 			{
-				SharingFile& file = SharingFileManager::instance()->get_file(group_root_dir.inside_file_list[i]);
-				if (file.file_name == m_request.filename())
-				{
-					exist = true;
-					break;
-				}
+				return send_back_error(-1);
 			}
 
-			if (exist)
+			if (group.exist_path(path))
 			{
 				return send_back_error(-1);
 			}
 
 			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
-																				  m_request.filename(),
+																				  path.filename(),
 																				  default_storage_node->node_id,
-																				  m_request.filename());
-			group_root_dir.inside_file_list.push_back(new_file.file_id);
+																				  path.filename());
+			group.add_file(path.directory_path(), new_file.file_id);
 		}
 
-		default_storage_conn->send_protobuf(protocol::REQ_PUT_FILE, m_request, transcation_id());
+		protocol::ReqPutFile request_to_storage = m_request;
+		request_to_storage.set_file_path(path.filename());
+		default_storage_conn->send_protobuf(protocol::REQ_PUT_FILE, request_to_storage, transcation_id());
 		wait_next_phase(*default_storage_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
@@ -388,24 +404,22 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 			return send_back_error(-1);
 		}
 
-		SharingFile& group_root_dir = SharingFileManager::instance()->get_file(group.root_dir_id());
-		bool exist = false;
-		for (std::size_t i = 0; i < group_root_dir.inside_file_list.size(); ++i)
-		{
-			SharingFile& file = SharingFileManager::instance()->get_file(group_root_dir.inside_file_list[i]);
-			if (file.file_name == m_request.filename())
-			{
-				exist = true;
-				break;
-			}
-		}
-
-		if (!exist)
+		FilePath path = m_request.file_path();
+		if (!group.exist_path(path))
 		{
 			return send_back_error(-1);
 		}
 
-		default_storage_conn->send_protobuf(protocol::REQ_GET_FILE, m_request, transcation_id());
+		int file_id = group.get_file_id(path);
+		SharingFile& file = SharingFileManager::instance()->get_file(file_id);
+		if (file.file_type != SharingFile::GENERAL_FILE)
+		{
+			return send_back_error(-1);
+		}
+
+		protocol::ReqGetFile request_to_storage = m_request;
+		request_to_storage.set_file_path(path.filename());
+		default_storage_conn->send_protobuf(protocol::REQ_GET_FILE, request_to_storage, transcation_id());
 		wait_next_phase(*default_storage_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
@@ -453,6 +467,61 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::send_back_error(int er
 	return EXIT_TRANCATION;
 }
 
+
+MultiplyPhaseTranscation* RemovePathTranscation::register_transcation(int trans_id)
+{
+	return new RemovePathTranscation(trans_id);
+}
+
+
+RemovePathTranscation::RemovePathTranscation(int trans_id) :
+	MultiplyPhaseTranscation(trans_id) {}
+
+
+MultiplyPhaseTranscation::PhaseResult
+RemovePathTranscation::on_init(NetworkConnection& conn, const PackageBuffer& package)
+{
+	User* user = static_cast<User*>(first_connection()->get_attachment());
+	if (user == nullptr)
+	{
+		return send_back_error(-1);
+	}
+
+	try
+	{
+		package.parse_as_protobuf(m_request);
+		SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
+		if (!group.is_manager(user->user_id))
+		{
+			return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		}
+
+		group.remove_path(m_request.path());
+
+		return EXIT_TRANCATION;
+	}
+	catch (Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
+						first_connection()->connection_id(), user->user_id, ex);
+		return send_back_error(ex.code());
+	}
+}
+
+
+MultiplyPhaseTranscation::PhaseResult
+RemovePathTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+{
+	return EXIT_TRANCATION;
+}
+
+
+MultiplyPhaseTranscation::PhaseResult RemovePathTranscation::send_back_error(int error_code)
+{
+	m_rsponse.set_result(error_code);
+	first_connection()->send_back_protobuf(protocol::RSP_REMOVE_PATH, m_rsponse);
+	return EXIT_TRANCATION;
+}
 } // namespace transcation
 } // namespace resource_server
 } // namespace spaceless

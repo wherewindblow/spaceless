@@ -128,24 +128,24 @@ void SharingGroupManager::kick_out_user(int group_id, int user_id)
 
 
 void SharingGroupManager::put_file(int group_id,
-							  const std::string& local_filename,
-							  const std::string& remote_filename,
+							  const std::string& local_file_path,
+							  const std::string& remote_file_path,
 							  int fragment_index)
 {
 	if (fragment_index == 0)
 	{
-		m_putting_file_session.local_filename = local_filename;
+		m_putting_file_session.local_file_path = local_file_path;
 		m_putting_file_session.group_id = group_id;
-		m_putting_file_session.remote_filename = remote_filename;
+		m_putting_file_session.remote_file_path = remote_file_path;
 	}
 
 	protocol::ReqPutFile request;
 	request.set_group_id(group_id);
-	request.set_filename(remote_filename);
+	request.set_file_path(remote_file_path);
 	request.mutable_fragment()->set_fragment_index(fragment_index);
 	m_putting_file_session.fragment_index = fragment_index;
 
-	lights::FileStream file(local_filename, "r");
+	lights::FileStream file(local_file_path, "r");
 	float file_size = static_cast<float>(file.size());
 	int max_fragment = static_cast<int>(std::ceil(file_size / protocol::MAX_FRAGMENT_CONTENT_LEN));
 	m_putting_file_session.max_fragment = max_fragment;
@@ -159,15 +159,34 @@ void SharingGroupManager::put_file(int group_id,
 }
 
 
-void SharingGroupManager::get_file(int group_id, const std::string& remote_filename, const std::string& local_filename)
+void SharingGroupManager::get_file(int group_id, const std::string& remote_file_path, const std::string& local_file_path)
 {
-	m_getting_file_session.local_filename = local_filename;
+	m_getting_file_session.local_file_path = local_file_path;
 	m_getting_file_session.group_id = group_id;
-	m_getting_file_session.remote_filename = remote_filename;
+	m_getting_file_session.remote_file_path = remote_file_path;
 	protocol::ReqGetFile request;
 	request.set_group_id(group_id);
-	request.set_filename(remote_filename);
+	request.set_file_path(remote_file_path);
 	network_conn->send_protobuf(protocol::REQ_GET_FILE, request);
+}
+
+
+void SharingGroupManager::create_path(int group_id, const std::string& path)
+{
+	protocol::ReqCreatePath request;
+	request.set_group_id(group_id);
+	request.set_path(path);
+	network_conn->send_protobuf(protocol::REQ_CREATE_PATH, request);
+}
+
+
+void SharingGroupManager::remove_path(int group_id, const std::string& path, bool force_remove_all)
+{
+	protocol::ReqRemovePath request;
+	request.set_group_id(group_id);
+	request.set_path(path);
+	request.set_force_remove_all(force_remove_all);
+	network_conn->send_protobuf(protocol::REQ_REMOVE_PATH, request);
 }
 
 

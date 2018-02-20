@@ -37,6 +37,10 @@ enum CommandType
     RSP_PUT_FILE = 1152;
     REQ_GET_FILE = 1153;
     RSP_GET_FILE = 1154;
+    REQ_CREATE_PATH = 1155;
+    RSP_CREATE_PATH = 1156;
+    REQ_REMOVE_PATH = 1157;
+    RSP_REMOVE_PATH = 1158;
 };
 
 enum MiscellaneousType
@@ -198,7 +202,7 @@ message FileFragment
 message ReqPutFile
 {
     int32 group_id = 1;
-    string filename = 2;
+    string file_path = 2;
     FileFragment fragment = 3;
 }
 
@@ -210,11 +214,34 @@ message RspPutFile
 message ReqGetFile
 {
     int32 group_id = 1;
-    string filename = 2;
+    string file_path = 2;
 }
 
 message RspGetFile
 {
     int32 result = 1;
     FileFragment fragment = 2;
+}
+
+message ReqCreatePath
+{
+    int32 group_id = 1;
+    string path = 2;
+}
+
+message RspCreatePath
+{
+    int32 result = 1;
+}
+
+message ReqRemovePath
+{
+    int32 group_id = 1;
+    string path = 2;
+    bool force_remove_all = 3;
+}
+
+message RspRemovePath
+{
+    int32 result = 1;
 }

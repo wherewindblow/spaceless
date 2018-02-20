@@ -239,12 +239,12 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	{
 		std::string address = m_socket.address().toString();
 		std::string peer_address = m_socket.peerAddress().toString();
-		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: {}, address {}/{}.",
+		SPACELESS_DEBUG(MODULE_NETWORK, "Creates network connection {}: local {} and peer {}.",
 						m_id, address, peer_address);
 	}
 	catch (Poco::Exception& ex)
 	{
-		SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network connection: {}, address unkown/unkown.", m_id);
+		SPACELESS_DEBUG(MODULE_NETWORK, "Creates network connection {}: local unkown and peer unkown.", m_id);
 	}
 }
 
@@ -253,7 +253,7 @@ NetworkConnection::~NetworkConnection()
 {
 	try
 	{
-		SPACELESS_DEBUG(MODULE_NETWORK, "Destroys a network connection: {}.", m_id);
+		SPACELESS_DEBUG(MODULE_NETWORK, "Destroys network connection {}.", m_id);
 		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
 		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
 		{
@@ -607,7 +607,7 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 {
 	ServerSocket serve_socket(SocketAddress(host, port));
 	m_acceptor_list.emplace_back(serve_socket, m_reactor);
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates a network listener: {}.", serve_socket.address());
+	SPACELESS_DEBUG(MODULE_NETWORK, "Creates network listener {}.", serve_socket.address());
 }
 
 

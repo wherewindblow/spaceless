@@ -53,6 +53,8 @@ using Poco::Net::ErrorNotification;
 
 
 const int MODULE_NETWORK = 1;
+const int PROTOCOL_PACKAGE_VERSION = 1;
+const int INVALID_ID = 0;
 
 enum
 {
@@ -63,8 +65,6 @@ enum
 	ERR_MULTIPLY_PHASE_TRANSCATION_ALREADY_EXIST = 300,
 };
 
-
-const int PROTOCOL_PACKAGE_VERSION = 1;
 
 /**
  * Network package header include some common data of each package.
