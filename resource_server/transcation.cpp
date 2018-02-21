@@ -16,6 +16,16 @@ namespace spaceless {
 namespace resource_server {
 namespace transcation {
 
+enum
+{
+	ERR_USER_NOT_LOGIN = 2000,
+	ERR_USER_LOGIN_FALIURE = 2001,
+	ERR_PATH_NOT_EXIST = 2100,
+	ERR_PATH_ALREADY_EXIST = 2101,
+	ERR_PATH_NOT_GENERAL_FILE = 2102,
+};
+
+
 #define SPACELESS_COMMAND_HANDLER_BEGIN(RequestType, RsponseType) \
 	RequestType request; \
 	RsponseType rsponse; \
@@ -50,7 +60,7 @@ namespace transcation {
 	User* user = static_cast<User*>(conn.get_attachment()); \
 	if (user == nullptr) \
 	{ \
-		rsponse.set_result(-1); \
+		rsponse.set_result(ERR_USER_NOT_LOGIN); \
 		goto send_back_msg; \
 	} \
 	\
@@ -108,7 +118,10 @@ void on_login_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqLoginUser, protocol::RspLoginUser);
 		bool pass = UserManager::instance()->login_user(request.user_id(), request.password(), conn);
-		rsponse.set_result(pass ? 0 : -1);
+		if (!pass)
+		{
+			rsponse.set_result(ERR_USER_LOGIN_FALIURE);
+		}
 	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_LOGIN_USER);
 }
 
@@ -117,7 +130,6 @@ void on_remove_user(NetworkConnection& conn, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqRemoveUser, protocol::RspRemoveUser);
 		UserManager::instance()->remove_user(request.user_id());
-		rsponse.set_result(0);
 	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_REMOVE_USER);
 }
 
@@ -141,7 +153,7 @@ void on_find_user(NetworkConnection& conn, const PackageBuffer& package)
 		}
 		else
 		{
-			rsponse.set_result(-1);
+			rsponse.set_result(ERR_USER_NOT_EXIST);
 		}
 	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_FIND_USER);
 }
@@ -199,7 +211,7 @@ void on_find_group(NetworkConnection& conn, const PackageBuffer& package)
 		}
 		else
 		{
-			rsponse.set_result(-1);
+			rsponse.set_result(ERR_GROUP_NOT_EXIST);
 		}
 	SPACELESS_COMMAND_HANDLER_USER_END(protocol::RSP_FIND_GROUP);
 }
@@ -220,7 +232,7 @@ void on_assign_as_manager(NetworkConnection& conn, const PackageBuffer& package)
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 		if (!group.is_manager(user->user_id))
 		{
-			rsponse.set_result(-1);
+			rsponse.set_result(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 			goto send_back_msg;
 		}
 		group.assign_as_manager(request.user_id());
@@ -234,7 +246,7 @@ void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package)
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 		if (!group.is_manager(user->user_id))
 		{
-			rsponse.set_result(-1);
+			rsponse.set_result(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 			goto send_back_msg;
 		}
 		group.assign_as_memeber(request.user_id());
@@ -250,7 +262,7 @@ void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 		{
 			if (!group.is_manager(user->user_id))
 			{
-				rsponse.set_result(-1);
+				rsponse.set_result(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 				goto send_back_msg;
 			}
 		}
@@ -265,7 +277,7 @@ void on_create_path(NetworkConnection& conn, const PackageBuffer& package)
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 		if (!group.is_manager(user->user_id))
 		{
-			rsponse.set_result(-1);
+			rsponse.set_result(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 			goto send_back_msg;
 		}
 
@@ -294,7 +306,7 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
 	{
-		return send_back_error(-1);
+		return send_back_error(ERR_USER_NOT_LOGIN);
 	}
 
 	try
@@ -303,7 +315,7 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 		SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
 		if (!group.is_manager(user->user_id))
 		{
-			return send_back_error(-1);
+			return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 		}
 
 		FilePath path = m_request.file_path();
@@ -311,12 +323,12 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 		{
 			if (!group.exist_path(path.directory_path()))
 			{
-				return send_back_error(-1);
+				return send_back_error(ERR_PATH_NOT_EXIST);
 			}
 
 			if (group.exist_path(path))
 			{
-				return send_back_error(-1);
+				return send_back_error(ERR_PATH_ALREADY_EXIST);
 			}
 
 			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
@@ -346,7 +358,7 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_active(NetworkConne
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
 	{
-		return send_back_error(-1);
+		return send_back_error(ERR_USER_NOT_LOGIN);
 	}
 
 	try
@@ -392,7 +404,7 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
 	{
-		return send_back_error(-1);
+		return send_back_error(ERR_USER_NOT_LOGIN);
 	}
 
 	try
@@ -401,20 +413,20 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 		SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
 		if (!group.is_member(user->user_id))
 		{
-			return send_back_error(-1);
+			return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
 		}
 
 		FilePath path = m_request.file_path();
 		if (!group.exist_path(path))
 		{
-			return send_back_error(-1);
+			return send_back_error(ERR_PATH_NOT_EXIST);
 		}
 
 		int file_id = group.get_file_id(path);
 		SharingFile& file = SharingFileManager::instance()->get_file(file_id);
 		if (file.file_type != SharingFile::GENERAL_FILE)
 		{
-			return send_back_error(-1);
+			return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
 		}
 
 		protocol::ReqGetFile request_to_storage = m_request;
@@ -437,7 +449,7 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_active(NetworkConne
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
 	{
-		return send_back_error(-1);
+		return send_back_error(ERR_USER_NOT_LOGIN);
 	}
 
 	try
@@ -484,7 +496,7 @@ RemovePathTranscation::on_init(NetworkConnection& conn, const PackageBuffer& pac
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
 	{
-		return send_back_error(-1);
+		return send_back_error(ERR_USER_NOT_LOGIN);
 	}
 
 	try

@@ -14,21 +14,6 @@
 #include <common/exception.h>
 
 
-namespace lights {
-
-inline bool operator==(StringView lhs, StringView rhs)
-{
-	return lhs.length() == rhs.length() && std::strncmp(lhs.data(), rhs.data(), lhs.length()) == 0;
-}
-
-inline bool operator!=(StringView lhs, StringView rhs)
-{
-	return !(lhs == rhs);
-}
-
-} // namespace lights
-
-
 namespace spaceless {
 namespace resource_server {
 
@@ -427,17 +412,12 @@ void SharingGroup::create_path(const FilePath& path)
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file && file->file_name == dir_name)
 			{
-				if (file->file_type == SharingFile::DIRECTORY)
-				{
-					return true;
-				}
-				else
-				{
-					LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
-				}
+				return true;
 			}
-
-			return false;
+			else
+			{
+				return false;
+			}
 		});
 
 		if (itr == parent->inside_file_list.end())
@@ -464,7 +444,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
 		if (parent->file_type != SharingFile::DIRECTORY)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_REMOVE_DIR_MUST_UNDER_DIR);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_INVALID_PATH);
 		}
 
 		auto itr = std::find_if(parent->inside_file_list.begin(), parent->inside_file_list.end(),
