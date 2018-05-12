@@ -76,7 +76,7 @@ MultiplyPhaseTranscation* MultiplyPhaseTranscation::register_transcation(int tra
 
 void MultiplyPhaseTranscation::pre_on_init(NetworkConnection& conn, const PackageBuffer& package)
 {
-	m_first_conn = &conn;
+	m_first_conn_id = conn.connection_id();
 }
 
 
@@ -91,7 +91,7 @@ MultiplyPhaseTranscation::PhaseResult MultiplyPhaseTranscation::wait_next_phase(
 																				int current_phase,
 																				int timeout)
 {
-	m_wait_conn = &conn;
+	m_wait_conn_id = conn.connection_id();
 	m_wait_cmd = cmd;
 	m_current_phase = current_phase;
 	// TODO: How to implement timeout of transcation.
@@ -113,13 +113,13 @@ int MultiplyPhaseTranscation::current_phase() const
 
 NetworkConnection* MultiplyPhaseTranscation::first_connection()
 {
-	return m_first_conn;
+	return NetworkConnectionManager::instance()->find_connection(m_first_conn_id);
 }
 
 
 NetworkConnection* MultiplyPhaseTranscation::waiting_connection()
 {
-	return m_wait_conn;
+	return NetworkConnectionManager::instance()->find_connection(m_wait_conn_id);
 }
 
 
@@ -486,23 +486,34 @@ void NetworkConnection::trigger_transcation()
 		int trans_id = m_read_buffer.header().trigger_trans_id;
 		int command = m_read_buffer.header().command;
 
-		if (trans_id != 0)
+		if (trans_id != 0) // Active sleep transcation.
 		{
-			MultiplyPhaseTranscation* trans_handler =
-				MultiplyPhaseTranscationManager::instance()->find_transcation(trans_id);
+			auto trans_handler = MultiplyPhaseTranscationManager::instance()->find_transcation(trans_id);
 			if (trans_handler)
 			{
 				// Check the send rsponse connection is same as send request connection. Don't give chance to
 				// other to interrupt not self transcation.
 				if (this == trans_handler->waiting_connection() && command == trans_handler->waiting_command())
 				{
-					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
-									m_id, command, trans_id, trans_handler->current_phase());
-					MultiplyPhaseTranscation::PhaseResult result = trans_handler->on_active(*this, m_read_buffer);
-					if (result == MultiplyPhaseTranscation::EXIT_TRANCATION)
+					SPACELESS_DEBUG(MODULE_NETWORK,
+									"Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
+									m_id,
+									command,
+									trans_id,
+									trans_handler->current_phase());
+					if (trans_handler->first_connection() == nullptr)
 					{
 						MultiplyPhaseTranscationManager::instance()->remove_transcation(trans_id);
-						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", m_id, trans_id);
+						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {} by first connection close.", m_id, trans_id);
+					}
+					else
+					{
+						auto result = trans_handler->on_active(*this, m_read_buffer);
+						if (result == MultiplyPhaseTranscation::EXIT_TRANCATION)
+						{
+							MultiplyPhaseTranscationManager::instance()->remove_transcation(trans_id);
+							SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", m_id, trans_id);
+						}
 					}
 				}
 				else
@@ -519,7 +530,7 @@ void NetworkConnection::trigger_transcation()
 				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown trans_id {}.", m_id, trans_id);
 			}
 		}
-		else
+		else // Create new transcation.
 		{
 			auto transcation = TranscationManager::instance()->find_transcation(command);
 			if (transcation)
@@ -543,7 +554,7 @@ void NetworkConnection::trigger_transcation()
 						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Start trans_id {}.",
 										m_id, command, trans_handler.transcation_id());
 						trans_handler.pre_on_init(*this, m_read_buffer);
-						MultiplyPhaseTranscation::PhaseResult result = trans_handler.on_init(*this, m_read_buffer);
+						auto result = trans_handler.on_init(*this, m_read_buffer);
 						if (result == MultiplyPhaseTranscation::EXIT_TRANCATION)
 						{
 							MultiplyPhaseTranscationManager::instance()->remove_transcation(trans_handler.transcation_id());
@@ -634,6 +645,18 @@ NetworkConnection* NetworkConnectionManager::find_connection(int conn_id)
 	}
 
 	return *itr;
+}
+
+
+NetworkConnection& NetworkConnectionManager::get_connection(int conn_id)
+{
+	NetworkConnection* conn = find_connection(conn_id);
+	if (conn == nullptr)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_CONNECTION_NOT_EXIST);
+	}
+
+	return *conn;
 }
 
 

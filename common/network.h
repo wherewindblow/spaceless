@@ -62,6 +62,7 @@ enum
 	ERR_NETWORK_PACKAGE_ALREADY_EXIST = 100,
 	ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF = 101,
 	ERR_NETWORK_PACKAGE_NOT_EXIST = 102,
+	ERR_NETWORK_CONNECTION_NOT_EXIST = 110,
 	ERR_TRANSCATION_ALREADY_EXIST = 200,
 	ERR_MULTIPLY_PHASE_TRANSCATION_ALREADY_EXIST = 300,
 };
@@ -232,7 +233,7 @@ public:
 	PackageBuffer* find_package(int package_id);
 
 	/**
-	 * Get package buffer.
+	 * Gets package buffer.
 	 * @throw Throws exception if cannot find package.
 	 */
 	PackageBuffer& get_package(int package_id);
@@ -417,15 +418,21 @@ public:
 	void register_listener(const std::string& host, unsigned short port);
 
 	/**
-	 * Removes a network connection.
+	 * Removes network connection.
 	 */
 	void remove_connection(int conn_id);
 
 	/**
-	 * Finds a network connection.
+	 * Finds network connection.
 	 * @note Returns nullptr if cannot find connection.
 	 */
 	NetworkConnection* find_connection(int conn_id);
+
+	/**
+	 * Gets network connection.
+	 * @throw Throws exception if cannot find connection.
+	 */
+	NetworkConnection& get_connection(int conn_id);
 
 	/**
 	 * Stop all network connection and listener.
@@ -559,8 +566,8 @@ public:
 private:
 	int m_id;
 	int m_current_phase = 0;
-	NetworkConnection* m_first_conn = nullptr;
-	NetworkConnection* m_wait_conn = nullptr;
+	int m_first_conn_id = 0;
+	int m_wait_conn_id = 0;
 	int m_wait_cmd = 0;
 };
 
