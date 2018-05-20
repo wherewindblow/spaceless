@@ -1,5 +1,5 @@
 /**
- * transcation.h
+ * transaction.h
  * @author wherewindblow
  * @date   Jan 09, 2018
  */
@@ -10,12 +10,12 @@
 
 namespace spaceless {
 namespace storage_node {
-namespace transcation {
+namespace transaction {
 
 void on_put_file(NetworkConnection& conn, const PackageBuffer& package);
 
 void on_get_file(NetworkConnection& conn, const PackageBuffer& package);
 
-} // namespace transcation
+} // namespace transaction
 } // namespace storage_node
 } // namespace spaceless

@@ -63,8 +63,8 @@ enum
 	ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF = 101,
 	ERR_NETWORK_PACKAGE_NOT_EXIST = 102,
 	ERR_NETWORK_CONNECTION_NOT_EXIST = 110,
-	ERR_TRANSCATION_ALREADY_EXIST = 200,
-	ERR_MULTIPLY_PHASE_TRANSCATION_ALREADY_EXIST = 300,
+	ERR_TRANSACTION_ALREADY_EXIST = 200,
+	ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST = 300,
 };
 
 
@@ -99,7 +99,7 @@ public:
 	/**
 	 * Creates the PackageBuffer.
 	 */
-	PackageBuffer(int package_id):
+	PackageBuffer(int package_id) :
 		m_id(package_id)
 	{
 		header().version = PROTOCOL_PACKAGE_VERSION;
@@ -132,7 +132,7 @@ public:
 	 */
 	lights::Sequence content()
 	{
-		return { m_buffer + MAX_HEADER_LEN, static_cast<std::size_t>(header().content_length) };
+		return {m_buffer + MAX_HEADER_LEN, static_cast<std::size_t>(header().content_length)};
 	}
 
 	/**
@@ -141,7 +141,7 @@ public:
 	 */
 	lights::SequenceView content() const
 	{
-		return { m_buffer + MAX_HEADER_LEN, static_cast<std::size_t>(header().content_length) };
+		return {m_buffer + MAX_HEADER_LEN, static_cast<std::size_t>(header().content_length)};
 	}
 
 	/**
@@ -149,7 +149,7 @@ public:
 	 */
 	lights::Sequence content_buffer()
 	{
-		return { m_buffer + MAX_HEADER_LEN, MAX_CONTENT_LEN };
+		return {m_buffer + MAX_HEADER_LEN, MAX_CONTENT_LEN};
 	}
 
 	/**
@@ -157,7 +157,7 @@ public:
 	 */
 	lights::SequenceView content_buffer() const
 	{
-		return { m_buffer + MAX_HEADER_LEN, MAX_CONTENT_LEN };
+		return {m_buffer + MAX_HEADER_LEN, MAX_CONTENT_LEN};
 	}
 
 	/**
@@ -306,17 +306,17 @@ public:
 	 * Parses a protobuf as package buffer and send to remote on asynchronization.
 	 * @param cmd            Identifies package content type.
 	 * @param msg            Message of protobuff type.
-	 * @param bind_trans_id  Specific transcation that trigger by rsponse.
-	 * @param is_send_back   Is need to return last request associate transcation.
+	 * @param bind_trans_id  Specific transaction that trigger by rsponse.
+	 * @param is_send_back   Is need to return last request associate transaction.
 	 */
 	template <typename ProtobufType>
 	void send_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0, bool is_send_back = false);
 
 	/**
-	 * Parses a protobuf as package buffer and send to remote on asynchronization and send back request transcation id.
+	 * Parses a protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
 	 * @param cmd            Identifies package content type.
 	 * @param msg            Message of protobuff type.
-	 * @param bind_trans_id  Specific transcation that trigger by rsponse.
+	 * @param bind_trans_id  Specific transaction that trigger by rsponse.
 	 */
 	template <typename ProtobufType>
 	void send_back_protobuf(int cmd, const ProtobufType& msg, int bind_trans_id = 0);
@@ -350,7 +350,7 @@ public:
 private:
 	void read_for_state(int deep = 0);
 
-	void trigger_transcation();
+	void trigger_transaction();
 
 	int m_id;
 	StreamSocket m_socket;
@@ -377,7 +377,7 @@ void NetworkConnection::send_protobuf(int cmd, const ProtobufType& msg, int bind
 	PackageBuffer& package = PackageBufferManager::instance()->register_package();
 	PackageHeader& header = package.header();
 	header.command = cmd;
-	header.self_trans_id  = bind_trans_id;
+	header.self_trans_id = bind_trans_id;
 	header.trigger_trans_id = is_send_back ? m_read_buffer.header().self_trans_id : 0;
 	header.content_length = size;
 	lights::Sequence storage = package.content_buffer();
@@ -455,29 +455,29 @@ private:
 
 
 /**
- * Transcation type.
+ * Transaction type.
  */
-enum class TranscationType
+enum class TransactionType
 {
-	ONE_PHASE_TRANSCATION,
-	MULTIPLY_PHASE_TRANSCATION,
+	ONE_PHASE_TRANSACTION,
+	MULTIPLY_PHASE_TRANSACTION,
 };
 
 
 /**
- * General transcation type.
+ * General transaction type.
  */
-struct Transcation
+struct Transaction
 {
-	TranscationType trans_type;
-	void *trans_handler;
+	TransactionType trans_type;
+	void* trans_handler;
 };
 
 
 /**
- * Multiply phase transcation allow to save transcation session in time range.
+ * Multiply phase transaction allow to save transaction session in time range.
  */
-class MultiplyPhaseTranscation
+class MultiplyPhaseTransaction
 {
 public:
 	enum PhaseResult
@@ -487,20 +487,20 @@ public:
 	};
 
 	/**
-	 * Factory of this type transcation. Just simply call contructor.
+	 * Factory of this type transaction. Just simply call contructor.
 	 * @note This function is only a example.
 	 */
-	static MultiplyPhaseTranscation* register_transcation(int trans_id);
+	static MultiplyPhaseTransaction* register_transaction(int trans_id);
 
 	/**
-	 * Creates a transcation by trans_id.
+	 * Creates a transaction by trans_id.
 	 */
-	MultiplyPhaseTranscation(int trans_id);
+	MultiplyPhaseTransaction(int trans_id);
 
 	/**
-	 * Destroys a transcation.
+	 * Destroys a transaction.
 	 */
-	virtual ~MultiplyPhaseTranscation() = default;
+	virtual ~MultiplyPhaseTransaction() = default;
 
 	/**
 	 * Initializes this base class interal variables.
@@ -541,7 +541,7 @@ public:
 	/**
 	 * Returns tranascation id.
 	 */
-	int transcation_id() const;
+	int transaction_id() const;
 
 	/**
 	 * Returns current phase.
@@ -549,7 +549,7 @@ public:
 	int current_phase() const;
 
 	/**
-	 * Returns connection that first start this transcation.
+	 * Returns connection that first start this transaction.
 	 */
 	NetworkConnection* first_connection();
 
@@ -573,90 +573,90 @@ private:
 
 
 template <typename T>
-void MultiplyPhaseTranscation::send_back_message(int cmd, T& msg)
+void MultiplyPhaseTransaction::send_back_message(int cmd, T& msg)
 {
 	first_connection()->send_back_protobuf(cmd, msg);
 }
 
 
 /**
- * Transcation factory function of multiply phase transcation.
+ * Transaction factory function of multiply phase transaction.
  */
-using TranscationFatory = MultiplyPhaseTranscation* (*)(int);
+using TransactionFatory = MultiplyPhaseTransaction* (*)(int);
 
 
 /**
- * Manager of multiply phase transcation.
+ * Manager of multiply phase transaction.
  */
-class MultiplyPhaseTranscationManager
+class MultiplyPhaseTransactionManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(MultiplyPhaseTranscationManager);
+	SPACELESS_SINGLETON_INSTANCE(MultiplyPhaseTransactionManager);
 
 	/**
-	 * Registers a multiply phase transcation.
+	 * Registers a multiply phase transaction.
 	 */
-	MultiplyPhaseTranscation& register_transcation(TranscationFatory trans_fatory);
+	MultiplyPhaseTransaction& register_transaction(TransactionFatory trans_fatory);
 
 	/**
-	 * Removes a multiply phase transcation.
+	 * Removes a multiply phase transaction.
 	 */
-	void remove_transcation(int trans_id);
+	void remove_transaction(int trans_id);
 
 	/**
-	 * Finds a multiply phase transcation.
-	 * @note Returns nullptr if cannot find multiply phase transcation.
+	 * Finds a multiply phase transaction.
+	 * @note Returns nullptr if cannot find multiply phase transaction.
 	 */
-	MultiplyPhaseTranscation* find_transcation(int trans_id);
+	MultiplyPhaseTransaction* find_transaction(int trans_id);
 
 private:
 	int m_next_id = 1;
-	std::map<int, MultiplyPhaseTranscation*> m_trans_list;
+	std::map<int, MultiplyPhaseTransaction*> m_trans_list;
 };
 
 
-using OnePhaseTrancation = void(*)(NetworkConnection&, const PackageBuffer&);
+using OnePhaseTrancation = void (*)(NetworkConnection&, const PackageBuffer&);
 
 /**
- * Manager of transcation. When recieve a command will trigger associated transcation.
+ * Manager of transaction. When recieve a command will trigger associated transaction.
  */
-class TranscationManager
+class TransactionManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(TranscationManager);
+	SPACELESS_SINGLETON_INSTANCE(TransactionManager);
 
 	/**
-	 * Registers association of command with transcation.
-     * @note A command only can associate one transcation.
+	 * Registers association of command with transaction.
+     * @note A command only can associate one transaction.
 	 */
-	void register_transcation(int cmd, TranscationType trans_type, void *handler);
+	void register_transaction(int cmd, TransactionType trans_type, void* handler);
 
 	/**
-	 * Registers association of command with one phase transcation.
-	 * @note A command only can associate one transcation.
+	 * Registers association of command with one phase transaction.
+	 * @note A command only can associate one transaction.
 	 */
-	void register_one_phase_transcation(int cmd, OnePhaseTrancation trancation);
+	void register_one_phase_transaction(int cmd, OnePhaseTrancation trancation);
 
 	/**
-	 * Registers association of command with multiply phase transcation.
- 	 * @param trans_fatory  Fatory of multiply phase transcation.
-     * @note A command only can associate one transcation.
+	 * Registers association of command with multiply phase transaction.
+ 	 * @param trans_fatory  Fatory of multiply phase transaction.
+     * @note A command only can associate one transaction.
 	 */
-	void register_multiply_phase_transcation(int cmd, TranscationFatory trans_fatory);
+	void register_multiply_phase_transaction(int cmd, TransactionFatory trans_fatory);
 
 	/**
-	 * Removes association of command with transcation.
+	 * Removes association of command with transaction.
 	 */
-	void remove_transcation(int cmd);
+	void remove_transaction(int cmd);
 
 	/**
-	 * Finds transcation that associate with command.
+	 * Finds transaction that associate with command.
 	 * @note Return nullptr if cannot find command.
 	 */
-	Transcation* find_transcation(int cmd);
+	Transaction* find_transaction(int cmd);
 
 private:
-	std::map<int, Transcation> m_trans_list;
+	std::map<int, Transaction> m_trans_list;
 };
 
 

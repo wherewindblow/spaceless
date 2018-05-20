@@ -1,10 +1,10 @@
 /**
- * transcation.cpp
+ * transaction.cpp
  * @author wherewindblow
  * @date   Jan 09, 2018
  */
 
-#include "transcation.h"
+#include "transaction.h"
 
 #include <cmath>
 #include <protocol/all.h>
@@ -14,7 +14,7 @@
 
 namespace spaceless {
 namespace storage_node {
-namespace transcation {
+namespace transaction {
 
 #define SPACELESS_COMMAND_HANDLER_BEGIN(RequestType, RsponseType) \
 	RequestType request; \
@@ -113,6 +113,6 @@ void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
 	SPACELESS_COMMAND_HANDLER_END(protocol::RSP_GET_FILE);
 }
 
-} // namespace transcation
+} // namespace transaction
 } // namespace storage_node
 } // namespace spaceless

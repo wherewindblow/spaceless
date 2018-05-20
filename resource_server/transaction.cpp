@@ -1,10 +1,10 @@
 /**
- * transcation.cpp
+ * transaction.cpp
  * @author wherewindblow
  * @date   Dec 24, 2017
  */
 
-#include "transcation.h"
+#include "transaction.h"
 
 #include <cmath>
 #include <protocol/all.h>
@@ -14,7 +14,7 @@
 
 namespace spaceless {
 namespace resource_server {
-namespace transcation {
+namespace transaction {
 
 enum
 {
@@ -291,17 +291,17 @@ void on_create_path(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-MultiplyPhaseTranscation* PutFileTranscation::register_transcation(int trans_id)
+MultiplyPhaseTransaction* PutFileTrans::register_transaction(int trans_id)
 {
-	return new PutFileTranscation(trans_id);
+	return new PutFileTrans(trans_id);
 }
 
 
-PutFileTranscation::PutFileTranscation(int trans_id) :
-	MultiplyPhaseTranscation(trans_id) {}
+PutFileTrans::PutFileTrans(int trans_id) :
+	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
@@ -344,7 +344,7 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 		NetworkConnection& storage_conn = NetworkConnectionManager::instance()->get_connection(storage_node.conn_id);
-		storage_conn.send_protobuf(protocol::REQ_PUT_FILE, request_to_storage, transcation_id());
+		storage_conn.send_protobuf(protocol::REQ_PUT_FILE, request_to_storage, transaction_id());
 		wait_next_phase(storage_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
@@ -357,8 +357,8 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 }
 
 
-MultiplyPhaseTranscation::PhaseResult
-PutFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult
+PutFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
@@ -386,7 +386,7 @@ PutFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& pack
 }
 
 
-MultiplyPhaseTranscation::PhaseResult PutFileTranscation::send_back_error(int error_code)
+MultiplyPhaseTransaction::PhaseResult PutFileTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
 	send_back_message(protocol::RSP_PUT_FILE, m_rsponse);
@@ -394,17 +394,17 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::send_back_error(int er
 }
 
 
-MultiplyPhaseTranscation* GetFileTranscation::register_transcation(int trans_id)
+MultiplyPhaseTransaction* GetFileTrans::register_transaction(int trans_id)
 {
-	return new GetFileTranscation(trans_id);
+	return new GetFileTrans(trans_id);
 }
 
 
-GetFileTranscation::GetFileTranscation(int trans_id) :
-	MultiplyPhaseTranscation(trans_id) {}
+GetFileTrans::GetFileTrans(int trans_id) :
+	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
@@ -443,7 +443,7 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
 		NetworkConnection& storage_conn = NetworkConnectionManager::instance()->get_connection(storage_node.conn_id);
-		storage_conn.send_protobuf(protocol::REQ_GET_FILE, request_to_storage, transcation_id());
+		storage_conn.send_protobuf(protocol::REQ_GET_FILE, request_to_storage, transaction_id());
 		wait_next_phase(storage_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
@@ -456,8 +456,8 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 }
 
 
-MultiplyPhaseTranscation::PhaseResult
-GetFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult
+GetFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
@@ -485,7 +485,7 @@ GetFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& pack
 }
 
 
-MultiplyPhaseTranscation::PhaseResult GetFileTranscation::send_back_error(int error_code)
+MultiplyPhaseTransaction::PhaseResult GetFileTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
 	send_back_message(protocol::RSP_GET_FILE, m_rsponse);
@@ -493,18 +493,18 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::send_back_error(int er
 }
 
 
-MultiplyPhaseTranscation* RemovePathTranscation::register_transcation(int trans_id)
+MultiplyPhaseTransaction* RemovePathTrans::register_transaction(int trans_id)
 {
-	return new RemovePathTranscation(trans_id);
+	return new RemovePathTrans(trans_id);
 }
 
 
-RemovePathTranscation::RemovePathTranscation(int trans_id) :
-	MultiplyPhaseTranscation(trans_id) {}
+RemovePathTrans::RemovePathTrans(int trans_id) :
+	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTranscation::PhaseResult
-RemovePathTranscation::on_init(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult
+RemovePathTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
@@ -534,19 +534,19 @@ RemovePathTranscation::on_init(NetworkConnection& conn, const PackageBuffer& pac
 }
 
 
-MultiplyPhaseTranscation::PhaseResult
-RemovePathTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult
+RemovePathTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
 {
 	return EXIT_TRANCATION;
 }
 
 
-MultiplyPhaseTranscation::PhaseResult RemovePathTranscation::send_back_error(int error_code)
+MultiplyPhaseTransaction::PhaseResult RemovePathTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
 	first_connection()->send_back_protobuf(protocol::RSP_REMOVE_PATH, m_rsponse);
 	return EXIT_TRANCATION;
 }
-} // namespace transcation
+} // namespace transaction
 } // namespace resource_server
 } // namespace spaceless

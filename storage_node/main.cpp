@@ -3,7 +3,7 @@
 #include <common/log.h>
 
 #include "core.h"
-#include "transcation.h"
+#include "transaction.h"
 
 
 namespace spaceless {
@@ -29,13 +29,13 @@ int main(int argc, const char* argv[])
 		NetworkConnectionManager::instance()->register_listener(ip, port);
 
 		std::pair<int, OnePhaseTrancation> handlers[] = {
-			{protocol::REQ_PUT_FILE, transcation::on_put_file},
-			{protocol::REQ_GET_FILE, transcation::on_get_file},
+			{protocol::REQ_PUT_FILE, transaction::on_put_file},
+			{protocol::REQ_GET_FILE, transaction::on_get_file},
 		};
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
 		{
-			TranscationManager::instance()->register_one_phase_transcation(handlers[i].first, handlers[i].second);
+			TransactionManager::instance()->register_one_phase_transaction(handlers[i].first, handlers[i].second);
 		}
 
 		NetworkConnectionManager::instance()->run();
@@ -44,11 +44,6 @@ int main(int argc, const char* argv[])
 	{
 		SPACELESS_ERROR(MODULE_STORAGE_NODE, ex);
 	}
-	catch (std::exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_STORAGE_NODE, ex.what());
-	}
-
 	return 0;
 }
 

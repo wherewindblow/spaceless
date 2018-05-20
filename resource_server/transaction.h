@@ -1,5 +1,5 @@
 /**
- * transcation.h
+ * transaction.h
  * @author wherewindblow
  * @date   Dec 24, 2017
  */
@@ -12,7 +12,7 @@
 
 namespace spaceless {
 namespace resource_server {
-namespace transcation {
+namespace transaction {
 
 void on_register_user(NetworkConnection& conn, const PackageBuffer& package);
 
@@ -39,7 +39,7 @@ void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package);
 void on_create_path(NetworkConnection& conn, const PackageBuffer& package);
 
 
-class PutFileTranscation: public MultiplyPhaseTranscation
+class PutFileTrans: public MultiplyPhaseTransaction
 {
 public:
 	enum
@@ -47,9 +47,9 @@ public:
 		WAIT_STORAGE_NODE_PUT_FILE,
 	};
 
-	static MultiplyPhaseTranscation* register_transcation(int trans_id);
+	static MultiplyPhaseTransaction* register_transaction(int trans_id);
 
-	PutFileTranscation(int trans_id);
+	PutFileTrans(int trans_id);
 
 	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
 
@@ -63,7 +63,7 @@ private:
 };
 
 
-class GetFileTranscation: public MultiplyPhaseTranscation
+class GetFileTrans: public MultiplyPhaseTransaction
 {
 public:
 	enum
@@ -71,9 +71,9 @@ public:
 		WAIT_STORAGE_NODE_GET_FILE,
 	};
 
-	static MultiplyPhaseTranscation* register_transcation(int trans_id);
+	static MultiplyPhaseTransaction* register_transaction(int trans_id);
 
-	GetFileTranscation(int trans_id);
+	GetFileTrans(int trans_id);
 
 	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
 
@@ -87,7 +87,7 @@ private:
 };
 
 
-class RemovePathTranscation: public MultiplyPhaseTranscation
+class RemovePathTrans: public MultiplyPhaseTransaction
 {
 public:
 	enum
@@ -95,9 +95,9 @@ public:
 		WAIT_STORAGE_NODE_GET_FILE,
 	};
 
-	static MultiplyPhaseTranscation* register_transcation(int trans_id);
+	static MultiplyPhaseTransaction* register_transaction(int trans_id);
 
-	RemovePathTranscation(int trans_id);
+	RemovePathTrans(int trans_id);
 
 	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
 
@@ -110,6 +110,6 @@ private:
 	protocol::RspRemovePath m_rsponse;
 };
 
-} // namespace transcation
+} // namespace transaction
 } // namespace resource_server
 } // namespace spaceless

@@ -48,7 +48,7 @@ int main(int argc, const char* argv[])
 
 		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
 		{
-			TranscationManager::instance()->register_one_phase_transcation(handlers[i].first, handlers[i].second);
+			TransactionManager::instance()->register_one_phase_transaction(handlers[i].first, handlers[i].second);
 		}
 
 		network_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
@@ -66,10 +66,6 @@ int main(int argc, const char* argv[])
 	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_CLIENT, ex);
-	}
-	catch (std::exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_CLIENT, ex.what());
 	}
 	return 0;
 }
@@ -187,7 +183,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		}
 		else if (func == "get_file")
 		{
-			std::cout << "Please input group id, local file path and remote file path." << std::endl;
+			std::cout << "Please input group id, remote file path and local file path." << std::endl;
 			int group_id;
 			std::string local_file_path, remote_file_path;
 			std::cin >> group_id >> remote_file_path >> local_file_path;

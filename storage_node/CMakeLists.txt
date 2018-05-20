@@ -3,7 +3,7 @@ include_directories(..)
 set(SPACELESS_STORAGE_NODE_SRC
         main.cpp
         core.h core.cpp
-        transcation.h transcation.cpp)
+        transaction.h transaction.cpp)
 
 add_executable(spaceless_storage_node ${SPACELESS_STORAGE_NODE_SRC})
 
