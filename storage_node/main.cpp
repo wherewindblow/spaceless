@@ -1,7 +1,3 @@
-#include <iostream>
-
-#include <lights/ostream.h>
-#include <lights/file.h>
 #include <protocol/all.h>
 #include <common/network.h>
 #include <common/log.h>
@@ -19,7 +15,18 @@ int main(int argc, const char* argv[])
 	{
 		logger.set_level(lights::LogLevel::DEBUG);
 
-		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10241);
+		if (argc < 4)
+		{
+			SPACELESS_ERROR(MODULE_STORAGE_NODE, "Not enought argumets to start up");
+			return -1;
+		}
+
+		std::string sharing_path = argv[1];
+		std::string ip = argv[2];
+		unsigned short port = static_cast<unsigned short>(std::stoi(argv[3]));
+
+		SharingFileManager::instance()->set_sharing_path(sharing_path);
+		NetworkConnectionManager::instance()->register_listener(ip, port);
 
 		std::pair<int, OnePhaseTrancation> handlers[] = {
 			{protocol::REQ_PUT_FILE, transcation::on_put_file},

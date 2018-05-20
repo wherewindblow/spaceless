@@ -1,0 +1,21 @@
+{
+  "resource_server": {
+    "ip": "127.0.0.1",
+    "port": 10240
+  },
+  "root_user": {
+    "name": "root",
+    "password": "pwd",
+    "group": "official"
+  },
+  "storage_nodes": [
+    {
+      "ip": "127.0.0.1",
+      "port": 10241
+    },
+    {
+      "ip": "127.0.0.1",
+      "port": 10242
+    }
+  ]
+}

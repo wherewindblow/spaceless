@@ -9,16 +9,16 @@
 #include <cmath>
 #include <algorithm>
 
+#include <Poco/DirectoryIterator.h>
+#include <Poco/Path.h>
+
 #include <lights/file.h>
 #include <common/exception.h>
-#include <Poco/DirectoryIterator.h>
-
 
 namespace spaceless {
 namespace storage_node {
 
-SharingFileManager::SharingFileManager():
-	m_file_path("/tmp/")
+SharingFileManager::SharingFileManager()
 {
 }
 
@@ -66,21 +66,21 @@ std::size_t SharingFileManager::get_file(const std::string& filename, lights::Se
 }
 
 
-const std::string& SharingFileManager::get_sharing_file_path() const
+const std::string& SharingFileManager::get_sharing_path() const
 {
-	return m_file_path;
+	return m_sharing_path;
 }
 
 
-void SharingFileManager::set_sharing_file_path(const std::string& file_path)
+void SharingFileManager::set_sharing_path(const std::string& sharing_path)
 {
-	m_file_path = file_path;
+	m_sharing_path = sharing_path;
 }
 
 
 std::string SharingFileManager::get_absolute_path(const std::string path) const
 {
-	return m_file_path  + path;
+	return m_sharing_path + Poco::Path::separator() + path;
 }
 
 

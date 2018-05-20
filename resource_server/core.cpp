@@ -173,11 +173,12 @@ std::string FilePath::filename() const
 }
 
 
-SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id):
+SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id, int storage_node_id):
 	m_group_id(group_id),
 	m_group_name(group_name),
 	m_owner_id(ower_id),
-	m_root_dir_id(root_dir_id)
+	m_root_dir_id(root_dir_id),
+	m_storage_node_id(storage_node_id)
 {
 	m_manager_list.push_back(ower_id);
 	m_member_list.push_back(ower_id);
@@ -205,6 +206,12 @@ int SharingGroup::owner_id() const
 int SharingGroup::root_dir_id() const
 {
 	return m_root_dir_id;
+}
+
+
+int SharingGroup::storage_node_id() const
+{
+	return m_storage_node_id;
 }
 
 
@@ -309,13 +316,14 @@ int SharingGroup::get_file_id(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
-		SharingFile* parent_dir = SharingFileManager::instance()->find_file(parent_dir_id);
-		if (parent_dir->file_type != SharingFile::DIRECTORY)
+		SharingFile* parent = SharingFileManager::instance()->find_file(parent_dir_id);
+		if (parent->file_type != SharingFile::DIRECTORY)
 		{
 			return INVALID_ID;
 		}
 
-		auto itr = std::find_if(parent_dir->inside_file_list.begin(), parent_dir->inside_file_list.end(),
+		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
+		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(),
 								[&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
@@ -329,7 +337,7 @@ int SharingGroup::get_file_id(const FilePath& path)
 			}
 		});
 
-		if (itr == parent_dir->inside_file_list.end())
+		if (itr == parent_dir->file_list.end())
 		{
 			return INVALID_ID;
 		}
@@ -351,11 +359,12 @@ bool SharingGroup::exist_path(const FilePath& path)
 
 void SharingGroup::add_file(const FilePath& path, int file_id)
 {
-	int dir_id = get_file_id(path);
-	SharingFile& dir = SharingFileManager::instance()->get_file(dir_id);
-	if (dir.file_type == SharingFile::DIRECTORY)
+	int path_file_id = get_file_id(path);
+	SharingFile& path_file = SharingFileManager::instance()->get_file(path_file_id);
+	if (path_file.file_type == SharingFile::DIRECTORY)
 	{
-		dir.inside_file_list.push_back(file_id);
+		auto& dir = dynamic_cast<SharingDirectory&>(path_file);
+		dir.file_list.push_back(file_id);
 	}
 	else
 	{
@@ -406,7 +415,8 @@ void SharingGroup::create_path(const FilePath& path)
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
 		}
 
-		auto itr = std::find_if(parent->inside_file_list.begin(), parent->inside_file_list.end(),
+		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
+		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(),
 					 [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
@@ -420,10 +430,10 @@ void SharingGroup::create_path(const FilePath& path)
 			}
 		});
 
-		if (itr == parent->inside_file_list.end())
+		if (itr == parent_dir->file_list.end())
 		{
 			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, dir_name);
-			parent->inside_file_list.push_back(new_file.file_id);
+			parent_dir->file_list.push_back(new_file.file_id);
 			parent_id = new_file.file_id;
 		}
 		else
@@ -447,7 +457,8 @@ void SharingGroup::remove_path(const FilePath& path)
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_INVALID_PATH);
 		}
 
-		auto itr = std::find_if(parent->inside_file_list.begin(), parent->inside_file_list.end(),
+		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
+		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(),
 								[&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
@@ -462,7 +473,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		});
 
 		previous_parent_id = parent_id;
-		if (itr == parent->inside_file_list.end())
+		if (itr == parent_dir->file_list.end())
 		{
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
 		}
@@ -479,8 +490,12 @@ void SharingGroup::remove_path(const FilePath& path)
 
 	SharingFileManager::instance()->remove_file(parent_id);
 	SharingFile* previous_parent = SharingFileManager::instance()->find_file(previous_parent_id);
-	auto itr = std::remove(previous_parent->inside_file_list.begin(), previous_parent->inside_file_list.end(), previous_parent_id);
-	previous_parent->inside_file_list.erase(itr, previous_parent->inside_file_list.end());
+	LIGHTS_ASSERT(previous_parent->file_type == SharingFile::DIRECTORY);
+	auto previous_parent_dir = dynamic_cast<SharingDirectory*>(previous_parent);
+	auto itr = std::remove(previous_parent_dir->file_list.begin(),
+						   previous_parent_dir->file_list.end(),
+						   previous_parent_id);
+	previous_parent_dir->file_list.erase(itr, previous_parent_dir->file_list.end());
 }
 
 
@@ -495,8 +510,10 @@ SharingGroup& SharingGroupManager::register_group(int user_id, const std::string
 	}
 
 	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
-	SharingGroup new_group(m_next_id, group_name, user_id, root_dir.file_id);
+	StorageNode& fit_node = StorageNodeManager::instance()->get_fit_node();
+	SharingGroup new_group(m_next_id, group_name, user_id, root_dir.file_id, fit_node.node_id);
 	++m_next_id;
+	++fit_node.use_counting;
 
 	auto value = std::make_pair(new_group.group_id(), new_group);
 	auto result = m_group_list.insert(value);
@@ -517,6 +534,8 @@ void SharingGroupManager::remove_group(int user_id, int group_id)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_OWNER);
 	}
 
+	StorageNode& node = StorageNodeManager::instance()->get_node(group.storage_node_id());
+	--node.use_counting;
 	m_group_list.erase(group_id);
 }
 
@@ -574,65 +593,100 @@ SharingGroup& SharingGroupManager::get_group(const std::string& group_name)
 }
 
 
-SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type,
-											   const std::string& file_name,
-											   int node_id,
-											   const std::string& node_file_name)
+SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type, const std::string& file_name, int arg)
 {
-	StorageFile storage_file = std::make_pair(node_id, node_file_name);
+	SharingFile* sharing_file = nullptr;
+	switch (file_type)
+	{
+		case SharingFile::DIRECTORY:
+		{
+			sharing_file = new SharingDirectory;
+			break;
+		}
+		case SharingFile::GENERAL_FILE:
+		{
+			auto file = new SharingGeneralFile;
+			file->storage_file_id = arg;
+			sharing_file = file;
 
-	SharingFile sharing_file = {
-		m_next_id,
-		file_type,
-		file_name,
-		node_id,
-		node_file_name
-	};
+			auto& storage_file = dynamic_cast<SharingStorageFile&>(get_file(file->storage_file_id));
+			++storage_file.use_counting;
+			break;
+		}
+		case SharingFile::STORAGE_FILE:
+		{
+			auto file = new SharingStorageFile;
+			file->node_id = arg;
+			sharing_file = file;
+			break;
+		}
+	}
+
+	sharing_file->file_id = m_next_id;
 	++m_next_id;
+	sharing_file->file_type = file_type;
+	sharing_file->file_name = file_name;
 
-	auto value = std::make_pair(sharing_file.file_id, sharing_file);
-	auto result = m_sharing_file_list.insert(value);
+	auto value = std::make_pair(sharing_file->file_id, sharing_file);
+	auto result = m_file_list.insert(value);
 	if (result.second == false)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_ALREADY_EXIST);
 	}
 
-	m_storage_file_list.insert(std::make_pair(storage_file, sharing_file.file_id));
-
-	return result.first->second;
+	return *result.first->second;
 }
 
 
 void SharingFileManager::remove_file(int file_id)
 {
-	SharingFile& sharing_file = get_file(file_id);
-	StorageFile storage_file = std::make_pair(sharing_file.node_id, sharing_file.node_file_name);
-	m_storage_file_list.erase(storage_file);
-	m_sharing_file_list.erase(file_id);
+	SharingFile* sharing_file = find_file(file_id);
+	m_file_list.erase(file_id);
+
+	if (sharing_file)
+	{
+		if (sharing_file->file_type == SharingFile::GENERAL_FILE)
+		{
+			auto* general_file = dynamic_cast<SharingGeneralFile*>(sharing_file);
+			SharingFile& storage_file = get_file(general_file->storage_file_id);
+			LIGHTS_ASSERT(storage_file.file_type == SharingFile::STORAGE_FILE)
+			auto& real_storage_file = dynamic_cast<SharingStorageFile&>(storage_file);
+			--real_storage_file.use_counting;
+			remove_file(real_storage_file.file_id);
+		}
+
+		delete sharing_file;
+	}
 }
 
 
 SharingFile* SharingFileManager::find_file(int file_id)
 {
-	auto itr = m_sharing_file_list.find(file_id);
-	if (itr == m_sharing_file_list.end())
+	auto itr = m_file_list.find(file_id);
+	if (itr == m_file_list.end())
 	{
 		return nullptr;
 	}
-	return &(itr->second);
+	return itr->second;
 }
 
 
 SharingFile* SharingFileManager::find_file(int node_id, const std::string& node_file_name)
 {
-	StorageFile storage_file = std::make_pair(node_id, node_file_name);
-	auto itr = m_storage_file_list.find(storage_file);
-	if (itr == m_storage_file_list.end())
+	for (auto& pair : m_file_list)
 	{
-		return nullptr;
+		if (pair.second->file_type == SharingFile::STORAGE_FILE)
+		{
+			auto storage_file = dynamic_cast<SharingStorageFile*>(pair.second);
+			if (storage_file->node_id == node_id &&
+				storage_file->file_name == node_file_name)
+			{
+				return storage_file;
+			}
+		}
 	}
 
-	return find_file(itr->second);
+	return nullptr;
 }
 
 
@@ -735,6 +789,31 @@ StorageNode& StorageNodeManager::get_node(const std::string& node_ip, unsigned s
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_NOT_EXIST);
 	}
 	return *node;
+}
+
+StorageNode& StorageNodeManager::get_fit_node()
+{
+	// Find free node.
+	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(), [](const StorageNodeList::value_type& pair) {
+		return pair.second.use_counting == 0;
+	});
+
+	if (itr != m_node_list.end())
+	{
+		return itr->second;
+	}
+
+	// Find the lowest load node.
+	StorageNode* low_load_node = &(m_node_list.begin()->second);
+	for (auto& pair: m_node_list)
+	{
+		if (pair.second.use_counting < low_load_node->use_counting)
+		{
+			low_load_node = &pair.second;
+		}
+	}
+
+	return *low_load_node;
 }
 
 StorageNode* default_storage_node = nullptr;

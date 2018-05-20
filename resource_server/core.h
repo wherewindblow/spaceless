@@ -119,7 +119,7 @@ class SharingGroup
 public:
 	using UserList = std::vector<int>;
 
-	SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id);
+	SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id, int storage_node_id);
 
 	int group_id() const;
 
@@ -128,6 +128,8 @@ public:
 	int owner_id() const;
 
 	int root_dir_id() const;
+
+	int storage_node_id() const;
 
 	const UserList& manager_list() const;
 
@@ -145,6 +147,9 @@ public:
 
 	void kick_out_user(int user_id);
 
+	/**
+	 * Get file id of @c path filename.
+	 */
 	int get_file_id(const FilePath& path);
 
 	bool exist_path(const FilePath& path);
@@ -170,6 +175,7 @@ private:
 	std::string m_group_name;
 	int m_owner_id;
 	int m_root_dir_id;
+	int m_storage_node_id;
 	UserList m_manager_list; // Manager list include owner and general managers.
 	UserList m_member_list; // Member list include all members in group.
 };
@@ -206,20 +212,41 @@ private:
 };
 
 
-struct SharingFile
+class SharingFile
 {
+public:
 	enum FileType
 	{
-		GENERAL_FILE,
 		DIRECTORY,
+		GENERAL_FILE,
+		STORAGE_FILE,
 	};
 
-	int file_id;
+	SharingFile() = default;
+	virtual ~SharingFile() = default;
+
+	int file_id = 0;
 	FileType file_type;
 	std::string file_name;
-	int node_id; // Only available when file_type is GENERAL_FILE.
-	std::string node_file_name; // Only available when file_type is GENERAL_FILE.
-	std::vector<int> inside_file_list; // Only available when file_type is DIRECTORY.
+};
+
+class SharingGeneralFile: public SharingFile
+{
+public:
+	int storage_file_id = 0; // The underlying storage file id.
+};
+
+class SharingStorageFile: public SharingFile
+{
+public:
+	int node_id = 0;
+	int use_counting = 0;
+};
+
+class SharingDirectory: public SharingFile
+{
+public:
+	std::vector<int> file_list;
 };
 
 
@@ -228,10 +255,7 @@ class SharingFileManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(SharingFileManager);
 
-	SharingFile& register_file(SharingFile::FileType file_type,
-							   const std::string& file_name,
-							   int node_id = 0,
-							   const std::string& node_file_name = std::string());
+	SharingFile& register_file(SharingFile::FileType file_type, const std::string& file_name, int arg = 0);
 
 	void remove_file(int file_id);
 
@@ -244,11 +268,8 @@ public:
 	SharingFile& get_file(int node_id, const std::string& node_file_name);
 
 private:
-	using SharingFileList = std::map<int, SharingFile>;
-	using StorageFile = std::pair<int, std::string>;
-	using StorageFileList = std::map<StorageFile, int>;
-	SharingFileList m_sharing_file_list;
-	StorageFileList m_storage_file_list;
+	using SharingFileList = std::map<int, SharingFile*>;
+	SharingFileList m_file_list;
 	int m_next_id = 1;
 };
 
@@ -259,6 +280,7 @@ struct StorageNode
 	std::string node_ip;
 	unsigned short node_port;
 	int conn_id;
+	int use_counting;
 };
 
 
@@ -279,15 +301,13 @@ public:
 
 	StorageNode& get_node(const std::string& node_ip, unsigned short node_port);
 
+	StorageNode& get_fit_node();
+
 private:
 	using StorageNodeList = std::map<int, StorageNode>;
 	StorageNodeList m_node_list;
 	int m_next_id = 1;
 };
-
-
-extern StorageNode* default_storage_node;
-extern NetworkConnection* default_storage_conn;
 
 } // namespace resource_server
 } // namespace spaceless

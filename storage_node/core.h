@@ -84,14 +84,14 @@ public:
 
 	std::size_t get_file(const std::string& filename, lights::Sequence file_content, int start_pos = 0);
 
-	const std::string& get_sharing_file_path() const;
+	const std::string& get_sharing_path() const;
 
-	void set_sharing_file_path(const std::string& file_path);
+	void set_sharing_path(const std::string& sharing_path);
 
 	std::string get_absolute_path(const std::string path) const;
 
 private:
-	std::string m_file_path;
+	std::string m_sharing_path;
 };
 
 } // namespace storage_node

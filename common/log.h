@@ -7,7 +7,6 @@
 #pragma once
 
 #include <lights/logger.h>
-#include <lights/log_sinks/stdout_sink.h>
 
 namespace spaceless {
 

@@ -1,10 +1,8 @@
-#include <iostream>
-
-#include <lights/ostream.h>
-#include <lights/file.h>
 #include <protocol/all.h>
 #include <common/network.h>
 #include <common/log.h>
+
+#include <Poco/Util/JSONConfiguration.h>
 
 #include "core.h"
 #include "transcation.h"
@@ -13,9 +11,7 @@
 namespace spaceless {
 namespace resource_server {
 
-const std::string ROOT_USER_NAME = "root";
-const std::string ROOT_USER_PWD = "pwd";
-int ROOT_USER_ID = 1;
+const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
 
 int main(int argc, const char* argv[])
 {
@@ -23,13 +19,38 @@ int main(int argc, const char* argv[])
 	{
 		logger.set_level(lights::LogLevel::DEBUG);
 
-		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
-		default_storage_node = &StorageNodeManager::instance()->register_node("127.0.0.1", 10241);
-		default_storage_conn = NetworkConnectionManager::instance()->find_connection(default_storage_node->conn_id);
+		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
+		for (int i = 0;; ++i)
+		{
+			std::string key_prefix = "storage_nodes[" + std::to_string(i) + "]";
+			try
+			{
+				std::string ip = configuration.getString(key_prefix + ".ip");
+				unsigned int port = configuration.getUInt(key_prefix + ".port");
+				StorageNodeManager::instance()->register_node(ip, static_cast<unsigned short>(port));
+			}
+			catch (Poco::NotFoundException& e)
+			{
+				if (i == 0)
+				{
+					SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Have not storage node in here");
+				}
+				else
+				{
+					break;  // Into array end.
+				}
+			}
+		}
 
-		User& root = UserManager::instance()->register_user(ROOT_USER_NAME, ROOT_USER_PWD);
-		ROOT_USER_ID = root.user_id;
-		SharingGroupManager::instance()->register_group(root.user_id, "official");
+		std::string ip = configuration.getString("resource_server.ip");
+		unsigned int port = configuration.getUInt("resource_server.port");
+		NetworkConnectionManager::instance()->register_listener(ip, static_cast<unsigned short>(port));
+
+		std::string root_user_name = configuration.getString("root_user.name");
+		std::string root_user_pwd = configuration.getString("root_user.password");
+		User& root = UserManager::instance()->register_user(root_user_name, root_user_pwd);
+		std::string root_group_name = configuration.getString("root_user.group");
+		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
 
 		std::pair<int, OnePhaseTrancation> handlers[] = {
 			{protocol::REQ_REGISTER_USER, transcation::on_register_user},

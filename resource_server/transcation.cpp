@@ -331,17 +331,21 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 				return send_back_error(ERR_PATH_ALREADY_EXIST);
 			}
 
-			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
-																				  path.filename(),
-																				  default_storage_node->node_id,
-																				  path.filename());
-			group.add_file(path.directory_path(), new_file.file_id);
+			SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
+																					  path.filename(),
+																					  group.storage_node_id());
+			SharingFile& general_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
+																					  path.filename(),
+																					  storage_file.file_id);
+			group.add_file(path.directory_path(), general_file.file_id);
 		}
 
 		protocol::ReqPutFile request_to_storage = m_request;
 		request_to_storage.set_file_path(path.filename());
-		default_storage_conn->send_protobuf(protocol::REQ_PUT_FILE, request_to_storage, transcation_id());
-		wait_next_phase(*default_storage_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
+		StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
+		NetworkConnection& storage_conn = NetworkConnectionManager::instance()->get_connection(storage_node.conn_id);
+		storage_conn.send_protobuf(protocol::REQ_PUT_FILE, request_to_storage, transcation_id());
+		wait_next_phase(storage_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
@@ -353,7 +357,8 @@ MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_init(NetworkConnect
 }
 
 
-MultiplyPhaseTranscation::PhaseResult PutFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTranscation::PhaseResult
+PutFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)
@@ -423,16 +428,23 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 		}
 
 		int file_id = group.get_file_id(path);
-		SharingFile& file = SharingFileManager::instance()->get_file(file_id);
-		if (file.file_type != SharingFile::GENERAL_FILE)
+		SharingFile& general_file = SharingFileManager::instance()->get_file(file_id);
+		if (general_file.file_type != SharingFile::GENERAL_FILE)
 		{
 			return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
 		}
 
+		auto& real_general_file = dynamic_cast<SharingGeneralFile&>(general_file);
+		SharingFile& storage_file = SharingFileManager::instance()->get_file(real_general_file.storage_file_id);
+		LIGHTS_ASSERT(storage_file.file_type == SharingFile::STORAGE_FILE);
+		auto& real_storage_file = dynamic_cast<SharingStorageFile&>(storage_file);
+
 		protocol::ReqGetFile request_to_storage = m_request;
 		request_to_storage.set_file_path(path.filename());
-		default_storage_conn->send_protobuf(protocol::REQ_GET_FILE, request_to_storage, transcation_id());
-		wait_next_phase(*default_storage_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
+		StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
+		NetworkConnection& storage_conn = NetworkConnectionManager::instance()->get_connection(storage_node.conn_id);
+		storage_conn.send_protobuf(protocol::REQ_GET_FILE, request_to_storage, transcation_id());
+		wait_next_phase(storage_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
@@ -444,7 +456,8 @@ MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_init(NetworkConnect
 }
 
 
-MultiplyPhaseTranscation::PhaseResult GetFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTranscation::PhaseResult
+GetFileTranscation::on_active(NetworkConnection& conn, const PackageBuffer& package)
 {
 	User* user = static_cast<User*>(first_connection()->get_attachment());
 	if (user == nullptr)

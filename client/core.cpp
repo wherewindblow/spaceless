@@ -128,9 +128,9 @@ void SharingGroupManager::kick_out_user(int group_id, int user_id)
 
 
 void SharingGroupManager::put_file(int group_id,
-							  const std::string& local_file_path,
-							  const std::string& remote_file_path,
-							  int fragment_index)
+								   const std::string& local_file_path,
+								   const std::string& remote_file_path,
+								   int fragment_index)
 {
 	if (fragment_index == 0)
 	{
