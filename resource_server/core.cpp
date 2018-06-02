@@ -60,8 +60,7 @@ User* UserManager::find_user(int user_id)
 
 User* UserManager::find_user(const std::string& user_name)
 {
-	auto itr = std::find_if(m_user_list.begin(), m_user_list.end(),
-							[&user_name](const UserList::value_type& value_type)
+	auto itr = std::find_if(m_user_list.begin(), m_user_list.end(), [&user_name](const UserList::value_type& value_type)
 	{
 		return value_type.second.user_name == user_name;
 	});
@@ -123,7 +122,7 @@ User* UserManager::find_login_user(int conn_id)
 	{
 		return nullptr;
 	}
-	
+
 	return find_user(itr->second);
 }
 
@@ -336,8 +335,7 @@ int SharingGroup::get_file_id(const FilePath& path)
 		}
 
 		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
-		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(),
-								[&dir_name](int file_id)
+		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file && file->file_name == dir_name)
@@ -429,8 +427,7 @@ void SharingGroup::create_path(const FilePath& path)
 		}
 
 		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
-		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(),
-					 [&dir_name](int file_id)
+		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file && file->file_name == dir_name)
@@ -471,8 +468,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		}
 
 		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
-		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(),
-								[&dir_name](int file_id)
+		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file && file->file_name == dir_name)
@@ -569,8 +565,7 @@ SharingGroup* SharingGroupManager::find_group(int group_id)
 
 SharingGroup* SharingGroupManager::find_group(const std::string& group_name)
 {
-	auto itr = std::find_if(m_group_list.begin(), m_group_list.end(),
-							[&group_name](const GroupList::value_type& value_type)
+	auto itr = std::find_if(m_group_list.begin(), m_group_list.end(), [&group_name](const GroupList::value_type& value_type)
 	{
 		return value_type.second.group_name() == group_name;
 	});
@@ -770,9 +765,9 @@ StorageNode* StorageNodeManager::find_node(const std::string& node_ip, unsigned 
 {
 	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(),
 							[&](const StorageNodeList::value_type& value_type)
-	{
-		return value_type.second.node_ip == node_ip && value_type.second.node_port == node_port;
-	});
+							{
+								return value_type.second.node_ip == node_ip && value_type.second.node_port == node_port;
+							});
 
 	if (itr == m_node_list.end())
 	{

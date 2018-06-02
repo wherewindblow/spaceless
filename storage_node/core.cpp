@@ -155,8 +155,7 @@ FileTransferSession* FileTransferSessionManager::find_session(int session_id)
 
 FileTransferSession* FileTransferSessionManager::find_session(int uid, const std::string& filename)
 {
-	auto itr = std::find_if(m_session_list.begin(), m_session_list.end(),
-							[&](const SessionList::value_type& value_type)
+	auto itr = std::find_if(m_session_list.begin(), m_session_list.end(), [&](const SessionList::value_type& value_type)
 	{
 		return value_type.second.group_id == uid && value_type.second.filename == filename;
 	});
