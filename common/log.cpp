@@ -5,6 +5,7 @@
  */
 
 #include "log.h"
+
 #include <lights/log_sinks/stdout_sink.h>
 
 namespace spaceless {

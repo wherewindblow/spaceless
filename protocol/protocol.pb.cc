@@ -557,7 +557,7 @@ void AddDescriptorsImpl() {
       "\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\" \n\016Rs"
       "pKickOutUser\022\016\n\006result\030\001 \001(\005\"V\n\014FileFrag"
       "ment\022\024\n\014max_fragment\030\001 \001(\005\022\026\n\016fragment_i"
-      "ndex\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\t\"e\n\n"
+      "ndex\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\014\"e\n\n"
       "ReqPutFile\022\020\n\010group_id\030\001 \001(\005\022\021\n\tfile_pat"
       "h\030\002 \001(\t\0222\n\010fragment\030\003 \001(\0132 .spaceless.pr"
       "otocol.FileFragment\"\034\n\nRspPutFile\022\016\n\006res"
@@ -8013,15 +8013,11 @@ bool FileFragment::MergePartialFromCodedStream(
         break;
       }
 
-      // string fragment_content = 3;
+      // bytes fragment_content = 3;
       case 3: {
         if (tag == 26u) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_fragment_content()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->fragment_content().data(), this->fragment_content().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "spaceless.protocol.FileFragment.fragment_content"));
         } else {
           goto handle_unusual;
         }
@@ -8062,13 +8058,9 @@ void FileFragment::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->fragment_index(), output);
   }
 
-  // string fragment_content = 3;
+  // bytes fragment_content = 3;
   if (this->fragment_content().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->fragment_content().data(), this->fragment_content().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "spaceless.protocol.FileFragment.fragment_content");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
       3, this->fragment_content(), output);
   }
 
@@ -8089,14 +8081,10 @@ void FileFragment::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->fragment_index(), target);
   }
 
-  // string fragment_content = 3;
+  // bytes fragment_content = 3;
   if (this->fragment_content().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->fragment_content().data(), this->fragment_content().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "spaceless.protocol.FileFragment.fragment_content");
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
         3, this->fragment_content(), target);
   }
 
@@ -8108,10 +8096,10 @@ size_t FileFragment::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.FileFragment)
   size_t total_size = 0;
 
-  // string fragment_content = 3;
+  // bytes fragment_content = 3;
   if (this->fragment_content().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
+      ::google::protobuf::internal::WireFormatLite::BytesSize(
         this->fragment_content());
   }
 
@@ -8232,7 +8220,7 @@ void FileFragment::set_fragment_index(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.fragment_index)
 }
 
-// string fragment_content = 3;
+// bytes fragment_content = 3;
 void FileFragment::clear_fragment_content() {
   fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -8258,7 +8246,7 @@ void FileFragment::set_fragment_content(const char* value) {
   fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:spaceless.protocol.FileFragment.fragment_content)
 }
-void FileFragment::set_fragment_content(const char* value, size_t size) {
+void FileFragment::set_fragment_content(const void* value, size_t size) {
   
   fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));

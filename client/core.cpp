@@ -8,14 +8,14 @@
 #include "core.h"
 
 #include <cmath>
+#include <common/transaction.h>
 #include <protocol/all.h>
-
 
 
 namespace spaceless {
 namespace client {
 
-NetworkConnection* network_conn = nullptr;
+int conn_id = 0;
 
 
 void UserManager::register_user(const std::string& username, const std::string& password)
@@ -23,7 +23,7 @@ void UserManager::register_user(const std::string& username, const std::string& 
 	protocol::ReqRegisterUser request;
 	request.set_username(username);
 	request.set_password(password);
-	network_conn->send_protobuf(protocol::REQ_REGISTER_USER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_REGISTER_USER, request);
 }
 
 
@@ -32,7 +32,7 @@ void UserManager::login_user(int user_id, const std::string& password)
 	protocol::ReqLoginUser request;
 	request.set_user_id(user_id);
 	request.set_password(password);
-	network_conn->send_protobuf(protocol::REQ_LOGIN_USER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_LOGIN_USER, request);
 }
 
 
@@ -40,7 +40,7 @@ void UserManager::remove_user(int user_id)
 {
 	protocol::ReqRemoveUser request;
 	request.set_user_id(user_id);
-	network_conn->send_protobuf(protocol::REQ_REMOVE_USER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_REMOVE_USER, request);
 }
 
 
@@ -48,7 +48,7 @@ void UserManager::find_user(int user_id)
 {
 	protocol::ReqFindUser request;
 	request.set_user_id(user_id);
-	network_conn->send_protobuf(protocol::REQ_FIND_USER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_FIND_USER, request);
 }
 
 
@@ -56,7 +56,7 @@ void UserManager::find_user(const std::string& username)
 {
 	protocol::ReqFindUser request;
 	request.set_username(username);
-	network_conn->send_protobuf(protocol::REQ_FIND_USER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_FIND_USER, request);
 }
 
 
@@ -64,7 +64,7 @@ void SharingGroupManager::register_group(const std::string& group_name)
 {
 	protocol::ReqRegisterGroup request;
 	request.set_group_name(group_name);
-	network_conn->send_protobuf(protocol::REQ_REGISTER_GROUP, request);
+	Network::send_protobuf(conn_id, protocol::REQ_REGISTER_GROUP, request);
 }
 
 
@@ -72,7 +72,7 @@ void SharingGroupManager::remove_group(int group_id)
 {
 	protocol::ReqRemoveGroup request;
 	request.set_group_id(group_id);
-	network_conn->send_protobuf(protocol::REQ_REMOVE_GROUP, request);
+	Network::send_protobuf(conn_id, protocol::REQ_REMOVE_GROUP, request);
 }
 
 
@@ -80,7 +80,7 @@ void SharingGroupManager::find_group(int group_id)
 {
 	protocol::ReqFindGroup request;
 	request.set_group_id(group_id);
-	network_conn->send_protobuf(protocol::REQ_FIND_GROUP, request);
+	Network::send_protobuf(conn_id, protocol::REQ_FIND_GROUP, request);
 }
 
 
@@ -88,7 +88,7 @@ void SharingGroupManager::find_group(const std::string& group_name)
 {
 	protocol::ReqFindGroup request;
 	request.set_group_name(group_name);
-	network_conn->send_protobuf(protocol::REQ_FIND_GROUP, request);
+	Network::send_protobuf(conn_id, protocol::REQ_FIND_GROUP, request);
 }
 
 
@@ -96,7 +96,7 @@ void SharingGroupManager::join_group(int group_id)
 {
 	protocol::ReqJoinGroup request;
 	request.set_group_id(group_id);
-	network_conn->send_protobuf(protocol::REQ_JOIN_GROUP, request);
+	Network::send_protobuf(conn_id, protocol::REQ_JOIN_GROUP, request);
 }
 
 
@@ -105,7 +105,7 @@ void SharingGroupManager::assign_as_manager(int group_id, int user_id)
 	protocol::ReqAssignAsManager request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
-	network_conn->send_protobuf(protocol::REQ_ASSIGN_AS_MANAGER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_ASSIGN_AS_MANAGER, request);
 }
 
 
@@ -114,7 +114,7 @@ void SharingGroupManager::assign_as_memeber(int group_id, int user_id)
 	protocol::ReqAssignAsMemeber request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
-	network_conn->send_protobuf(protocol::REQ_ASSIGN_AS_MEMEBER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_ASSIGN_AS_MEMEBER, request);
 }
 
 
@@ -123,7 +123,7 @@ void SharingGroupManager::kick_out_user(int group_id, int user_id)
 	protocol::ReqKickOutUser request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
-	network_conn->send_protobuf(protocol::REQ_KICK_OUT_USER, request);
+	Network::send_protobuf(conn_id, protocol::REQ_KICK_OUT_USER, request);
 }
 
 
@@ -155,7 +155,7 @@ void SharingGroupManager::put_file(int group_id,
 	file.seek(fragment_index * protocol::MAX_FRAGMENT_CONTENT_LEN, lights::FileSeekWhence::BEGIN);
 	std::size_t content_len = file.read({content, protocol::MAX_FRAGMENT_CONTENT_LEN});
 	request.mutable_fragment()->set_fragment_content(content, content_len);
-	network_conn->send_protobuf(protocol::REQ_PUT_FILE, request);
+	Network::send_protobuf(conn_id, protocol::REQ_PUT_FILE, request);
 }
 
 
@@ -167,7 +167,7 @@ void SharingGroupManager::get_file(int group_id, const std::string& remote_file_
 	protocol::ReqGetFile request;
 	request.set_group_id(group_id);
 	request.set_file_path(remote_file_path);
-	network_conn->send_protobuf(protocol::REQ_GET_FILE, request);
+	Network::send_protobuf(conn_id, protocol::REQ_GET_FILE, request);
 }
 
 
@@ -176,7 +176,7 @@ void SharingGroupManager::create_path(int group_id, const std::string& path)
 	protocol::ReqCreatePath request;
 	request.set_group_id(group_id);
 	request.set_path(path);
-	network_conn->send_protobuf(protocol::REQ_CREATE_PATH, request);
+	Network::send_protobuf(conn_id, protocol::REQ_CREATE_PATH, request);
 }
 
 
@@ -186,7 +186,7 @@ void SharingGroupManager::remove_path(int group_id, const std::string& path, boo
 	request.set_group_id(group_id);
 	request.set_path(path);
 	request.set_force_remove_all(force_remove_all);
-	network_conn->send_protobuf(protocol::REQ_REMOVE_PATH, request);
+	Network::send_protobuf(conn_id, protocol::REQ_REMOVE_PATH, request);
 }
 
 

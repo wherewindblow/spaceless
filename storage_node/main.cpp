@@ -1,5 +1,6 @@
 #include <protocol/all.h>
 #include <common/network.h>
+#include <common/transaction.h>
 #include <common/log.h>
 
 #include "core.h"

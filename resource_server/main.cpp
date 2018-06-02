@@ -1,5 +1,6 @@
 #include <protocol/all.h>
 #include <common/network.h>
+#include <common/transaction.h>
 #include <common/log.h>
 
 #include <Poco/Util/JSONConfiguration.h>
@@ -17,7 +18,7 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		logger.set_level(lights::LogLevel::DEBUG);
+		logger.set_level(lights::LogLevel::INFO);
 
 		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
 		for (int i = 0;; ++i)
@@ -89,7 +90,14 @@ int main(int argc, const char* argv[])
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, ex);
 	}
-
+	catch (Poco::Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "{}:{}", ex.name(), ex.message());
+	}
+	catch (std::exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "{}:{}", typeid(ex).name(), ex.what());
+	}
 	return 0;
 }
 

@@ -11,6 +11,7 @@
 
 #include <Poco/String.h>
 #include <Poco/StringTokenizer.h>
+#include <lights/file.h>
 #include <common/exception.h>
 
 
@@ -36,25 +37,6 @@ User& UserManager::register_user(const std::string& username, const std::string&
 	}
 
 	return result.first->second;
-}
-
-
-bool UserManager::login_user(int user_id, const std::string& password, NetworkConnection& conn)
-{
-	User* user = find_user(user_id);
-	if (!user)
-	{
-		return false;
-	}
-
-	if (user->password != password)
-	{
-		return false;
-	}
-
-	user->conn_id = conn.connection_id();
-	conn.set_attachment(user);
-	return true;
 }
 
 
@@ -112,6 +94,37 @@ User& UserManager::get_user(const std::string& username)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_EXIST);
 	}
 	return *user;
+}
+
+
+bool UserManager::login_user(int user_id, const std::string& password, int conn_id)
+{
+	User* user = find_user(user_id);
+	if (!user)
+	{
+		return false;
+	}
+
+	if (user->password != password)
+	{
+		return false;
+	}
+
+	user->conn_id = conn_id;
+	m_conn_user_map.insert(std::make_pair(conn_id, user_id));
+	return true;
+}
+
+
+User* UserManager::find_login_user(int conn_id)
+{
+	auto itr = m_conn_user_map.find(conn_id);
+	if (itr == m_conn_user_map.end())
+	{
+		return nullptr;
+	}
+	
+	return find_user(itr->second);
 }
 
 

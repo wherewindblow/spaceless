@@ -4,6 +4,7 @@
 #include <lights/ostream.h>
 #include <protocol/all.h>
 #include <common/network.h>
+#include <common/transaction.h>
 #include <common/log.h>
 
 #include "core.h"
@@ -15,7 +16,7 @@ const int MODULE_CLIENT = 1100;
 
 namespace client {
 
-void read_handler(NetworkConnection& conn, const PackageBuffer& package);
+void read_handler(int conn_id, const PackageBuffer& package);
 
 using ConnectionList = std::vector<int>;
 
@@ -51,9 +52,12 @@ int main(int argc, const char* argv[])
 			TransactionManager::instance()->register_one_phase_transaction(handlers[i].first, handlers[i].second);
 		}
 
-		network_conn = &NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
+		NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
+		conn_id = conn.connection_id();
+//		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
+//		NetworkConnectionManager::instance()->run();
 		ConnectionList conn_list;
-		conn_list.push_back(network_conn->connection_id());
+		conn_list.push_back(conn.connection_id());
 
 		// Must run after have a event in loop. Just after reading.
 		std::thread thread([]() {
@@ -231,7 +235,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 				}
 				else
 				{
-					network_conn = conn;
+					conn_id = conn->connection_id();
 				}
 			}
 			catch (std::out_of_range& e)
@@ -251,7 +255,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 }
 
 
-void read_handler(NetworkConnection& conn, const PackageBuffer& package)
+void read_handler(int conn_id, const PackageBuffer& package)
 {
 	protocol::RspError error;
 	package.parse_as_protobuf(error);

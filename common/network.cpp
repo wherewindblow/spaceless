@@ -7,209 +7,29 @@
 #include "network.h"
 
 #include <execinfo.h>
-
 #include <Poco/Net/NetException.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Observer.h>
+
+#include "log.h"
+#include "transaction.h"
+
+
+namespace lights {
+
+template <typename Sink>
+FormatSinkAdapter<Sink> operator<< (FormatSinkAdapter<Sink> out, const Poco::Net::SocketAddress& address)
+{
+	out << address.toString();
+	return out;
+}
+
+} // namespace lights
 
 
 namespace spaceless {
 
 using Poco::Net::SocketAddress;
-
-PackageBuffer& PackageBufferManager::register_package()
-{
-	auto value = std::make_pair(m_next_id, PackageBuffer(m_next_id));
-	++m_next_id;
-
-	auto result = m_package_list.insert(value);
-	if (result.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
-	}
-
-	return result.first->second;
-}
-
-
-void PackageBufferManager::remove_package(int package_id)
-{
-	m_package_list.erase(package_id);
-}
-
-
-PackageBuffer* PackageBufferManager::find_package(int package_id)
-{
-	auto itr = m_package_list.find(package_id);
-	if (itr == m_package_list.end())
-	{
-		return nullptr;
-	}
-
-	return &itr->second;
-}
-
-
-PackageBuffer& PackageBufferManager::get_package(int package_id)
-{
-	PackageBuffer* package = find_package(package_id);
-	if (package == nullptr)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_NOT_EXIST);
-	}
-
-	return *package;
-}
-
-
-MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id):
-	m_id(trans_id)
-{
-}
-
-
-MultiplyPhaseTransaction* MultiplyPhaseTransaction::register_transaction(int trans_id)
-{
-	return nullptr;
-}
-
-
-void MultiplyPhaseTransaction::pre_on_init(NetworkConnection& conn, const PackageBuffer& package)
-{
-	m_first_conn_id = conn.connection_id();
-}
-
-
-MultiplyPhaseTransaction::PhaseResult MultiplyPhaseTransaction::on_timeout()
-{
-	return EXIT_TRANCATION;
-}
-
-
-MultiplyPhaseTransaction::PhaseResult MultiplyPhaseTransaction::wait_next_phase(NetworkConnection& conn,
-																				int cmd,
-																				int current_phase,
-																				int timeout)
-{
-	m_wait_conn_id = conn.connection_id();
-	m_wait_cmd = cmd;
-	m_current_phase = current_phase;
-	// TODO: How to implement timeout of transaction.
-	return WAIT_NEXT_PHASE;
-}
-
-
-int MultiplyPhaseTransaction::transaction_id() const
-{
-	return m_id;
-}
-
-
-int MultiplyPhaseTransaction::current_phase() const
-{
-	return m_current_phase;
-}
-
-
-NetworkConnection* MultiplyPhaseTransaction::first_connection()
-{
-	return NetworkConnectionManager::instance()->find_connection(m_first_conn_id);
-}
-
-
-NetworkConnection* MultiplyPhaseTransaction::waiting_connection()
-{
-	return NetworkConnectionManager::instance()->find_connection(m_wait_conn_id);
-}
-
-
-int MultiplyPhaseTransaction::waiting_command() const
-{
-	return m_wait_cmd;
-}
-
-
-MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(TransactionFatory trans_fatory)
-{
-	MultiplyPhaseTransaction* trans = trans_fatory(m_next_id);
-	++m_next_id;
-
-	auto value = std::make_pair(trans->transaction_id(), trans);
-	auto result = m_trans_list.insert(value);
-	if (result.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST);
-	}
-
-	return *trans;
-}
-
-
-void MultiplyPhaseTransactionManager::remove_transaction(int trans_id)
-{
-	MultiplyPhaseTransaction* trans = find_transaction(trans_id);
-	if (trans)
-	{
-		delete trans;
-	}
-
-	m_trans_list.erase(trans_id);
-}
-
-
-MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_transaction(int trans_id)
-{
-	auto itr = m_trans_list.find(trans_id);
-	if (itr == m_trans_list.end())
-	{
-		return nullptr;
-	}
-
-	return itr->second;
-}
-
-
-void TransactionManager::register_transaction(int cmd, TransactionType trans_type, void* handler)
-{
-	auto value = std::make_pair(cmd, Transaction {trans_type, handler});
-	auto result = m_trans_list.insert(value);
-	if (result.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSACTION_ALREADY_EXIST);
-	}
-}
-
-
-void TransactionManager::register_one_phase_transaction(int cmd, OnePhaseTrancation trancation)
-{
-	void* handler = reinterpret_cast<void*>(trancation);
-	register_transaction(cmd, TransactionType::ONE_PHASE_TRANSACTION, handler);
-}
-
-
-void TransactionManager::register_multiply_phase_transaction(int cmd, TransactionFatory trans_fatory)
-{
-	void* handler = reinterpret_cast<void*>(trans_fatory);
-	register_transaction(cmd, TransactionType::MULTIPLY_PHASE_TRANSACTION, handler);
-}
-
-
-void TransactionManager::remove_transaction(int cmd)
-{
-	m_trans_list.erase(cmd);
-}
-
-
-Transaction* TransactionManager::find_transaction(int cmd)
-{
-	auto itr = m_trans_list.find(cmd);
-	if (itr == m_trans_list.end())
-	{
-		return nullptr;
-	}
-	return &itr->second;
-}
-
 
 NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor) :
 	m_socket(socket),
@@ -217,8 +37,7 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	m_read_buffer(0),
 	m_readed_len(0),
 	m_read_state(ReadState::READ_HEADER),
-	m_sended_len(0),
-	m_attachment(nullptr)
+	m_sended_len(0)
 {
 	m_socket.setBlocking(false);
 
@@ -239,12 +58,12 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	{
 		std::string address = m_socket.address().toString();
 		std::string peer_address = m_socket.peerAddress().toString();
-		SPACELESS_DEBUG(MODULE_NETWORK, "Creates network connection {}: local {} and peer {}.",
+		SPACELESS_INFO(MODULE_NETWORK, "Creates network connection {}: local {} and peer {}.",
 						m_id, address, peer_address);
 	}
 	catch (Poco::Exception& ex)
 	{
-		SPACELESS_DEBUG(MODULE_NETWORK, "Creates network connection {}: local unkown and peer unkown.", m_id);
+		SPACELESS_INFO(MODULE_NETWORK, "Creates network connection {}: local unknow and peer unknow.", m_id);
 	}
 }
 
@@ -377,6 +196,7 @@ void NetworkConnection::send_package(const PackageBuffer& package)
 	if (m_sended_len == len)
 	{
 		m_sended_len = 0;
+		PackageBufferManager::instance()->remove_package(package.package_id());
 	}
 	else if (m_sended_len < len)
 	{
@@ -393,25 +213,7 @@ void NetworkConnection::close()
 }
 
 
-void NetworkConnection::set_attachment(void* attachment)
-{
-	m_attachment = attachment;
-}
-
-
-void* NetworkConnection::get_attachment()
-{
-	return m_attachment;
-}
-
-
 StreamSocket& NetworkConnection::stream_socket()
-{
-	return m_socket;
-}
-
-
-const StreamSocket& NetworkConnection::stream_socket() const
 {
 	return m_socket;
 }
@@ -469,7 +271,10 @@ void NetworkConnection::read_for_state(int deep)
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				trigger_transaction();
+				PackageBuffer& package = PackageBufferManager::instance()->register_package();
+				package = m_read_buffer;
+				NetworkMessageQueue::Message msg = { connection_id(), package.package_id() };
+				NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
 			}
 			break;
 		}
@@ -479,112 +284,75 @@ void NetworkConnection::read_for_state(int deep)
 }
 
 
-void NetworkConnection::trigger_transaction()
+void NetworkMessageQueue::push(QueueType queue_type, const Message& msg)
 {
-	try
-	{
-		int trans_id = m_read_buffer.header().trigger_trans_id;
-		int command = m_read_buffer.header().command;
+	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
+	m_queue[queue_type].push(msg);
+}
 
-		if (trans_id != 0) // Active sleep transaction.
-		{
-			auto trans_handler = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
-			if (trans_handler)
-			{
-				// Check the send rsponse connection is same as send request connection. Don't give chance to
-				// other to interrupt not self transaction.
-				if (this == trans_handler->waiting_connection() && command == trans_handler->waiting_command())
-				{
-					SPACELESS_DEBUG(MODULE_NETWORK,
-									"Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
-									m_id,
-									command,
-									trans_id,
-									trans_handler->current_phase());
-					if (trans_handler->first_connection() == nullptr)
-					{
-						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
-						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {} by first connection close.", m_id, trans_id);
-					}
-					else
-					{
-						auto result = trans_handler->on_active(*this, m_read_buffer);
-						if (result == MultiplyPhaseTransaction::EXIT_TRANCATION)
-						{
-							MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
-							SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", m_id, trans_id);
-						}
-					}
-				}
-				else
-				{
-					SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: cmd {} not fit with conn_id {}, cmd {}.",
-									m_id,
-									command,
-									trans_handler->waiting_connection()->connection_id(),
-									trans_handler->waiting_command());
-				}
-			}
-			else
-			{
-				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown trans_id {}.", m_id, trans_id);
-			}
-		}
-		else // Create new transaction.
-		{
-			auto trans = TransactionManager::instance()->find_transaction(command);
-			if (trans)
-			{
-				switch (trans->trans_type)
-				{
-					case TransactionType::ONE_PHASE_TRANSACTION:
-					{
-						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}.", m_id, command);
-						OnePhaseTrancation trans_handler =
-							reinterpret_cast<OnePhaseTrancation>(trans->trans_handler);
-						trans_handler(*this, m_read_buffer);
-						break;
-					}
-					case TransactionType::MULTIPLY_PHASE_TRANSACTION:
-					{
-						TransactionFatory trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
-						MultiplyPhaseTransaction& trans_handler =
-							MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 
-						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Start trans_id {}.",
-										m_id, command, trans_handler.transaction_id());
-						trans_handler.pre_on_init(*this, m_read_buffer);
-						auto result = trans_handler.on_init(*this, m_read_buffer);
-						if (result == MultiplyPhaseTransaction::EXIT_TRANCATION)
-						{
-							MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_handler.transaction_id());
-							SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.",
-											m_id, trans_handler.transaction_id());
-						}
-						break;
-					}
-					default:
-						LIGHTS_ASSERT(false && "Invalid TransactionType");
-						break;
-				}
-			}
-			else
-			{
-				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown command {}.", m_id, command);
-			}
+NetworkMessageQueue::Message NetworkMessageQueue::pop(QueueType queue_type)
+{
+	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
+	Message msg = m_queue[queue_type].front();
+	m_queue[queue_type].pop();
+	return msg;
+}
+
+
+bool NetworkMessageQueue::empty(NetworkMessageQueue::QueueType queue_type)
+{
+	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
+	return m_queue[queue_type].empty();
+}
+
+
+void NetworkReactor::onIdle()
+{
+	SPACELESS_DEBUG(MODULE_NETWORK, "onIdle");
+	process_send_package();
+}
+
+
+void NetworkReactor::onBusy()
+{
+	SPACELESS_DEBUG(MODULE_NETWORK, "onBusy");
+	process_send_package();
+}
+
+
+void NetworkReactor::onTimeout()
+{
+//	SPACELESS_DEBUG(MODULE_NETWORK, "onTimeout");
+	process_send_package();
+}
+
+
+void NetworkReactor::process_send_package()
+{
+	for (std::size_t i = 0; i < MAX_PACKAGE_PROCESS_PER_TIMES; ++i)
+	{
+		if (NetworkMessageQueue::instance()->empty(NetworkMessageQueue::OUT_QUEUE))
+		{
+			break;
 		}
-	}
-	catch (const Exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}/{}.", m_id, ex.code(), ex);
-	}
-	catch (const std::exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}.", m_id, ex.what());
-	}
-	catch (...)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error.", m_id);
+
+		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
+		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(msg.conn_id);
+		if (!conn)
+		{
+			SPACELESS_INFO(MODULE_NETWORK, "Network connction {}: Already close", msg.conn_id);
+			break;
+		}
+
+		PackageBuffer* package = PackageBufferManager::instance()->find_package(msg.package_id);
+		if (!package)
+		{
+			SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Package {} already remove", msg.conn_id, msg.package_id);
+			break;
+		}
+
+		conn->send_package(*package);
 	}
 }
 
@@ -618,7 +386,7 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 {
 	ServerSocket server_socket(SocketAddress(host, port));
 	m_acceptor_list.emplace_back(server_socket, m_reactor);
-	SPACELESS_DEBUG(MODULE_NETWORK, "Creates network listener {}.", server_socket.address());
+	SPACELESS_INFO(MODULE_NETWORK, "Creates network listener {}.", server_socket.address());
 }
 
 
@@ -674,6 +442,9 @@ void NetworkConnectionManager::stop_all()
 
 void NetworkConnectionManager::run()
 {
+	TransactionScheduler::instance()->start();
+
+	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
 	m_reactor.run();
 }
 

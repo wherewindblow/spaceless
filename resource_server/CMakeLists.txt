@@ -7,6 +7,7 @@ set(SPACELESS_RESOURCE_SERVER_SRC
 add_executable(spaceless_resource_server ${SPACELESS_RESOURCE_SERVER_SRC})
 
 target_link_libraries(spaceless_resource_server
+        pthread
         spaceless_common
         spaceless_protocol
         lights_static

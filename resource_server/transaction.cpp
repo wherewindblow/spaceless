@@ -40,15 +40,15 @@ enum
 	catch (Exception& ex) \
 	{ \
 		rsponse.set_result(ex.code()); \
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), ex); \
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn_id, ex); \
 		log_error = false; \
 	} \
 	\
 	send_back_msg: \
-	conn.send_back_protobuf(rsponse_cmd, rsponse); \
+	Network::send_back_protobuf(conn_id, rsponse_cmd, rsponse, package); \
 	if (rsponse.result() && log_error) \
 	{ \
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), rsponse.result()); \
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn_id, rsponse.result()); \
 	} \
 
 
@@ -57,7 +57,7 @@ enum
 	RsponseType rsponse; \
 	\
 	bool log_error = true; \
-	User* user = static_cast<User*>(conn.get_attachment()); \
+	User* user = UserManager::instance()->find_login_user(conn_id); \
 	if (user == nullptr) \
 	{ \
 		rsponse.set_result(ERR_USER_NOT_LOGIN); \
@@ -74,22 +74,22 @@ enum
 	catch (Exception& ex) \
 	{ \
 		rsponse.set_result(ex.code()); \
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", conn.connection_id(), user->user_id, ex); \
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", conn_id, user->user_id, ex); \
 		log_error = false; \
 	} \
 	\
 	send_back_msg: \
-	conn.send_back_protobuf(rsponse_cmd, rsponse); \
+	Network::send_back_protobuf(conn_id, rsponse_cmd, rsponse, package); \
 	if (rsponse.result() && log_error) \
 	{ \
 		if (user == nullptr) \
 		{ \
-			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn.connection_id(), rsponse.result()); \
+			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}: {}", conn_id, rsponse.result()); \
 		} \
 		else \
 		{ \
 			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", \
-				conn.connection_id(), user->user_id, rsponse.result()); \
+				conn_id, user->user_id, rsponse.result()); \
 		} \
 	} \
 
@@ -105,7 +105,7 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 }
 
 
-void on_register_user(NetworkConnection& conn, const PackageBuffer& package)
+void on_register_user(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqRegisterUser, protocol::RspRegisterUser);
 		User& user = UserManager::instance()->register_user(request.username(), request.password());
@@ -114,10 +114,10 @@ void on_register_user(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_login_user(NetworkConnection& conn, const PackageBuffer& package)
+void on_login_user(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqLoginUser, protocol::RspLoginUser);
-		bool pass = UserManager::instance()->login_user(request.user_id(), request.password(), conn);
+		bool pass = UserManager::instance()->login_user(request.user_id(), request.password(), conn_id);
 		if (!pass)
 		{
 			rsponse.set_result(ERR_USER_LOGIN_FALIURE);
@@ -126,7 +126,7 @@ void on_login_user(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_remove_user(NetworkConnection& conn, const PackageBuffer& package)
+void on_remove_user(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqRemoveUser, protocol::RspRemoveUser);
 		UserManager::instance()->remove_user(request.user_id());
@@ -134,7 +134,7 @@ void on_remove_user(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_find_user(NetworkConnection& conn, const PackageBuffer& package)
+void on_find_user(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqFindUser, protocol::RspFindUser);
 		User* user = nullptr;
@@ -175,7 +175,7 @@ void convert_group(const SharingGroup& server_group, protocol::SharingGroup& rsp
 }
 
 
-void on_register_group(NetworkConnection& conn, const PackageBuffer& package)
+void on_register_group(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqRegisterGroup, protocol::RspRegisterGroup);
 		SharingGroup& group = SharingGroupManager::instance()->register_group(user->user_id, request.group_name());
@@ -184,7 +184,7 @@ void on_register_group(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_remove_group(NetworkConnection& conn, const PackageBuffer& package)
+void on_remove_group(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqRemoveGroup, protocol::RspRemoveGroup);
 		SharingGroupManager::instance()->remove_group(user->user_id, request.group_id());
@@ -192,7 +192,7 @@ void on_remove_group(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_find_group(NetworkConnection& conn, const PackageBuffer& package)
+void on_find_group(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqFindGroup, protocol::RspFindGroup);
 		SharingGroup* group = nullptr;
@@ -217,7 +217,7 @@ void on_find_group(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_join_group(NetworkConnection& conn, const PackageBuffer& package)
+void on_join_group(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqJoinGroup, protocol::RspJoinGroup);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -226,7 +226,7 @@ void on_join_group(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_assign_as_manager(NetworkConnection& conn, const PackageBuffer& package)
+void on_assign_as_manager(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqAssignAsManager, protocol::RspAssignAsManager);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -240,7 +240,7 @@ void on_assign_as_manager(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package)
+void on_assign_as_memeber(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqAssignAsMemeber, protocol::RspAssignAsMemeber);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -254,7 +254,7 @@ void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
+void on_kick_out_user(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqKickOutUser, protocol::RspKickOutUser);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -271,7 +271,7 @@ void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_create_path(NetworkConnection& conn, const PackageBuffer& package)
+void on_create_path(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_USER_BEGIN(protocol::ReqCreatePath, protocol::RspCreatePath);
 		SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -301,9 +301,9 @@ PutFileTrans::PutFileTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 {
-	User* user = static_cast<User*>(first_connection()->get_attachment());
+	User* user = UserManager::instance()->find_login_user(conn_id);
 	if (user == nullptr)
 	{
 		return send_back_error(ERR_USER_NOT_LOGIN);
@@ -343,24 +343,22 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(NetworkConnection& c
 		protocol::ReqPutFile request_to_storage = m_request;
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
-		NetworkConnection& storage_conn = NetworkConnectionManager::instance()->get_connection(storage_node.conn_id);
-		storage_conn.send_protobuf(protocol::REQ_PUT_FILE, request_to_storage, transaction_id());
-		wait_next_phase(storage_conn, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
+		Network::send_protobuf(storage_node.conn_id, protocol::REQ_PUT_FILE, request_to_storage, transaction_id());
+		wait_next_phase(storage_node.conn_id, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-						first_connection()->connection_id(), user->user_id, ex);
+						first_connection_id(), user->user_id, ex);
 		return send_back_error(ex.code());
 	}
 }
 
 
-MultiplyPhaseTransaction::PhaseResult
-PutFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
-	User* user = static_cast<User*>(first_connection()->get_attachment());
+	User* user = UserManager::instance()->find_login_user(first_connection_id());
 	if (user == nullptr)
 	{
 		return send_back_error(ERR_USER_NOT_LOGIN);
@@ -372,15 +370,14 @@ PutFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
 		if (m_rsponse.result())
 		{
 			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-							first_connection()->connection_id(), user->user_id, m_rsponse.result());
+							first_connection_id(), user->user_id, m_rsponse.result());
 		}
 		send_back_message(protocol::RSP_PUT_FILE, m_rsponse);
 		return EXIT_TRANCATION;
 	}
 	catch (Exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-						first_connection()->connection_id(), user->user_id, ex);
+		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", first_connection_id(), user->user_id, ex);
 		return send_back_error(ex.code());
 	}
 }
@@ -404,9 +401,9 @@ GetFileTrans::GetFileTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 {
-	User* user = static_cast<User*>(first_connection()->get_attachment());
+	User* user = UserManager::instance()->find_login_user(conn_id);
 	if (user == nullptr)
 	{
 		return send_back_error(ERR_USER_NOT_LOGIN);
@@ -442,24 +439,22 @@ MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(NetworkConnection& c
 		protocol::ReqGetFile request_to_storage = m_request;
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
-		NetworkConnection& storage_conn = NetworkConnectionManager::instance()->get_connection(storage_node.conn_id);
-		storage_conn.send_protobuf(protocol::REQ_GET_FILE, request_to_storage, transaction_id());
-		wait_next_phase(storage_conn, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
+		Network::send_protobuf(storage_node.conn_id, protocol::REQ_GET_FILE, request_to_storage, transaction_id());
+		wait_next_phase(storage_node.conn_id, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-						first_connection()->connection_id(), user->user_id, ex);
+						first_connection_id(), user->user_id, ex);
 		return send_back_error(ex.code());
 	}
 }
 
 
-MultiplyPhaseTransaction::PhaseResult
-GetFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
-	User* user = static_cast<User*>(first_connection()->get_attachment());
+	User* user = UserManager::instance()->find_login_user(first_connection_id());
 	if (user == nullptr)
 	{
 		return send_back_error(ERR_USER_NOT_LOGIN);
@@ -471,7 +466,7 @@ GetFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
 		if (m_rsponse.result())
 		{
 			SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-							first_connection()->connection_id(), user->user_id, m_rsponse.result());
+							first_connection_id(), user->user_id, m_rsponse.result());
 		}
 		send_back_message(protocol::RSP_GET_FILE, m_rsponse);
 		return EXIT_TRANCATION;
@@ -479,7 +474,7 @@ GetFileTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
 	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-						first_connection()->connection_id(), user->user_id, ex);
+						first_connection_id(), user->user_id, ex);
 		return send_back_error(ex.code());
 	}
 }
@@ -503,10 +498,9 @@ RemovePathTrans::RemovePathTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTransaction::PhaseResult
-RemovePathTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
 {
-	User* user = static_cast<User*>(first_connection()->get_attachment());
+	User* user = UserManager::instance()->find_login_user(conn_id);
 	if (user == nullptr)
 	{
 		return send_back_error(ERR_USER_NOT_LOGIN);
@@ -528,14 +522,13 @@ RemovePathTrans::on_init(NetworkConnection& conn, const PackageBuffer& package)
 	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}",
-						first_connection()->connection_id(), user->user_id, ex);
+						first_connection_id(), user->user_id, ex);
 		return send_back_error(ex.code());
 	}
 }
 
 
-MultiplyPhaseTransaction::PhaseResult
-RemovePathTrans::on_active(NetworkConnection& conn, const PackageBuffer& package)
+MultiplyPhaseTransaction::PhaseResult RemovePathTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	return EXIT_TRANCATION;
 }
@@ -544,7 +537,7 @@ RemovePathTrans::on_active(NetworkConnection& conn, const PackageBuffer& package
 MultiplyPhaseTransaction::PhaseResult RemovePathTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
-	first_connection()->send_back_protobuf(protocol::RSP_REMOVE_PATH, m_rsponse);
+	send_back_message(protocol::RSP_REMOVE_PATH, m_rsponse);
 	return EXIT_TRANCATION;
 }
 } // namespace transaction

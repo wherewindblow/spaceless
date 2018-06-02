@@ -7,6 +7,7 @@
 #include "transaction.h"
 
 #include <cmath>
+#include <common/transaction.h>
 #include <protocol/all.h>
 
 #include "core.h"
@@ -30,20 +31,20 @@ namespace transaction {
 	catch (Exception& ex) \
 	{ \
 		rsponse.set_result(ex.code()); \
-		SPACELESS_ERROR(MODULE_STORAGE_NODE, "Connection {}: {}", conn.connection_id(), ex); \
+		SPACELESS_ERROR(MODULE_STORAGE_NODE, "Connection {}: {}", conn_id, ex); \
 		log_error = false; \
 	} \
 	\
 	send_back_msg: \
-	conn.send_back_protobuf(rsponse_cmd, rsponse); \
+	Network::send_back_protobuf(conn_id, rsponse_cmd, rsponse, package); \
 	if (rsponse.result() && log_error) \
 	{ \
-		SPACELESS_ERROR(MODULE_STORAGE_NODE, "Connection {}: {}", conn.connection_id(), rsponse.result()); \
+		SPACELESS_ERROR(MODULE_STORAGE_NODE, "Connection {}: {}", conn_id, rsponse.result()); \
 	} \
 
 
 
-void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
+void on_put_file(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqPutFile, protocol::RspPutFile);
 		FileTransferSession* session = nullptr;
@@ -84,7 +85,7 @@ void on_put_file(NetworkConnection& conn, const PackageBuffer& package)
 }
 
 
-void on_get_file(NetworkConnection& conn, const PackageBuffer& package)
+void on_get_file(int conn_id, const PackageBuffer& package)
 {
 	SPACELESS_COMMAND_HANDLER_BEGIN(protocol::ReqGetFile, protocol::RspGetFile);
 		FileTransferSession* session =

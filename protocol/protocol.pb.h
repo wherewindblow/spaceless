@@ -2586,7 +2586,7 @@ class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // string fragment_content = 3;
+  // bytes fragment_content = 3;
   void clear_fragment_content();
   static const int kFragmentContentFieldNumber = 3;
   const ::std::string& fragment_content() const;
@@ -2595,7 +2595,7 @@ class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_po
   void set_fragment_content(::std::string&& value);
   #endif
   void set_fragment_content(const char* value);
-  void set_fragment_content(const char* value, size_t size);
+  void set_fragment_content(const void* value, size_t size);
   ::std::string* mutable_fragment_content();
   ::std::string* release_fragment_content();
   void set_allocated_fragment_content(::std::string* fragment_content);
@@ -4538,7 +4538,7 @@ inline void FileFragment::set_fragment_index(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.fragment_index)
 }
 
-// string fragment_content = 3;
+// bytes fragment_content = 3;
 inline void FileFragment::clear_fragment_content() {
   fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -4564,7 +4564,7 @@ inline void FileFragment::set_fragment_content(const char* value) {
   fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:spaceless.protocol.FileFragment.fragment_content)
 }
-inline void FileFragment::set_fragment_content(const char* value, size_t size) {
+inline void FileFragment::set_fragment_content(const void* value, size_t size) {
   
   fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));

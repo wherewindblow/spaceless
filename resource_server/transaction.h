@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/network.h>
+#include <common/transaction.h>
 #include <protocol/all.h>
 
 
@@ -14,29 +14,29 @@ namespace spaceless {
 namespace resource_server {
 namespace transaction {
 
-void on_register_user(NetworkConnection& conn, const PackageBuffer& package);
+void on_register_user(int conn_id, const PackageBuffer& package);
 
-void on_login_user(NetworkConnection& conn, const PackageBuffer& package);
+void on_login_user(int conn_id, const PackageBuffer& package);
 
-void on_remove_user(NetworkConnection& conn, const PackageBuffer& package);
+void on_remove_user(int conn_id, const PackageBuffer& package);
 
-void on_find_user(NetworkConnection& conn, const PackageBuffer& package);
+void on_find_user(int conn_id, const PackageBuffer& package);
 
-void on_register_group(NetworkConnection& conn, const PackageBuffer& package);
+void on_register_group(int conn_id, const PackageBuffer& package);
 
-void on_remove_group(NetworkConnection& conn, const PackageBuffer& package);
+void on_remove_group(int conn_id, const PackageBuffer& package);
 
-void on_find_group(NetworkConnection& conn, const PackageBuffer& package);
+void on_find_group(int conn_id, const PackageBuffer& package);
 
-void on_join_group(NetworkConnection& conn, const PackageBuffer& package);
+void on_join_group(int conn_id, const PackageBuffer& package);
 
-void on_assign_as_manager(NetworkConnection& conn, const PackageBuffer& package);
+void on_assign_as_manager(int conn_id, const PackageBuffer& package);
 
-void on_assign_as_memeber(NetworkConnection& conn, const PackageBuffer& package);
+void on_assign_as_memeber(int conn_id, const PackageBuffer& package);
 
-void on_kick_out_user(NetworkConnection& conn, const PackageBuffer& package);
+void on_kick_out_user(int conn_id, const PackageBuffer& package);
 
-void on_create_path(NetworkConnection& conn, const PackageBuffer& package);
+void on_create_path(int conn_id, const PackageBuffer& package);
 
 
 class PutFileTrans: public MultiplyPhaseTransaction
@@ -51,9 +51,9 @@ public:
 
 	PutFileTrans(int trans_id);
 
-	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_init(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
 
 	PhaseResult send_back_error(int error_code);
 
@@ -75,9 +75,9 @@ public:
 
 	GetFileTrans(int trans_id);
 
-	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_init(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
 
 	PhaseResult send_back_error(int error_code);
 
@@ -99,9 +99,9 @@ public:
 
 	RemovePathTrans(int trans_id);
 
-	PhaseResult on_init(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_init(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_active(NetworkConnection& conn, const PackageBuffer& package) override;
+	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
 
 	PhaseResult send_back_error(int error_code);
 

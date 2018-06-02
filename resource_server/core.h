@@ -73,8 +73,6 @@ public:
 
 	User& register_user(const std::string& username, const std::string& password);
 
-	bool login_user(int user_id, const std::string& password, NetworkConnection& conn);
-
 	void remove_user(int user_id);
 
 	User* find_user(int user_id);
@@ -85,9 +83,14 @@ public:
 
 	User& get_user(const std::string& username);
 
+	bool login_user(int user_id, const std::string& password, int conn_id);
+
+	User* find_login_user(int conn_id);
+
 private:
 	using UserList = std::map<int, User>;
 	UserList m_user_list;
+	std::map<int, int> m_conn_user_map;
 	int m_next_id = 1;
 };
 

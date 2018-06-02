@@ -196,7 +196,7 @@ message FileFragment
 {
     int32 max_fragment = 1;
     int32 fragment_index = 2;
-    string fragment_content = 3;
+    bytes fragment_content = 3;
 }
 
 message ReqPutFile
