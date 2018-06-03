@@ -174,6 +174,7 @@ public:
 
 	/**
 	 * Registers package buffer.
+	 * @throw Throws exception if register failure.
 	 */
 	PackageBuffer& register_package();
 

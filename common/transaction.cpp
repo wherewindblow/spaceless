@@ -182,6 +182,8 @@ namespace details {
 
 void trigger_transaction(const NetworkMessageQueue::Message& msg);
 
+int safe_excute(int conn_id, std::function<void()> function);
+
 
 struct SchedulerContext
 {
@@ -218,32 +220,6 @@ void schedule()
 	scheduler_context.run_state = SchedulerContext::STOPED;
 }
 
-
-int safe_excute(int conn_id, std::function<void()> function)
-{
-	try
-	{
-		function();
-		return 0;
-	}
-	catch (Exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Extend exception {}, {}.", conn_id, ex.code(), ex);
-	}
-	catch (Poco::Exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Type {}, {}.", conn_id, ex.name(), ex.message());
-	}
-	catch (std::exception& ex)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Type {}, {}.", conn_id, typeid(ex).name(), ex.what());
-	}
-	catch (...)
-	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error.", conn_id);
-	}
-	return -1;
-}
 
 void trigger_transaction(const NetworkMessageQueue::Message& msg)
 {
@@ -390,6 +366,33 @@ void trigger_transaction(const NetworkMessageQueue::Message& msg)
 	{
 		PackageBufferManager::instance()->remove_package(package_id);
 	}
+}
+
+
+int safe_excute(int conn_id, std::function<void()> function)
+{
+	try
+	{
+		function();
+		return 0;
+	}
+	catch (Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction error {}:{}.", conn_id, ex.code(), ex);
+	}
+	catch (Poco::Exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction Poco error {}:{}.", conn_id, ex.name(), ex.message());
+	}
+	catch (std::exception& ex)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction std error {}:{}.", conn_id, typeid(ex).name(), ex.what());
+	}
+	catch (...)
+	{
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction unkown error.", conn_id);
+	}
+	return -1;
 }
 
 } // namespace details

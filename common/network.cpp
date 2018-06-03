@@ -100,11 +100,11 @@ NetworkConnection::~NetworkConnection()
 	}
 	catch (std::exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: {}", m_id, ex.what());
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Destroy error: {}", m_id, ex.what());
 	}
 	catch (...)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Unkown error", m_id);
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Destroy unkown error", m_id);
 	}
 }
 
@@ -365,11 +365,11 @@ NetworkConnectionManager::~NetworkConnectionManager()
 	}
 	catch (std::exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, ex.what());
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connection manager destroy error: {}", ex.what());
 	}
 	catch (...)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Unkown error");
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connection manager destroy unkown error");
 	}
 }
 

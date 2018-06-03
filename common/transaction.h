@@ -257,12 +257,14 @@ public:
 	/**
 	 * Registers association of command with transaction.
      * @note A command only can associate one transaction.
+     * @throw Throws exception if register failure.
 	 */
 	void register_transaction(int cmd, TransactionType trans_type, void* handler);
 
 	/**
 	 * Registers association of command with one phase transaction.
 	 * @note A command only can associate one transaction.
+	 * @throw Throws exception if register failure.
 	 */
 	void register_one_phase_transaction(int cmd, OnePhaseTrancation trancation);
 
@@ -270,6 +272,7 @@ public:
 	 * Registers association of command with multiply phase transaction.
  	 * @param trans_fatory  Fatory of multiply phase transaction.
      * @note A command only can associate one transaction.
+     * @throw Throws exception if register failure.
 	 */
 	void register_multiply_phase_transaction(int cmd, TransactionFatory trans_fatory);
 
