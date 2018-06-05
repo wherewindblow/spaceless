@@ -330,7 +330,7 @@ void NetworkReactor::onTimeout()
 
 void NetworkReactor::process_send_package()
 {
-	for (std::size_t i = 0; i < MAX_PACKAGE_PROCESS_PER_TIMES; ++i)
+	for (std::size_t i = 0; i < MAX_SEND_PACKAGE_PROCESS_PER_TIMES; ++i)
 	{
 		if (NetworkMessageQueue::instance()->empty(NetworkMessageQueue::OUT_QUEUE))
 		{

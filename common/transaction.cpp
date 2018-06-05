@@ -208,13 +208,21 @@ void schedule()
 
 	while (!scheduler_context.stop_flag)
 	{
+		bool need_sleep = false;
 		if (!NetworkMessageQueue::instance()->empty(NetworkMessageQueue::IN_QUEUE))
 		{
 			auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::IN_QUEUE);
 			trigger_transaction(msg);
 		}
+		else
+		{
+			need_sleep = true;
+		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(POLLING_INTERNAL_SLEEP_MS));
+		if (need_sleep)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(TRANSACTION_IDLE_SLEEP_MS));
+		}
 	}
 
 	scheduler_context.run_state = SchedulerContext::STOPED;

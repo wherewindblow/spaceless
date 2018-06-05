@@ -21,9 +21,9 @@ namespace spaceless {
 const int MODULE_NETWORK = 1;
 const int PROTOCOL_PACKAGE_VERSION = 1;
 const int INVALID_ID = 0;
-const int MAX_PACKAGE_PROCESS_PER_TIMES = 10;
+const int MAX_SEND_PACKAGE_PROCESS_PER_TIMES = 10;
 const int REACTOR_TIME_OUT_US = 5000;
-const int POLLING_INTERNAL_SLEEP_MS = 2;
+const int TRANSACTION_IDLE_SLEEP_MS = 2;
 
 enum
 {

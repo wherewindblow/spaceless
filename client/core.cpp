@@ -137,6 +137,7 @@ void SharingGroupManager::put_file(int group_id,
 		m_putting_file_session.local_file_path = local_file_path;
 		m_putting_file_session.group_id = group_id;
 		m_putting_file_session.remote_file_path = remote_file_path;
+		m_putting_file_session.start_time = std::time(nullptr);
 	}
 
 	protocol::ReqPutFile request;

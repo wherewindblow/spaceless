@@ -338,7 +338,8 @@ void read_handler(int conn_id, const PackageBuffer& package)
 			FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
 			if (session.fragment_index + 1 >= session.max_fragment)
 			{
-				std::cout << lights::format("Put file {} finish.", session.remote_file_path) << std::endl;
+				std::time_t use_sec = std::time(nullptr) - session.start_time ;
+				std::cout << lights::format("Put file {} finish. use {} s", session.remote_file_path, use_sec) << std::endl;
 			}
 			else
 			{
