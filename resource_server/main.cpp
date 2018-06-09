@@ -1,7 +1,7 @@
-#include <protocol/all.h>
 #include <common/network.h>
 #include <common/transaction.h>
 #include <common/log.h>
+#include <protocol/all.h>
 
 #include <Poco/Util/JSONConfiguration.h>
 
@@ -18,7 +18,7 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		logger.set_level(lights::LogLevel::INFO);
+		logger.set_level(lights::LogLevel::DEBUG);
 
 		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
 		for (int i = 0;; ++i)

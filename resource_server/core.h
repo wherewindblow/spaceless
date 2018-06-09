@@ -9,12 +9,11 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <memory>
 
-#include <Poco/StringTokenizer.h>
 #include <lights/sequence.h>
-#include <lights/exception.h>
-#include <common/network.h>
 #include <common/basics.h>
+#include <Poco/StringTokenizer.h>
 
 
 namespace spaceless {

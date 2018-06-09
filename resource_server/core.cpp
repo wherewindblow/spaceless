@@ -9,10 +9,11 @@
 #include <algorithm>
 #include <utility>
 
-#include <Poco/String.h>
-#include <Poco/StringTokenizer.h>
 #include <lights/file.h>
 #include <common/exception.h>
+#include <common/network.h>
+#include <Poco/String.h>
+#include <Poco/StringTokenizer.h>
 
 
 namespace spaceless {
@@ -657,7 +658,7 @@ void SharingFileManager::remove_file(int file_id)
 		{
 			auto* general_file = dynamic_cast<SharingGeneralFile*>(sharing_file);
 			SharingFile& storage_file = get_file(general_file->storage_file_id);
-			LIGHTS_ASSERT(storage_file.file_type == SharingFile::STORAGE_FILE)
+			LIGHTS_ASSERT(storage_file.file_type == SharingFile::STORAGE_FILE);
 			auto& real_storage_file = dynamic_cast<SharingStorageFile&>(storage_file);
 			--real_storage_file.use_counting;
 			remove_file(real_storage_file.file_id);

@@ -1,7 +1,7 @@
-#include <protocol/all.h>
 #include <common/network.h>
 #include <common/transaction.h>
 #include <common/log.h>
+#include <protocol/all.h>
 
 #include "core.h"
 #include "transaction.h"

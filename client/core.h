@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include <ctime>
 #include <vector>
 #include <map>
 #include <lights/sequence.h>
 
-#include "common/network.h"
 #include "common/basics.h"
 
 

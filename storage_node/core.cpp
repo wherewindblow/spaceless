@@ -9,11 +9,11 @@
 #include <cmath>
 #include <algorithm>
 
+#include <lights/file.h>
+#include <common/exception.h>
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Path.h>
 
-#include <lights/file.h>
-#include <common/exception.h>
 
 namespace spaceless {
 namespace storage_node {

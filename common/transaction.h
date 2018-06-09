@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <map>
+
 #include "basics.h"
 #include "package.h"
 #include "log.h"

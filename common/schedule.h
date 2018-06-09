@@ -6,7 +6,11 @@
 
 #pragma once
 
+#include <vector>
+#include <functional>
+
 #include <lights/logger.h>
+
 #include "basics.h"
 
 /**
@@ -56,7 +60,6 @@ public:
 	{
 		bool operator()(const Timer& left, const Timer& right)
 		{
-//			using namespace lights;
 			return left.expiry_time < right.expiry_time;
 		}
 	};
