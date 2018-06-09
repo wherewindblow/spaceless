@@ -12,7 +12,7 @@
 #include <Poco/Observer.h>
 
 #include "log.h"
-#include "transaction.h"
+#include "schedule.h"
 
 
 namespace lights {
@@ -442,7 +442,7 @@ void NetworkConnectionManager::stop_all()
 
 void NetworkConnectionManager::run()
 {
-	TransactionScheduler::instance()->start();
+	WorkScheduler::instance()->start();
 
 	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
 	m_reactor.run();

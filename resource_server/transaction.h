@@ -55,6 +55,8 @@ public:
 
 	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
 
+	PhaseResult on_timeout() override;
+
 	PhaseResult send_back_error(int error_code);
 
 private:

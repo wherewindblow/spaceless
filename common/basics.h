@@ -25,6 +25,8 @@ const int MAX_SEND_PACKAGE_PROCESS_PER_TIMES = 10;
 const int REACTOR_TIME_OUT_US = 5000;
 const int TRANSACTION_IDLE_SLEEP_MS = 2;
 
+extern const char* WORKER_THREAD_NAME;
+
 enum
 {
 	ERR_SUCCESS = 0,

@@ -344,7 +344,7 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(int conn_id, const P
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 		Network::send_protobuf(storage_node.conn_id, protocol::REQ_PUT_FILE, request_to_storage, transaction_id());
-		wait_next_phase(storage_node.conn_id, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE, 1);
+		wait_next_phase(storage_node.conn_id, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
@@ -380,6 +380,12 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_active(int conn_id, const
 		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Connection {}, user {}: {}", first_connection_id(), user->user_id, ex);
 		return send_back_error(ex.code());
 	}
+}
+
+
+MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_timeout()
+{
+	return EXIT_TRANCATION;
 }
 
 
@@ -440,7 +446,7 @@ MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(int conn_id, const P
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
 		Network::send_protobuf(storage_node.conn_id, protocol::REQ_GET_FILE, request_to_storage, transaction_id());
-		wait_next_phase(storage_node.conn_id, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE, 1);
+		wait_next_phase(storage_node.conn_id, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE);
 		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)

@@ -155,7 +155,7 @@ public:
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
-	PhaseResult wait_next_phase(int conn_id, int cmd, int current_phase, int timeout);
+	PhaseResult wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = 1);
 
 	template <typename T>
 	void send_back_message(int cmd, T& msg);
@@ -289,26 +289,6 @@ public:
 
 private:
 	std::map<int, Transaction> m_trans_list;
-};
-
-
-/**
- * Schedule execution of transaction.
- */
-class TransactionScheduler
-{
-public:
-	SPACELESS_SINGLETON_INSTANCE(TransactionScheduler);
-
-	/**
-	 * Starts to schedule.
-	 */
-	void start();
-
-	/**
-	 * Stops to schedule.
-	 */
-	void stop();
 };
 
 } // namespace spaceless
