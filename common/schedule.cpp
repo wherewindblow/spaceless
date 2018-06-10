@@ -119,17 +119,15 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 				case TransactionType::MULTIPLY_PHASE_TRANSACTION:
 				{
 					auto trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
-					auto& trans_handler =
-						MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
+					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 
 					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Start trans_id {}.",
 									conn_id, command, trans_handler.transaction_id());
 					trans_handler.pre_on_init(conn_id, *package);
 
-					auto result = MultiplyPhaseTransaction::EXIT_TRANCATION;
 					int err = safe_excute(conn_id, [&]()
 					{
-						result = trans_handler.on_init(conn_id, *package);
+						trans_handler.on_init(conn_id, *package);
 					});
 
 					if (err)
@@ -137,7 +135,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 						need_remove_package = true;
 					}
 
-					if (result == MultiplyPhaseTransaction::EXIT_TRANCATION)
+					if (!trans_handler.is_waiting())
 					{
 						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.",
 										conn_id, trans_handler.transaction_id());
@@ -162,8 +160,8 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 		auto trans_handler = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
 		if (trans_handler)
 		{
-			// Check the send rsponse connection is same as send request connection. Don't give chance to
-			// other to interrupt not self transaction.
+			// Check the send rsponse connection is same as send request connection.
+			// Don't give chance to other to interrupt not self transaction.
 			if (conn_id == trans_handler->waiting_connection_id() && command == trans_handler->waiting_command())
 			{
 				SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
@@ -172,33 +170,29 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 								trans_id,
 								trans_handler->current_phase());
 
-				// TODO: Clean transaction if connection close.
-				//	if (/*trans_handler->first_connection_id() == nullptr*/1)
-				//	{
-				//		MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
-				//		SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {} by first connection close.", conn_id, trans_id);
-				//	}
-				//	else
+				// If connection close will not lead to leak.
+				// 1. If after on_active is not at waiting, transaction will be remove.
+				// 2. If after on_active is at waiting, transaction will be remove on timeout
+				//    that cannot receive message by connection close.
+
+				trans_handler->clear_waiting_state();
+
+				int err = safe_excute(conn_id, [&]()
 				{
-					auto result = MultiplyPhaseTransaction::EXIT_TRANCATION;
-					int err = safe_excute(conn_id, [&]()
-					{
-						result = trans_handler->on_active(conn_id, *package);
+					trans_handler->on_active(conn_id, *package);
+				});
 
-					});
+				if (err)
+				{
+					need_remove_package = true;
+				}
 
-					if (err)
-					{
-						need_remove_package = true;
-					}
-
-					if (result == MultiplyPhaseTransaction::EXIT_TRANCATION)
-					{
-						SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", conn_id, trans_id);
-						need_remove_package = true;
-						PackageBufferManager::instance()->remove_package(trans_handler->first_package_id());
-						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
-					}
+				if (!trans_handler->is_waiting())
+				{
+					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", conn_id, trans_id);
+					need_remove_package = true;
+					PackageBufferManager::instance()->remove_package(trans_handler->first_package_id());
+					MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 				}
 			}
 			else
@@ -336,7 +330,5 @@ int TimerManager::process_expiry_timer()
 	m_timer_queue.pop_back();
 	return 1;
 }
-
-
 
 } // namespace spaceless

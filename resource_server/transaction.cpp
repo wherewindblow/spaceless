@@ -301,7 +301,7 @@ PutFileTrans::PutFileTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
+void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User* user = UserManager::instance()->find_login_user(conn_id);
 	if (user == nullptr)
@@ -344,8 +344,8 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(int conn_id, const P
 		request_to_storage.set_file_path(path.filename());
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 		Network::send_protobuf(storage_node.conn_id, protocol::REQ_PUT_FILE, request_to_storage, transaction_id());
+		// TODO: How to ensure return WAIT_NEXT_PHASE must call wait_next_phase to avoid leak.
 		wait_next_phase(storage_node.conn_id, protocol::RSP_PUT_FILE, WAIT_STORAGE_NODE_PUT_FILE);
-		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
 	{
@@ -356,7 +356,7 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_init(int conn_id, const P
 }
 
 
-MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
+void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	User* user = UserManager::instance()->find_login_user(first_connection_id());
 	if (user == nullptr)
@@ -373,7 +373,6 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_active(int conn_id, const
 							first_connection_id(), user->user_id, m_rsponse.result());
 		}
 		send_back_message(protocol::RSP_PUT_FILE, m_rsponse);
-		return EXIT_TRANCATION;
 	}
 	catch (Exception& ex)
 	{
@@ -383,17 +382,16 @@ MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_active(int conn_id, const
 }
 
 
-MultiplyPhaseTransaction::PhaseResult PutFileTrans::on_timeout()
+void PutFileTrans::on_timeout()
 {
-	return EXIT_TRANCATION;
+
 }
 
 
-MultiplyPhaseTransaction::PhaseResult PutFileTrans::send_back_error(int error_code)
+void PutFileTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
 	send_back_message(protocol::RSP_PUT_FILE, m_rsponse);
-	return EXIT_TRANCATION;
 }
 
 
@@ -407,7 +405,7 @@ GetFileTrans::GetFileTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
+void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User* user = UserManager::instance()->find_login_user(conn_id);
 	if (user == nullptr)
@@ -447,7 +445,6 @@ MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(int conn_id, const P
 		StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
 		Network::send_protobuf(storage_node.conn_id, protocol::REQ_GET_FILE, request_to_storage, transaction_id());
 		wait_next_phase(storage_node.conn_id, protocol::RSP_GET_FILE, WAIT_STORAGE_NODE_GET_FILE);
-		return WAIT_NEXT_PHASE;
 	}
 	catch (Exception& ex)
 	{
@@ -458,7 +455,7 @@ MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_init(int conn_id, const P
 }
 
 
-MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
+void GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	User* user = UserManager::instance()->find_login_user(first_connection_id());
 	if (user == nullptr)
@@ -475,7 +472,6 @@ MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_active(int conn_id, const
 							first_connection_id(), user->user_id, m_rsponse.result());
 		}
 		send_back_message(protocol::RSP_GET_FILE, m_rsponse);
-		return EXIT_TRANCATION;
 	}
 	catch (Exception& ex)
 	{
@@ -486,11 +482,10 @@ MultiplyPhaseTransaction::PhaseResult GetFileTrans::on_active(int conn_id, const
 }
 
 
-MultiplyPhaseTransaction::PhaseResult GetFileTrans::send_back_error(int error_code)
+void GetFileTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
 	send_back_message(protocol::RSP_GET_FILE, m_rsponse);
-	return EXIT_TRANCATION;
 }
 
 
@@ -504,7 +499,7 @@ RemovePathTrans::RemovePathTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-MultiplyPhaseTransaction::PhaseResult RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
+void RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User* user = UserManager::instance()->find_login_user(conn_id);
 	if (user == nullptr)
@@ -522,8 +517,6 @@ MultiplyPhaseTransaction::PhaseResult RemovePathTrans::on_init(int conn_id, cons
 		}
 
 		group.remove_path(m_request.path());
-
-		return EXIT_TRANCATION;
 	}
 	catch (Exception& ex)
 	{
@@ -534,18 +527,17 @@ MultiplyPhaseTransaction::PhaseResult RemovePathTrans::on_init(int conn_id, cons
 }
 
 
-MultiplyPhaseTransaction::PhaseResult RemovePathTrans::on_active(int conn_id, const PackageBuffer& package)
+void RemovePathTrans::on_active(int conn_id, const PackageBuffer& package)
 {
-	return EXIT_TRANCATION;
 }
 
 
-MultiplyPhaseTransaction::PhaseResult RemovePathTrans::send_back_error(int error_code)
+void RemovePathTrans::send_back_error(int error_code)
 {
 	m_rsponse.set_result(error_code);
 	send_back_message(protocol::RSP_REMOVE_PATH, m_rsponse);
-	return EXIT_TRANCATION;
 }
+
 } // namespace transaction
 } // namespace resource_server
 } // namespace spaceless

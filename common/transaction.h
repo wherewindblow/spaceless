@@ -104,12 +104,6 @@ struct Transaction
 class MultiplyPhaseTransaction
 {
 public:
-	enum PhaseResult
-	{
-		EXIT_TRANCATION,
-		WAIT_NEXT_PHASE,
-	};
-
 	/**
 	 * Factory of this type transaction. Just simply call contructor.
 	 * @note This function is only a example.
@@ -136,19 +130,19 @@ public:
 	 * @param conn     Network connection of send package.
 	 * @param package  Pakcage of trigger this function.
 	 */
-	virtual PhaseResult on_init(int conn_id, const PackageBuffer& package) = 0;
+	virtual void on_init(int conn_id, const PackageBuffer& package) = 0;
 
 	/**
 	 * Processes the package of wait phase.
 	 * @param conn     Network connection of send package.
 	 * @param package  Pakcage of trigger this function.
 	 */
-	virtual PhaseResult on_active(int conn_id, const PackageBuffer& package) = 0;
+	virtual void on_active(int conn_id, const PackageBuffer& package) = 0;
 
 	/**
 	 * Processes wait time out.
 	 */
-	virtual PhaseResult on_timeout();
+	virtual void on_timeout();
 
 	/**
 	 * Sets wait package info.
@@ -157,8 +151,11 @@ public:
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
-	PhaseResult wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = 1);
+	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = 1);
 
+	/**
+	 * Sends back message to first connection.
+	 */
 	template <typename T>
 	void send_back_message(int cmd, T& msg);
 
@@ -192,6 +189,16 @@ public:
 	 */
 	int waiting_command() const;
 
+	/**
+	 * Returns is at waiting state.
+	 */
+	bool is_waiting() const;
+
+	/**
+	 * Clears waiting state.
+	 */
+	void clear_waiting_state();
+
 private:
 	int m_id;
 	int m_current_phase = 0;
@@ -199,6 +206,7 @@ private:
 	int m_first_conn_id = 0;
 	int m_wait_conn_id = 0;
 	int m_wait_cmd = 0;
+	bool m_is_waiting = false;
 };
 
 

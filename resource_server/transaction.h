@@ -51,13 +51,13 @@ public:
 
 	PutFileTrans(int trans_id);
 
-	PhaseResult on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_timeout() override;
+	void on_timeout() override;
 
-	PhaseResult send_back_error(int error_code);
+	void send_back_error(int error_code);
 
 private:
 	protocol::ReqPutFile m_request;
@@ -77,11 +77,11 @@ public:
 
 	GetFileTrans(int trans_id);
 
-	PhaseResult on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult send_back_error(int error_code);
+	void send_back_error(int error_code);
 
 private:
 	protocol::ReqGetFile m_request;
@@ -101,11 +101,11 @@ public:
 
 	RemovePathTrans(int trans_id);
 
-	PhaseResult on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, const PackageBuffer& package) override;
 
-	PhaseResult send_back_error(int error_code);
+	void send_back_error(int error_code);
 
 private:
 	protocol::ReqRemovePath m_request;

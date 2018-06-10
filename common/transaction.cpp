@@ -40,20 +40,17 @@ void MultiplyPhaseTransaction::pre_on_init(int conn_id, const PackageBuffer& pac
 }
 
 
-MultiplyPhaseTransaction::PhaseResult MultiplyPhaseTransaction::on_timeout()
+void MultiplyPhaseTransaction::on_timeout()
 {
-	return EXIT_TRANCATION;
 }
 
 
-MultiplyPhaseTransaction::PhaseResult MultiplyPhaseTransaction::wait_next_phase(int conn_id,
-																				int cmd,
-																				int current_phase,
-																				int timeout)
+void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current_phase, int timeout)
 {
 	m_wait_conn_id = conn_id;
 	m_wait_cmd = cmd;
 	m_current_phase = current_phase;
+	m_is_waiting = true;
 
 	int trans_id = m_id; // Cannot capture this. It maybe remove on timeout.
 	TimerManager::instance()->start_timer(PreciseTime(timeout, 0), [trans_id]()
@@ -68,12 +65,18 @@ MultiplyPhaseTransaction::PhaseResult MultiplyPhaseTransaction::wait_next_phase(
 						trans->waiting_connection_id(),
 						trans_id,
 						trans->current_phase());
+
+		trans->clear_waiting_state();
 		trans->on_timeout();
 
-		SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.", trans->waiting_connection_id(), trans_id);
-		MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
+		if (!trans->is_waiting())
+		{
+			SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.",
+							trans->waiting_connection_id(),
+							trans_id);
+			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
+		}
 	});
-	return WAIT_NEXT_PHASE;
 }
 
 
@@ -110,6 +113,18 @@ int MultiplyPhaseTransaction::waiting_connection_id() const
 int MultiplyPhaseTransaction::waiting_command() const
 {
 	return m_wait_cmd;
+}
+
+
+bool MultiplyPhaseTransaction::is_waiting() const
+{
+	return m_is_waiting;
+}
+
+
+void MultiplyPhaseTransaction::clear_waiting_state()
+{
+	m_is_waiting = false;
 }
 
 
