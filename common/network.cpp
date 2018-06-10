@@ -339,17 +339,27 @@ void NetworkReactor::process_send_package()
 
 		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
 		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(msg.conn_id);
-		if (!conn)
-		{
-			SPACELESS_INFO(MODULE_NETWORK, "Network connction {}: Already close", msg.conn_id);
-			break;
-		}
-
 		PackageBuffer* package = PackageBufferManager::instance()->find_package(msg.package_id);
-		if (!package)
+
+		if (!conn || !package)
 		{
-			SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Package {} already remove", msg.conn_id, msg.package_id);
-			break;
+			if (!conn)
+			{
+				SPACELESS_INFO(MODULE_NETWORK, "Network connction {}: Already close", msg.conn_id);
+			}
+
+			if (!package)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Package {} already remove",
+								msg.conn_id, msg.package_id);
+			}
+
+			if (package)
+			{
+				PackageBufferManager::instance()->remove_package(msg.package_id);
+			}
+
+			continue;
 		}
 
 		conn->send_package(*package);
