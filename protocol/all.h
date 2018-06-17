@@ -7,3 +7,4 @@
 #pragma once
 
 #include "protocol.pb.h"
+#include "command.h"

@@ -127,6 +127,16 @@ User* UserManager::find_login_user(int conn_id)
 	return find_user(itr->second);
 }
 
+User& UserManager::get_login_user(int conn_id)
+{
+	User* user = find_login_user(conn_id);
+	if (!user)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_LGOIN);
+	}
+	return *user;
+}
+
 
 const char FilePath::SEPARATOR[] = "/";
 

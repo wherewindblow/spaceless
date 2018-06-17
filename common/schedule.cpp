@@ -12,6 +12,7 @@
 #include <Poco/Runnable.h>
 #include <sys/prctl.h>
 
+#include "package.h"
 #include "network.h"
 #include "transaction.h"
 
@@ -41,7 +42,11 @@ public:
 private:
 	void trigger_transaction(const NetworkMessageQueue::Message& msg);
 
-	int safe_excute(int conn_id, std::function<void()> function);
+	using ErrorHandler = std::function<void(int, const PackageBuffer&, const Exception&)>;
+
+	int safe_excute(int conn_id, const PackageBuffer& package, ErrorHandler error_handler, std::function<void()> function);
+
+	const std::string& get_name(int cmd);
 };
 
 
@@ -89,7 +94,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 	PackageBuffer* package = PackageBufferManager::instance()->find_package(package_id);
 	if (!package)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Package {} already remove", conn_id, package_id);
+		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Package {} already removed", conn_id, package_id);
 		return;
 	}
 
@@ -105,10 +110,11 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			{
 				case TransactionType::ONE_PHASE_TRANSACTION:
 				{
-					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}.", conn_id, command);
+					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, name {}.",
+									conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTrancation>(trans->trans_handler);
 
-					safe_excute(conn_id, [&]()
+					safe_excute(conn_id, *package, trans->error_handler, [&]()
 					{
 						trans_handler(conn_id, *package);
 					});
@@ -121,11 +127,19 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 					auto trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
 					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 
-					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Start trans_id {}.",
-									conn_id, command, trans_handler.transaction_id());
+					SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, name {}, Start trans_id {}.",
+									conn_id,
+									command,
+									get_name(command),
+									trans_handler.transaction_id());
 					trans_handler.pre_on_init(conn_id, *package);
 
-					int err = safe_excute(conn_id, [&]()
+					auto error_handler = [&](int conn_id, const PackageBuffer& package, const Exception& ex)
+					{
+						trans_handler.on_error(conn_id, package, ex);
+					};
+
+					int err = safe_excute(conn_id, *package, error_handler, [&]()
 					{
 						trans_handler.on_init(conn_id, *package);
 					});
@@ -164,9 +178,10 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			// Don't give chance to other to interrupt not self transaction.
 			if (conn_id == trans_handler->waiting_connection_id() && command == trans_handler->waiting_command())
 			{
-				SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, Active trans_id {}, phase {}.",
+				SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Trigger cmd {}, name {}, Active trans_id {}, phase {}.",
 								conn_id,
 								command,
+								get_name(command),
 								trans_id,
 								trans_handler->current_phase());
 
@@ -177,7 +192,12 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 
 				trans_handler->clear_waiting_state();
 
-				int err = safe_excute(conn_id, [&]()
+				auto error_handler = [&](int conn_id, const PackageBuffer& package, const Exception& ex)
+				{
+					trans_handler->on_error(conn_id, package, ex);
+				};
+
+				int err = safe_excute(conn_id, *package, error_handler, [&]()
 				{
 					trans_handler->on_active(conn_id, *package);
 				});
@@ -219,7 +239,10 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 }
 
 
-int SchedulerImpl::safe_excute(int conn_id, std::function<void()> function)
+int SchedulerImpl::safe_excute(int conn_id,
+							   const PackageBuffer& package,
+							   ErrorHandler error_handler,
+							   std::function<void()> function)
 {
 	try
 	{
@@ -229,6 +252,36 @@ int SchedulerImpl::safe_excute(int conn_id, std::function<void()> function)
 	catch (Exception& ex)
 	{
 		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction error {}:{}.", conn_id, ex.code(), ex);
+		if (error_handler)
+		{
+			try
+			{
+				error_handler(conn_id, package, ex);
+			}
+			catch (Exception& ex)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction on_error error {}:{}.",
+								conn_id, ex.code(), ex);
+			}
+			catch (Poco::Exception& ex)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction on_error Poco error {}:{}.",
+								conn_id,
+								ex.name(),
+								ex.message());
+			}
+			catch (std::exception& ex)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction on_error std error {}:{}.",
+								conn_id,
+								typeid(ex).name(),
+								ex.what());
+			}
+			catch (...)
+			{
+				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction on_error unkown error.", conn_id);
+			}
+		}
 	}
 	catch (Poco::Exception& ex)
 	{
@@ -249,6 +302,18 @@ int SchedulerImpl::safe_excute(int conn_id, std::function<void()> function)
 		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Transaction unkown error.", conn_id);
 	}
 	return -1;
+}
+
+
+const std::string& SchedulerImpl::get_name(int cmd)
+{
+	auto name = protocol::find_protobuf_name(cmd);
+	if (!name)
+	{
+		static const std::string INVALID;
+		return INVALID;
+	}
+	return *name;
 }
 
 } // namespace details

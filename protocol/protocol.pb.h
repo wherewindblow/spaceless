@@ -151,56 +151,6 @@ void AddDescriptors();
 void InitDefaults();
 }  // namespace protobuf_protocol_2eproto
 
-enum CommandType {
-  INVALID_COMMAND = 0,
-  REQ_REGISTER_USER = 1000,
-  RSP_REGISTER_USER = 1002,
-  REQ_LOGIN_USER = 1003,
-  RSP_LOGIN_USER = 1004,
-  REQ_REMOVE_USER = 1005,
-  RSP_REMOVE_USER = 1006,
-  REQ_FIND_USER = 1007,
-  RSP_FIND_USER = 1008,
-  REQ_REGISTER_GROUP = 1109,
-  RSP_REGISTER_GROUP = 1110,
-  REQ_REMOVE_GROUP = 1111,
-  RSP_REMOVE_GROUP = 1112,
-  REQ_FIND_GROUP = 1113,
-  RSP_FIND_GROUP = 1114,
-  REQ_JOIN_GROUP = 1115,
-  RSP_JOIN_GROUP = 1116,
-  REQ_ASSIGN_AS_MANAGER = 1117,
-  RSP_ASSIGN_AS_MANAGER = 1118,
-  REQ_ASSIGN_AS_MEMEBER = 1119,
-  RSP_ASSIGN_AS_MEMEBER = 1120,
-  REQ_KICK_OUT_USER = 1121,
-  RSP_KICK_OUT_USER = 1122,
-  REQ_PUT_FILE = 1151,
-  RSP_PUT_FILE = 1152,
-  REQ_GET_FILE = 1153,
-  RSP_GET_FILE = 1154,
-  REQ_CREATE_PATH = 1155,
-  RSP_CREATE_PATH = 1156,
-  REQ_REMOVE_PATH = 1157,
-  RSP_REMOVE_PATH = 1158,
-  CommandType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
-  CommandType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
-};
-bool CommandType_IsValid(int value);
-const CommandType CommandType_MIN = INVALID_COMMAND;
-const CommandType CommandType_MAX = RSP_REMOVE_PATH;
-const int CommandType_ARRAYSIZE = CommandType_MAX + 1;
-
-const ::google::protobuf::EnumDescriptor* CommandType_descriptor();
-inline const ::std::string& CommandType_Name(CommandType value) {
-  return ::google::protobuf::internal::NameOfEnum(
-    CommandType_descriptor(), value);
-}
-inline bool CommandType_Parse(
-    const ::std::string& name, CommandType* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<CommandType>(
-    CommandType_descriptor(), name, value);
-}
 enum MiscellaneousType {
   INVALID_MISCELLANEOUS = 0,
   MAX_FRAGMENT_CONTENT_LEN = 50000,
@@ -5112,11 +5062,6 @@ inline void RspRemovePath::set_result(::google::protobuf::int32 value) {
 namespace google {
 namespace protobuf {
 
-template <> struct is_proto_enum< ::spaceless::protocol::CommandType> : ::google::protobuf::internal::true_type {};
-template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::spaceless::protocol::CommandType>() {
-  return ::spaceless::protocol::CommandType_descriptor();
-}
 template <> struct is_proto_enum< ::spaceless::protocol::MiscellaneousType> : ::google::protobuf::internal::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::spaceless::protocol::MiscellaneousType>() {

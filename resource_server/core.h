@@ -25,6 +25,7 @@ enum
 {
 	ERR_USER_ALREADY_EXIST = 1000,
 	ERR_USER_NOT_EXIST = 1001,
+	ERR_USER_NOT_LGOIN = 1010,
 
 	ERR_GROUP_ALREADY_EXIST = 1100,
 	ERR_GROUP_NOT_EXIST = 1101,
@@ -85,6 +86,8 @@ public:
 	bool login_user(int user_id, const std::string& password, int conn_id);
 
 	User* find_login_user(int conn_id);
+
+	User& get_login_user(int conn_id);
 
 private:
 	using UserList = std::map<int, User>;

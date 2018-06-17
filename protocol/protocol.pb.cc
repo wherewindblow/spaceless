@@ -94,7 +94,7 @@ namespace protobuf_protocol_2eproto {
 namespace {
 
 ::google::protobuf::Metadata file_level_metadata[34];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
+const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[1];
 
 }  // namespace
 
@@ -569,30 +569,12 @@ void AddDescriptorsImpl() {
       "eatePath\022\016\n\006result\030\001 \001(\005\"I\n\rReqRemovePat"
       "h\022\020\n\010group_id\030\001 \001(\005\022\014\n\004path\030\002 \001(\t\022\030\n\020for"
       "ce_remove_all\030\003 \001(\010\"\037\n\rRspRemovePath\022\016\n\006"
-      "result\030\001 \001(\005*\310\005\n\013CommandType\022\023\n\017INVALID_"
-      "COMMAND\020\000\022\026\n\021REQ_REGISTER_USER\020\350\007\022\026\n\021RSP"
-      "_REGISTER_USER\020\352\007\022\023\n\016REQ_LOGIN_USER\020\353\007\022\023"
-      "\n\016RSP_LOGIN_USER\020\354\007\022\024\n\017REQ_REMOVE_USER\020\355"
-      "\007\022\024\n\017RSP_REMOVE_USER\020\356\007\022\022\n\rREQ_FIND_USER"
-      "\020\357\007\022\022\n\rRSP_FIND_USER\020\360\007\022\027\n\022REQ_REGISTER_"
-      "GROUP\020\325\010\022\027\n\022RSP_REGISTER_GROUP\020\326\010\022\025\n\020REQ"
-      "_REMOVE_GROUP\020\327\010\022\025\n\020RSP_REMOVE_GROUP\020\330\010\022"
-      "\023\n\016REQ_FIND_GROUP\020\331\010\022\023\n\016RSP_FIND_GROUP\020\332"
-      "\010\022\023\n\016REQ_JOIN_GROUP\020\333\010\022\023\n\016RSP_JOIN_GROUP"
-      "\020\334\010\022\032\n\025REQ_ASSIGN_AS_MANAGER\020\335\010\022\032\n\025RSP_A"
-      "SSIGN_AS_MANAGER\020\336\010\022\032\n\025REQ_ASSIGN_AS_MEM"
-      "EBER\020\337\010\022\032\n\025RSP_ASSIGN_AS_MEMEBER\020\340\010\022\026\n\021R"
-      "EQ_KICK_OUT_USER\020\341\010\022\026\n\021RSP_KICK_OUT_USER"
-      "\020\342\010\022\021\n\014REQ_PUT_FILE\020\377\010\022\021\n\014RSP_PUT_FILE\020\200"
-      "\t\022\021\n\014REQ_GET_FILE\020\201\t\022\021\n\014RSP_GET_FILE\020\202\t\022"
-      "\024\n\017REQ_CREATE_PATH\020\203\t\022\024\n\017RSP_CREATE_PATH"
-      "\020\204\t\022\024\n\017REQ_REMOVE_PATH\020\205\t\022\024\n\017RSP_REMOVE_"
-      "PATH\020\206\t*N\n\021MiscellaneousType\022\031\n\025INVALID_"
-      "MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_"
-      "LEN\020\320\206\003b\006proto3"
+      "result\030\001 \001(\005*N\n\021MiscellaneousType\022\031\n\025INV"
+      "ALID_MISCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT_CON"
+      "TENT_LEN\020\320\206\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2655);
+      descriptor, 1940);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
   ::google::protobuf::internal::OnShutdown(&TableStruct::Shutdown);
@@ -611,52 +593,9 @@ struct StaticDescriptorInitializer {
 
 }  // namespace protobuf_protocol_2eproto
 
-const ::google::protobuf::EnumDescriptor* CommandType_descriptor() {
-  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_enum_descriptors[0];
-}
-bool CommandType_IsValid(int value) {
-  switch (value) {
-    case 0:
-    case 1000:
-    case 1002:
-    case 1003:
-    case 1004:
-    case 1005:
-    case 1006:
-    case 1007:
-    case 1008:
-    case 1109:
-    case 1110:
-    case 1111:
-    case 1112:
-    case 1113:
-    case 1114:
-    case 1115:
-    case 1116:
-    case 1117:
-    case 1118:
-    case 1119:
-    case 1120:
-    case 1121:
-    case 1122:
-    case 1151:
-    case 1152:
-    case 1153:
-    case 1154:
-    case 1155:
-    case 1156:
-    case 1157:
-    case 1158:
-      return true;
-    default:
-      return false;
-  }
-}
-
 const ::google::protobuf::EnumDescriptor* MiscellaneousType_descriptor() {
   protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_protocol_2eproto::file_level_enum_descriptors[1];
+  return protobuf_protocol_2eproto::file_level_enum_descriptors[0];
 }
 bool MiscellaneousType_IsValid(int value) {
   switch (value) {

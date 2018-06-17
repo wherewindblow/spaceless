@@ -2,47 +2,6 @@ syntax = "proto3";
 
 package spaceless.protocol;
 
-enum CommandType
-{
-    INVALID_COMMAND = 0;
-
-    // User operation.
-    REQ_REGISTER_USER = 1000;
-    RSP_REGISTER_USER = 1002;
-    REQ_LOGIN_USER = 1003;
-    RSP_LOGIN_USER = 1004;
-    REQ_REMOVE_USER = 1005;
-    RSP_REMOVE_USER = 1006;
-    REQ_FIND_USER = 1007;
-    RSP_FIND_USER = 1008;
-
-    // Group operation.
-    REQ_REGISTER_GROUP = 1109;
-    RSP_REGISTER_GROUP = 1110;
-    REQ_REMOVE_GROUP = 1111;
-    RSP_REMOVE_GROUP = 1112;
-    REQ_FIND_GROUP = 1113;
-    RSP_FIND_GROUP = 1114;
-    REQ_JOIN_GROUP = 1115;
-    RSP_JOIN_GROUP = 1116;
-    REQ_ASSIGN_AS_MANAGER = 1117;
-    RSP_ASSIGN_AS_MANAGER = 1118;
-    REQ_ASSIGN_AS_MEMEBER = 1119;
-    RSP_ASSIGN_AS_MEMEBER = 1120;
-    REQ_KICK_OUT_USER = 1121;
-    RSP_KICK_OUT_USER = 1122;
-
-    // Group file operation.
-    REQ_PUT_FILE = 1151;
-    RSP_PUT_FILE = 1152;
-    REQ_GET_FILE = 1153;
-    RSP_GET_FILE = 1154;
-    REQ_CREATE_PATH = 1155;
-    RSP_CREATE_PATH = 1156;
-    REQ_REMOVE_PATH = 1157;
-    RSP_REMOVE_PATH = 1158;
-};
-
 enum MiscellaneousType
 {
     INVALID_MISCELLANEOUS = 0;

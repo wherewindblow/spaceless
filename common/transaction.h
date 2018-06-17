@@ -7,6 +7,7 @@
 #pragma once
 
 #include <map>
+#include <protocol/command.h>
 
 #include "basics.h"
 #include "package.h"
@@ -34,7 +35,7 @@ public:
 	 * @param is_send_back    Is need to return last request associate transaction.
 	 */
 	template <typename ProtobufType>
-	static void send_protobuf(int conn_id, int cmd, const ProtobufType& msg, int bind_trans_id = 0, int trigger_trans_id = 0);
+	static void send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans_id = 0, int trigger_trans_id = 0, int trigger_cmd = 0);
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
@@ -44,12 +45,12 @@ public:
 	 * @param bind_trans_id   Specific transaction that trigger by response.
 	 */
 	template <typename ProtobufType>
-	static void send_back_protobuf(int conn_id, int cmd, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id = 0);
+	static void send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id = 0);
 };
 
 
 template <typename ProtobufType>
-void Network::send_protobuf(int conn_id, int cmd, const ProtobufType& msg, int bind_trans_id, int trigger_trans_id)
+void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans_id, int trigger_trans_id, int trigger_cmd)
 {
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
@@ -60,7 +61,18 @@ void Network::send_protobuf(int conn_id, int cmd, const ProtobufType& msg, int b
 
 	PackageBuffer& package = PackageBufferManager::instance()->register_package();
 	PackageHeader& header = package.header();
-	header.command = cmd;
+
+	if (protocol::get_protobuf_name(msg) == "RspError" && trigger_cmd != 0)
+	{
+		auto protobuf_name = protocol::get_protobuf_name(trigger_cmd);
+		protobuf_name.replace(0, 3, "Rsp");
+		header.command = protocol::get_command(protobuf_name);
+	}
+	else
+	{
+		auto& protobuf_name = protocol::get_protobuf_name(msg);
+		header.command = protocol::get_command(protobuf_name);
+	}
 	header.self_trans_id = bind_trans_id;
 	header.trigger_trans_id = trigger_trans_id;
 	header.content_length = size;
@@ -72,9 +84,9 @@ void Network::send_protobuf(int conn_id, int cmd, const ProtobufType& msg, int b
 
 
 template <typename ProtobufType>
-void Network::send_back_protobuf(int conn_id, int cmd, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id)
+void Network::send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id)
 {
-	send_protobuf(conn_id, cmd, msg, bind_trans_id, trigger_package.header().self_trans_id);
+	send_protobuf(conn_id, msg, bind_trans_id, trigger_package.header().self_trans_id, trigger_package.header().command);
 }
 
 
@@ -87,6 +99,9 @@ enum class TransactionType
 	MULTIPLY_PHASE_TRANSACTION,
 };
 
+using TransactionErrorHandler = void (*)(int conn_id, const PackageBuffer& package, const Exception& ex);
+
+void on_error(int conn_id, const PackageBuffer& package, const Exception& ex);
 
 /**
  * General transaction type.
@@ -95,6 +110,7 @@ struct Transaction
 {
 	TransactionType trans_type;
 	void* trans_handler;
+	TransactionErrorHandler error_handler;
 };
 
 
@@ -144,6 +160,8 @@ public:
 	 */
 	virtual void on_timeout();
 
+	virtual void on_error(int conn_id, const PackageBuffer& package, const Exception& ex);
+
 	/**
 	 * Sets wait package info.
 	 * @param conn          Network connection that send indicate package.
@@ -153,11 +171,14 @@ public:
 	 */
 	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = 1);
 
+	template <typename ProtobufType>
+	void wait_next_phase(int conn_id, const ProtobufType& msg, int current_phase, int timeout = 1);
+
 	/**
 	 * Sends back message to first connection.
 	 */
 	template <typename T>
-	void send_back_message(int cmd, T& msg);
+	void send_back_message(T& msg);
 
 	/**
 	 * Returns tranascation id.
@@ -202,19 +223,25 @@ public:
 private:
 	int m_id;
 	int m_current_phase = 0;
-	int m_package_id = 0;
+	int m_first_package_id = 0;
 	int m_first_conn_id = 0;
 	int m_wait_conn_id = 0;
 	int m_wait_cmd = 0;
 	bool m_is_waiting = false;
 };
 
-
-template <typename T>
-void MultiplyPhaseTransaction::send_back_message(int cmd, T& msg)
+template <typename ProtobufType>
+void MultiplyPhaseTransaction::wait_next_phase(int conn_id, const ProtobufType& msg, int current_phase, int timeout)
 {
-	PackageBuffer& package = PackageBufferManager::instance()->get_package(m_package_id);
-	Network::send_back_protobuf(m_first_conn_id, cmd, msg, package);
+	auto cmd = protocol::get_command(msg);
+	wait_next_phase(conn_id, cmd, current_phase, timeout);
+}
+
+template <typename ProtobufType>
+void MultiplyPhaseTransaction::send_back_message(ProtobufType& msg)
+{
+	PackageBuffer& first_package = PackageBufferManager::instance()->get_package(m_first_package_id);
+	Network::send_back_protobuf(m_first_conn_id, msg, first_package);
 }
 
 
@@ -269,14 +296,24 @@ public:
      * @note A command only can associate one transaction.
      * @throw Throws exception if register failure.
 	 */
-	void register_transaction(int cmd, TransactionType trans_type, void* handler);
+	void register_transaction(int cmd,
+							  TransactionType trans_type,
+							  void* handler,
+							  TransactionErrorHandler error_handler = nullptr);
 
 	/**
 	 * Registers association of command with one phase transaction.
 	 * @note A command only can associate one transaction.
 	 * @throw Throws exception if register failure.
 	 */
-	void register_one_phase_transaction(int cmd, OnePhaseTrancation trancation);
+	void register_one_phase_transaction(int cmd,
+										OnePhaseTrancation trancation,
+										TransactionErrorHandler error_handler = on_error);
+
+	template <typename ProtoBufType>
+	void register_one_phase_transaction(const ProtoBufType& msg,
+										OnePhaseTrancation trancation,
+										TransactionErrorHandler error_handler = on_error);
 
 	/**
 	 * Registers association of command with multiply phase transaction.
@@ -285,6 +322,9 @@ public:
      * @throw Throws exception if register failure.
 	 */
 	void register_multiply_phase_transaction(int cmd, TransactionFatory trans_fatory);
+
+	template <typename ProtoBufType>
+	void register_multiply_phase_transaction(const ProtoBufType& msg, TransactionFatory trans_fatory);
 
 	/**
 	 * Removes association of command with transaction.
@@ -300,5 +340,30 @@ public:
 private:
 	std::map<int, Transaction> m_trans_list;
 };
+
+
+template <typename ProtoBufType>
+void TransactionManager::register_one_phase_transaction(const ProtoBufType& msg,
+														OnePhaseTrancation trancation,
+														TransactionErrorHandler error_handler)
+{
+	auto cmd = protocol::get_command(msg);
+	register_one_phase_transaction(cmd, trancation, error_handler);
+}
+
+
+template <typename ProtoBufType>
+void TransactionManager::register_multiply_phase_transaction(const ProtoBufType& msg, TransactionFatory trans_fatory)
+{
+	auto cmd = protocol::get_command(msg);
+	register_multiply_phase_transaction(cmd, trans_fatory);
+}
+
+
+#define SPACE_REGISTER_ONE_PHASE_TRANSACTION(protobuf_type, ...) \
+		TransactionManager::instance()->register_one_phase_transaction(protobuf_type(), __VA_ARGS__);
+
+#define SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protobuf_type, ...) \
+		TransactionManager::instance()->register_multiply_phase_transaction(protobuf_type(), __VA_ARGS__);
 
 } // namespace spaceless

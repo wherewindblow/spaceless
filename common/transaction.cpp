@@ -7,6 +7,7 @@
 #include "transaction.h"
 
 #include <cassert>
+#include <protocol/all.h>
 
 #include "network.h"
 #include "schedule.h"
@@ -26,6 +27,13 @@ MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id) :
 {
 }
 
+void on_error(int conn_id, const PackageBuffer& package, const Exception& ex)
+{
+	protocol::RspError error;
+	error.set_result(ex.code());
+	Network::send_back_protobuf(conn_id, error, package);
+}
+
 
 MultiplyPhaseTransaction* MultiplyPhaseTransaction::register_transaction(int trans_id)
 {
@@ -36,12 +44,18 @@ MultiplyPhaseTransaction* MultiplyPhaseTransaction::register_transaction(int tra
 void MultiplyPhaseTransaction::pre_on_init(int conn_id, const PackageBuffer& package)
 {
 	m_first_conn_id = conn_id;
-	m_package_id = package.package_id();
+	m_first_package_id = package.package_id();
 }
 
 
 void MultiplyPhaseTransaction::on_timeout()
 {
+}
+
+
+void MultiplyPhaseTransaction::on_error(int conn_id, const PackageBuffer& package, const Exception& ex)
+{
+	spaceless::on_error(conn_id, package, ex);
 }
 
 
@@ -100,7 +114,7 @@ int MultiplyPhaseTransaction::first_connection_id() const
 
 int MultiplyPhaseTransaction::first_package_id() const
 {
-	return m_package_id;
+	return m_first_package_id;
 }
 
 
@@ -135,7 +149,7 @@ MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(
 
 	auto value = std::make_pair(trans->transaction_id(), trans);
 	auto result = m_trans_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST);
 	}
@@ -168,21 +182,26 @@ MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_transaction(int 
 }
 
 
-void TransactionManager::register_transaction(int cmd, TransactionType trans_type, void* handler)
+void TransactionManager::register_transaction(int cmd,
+											  TransactionType trans_type,
+											  void* handler,
+											  TransactionErrorHandler error_handler)
 {
-	auto value = std::make_pair(cmd, Transaction {trans_type, handler});
+	auto value = std::make_pair(cmd, Transaction {trans_type, handler, error_handler});
 	auto result = m_trans_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSACTION_ALREADY_EXIST);
 	}
 }
 
 
-void TransactionManager::register_one_phase_transaction(int cmd, OnePhaseTrancation trancation)
+void TransactionManager::register_one_phase_transaction(int cmd,
+														OnePhaseTrancation trancation,
+														TransactionErrorHandler error_handler)
 {
 	void* handler = reinterpret_cast<void*>(trancation);
-	register_transaction(cmd, TransactionType::ONE_PHASE_TRANSACTION, handler);
+	register_transaction(cmd, TransactionType::ONE_PHASE_TRANSACTION, handler, error_handler);
 }
 
 
@@ -208,7 +227,6 @@ Transaction* TransactionManager::find_transaction(int cmd)
 	}
 	return &itr->second;
 }
-
 
 
 

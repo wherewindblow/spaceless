@@ -53,36 +53,21 @@ int main(int argc, const char* argv[])
 		std::string root_group_name = configuration.getString("root_user.group");
 		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
 
-		std::pair<int, OnePhaseTrancation> handlers[] = {
-			{protocol::REQ_REGISTER_USER, transaction::on_register_user},
-			{protocol::REQ_LOGIN_USER, transaction::on_login_user},
-			{protocol::REQ_REMOVE_USER, transaction::on_remove_user},
-			{protocol::REQ_FIND_USER, transaction::on_find_user},
-			{protocol::REQ_REGISTER_GROUP, transaction::on_register_group},
-			{protocol::REQ_REMOVE_GROUP, transaction::on_remove_group},
-			{protocol::REQ_FIND_GROUP, transaction::on_find_group},
-			{protocol::REQ_JOIN_GROUP, transaction::on_join_group},
-			{protocol::REQ_ASSIGN_AS_MANAGER, transaction::on_assign_as_manager},
-			{protocol::REQ_ASSIGN_AS_MEMEBER, transaction::on_assign_as_memeber},
-			{protocol::REQ_KICK_OUT_USER, transaction::on_kick_out_user},
-			{protocol::REQ_CREATE_PATH, transaction::on_create_path},
-		};
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqRegisterUser, transaction::on_register_user)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqLoginUser, transaction::on_login_user)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqRemoveUser, transaction::on_remove_user)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqFindUser, transaction::on_find_user)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqRegisterGroup, transaction::on_register_group)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqFindGroup, transaction::on_find_group)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqJoinGroup, transaction::on_join_group)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqAssignAsManager, transaction::on_assign_as_manager)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqAssignAsMemeber, transaction::on_assign_as_memeber)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqKickOutUser, transaction::on_kick_out_user)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqCreatePath, transaction::on_create_path)
 
-		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
-		{
-			TransactionManager::instance()->register_one_phase_transaction(handlers[i].first, handlers[i].second);
-		}
-
-		std::pair<int, TransactionFatory> fatories[] = {
-			{protocol::REQ_PUT_FILE, transaction::PutFileTrans::register_transaction},
-			{protocol::REQ_GET_FILE, transaction::GetFileTrans::register_transaction},
-			{protocol::REQ_REMOVE_PATH, transaction::RemovePathTrans::register_transaction},
-		};
-
-		for (std::size_t i = 0; i < lights::size_of_array(fatories); ++i)
-		{
-			TransactionManager::instance()->register_multiply_phase_transaction(fatories[i].first, fatories[i].second);
-		}
+		SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protocol::ReqPutFile, transaction::PutFileTrans::register_transaction);
+		SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protocol::ReqGetFile, transaction::GetFileTrans::register_transaction);
+		SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protocol::ReqRemovePath, transaction::RemovePathTrans::register_transaction);
 
 		NetworkConnectionManager::instance()->run();
 	}

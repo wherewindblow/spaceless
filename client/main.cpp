@@ -29,33 +29,24 @@ int main(int argc, const char* argv[])
 	{
 		logger.set_level(lights::LogLevel::DEBUG);
 
-		std::pair<int, OnePhaseTrancation> handlers[] = {
-			{protocol::RSP_REGISTER_USER, read_handler},
-			{protocol::RSP_LOGIN_USER, read_handler},
-			{protocol::RSP_REMOVE_USER, read_handler},
-			{protocol::RSP_FIND_USER, read_handler},
-			{protocol::RSP_REGISTER_GROUP, read_handler},
-			{protocol::RSP_REMOVE_GROUP, read_handler},
-			{protocol::RSP_FIND_GROUP, read_handler},
-			{protocol::RSP_JOIN_GROUP, read_handler},
-			{protocol::RSP_ASSIGN_AS_MANAGER, read_handler},
-			{protocol::RSP_ASSIGN_AS_MEMEBER, read_handler},
-			{protocol::RSP_KICK_OUT_USER, read_handler},
-			{protocol::RSP_PUT_FILE, read_handler},
-			{protocol::RSP_GET_FILE, read_handler},
-			{protocol::RSP_CREATE_PATH, read_handler},
-			{protocol::RSP_REMOVE_PATH, read_handler},
-		};
-
-		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
-		{
-			TransactionManager::instance()->register_one_phase_transaction(handlers[i].first, handlers[i].second);
-		}
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRegisterUser, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspLoginUser, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRemoveUser, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspFindUser, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRegisterGroup, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRemoveGroup, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspFindGroup, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspJoinGroup, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspAssignAsManager, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspAssignAsMemeber, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspKickOutUser, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspPutFile, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspGetFile, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspCreatePath, read_handler);
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRemovePath, read_handler);
 
 		NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
 		conn_id = conn.connection_id();
-//		NetworkConnectionManager::instance()->register_listener("127.0.0.1", 10240);
-//		NetworkConnectionManager::instance()->run();
 		ConnectionList conn_list;
 		conn_list.push_back(conn.connection_id());
 
@@ -254,6 +245,10 @@ void cmd_ui_interface(ConnectionList& conn_list)
 	}
 }
 
+int cmd(const std::string& protobuf_name)
+{
+	return protocol::get_command(protobuf_name);
+}
 
 void read_handler(int conn_id, const PackageBuffer& package)
 {
@@ -265,116 +260,106 @@ void read_handler(int conn_id, const PackageBuffer& package)
 		return;
 	}
 
-	switch (package.header().command)
+	int command = package.header().command;
+	if (command == cmd("RspRegisterUser"))
 	{
-		case protocol::RSP_REGISTER_USER:
-		{
-			protocol::RspRegisterUser rsponse;
-			package.parse_as_protobuf(rsponse);
-			std::cout << lights::format("Your user id is {}.", rsponse.user().user_id()) << std::endl;
-			break;
-		}
-		case protocol::RSP_FIND_USER:
-		{
-			protocol::RspFindUser rsponse;
-			package.parse_as_protobuf(rsponse);
-			std::cout << lights::format("Your user id is {} and username is {}.",
+		protocol::RspRegisterUser rsponse;
+		package.parse_as_protobuf(rsponse);
+		std::cout << lights::format("Your user id is {}.", rsponse.user().user_id()) << std::endl;
+	}
+	else if (command == cmd("RspFindUser"))
+	{
+		protocol::RspFindUser rsponse;
+		package.parse_as_protobuf(rsponse);
+		std::cout << lights::format("Your user id is {} and username is {}.",
 									rsponse.user().user_id(), rsponse.user().user_name())
-					  << std::endl;
-			break;
-		}
-		case protocol::RSP_REGISTER_GROUP:
+				  << std::endl;
+	}
+	else if (command == cmd("RspRegisterGroup"))
+	{
+		protocol::RspRegisterGroup rsponse;
+		package.parse_as_protobuf(rsponse);
+		std::cout << lights::format("Group id is {}.", rsponse.group_id()) << std::endl;
+	}
+	else if (command == cmd("RspFindGroup"))
+	{
+		protocol::RspFindGroup rsponse;
+		package.parse_as_protobuf(rsponse);
+		std::string msg;
+		auto sink = lights::make_format_sink_adapter(msg);
+
+		lights::write(sink,
+					  "group_id = {};\n"
+						  "group_name = {};\n"
+						  "owner_id = {};\n",
+					  rsponse.group().group_id(),
+					  rsponse.group().group_name(),
+					  rsponse.group().owner_id()
+		);
+
+		lights::write(sink, "manager_list = ");
+		for (int i = 0; i < rsponse.group().manager_list().size(); ++i)
 		{
-			protocol::RspRegisterGroup rsponse;
-			package.parse_as_protobuf(rsponse);
-			std::cout << lights::format("Group id is {}.", rsponse.group_id()) << std::endl;
-			break;
+			if (i != 0)
+			{
+				lights::write(sink, ", ");
+			}
+			lights::write(sink, "{}", rsponse.group().manager_list()[i]);
 		}
-		case protocol::RSP_FIND_GROUP:
+		lights::write(sink, ";\n");
+
+		lights::write(sink, "member_list = ");
+		for (int i = 0; i < rsponse.group().member_list().size(); ++i)
 		{
-			protocol::RspFindGroup rsponse;
-			package.parse_as_protobuf(rsponse);
-			std::string msg;
-			auto sink = lights::make_format_sink_adapter(msg);
-
-			lights::write(sink,
-						  "group_id = {};\n"
-							  "group_name = {};\n"
-							  "owner_id = {};\n",
-						  rsponse.group().group_id(),
-						  rsponse.group().group_name(),
-						  rsponse.group().owner_id()
-			);
-
-			lights::write(sink, "manager_list = ");
-			for (int i = 0; i < rsponse.group().manager_list().size(); ++i)
+			if (i != 0)
 			{
-				if (i != 0)
-				{
-					lights::write(sink, ", ");
-				}
-				lights::write(sink, "{}", rsponse.group().manager_list()[i]);
+				lights::write(sink, ", ");
 			}
-			lights::write(sink, ";\n");
-
-			lights::write(sink, "member_list = ");
-			for (int i = 0; i < rsponse.group().member_list().size(); ++i)
-			{
-				if (i != 0)
-				{
-					lights::write(sink, ", ");
-				}
-				lights::write(sink, "{}", rsponse.group().member_list()[i]);
-			}
-			lights::write(sink, ";\n");
-
-			std::cout << msg << std::endl;
-			break;
+			lights::write(sink, "{}", rsponse.group().member_list()[i]);
 		}
-		case protocol::RSP_PUT_FILE:
+		lights::write(sink, ";\n");
+
+		std::cout << msg << std::endl;
+	}
+	else if (command == cmd("RspPutFile"))
+	{
+		protocol::RspPutFile rsponse;
+		package.parse_as_protobuf(rsponse);
+		FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
+		if (session.fragment_index + 1 >= session.max_fragment)
 		{
-			protocol::RspPutFile rsponse;
-			package.parse_as_protobuf(rsponse);
-			FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
-			if (session.fragment_index + 1 >= session.max_fragment)
-			{
-				std::time_t use_sec = std::time(nullptr) - session.start_time ;
-				std::cout << lights::format("Put file {} finish. use {} s", session.remote_file_path, use_sec) << std::endl;
-			}
-			else
-			{
-				++session.fragment_index;
-				SharingGroupManager::instance()->put_file(session.group_id,
-														  session.local_file_path,
-														  session.remote_file_path,
-														  session.fragment_index);
-			}
-			break;
+			std::time_t use_sec = std::time(nullptr) - session.start_time;
+			std::cout << lights::format("Put file {} finish. use {} s", session.remote_file_path, use_sec) << std::endl;
 		}
-		case protocol::RSP_GET_FILE:
+		else
 		{
-			protocol::RspGetFile rsponse;
-			package.parse_as_protobuf(rsponse);
-			FileTransferSession& session = SharingGroupManager::instance()->getting_file_session();
-			lights::FileStream file(session.local_file_path, "a");
-			int offset = rsponse.fragment().fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;
-			file.seek(offset, lights::FileSeekWhence::BEGIN);
-			file.write({rsponse.fragment().fragment_content()});
-
-			if (rsponse.fragment().fragment_index() + 1 < rsponse.fragment().max_fragment())
-			{
-				SharingGroupManager::instance()->get_file(session.group_id,
-														  session.remote_file_path,
-														  session.local_file_path);
-			}
-			else
-			{
-				std::cout << lights::format("Get file {} finish.", session.remote_file_path) << std::endl;
-			}
-			break;
+			++session.fragment_index;
+			SharingGroupManager::instance()->put_file(session.group_id,
+													  session.local_file_path,
+													  session.remote_file_path,
+													  session.fragment_index);
 		}
-		default:
-			break;
+	}
+	else if (command == cmd("RspGetFile"))
+	{
+		protocol::RspGetFile rsponse;
+		package.parse_as_protobuf(rsponse);
+		FileTransferSession& session = SharingGroupManager::instance()->getting_file_session();
+		lights::FileStream file(session.local_file_path, "a");
+		int offset = rsponse.fragment().fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;
+		file.seek(offset, lights::FileSeekWhence::BEGIN);
+		file.write({rsponse.fragment().fragment_content()});
+
+		if (rsponse.fragment().fragment_index() + 1 < rsponse.fragment().max_fragment())
+		{
+			SharingGroupManager::instance()->get_file(session.group_id,
+													  session.remote_file_path,
+													  session.local_file_path);
+		}
+		else
+		{
+			std::cout << lights::format("Get file {} finish.", session.remote_file_path) << std::endl;
+		}
 	}
 }
 

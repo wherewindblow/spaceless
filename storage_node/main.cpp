@@ -29,15 +29,8 @@ int main(int argc, const char* argv[])
 		SharingFileManager::instance()->set_sharing_path(sharing_path);
 		NetworkConnectionManager::instance()->register_listener(ip, port);
 
-		std::pair<int, OnePhaseTrancation> handlers[] = {
-			{protocol::REQ_PUT_FILE, transaction::on_put_file},
-			{protocol::REQ_GET_FILE, transaction::on_get_file},
-		};
-
-		for (std::size_t i = 0; i < lights::size_of_array(handlers); ++i)
-		{
-			TransactionManager::instance()->register_one_phase_transaction(handlers[i].first, handlers[i].second);
-		}
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqPutFile, transaction::on_put_file)
+		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqGetFile, transaction::on_get_file)
 
 		NetworkConnectionManager::instance()->run();
 	}

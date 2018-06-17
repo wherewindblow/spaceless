@@ -1,0 +1,41 @@
+namespace spaceless {
+namespace protocol {
+namespace details {
+
+const std::map<int, std::string> default_command_name_map = {
+    {    1, "RspError"},
+    {    2, "ReqRegisterUser"},
+    {    3, "RspRegisterUser"},
+    {    4, "ReqLoginUser"},
+    {    5, "RspLoginUser"},
+    {    6, "ReqRemoveUser"},
+    {    7, "RspRemoveUser"},
+    {    8, "ReqFindUser"},
+    {    9, "RspFindUser"},
+    {   10, "ReqRegisterGroup"},
+    {   11, "RspRegisterGroup"},
+    {   12, "ReqRemoveGroup"},
+    {   13, "RspRemoveGroup"},
+    {   14, "ReqFindGroup"},
+    {   15, "RspFindGroup"},
+    {   16, "ReqJoinGroup"},
+    {   17, "RspJoinGroup"},
+    {   18, "ReqAssignAsManager"},
+    {   19, "RspAssignAsManager"},
+    {   20, "ReqAssignAsMemeber"},
+    {   21, "RspAssignAsMemeber"},
+    {   22, "ReqKickOutUser"},
+    {   23, "RspKickOutUser"},
+    {   24, "ReqPutFile"},
+    {   25, "RspPutFile"},
+    {   26, "ReqGetFile"},
+    {   27, "RspGetFile"},
+    {   28, "ReqCreatePath"},
+    {   29, "RspCreatePath"},
+    {   30, "ReqRemovePath"},
+    {   31, "RspRemovePath"},
+};
+
+} // namespace details
+} // namespace protocol
+} // namespace spaceless
