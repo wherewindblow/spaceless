@@ -23,6 +23,9 @@ class CommandTableImpl
 public:
 	SPACELESS_SINGLETON_INSTANCE(CommandTableImpl);
 
+	/**
+	 * Creates command table.
+	 */
 	CommandTableImpl()
 	{
 		m_cmd_name_map = default_command_name_map;
@@ -32,6 +35,10 @@ public:
 		}
 	}
 
+	/**
+	 * Finds name.
+	 * @note Returns nullptr if cannot it.
+	 */
 	const std::string* find_name(int cmd)
 	{
 		auto itr = m_cmd_name_map.find(cmd);
@@ -42,6 +49,24 @@ public:
 		return &itr->second;
 	}
 
+	/**
+	 * Gets name.
+	 * @throw Throws exception if cannot find it.
+	 */
+	const std::string& get_name(int cmd)
+	{
+		auto name = find_name(cmd);
+		if (!name)
+		{
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOBUF_NAME_NOT_EXIST);
+		}
+		return *name;
+	}
+
+	/**
+	 * Finds command.
+	 * @note Returns nullptr if cannot it.
+	 */
 	const int* find_command(const std::string& name)
 	{
 		auto itr = m_name_cmd_map.find(name);
@@ -52,6 +77,10 @@ public:
 		return &itr->second;
 	}
 
+	/**
+	 * Gets command.
+	 * @throw Throws exception if cannot find it.
+	 */
 	int get_command(const std::string& protobuf_name)
 	{
 		auto cmd = find_command(protobuf_name);
@@ -60,16 +89,6 @@ public:
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_COMMAND_NOT_EXIST);
 		}
 		return *cmd;
-	}
-
-	const std::string& get_protobuf_name(int cmd)
-	{
-		auto name = find_protobuf_name(cmd);
-		if (!name)
-		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOBUF_NAME_NOT_EXIST);
-		}
-		return *name;
 	}
 
 private:
@@ -98,7 +117,7 @@ int get_command(const std::string& protobuf_name)
 
 const std::string& get_protobuf_name(int cmd)
 {
-	return details::CommandTableImpl::instance()->get_protobuf_name(cmd);
+	return details::CommandTableImpl::instance()->get_name(cmd);
 }
 
 } // namespace protocol

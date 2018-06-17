@@ -92,7 +92,7 @@ public:
 private:
 	using UserList = std::map<int, User>;
 	UserList m_user_list;
-	std::map<int, int> m_conn_user_map;
+	std::map<int, int> m_login_user_list;
 	int m_next_id = 1;
 };
 

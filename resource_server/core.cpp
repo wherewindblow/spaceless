@@ -111,15 +111,15 @@ bool UserManager::login_user(int user_id, const std::string& password, int conn_
 	}
 
 	user->conn_id = conn_id;
-	m_conn_user_map.insert(std::make_pair(conn_id, user_id));
+	m_login_user_list.insert(std::make_pair(conn_id, user_id));
 	return true;
 }
 
 
 User* UserManager::find_login_user(int conn_id)
 {
-	auto itr = m_conn_user_map.find(conn_id);
-	if (itr == m_conn_user_map.end())
+	auto itr = m_login_user_list.find(conn_id);
+	if (itr == m_login_user_list.end())
 	{
 		return nullptr;
 	}
