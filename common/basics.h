@@ -19,6 +19,7 @@ static class_name* instance() \
 namespace spaceless {
 
 const int MODULE_NETWORK = 1;
+const int MODULE_SCHEDULER = 2;
 const int PROTOCOL_PACKAGE_VERSION = 1;
 const int INVALID_ID = 0;
 const int MAX_SEND_PACKAGE_PROCESS_PER_TIMES = 10;

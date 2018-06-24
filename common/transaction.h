@@ -55,7 +55,7 @@ void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Content length {} is too large.", conn_id, size)
+		SPACELESS_ERROR(MODULE_SCHEDULER, "Network connction {}: Content length {} is too large.", conn_id, size)
 		return;
 	}
 
@@ -120,6 +120,8 @@ struct Transaction
 class MultiplyPhaseTransaction
 {
 public:
+	static const int DEFAULT_TIME_OUT = 60;
+
 	/**
 	 * Factory of this type transaction. Just simply call contructor.
 	 * @note This function is only a example.
@@ -169,10 +171,10 @@ public:
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
-	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = 1);
+	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT);
 
 	template <typename ProtobufType>
-	void wait_next_phase(int conn_id, const ProtobufType& msg, int current_phase, int timeout = 1);
+	void wait_next_phase(int conn_id, const ProtobufType& msg, int current_phase, int timeout = DEFAULT_TIME_OUT);
 
 	/**
 	 * Sends back message to first connection.

@@ -75,7 +75,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 			return;
 		}
 
-		SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Timeout trans_id {}, phase {}.",
+		SPACELESS_DEBUG(MODULE_SCHEDULER, "Network connction {}: Timeout trans_id {}, phase {}.",
 						trans->waiting_connection_id(),
 						trans_id,
 						trans->current_phase());
@@ -85,7 +85,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 		if (!trans->is_waiting())
 		{
-			SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: End trans_id {}.",
+			SPACELESS_DEBUG(MODULE_SCHEDULER, "Network connction {}: End trans_id {}.",
 							trans->waiting_connection_id(),
 							trans_id);
 			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);

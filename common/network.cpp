@@ -185,6 +185,9 @@ void NetworkConnection::on_error(ErrorNotification* notification)
 
 void NetworkConnection::send_package(const PackageBuffer& package)
 {
+	SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Send package cmd:{}, trans_id:{}",
+					m_id, package.header().command, package.header().trigger_trans_id)
+
 	if (!m_send_list.empty())
 	{
 		m_send_list.push(package.package_id());
@@ -270,6 +273,9 @@ void NetworkConnection::read_for_state(int deep)
 			{
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
+
+				SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Recieve package cmd:{}, trans_id:{}",
+								m_id, m_read_buffer.header().command, m_read_buffer.header().trigger_trans_id)
 
 				PackageBuffer& package = PackageBufferManager::instance()->register_package();
 				package = m_read_buffer;
