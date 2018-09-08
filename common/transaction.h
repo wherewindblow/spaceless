@@ -46,6 +46,9 @@ public:
 	 */
 	template <typename ProtobufType>
 	static void send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id = 0);
+
+private:
+	static Logger& logger;
 };
 
 
@@ -55,8 +58,8 @@ void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_TOO_LARGE);
-//		LIGHTS_ERROR(logger, "Network connction {}: Content length {} is too large.", conn_id, size)
+//		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_TOO_LARGE);
+		LIGHTS_ERROR(logger, "Connction {}: Content length {} is too large.", conn_id, size)
 		return;
 	}
 
@@ -68,11 +71,13 @@ void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans
 		auto protobuf_name = protocol::get_protobuf_name(trigger_cmd);
 		protobuf_name.replace(0, 3, "Rsp");
 		header.command = protocol::get_command(protobuf_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}", conn_id, header.command, protobuf_name);
 	}
 	else
 	{
 		auto& protobuf_name = protocol::get_protobuf_name(msg);
 		header.command = protocol::get_command(protobuf_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}", conn_id, header.command, protobuf_name);
 	}
 	header.self_trans_id = bind_trans_id;
 	header.trigger_trans_id = trigger_trans_id;

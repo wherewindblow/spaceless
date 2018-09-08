@@ -15,7 +15,8 @@
 
 namespace spaceless {
 
-static Logger& logger = LoggerManager::instance()->register_logger("transaction");
+static Logger& logger = get_logger("schedule");
+Logger& Network::logger = get_logger("schedule");
 
 void Network::send_package(int conn_id, const PackageBuffer& package)
 {
@@ -77,7 +78,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 			return;
 		}
 
-		LIGHTS_DEBUG(logger, "Network connction {}: Timeout trans_id {}, phase {}.",
+		LIGHTS_DEBUG(logger, "Connction {}: Timeout trans_id {}, phase {}.",
 						trans->waiting_connection_id(),
 						trans_id,
 						trans->current_phase());
@@ -87,7 +88,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 		if (!trans->is_waiting())
 		{
-			LIGHTS_DEBUG(logger, "Network connction {}: End trans_id {}.",
+			LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.",
 							trans->waiting_connection_id(),
 							trans_id);
 			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);

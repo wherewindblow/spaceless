@@ -29,8 +29,7 @@ FormatSink<Backend> operator<< (FormatSink<Backend> sink, const Poco::Net::Socke
 
 namespace spaceless {
 
-//static lights::TextLogger logger("network", log_sink_ptr);
-static auto logger = LoggerManager::instance()->register_logger("network");
+static Logger& logger = get_logger("network");
 
 using Poco::Net::SocketAddress;
 
@@ -103,11 +102,11 @@ NetworkConnection::~NetworkConnection()
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Destroy error: {}", m_id, ex.what());
+		LIGHTS_ERROR(logger, "Connction {}: Destroy error: {}", m_id, ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Destroy unkown error", m_id);
+		LIGHTS_ERROR(logger, "Connction {}: Destroy unkown error", m_id);
 	}
 }
 
@@ -175,20 +174,20 @@ void NetworkConnection::on_shutdown(ShutdownNotification* notification)
 void NetworkConnection::on_timeout(TimeoutNotification* notification)
 {
 	notification->release();
-	LIGHTS_ERROR(logger, "Network connction {}: On time out.", m_id);
+	LIGHTS_ERROR(logger, "Connction {}: On time out.", m_id);
 }
 
 
 void NetworkConnection::on_error(ErrorNotification* notification)
 {
 	notification->release();
-	LIGHTS_ERROR(logger, "Network connction {}: On error.", m_id);
+	LIGHTS_ERROR(logger, "Connction {}: On error.", m_id);
 }
 
 
 void NetworkConnection::send_package(const PackageBuffer& package)
 {
-	LIGHTS_DEBUG(logger, "Network connction {}: Send package cmd:{}, trans_id:{}",
+	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}",
 					m_id, package.header().command, package.header().trigger_trans_id)
 
 	if (!m_send_list.empty())
@@ -277,7 +276,7 @@ void NetworkConnection::read_for_state(int deep)
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				LIGHTS_DEBUG(logger, "Network connction {}: Recieve package cmd:{}, trans_id:{}",
+				LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}",
 								m_id, m_read_buffer.header().command, m_read_buffer.header().trigger_trans_id)
 
 				PackageBuffer& package = PackageBufferManager::instance()->register_package();
@@ -354,12 +353,12 @@ void NetworkReactor::process_send_package()
 		{
 			if (!conn)
 			{
-				LIGHTS_INFO(logger, "Network connction {}: Already close", msg.conn_id);
+				LIGHTS_INFO(logger, "Connction {}: Already close", msg.conn_id);
 			}
 
 			if (!package)
 			{
-				LIGHTS_ERROR(logger, "Network connction {}: Package {} already remove",
+				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove",
 								msg.conn_id, msg.package_id);
 			}
 

@@ -19,7 +19,7 @@
 
 namespace spaceless {
 
-static Logger& logger = LoggerManager::instance()->register_logger("schedule");
+static Logger& logger = get_logger("schedule");
 
 namespace details {
 
@@ -96,7 +96,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 	PackageBuffer* package = PackageBufferManager::instance()->find_package(package_id);
 	if (!package)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Package {} already removed", conn_id, package_id);
+		LIGHTS_ERROR(logger, "Connction {}: Package {} already removed", conn_id, package_id);
 		return;
 	}
 
@@ -112,7 +112,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			{
 				case TransactionType::ONE_PHASE_TRANSACTION:
 				{
-					LIGHTS_DEBUG(logger, "Network connction {}: Trigger cmd {}, name {}.",
+					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}.",
 									conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTrancation>(trans->trans_handler);
 
@@ -129,7 +129,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 					auto trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
 					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 
-					LIGHTS_DEBUG(logger, "Network connction {}: Trigger cmd {}, name {}, Start trans_id {}.",
+					LIGHTS_DEBUG(logger, "Connction {}: Trigger cmd {}, name {}, Start trans_id {}.",
 									conn_id,
 									command,
 									get_name(command),
@@ -153,7 +153,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 
 					if (!trans_handler.is_waiting())
 					{
-						LIGHTS_DEBUG(logger, "Network connction {}: End trans_id {}.",
+						LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.",
 										conn_id, trans_handler.transaction_id());
 						need_remove_package = true;
 						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_handler.transaction_id());
@@ -167,7 +167,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 		}
 		else
 		{
-			LIGHTS_ERROR(logger, "Network connction {}: Unkown command {}.", conn_id, command);
+			LIGHTS_ERROR(logger, "Connction {}: Unkown command {}.", conn_id, command);
 			need_remove_package = true;
 		}
 	}
@@ -180,7 +180,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			// Don't give chance to other to interrupt not self transaction.
 			if (conn_id == trans_handler->waiting_connection_id() && command == trans_handler->waiting_command())
 			{
-				LIGHTS_DEBUG(logger, "Network connction {}: Trigger cmd {}, name {}, Active trans_id {}, phase {}.",
+				LIGHTS_DEBUG(logger, "Connction {}: Trigger cmd {}, name {}, Active trans_id {}, phase {}.",
 								conn_id,
 								command,
 								get_name(command),
@@ -211,7 +211,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 
 				if (!trans_handler->is_waiting())
 				{
-					LIGHTS_DEBUG(logger, "Network connction {}: End trans_id {}.", conn_id, trans_id);
+					LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_id);
 					need_remove_package = true;
 					PackageBufferManager::instance()->remove_package(trans_handler->first_package_id());
 					MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
@@ -219,7 +219,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			}
 			else
 			{
-				LIGHTS_ERROR(logger, "Network connction {}: cmd {} not fit with conn_id {}, cmd {}.",
+				LIGHTS_ERROR(logger, "Connction {}: cmd {} not fit with conn_id {}, cmd {}.",
 								conn_id,
 								command,
 								trans_handler->waiting_connection_id(),
@@ -229,7 +229,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 		}
 		else
 		{
-			LIGHTS_ERROR(logger, "Network connction {}: Unkown trans_id {}.", conn_id, trans_id);
+			LIGHTS_ERROR(logger, "Connction {}: Unkown trans_id {}.", conn_id, trans_id);
 			need_remove_package = true;
 		}
 	}
@@ -253,7 +253,7 @@ int SchedulerImpl::safe_excute(int conn_id,
 	}
 	catch (Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Transaction error {}:{}.", conn_id, ex.code(), ex);
+		LIGHTS_ERROR(logger, "Connction {}: Transaction error {}:{}.", conn_id, ex.code(), ex);
 		if (error_handler)
 		{
 			try
@@ -262,46 +262,46 @@ int SchedulerImpl::safe_excute(int conn_id,
 			}
 			catch (Exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Network connction {}: Transaction on_error error {}:{}.",
+				LIGHTS_ERROR(logger, "Connction {}: Transaction on_error error {}:{}.",
 								conn_id, ex.code(), ex);
 			}
 			catch (Poco::Exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Network connction {}: Transaction on_error Poco error {}:{}.",
+				LIGHTS_ERROR(logger, "Connction {}: Transaction on_error Poco error {}:{}.",
 								conn_id,
 								ex.name(),
 								ex.message());
 			}
 			catch (std::exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Network connction {}: Transaction on_error std error {}:{}.",
+				LIGHTS_ERROR(logger, "Connction {}: Transaction on_error std error {}:{}.",
 								conn_id,
 								typeid(ex).name(),
 								ex.what());
 			}
 			catch (...)
 			{
-				LIGHTS_ERROR(logger, "Network connction {}: Transaction on_error unkown error.", conn_id);
+				LIGHTS_ERROR(logger, "Connction {}: Transaction on_error unkown error.", conn_id);
 			}
 		}
 	}
 	catch (Poco::Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Transaction Poco error {}:{}.",
+		LIGHTS_ERROR(logger, "Connction {}: Transaction Poco error {}:{}.",
 						conn_id,
 						ex.name(),
 						ex.message());
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Transaction std error {}:{}.",
+		LIGHTS_ERROR(logger, "Connction {}: Transaction std error {}:{}.",
 						conn_id,
 						typeid(ex).name(),
 						ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Network connction {}: Transaction unkown error.", conn_id);
+		LIGHTS_ERROR(logger, "Connction {}: Transaction unkown error.", conn_id);
 	}
 	return -1;
 }

@@ -12,7 +12,7 @@
 namespace spaceless {
 namespace resource_server {
 
-static Logger& logger = LoggerManager::instance()->register_logger("resource_server");
+static Logger& logger = get_logger("resource_server");
 
 const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
 

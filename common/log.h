@@ -32,4 +32,6 @@ private:
 	std::map<std::string, Logger*> m_logger_map;
 };
 
+Logger& get_logger(const std::string& name);
+
 } // namespace spaceless

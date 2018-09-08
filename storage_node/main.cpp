@@ -10,7 +10,7 @@
 namespace spaceless {
 namespace storage_node {
 
-static Logger& logger = LoggerManager::instance()->register_logger("storage_node");
+static Logger& logger = get_logger("storage_node");
 
 int main(int argc, const char* argv[])
 {

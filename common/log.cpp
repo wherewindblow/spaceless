@@ -27,7 +27,7 @@ Logger& LoggerManager::register_logger(const std::string& name)
 	{
 		delete logger;
 //		return nullptr;
-		assert(false && "Repeat logger name");
+		LIGHTS_ASSERT(false && "Repeat logger name");
 	}
 	return *logger;
 }
@@ -53,5 +53,16 @@ void LoggerManager::for_each(std::function<void(const std::string&, Logger*)> ca
 	}
 }
 
+
+Logger& get_logger(const std::string& name)
+{
+	Logger* logger = LoggerManager::instance()->find_logger(name);
+	if (logger)
+	{
+		return *logger;
+	}
+
+	return LoggerManager::instance()->register_logger(name);
+}
 
 } // namespace spaceless

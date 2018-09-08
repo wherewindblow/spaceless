@@ -14,7 +14,7 @@ namespace spaceless {
 
 namespace client {
 
-static Logger& logger = LoggerManager::instance()->register_logger("client");
+static Logger& logger = get_logger("client");
 
 void read_handler(int conn_id, const PackageBuffer& package);
 
