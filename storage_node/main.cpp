@@ -22,7 +22,7 @@ int main(int argc, const char* argv[])
 
 		if (argc < 4)
 		{
-			LIGHTS_ERROR(logger, "Not enought argumets to start up");
+			LIGHTS_ERROR(logger, "Not enought argumets to start up.");
 			return -1;
 		}
 

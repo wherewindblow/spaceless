@@ -10,13 +10,13 @@
 #include <protocol/all.h>
 
 #include "network.h"
-#include "schedule.h"
+#include "work_schedule.h"
 
 
 namespace spaceless {
 
-static Logger& logger = get_logger("schedule");
-Logger& Network::logger = get_logger("schedule");
+static Logger& logger = get_logger("worker");
+Logger& Network::logger = get_logger("worker");
 
 void Network::send_package(int conn_id, const PackageBuffer& package)
 {

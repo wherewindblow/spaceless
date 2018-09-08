@@ -71,13 +71,13 @@ void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans
 		auto protobuf_name = protocol::get_protobuf_name(trigger_cmd);
 		protobuf_name.replace(0, 3, "Rsp");
 		header.command = protocol::get_command(protobuf_name);
-		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}", conn_id, header.command, protobuf_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.command, protobuf_name);
 	}
 	else
 	{
 		auto& protobuf_name = protocol::get_protobuf_name(msg);
 		header.command = protocol::get_command(protobuf_name);
-		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}", conn_id, header.command, protobuf_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.command, protobuf_name);
 	}
 	header.self_trans_id = bind_trans_id;
 	header.trigger_trans_id = trigger_trans_id;

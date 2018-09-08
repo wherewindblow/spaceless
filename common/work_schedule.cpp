@@ -4,7 +4,7 @@
  * @date   Jun 08, 2018
  */
 
-#include "schedule.h"
+#include "work_schedule.h"
 
 #include <atomic>
 #include <functional>
@@ -19,7 +19,7 @@
 
 namespace spaceless {
 
-static Logger& logger = get_logger("schedule");
+static Logger& logger = get_logger("worker");
 
 namespace details {
 
@@ -96,7 +96,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 	PackageBuffer* package = PackageBufferManager::instance()->find_package(package_id);
 	if (!package)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Package {} already removed", conn_id, package_id);
+		LIGHTS_ERROR(logger, "Connction {}: Package {} already removed.", conn_id, package_id);
 		return;
 	}
 

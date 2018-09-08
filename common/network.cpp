@@ -12,7 +12,7 @@
 #include <Poco/Observer.h>
 
 #include "log.h"
-#include "schedule.h"
+#include "work_schedule.h"
 
 
 namespace lights {
@@ -102,11 +102,11 @@ NetworkConnection::~NetworkConnection()
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Destroy error: {}", m_id, ex.what());
+		LIGHTS_ERROR(logger, "Connction {}: Destroy error: {}.", m_id, ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Destroy unkown error", m_id);
+		LIGHTS_ERROR(logger, "Connction {}: Destroy unkown error.", m_id);
 	}
 }
 
@@ -187,7 +187,7 @@ void NetworkConnection::on_error(ErrorNotification* notification)
 
 void NetworkConnection::send_package(const PackageBuffer& package)
 {
-	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}",
+	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}.",
 					m_id, package.header().command, package.header().trigger_trans_id)
 
 	if (!m_send_list.empty())
@@ -276,7 +276,7 @@ void NetworkConnection::read_for_state(int deep)
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}",
+				LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}.",
 								m_id, m_read_buffer.header().command, m_read_buffer.header().trigger_trans_id)
 
 				PackageBuffer& package = PackageBufferManager::instance()->register_package();
@@ -353,12 +353,12 @@ void NetworkReactor::process_send_package()
 		{
 			if (!conn)
 			{
-				LIGHTS_INFO(logger, "Connction {}: Already close", msg.conn_id);
+				LIGHTS_INFO(logger, "Connction {}: Already close.", msg.conn_id);
 			}
 
 			if (!package)
 			{
-				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove",
+				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.",
 								msg.conn_id, msg.package_id);
 			}
 
@@ -383,11 +383,11 @@ NetworkConnectionManager::~NetworkConnectionManager()
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Network connection manager destroy error: {}", ex.what());
+		LIGHTS_ERROR(logger, "Network connection manager destroy error: {}.", ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Network connection manager destroy unkown error");
+		LIGHTS_ERROR(logger, "Network connection manager destroy unkown error.");
 	}
 }
 
