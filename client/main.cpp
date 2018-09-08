@@ -12,9 +12,9 @@
 
 namespace spaceless {
 
-const int MODULE_CLIENT = 1100;
-
 namespace client {
+
+static Logger& logger = LoggerManager::instance()->register_logger("client");
 
 void read_handler(int conn_id, const PackageBuffer& package);
 
@@ -27,7 +27,9 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		logger.set_level(lights::LogLevel::DEBUG);
+		LoggerManager::instance()->for_each([](const std::string& name, Logger* logger) {
+			logger->set_level(lights::LogLevel::DEBUG);
+		});
 
 		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRegisterUser, read_handler);
 		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspLoginUser, read_handler);
@@ -56,11 +58,13 @@ int main(int argc, const char* argv[])
 		});
 		thread.detach();
 
+		UserManager::instance()->login_user(1, "pwd");
+
 		cmd_ui_interface(conn_list);
 	}
 	catch (Exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_CLIENT, ex);
+		LIGHTS_ERROR(logger, ex);
 	}
 	return 0;
 }
@@ -286,7 +290,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 		protocol::RspFindGroup rsponse;
 		package.parse_as_protobuf(rsponse);
 		std::string msg;
-		auto sink = lights::make_format_sink_adapter(msg);
+		auto sink = lights::make_format_sink(msg);
 
 		lights::write(sink,
 					  "group_id = {};\n"

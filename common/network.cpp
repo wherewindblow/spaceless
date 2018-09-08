@@ -17,17 +17,20 @@
 
 namespace lights {
 
-template <typename Sink>
-FormatSinkAdapter<Sink> operator<< (FormatSinkAdapter<Sink> out, const Poco::Net::SocketAddress& address)
+template <typename Backend>
+FormatSink<Backend> operator<< (FormatSink<Backend> sink, const Poco::Net::SocketAddress& address)
 {
-	out << address.toString();
-	return out;
+	sink << address.toString();
+	return sink;
 }
 
 } // namespace lights
 
 
 namespace spaceless {
+
+//static lights::TextLogger logger("network", log_sink_ptr);
+static auto logger = LoggerManager::instance()->register_logger("network");
 
 using Poco::Net::SocketAddress;
 
@@ -58,12 +61,12 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	{
 		std::string address = m_socket.address().toString();
 		std::string peer_address = m_socket.peerAddress().toString();
-		SPACELESS_INFO(MODULE_NETWORK, "Creates network connection {}: local {} and peer {}.",
+		LIGHTS_INFO(logger, "Creates network connection {}: local {} and peer {}.",
 						m_id, address, peer_address);
 	}
 	catch (Poco::Exception& ex)
 	{
-		SPACELESS_INFO(MODULE_NETWORK, "Creates network connection {}: local unknow and peer unknow.", m_id);
+		LIGHTS_INFO(logger, "Creates network connection {}: local unknow and peer unknow.", m_id);
 	}
 }
 
@@ -72,7 +75,7 @@ NetworkConnection::~NetworkConnection()
 {
 	try
 	{
-		SPACELESS_DEBUG(MODULE_NETWORK, "Destroys network connection {}.", m_id);
+		LIGHTS_DEBUG(logger, "Destroys network connection {}.", m_id);
 		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
 		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
 		{
@@ -100,11 +103,11 @@ NetworkConnection::~NetworkConnection()
 	}
 	catch (std::exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Destroy error: {}", m_id, ex.what());
+		LIGHTS_ERROR(logger, "Network connction {}: Destroy error: {}", m_id, ex.what());
 	}
 	catch (...)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Destroy unkown error", m_id);
+		LIGHTS_ERROR(logger, "Network connction {}: Destroy unkown error", m_id);
 	}
 }
 
@@ -172,20 +175,20 @@ void NetworkConnection::on_shutdown(ShutdownNotification* notification)
 void NetworkConnection::on_timeout(TimeoutNotification* notification)
 {
 	notification->release();
-	SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: On time out.", m_id);
+	LIGHTS_ERROR(logger, "Network connction {}: On time out.", m_id);
 }
 
 
 void NetworkConnection::on_error(ErrorNotification* notification)
 {
 	notification->release();
-	SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: On error.", m_id);
+	LIGHTS_ERROR(logger, "Network connction {}: On error.", m_id);
 }
 
 
 void NetworkConnection::send_package(const PackageBuffer& package)
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Send package cmd:{}, trans_id:{}",
+	LIGHTS_DEBUG(logger, "Network connction {}: Send package cmd:{}, trans_id:{}",
 					m_id, package.header().command, package.header().trigger_trans_id)
 
 	if (!m_send_list.empty())
@@ -274,7 +277,7 @@ void NetworkConnection::read_for_state(int deep)
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				SPACELESS_DEBUG(MODULE_NETWORK, "Network connction {}: Recieve package cmd:{}, trans_id:{}",
+				LIGHTS_DEBUG(logger, "Network connction {}: Recieve package cmd:{}, trans_id:{}",
 								m_id, m_read_buffer.header().command, m_read_buffer.header().trigger_trans_id)
 
 				PackageBuffer& package = PackageBufferManager::instance()->register_package();
@@ -315,21 +318,21 @@ bool NetworkMessageQueue::empty(NetworkMessageQueue::QueueType queue_type)
 
 void NetworkReactor::onIdle()
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "onIdle");
+	LIGHTS_DEBUG(logger, "onIdle");
 	process_send_package();
 }
 
 
 void NetworkReactor::onBusy()
 {
-	SPACELESS_DEBUG(MODULE_NETWORK, "onBusy");
+	LIGHTS_DEBUG(logger, "onBusy");
 	process_send_package();
 }
 
 
 void NetworkReactor::onTimeout()
 {
-//	SPACELESS_DEBUG(MODULE_NETWORK, "onTimeout");
+//	LIGHTS_DEBUG(logger, "onTimeout");
 	process_send_package();
 }
 
@@ -351,12 +354,12 @@ void NetworkReactor::process_send_package()
 		{
 			if (!conn)
 			{
-				SPACELESS_INFO(MODULE_NETWORK, "Network connction {}: Already close", msg.conn_id);
+				LIGHTS_INFO(logger, "Network connction {}: Already close", msg.conn_id);
 			}
 
 			if (!package)
 			{
-				SPACELESS_ERROR(MODULE_NETWORK, "Network connction {}: Package {} already remove",
+				LIGHTS_ERROR(logger, "Network connction {}: Package {} already remove",
 								msg.conn_id, msg.package_id);
 			}
 
@@ -381,11 +384,11 @@ NetworkConnectionManager::~NetworkConnectionManager()
 	}
 	catch (std::exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connection manager destroy error: {}", ex.what());
+		LIGHTS_ERROR(logger, "Network connection manager destroy error: {}", ex.what());
 	}
 	catch (...)
 	{
-		SPACELESS_ERROR(MODULE_NETWORK, "Network connection manager destroy unkown error");
+		LIGHTS_ERROR(logger, "Network connection manager destroy unkown error");
 	}
 }
 
@@ -402,7 +405,7 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 {
 	ServerSocket server_socket(SocketAddress(host, port));
 	m_acceptor_list.emplace_back(server_socket, m_reactor);
-	SPACELESS_INFO(MODULE_NETWORK, "Creates network listener {}.", server_socket.address());
+	LIGHTS_INFO(logger, "Creates network listener {}.", server_socket.address());
 }
 
 

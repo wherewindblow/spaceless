@@ -9,8 +9,9 @@
 #include <cassert>
 #include <exception>
 
+#include "config.h"
 #include "sequence.h"
-#include "sink_adapter.h"
+#include "sink.h"
 #include "current_function.hpp"
 #include "common.h"
 
@@ -53,11 +54,17 @@ private:
  */
 #define LIGHTS_CURRENT_SOURCE_LOCATION lights::SourceLocation(__FILE__, __LINE__, BOOST_CURRENT_FUNCTION)
 
+/**
+ * Returns invalid source location.
+ */
 inline SourceLocation invalid_source_location()
 {
 	return { nullptr, 0, nullptr };
 }
 
+/**
+ * Checks source location is valid.
+ */
 inline bool is_valid(const SourceLocation& location)
 {
 	return location.file() != nullptr && location.function() != nullptr;
@@ -90,15 +97,24 @@ public:
 		TYPE_MAX
 	};
 
+	/**
+	 * Creates error descriptions.
+	 */
 	ErrorCodeDescriptions(StringView without_args,
 						  StringView with_args) :
 		m_descriptions { without_args, with_args}
 	{}
 
+	/**
+	 * Creates error descriptions.
+	 */
 	ErrorCodeDescriptions(StringView without_args) :
 		ErrorCodeDescriptions(without_args, without_args)
 	{}
 
+	/**
+	 * Gets error description.
+	 */
 	StringView get_description(DescriptionType description_type) const
 	{
 		return m_descriptions[description_type];
@@ -111,7 +127,7 @@ private:
 
 /**
  * ErrorCodeCategory is a virtual base class of error category.
- * @details Why not use std::system_category() directyl. Because it use std::string as return
+ * @details Why not use std::system_category() directly. Because it use std::string as return
  *          type of get a description of error and that will waste more time.
  */
 class ErrorCodeCategory
@@ -120,7 +136,14 @@ public:
 	ErrorCodeCategory() = default;
 	virtual ~ErrorCodeCategory() = default;
 
+	/**
+	 * Returns name of category.
+	 */
 	virtual StringView name() const = 0;
+
+	/**
+	 * Returns error descriptions of error code.
+	 */
 	virtual const ErrorCodeDescriptions& descriptions(int code) const = 0;
 };
 
@@ -130,9 +153,15 @@ public:
 class LightsErrorCodeCategory: public ErrorCodeCategory
 {
 public:
-	virtual StringView name() const;
+	/**
+	 * Returns name of category.
+	 */
+	StringView name() const override;
 
-	virtual const ErrorCodeDescriptions& descriptions(int code) const;
+	/**
+	 * Returns error descriptions of error code.
+	 */
+	const ErrorCodeDescriptions& descriptions(int code) const override;
 
 	static LightsErrorCodeCategory& instance()
 	{
@@ -148,6 +177,9 @@ public:
 class Exception: public std::exception
 {
 public:
+	/**
+	 * Creates exception.
+	 */
 	Exception(const SourceLocation& occur_location, int code, const ErrorCodeCategory& code_category = LightsErrorCodeCategory::instance()):
 		m_occur_location(occur_location), m_code(code), m_code_category(code_category)
 	{
@@ -166,27 +198,36 @@ public:
 	 */
 	const char* what() const noexcept override;
 
+	/**
+	 * Returns error code.
+	 */
 	int code() const
 	{
 		return m_code;
 	}
 
+	/**
+	 * Returns error category.
+	 */
 	const ErrorCodeCategory& code_category() const
 	{
 		return m_code_category;
 	}
 
+	/**
+	 * Gets description of error code.
+	 */
 	StringView get_description(ErrorCodeDescriptions::DescriptionType description_type) const
 	{
 		return code_category().descriptions(code()).get_description(description_type);
 	}
 
 	/**
-	 * Dumps the error message to sink adapter @c out.
+	 * Dumps the error message to sink @c out.
 	 * Derived class can implement it via format with arguments.
 	 * @note The error message is no include occur location.
 	 */
-	virtual void dump_message(SinkAdapter& out,
+	virtual void dump_message(Sink& out,
 							  ErrorCodeDescriptions::DescriptionType description_type =
 							  		ErrorCodeDescriptions::TYPE_WITH_ARGS) const;
 
@@ -197,6 +238,9 @@ private:
 };
 
 
+/**
+ * AssertionError is throw by assertion failure.
+ */
 class AssertionError: public Exception
 {
 public:
@@ -205,13 +249,16 @@ public:
 	{
 	}
 
-	void dump_message(SinkAdapter& out, ErrorCodeDescriptions::DescriptionType description_type) const override;
+	void dump_message(Sink& out, ErrorCodeDescriptions::DescriptionType description_type) const override;
 
 private:
 	StringView m_description;
 };
 
 
+/**
+ * InvalidArgument is throw by arguments is invalid.
+ */
 class InvalidArgument: public Exception
 {
 public:
@@ -220,13 +267,16 @@ public:
 	{
 	}
 
-	void dump_message(SinkAdapter& out, ErrorCodeDescriptions::DescriptionType description_type) const override;
+	void dump_message(Sink& out, ErrorCodeDescriptions::DescriptionType description_type) const override;
 
 private:
 	std::string m_description;
 };
 
 
+/**
+ * OpenFileError is throw by open file failure.
+ */
 class OpenFileError: public Exception
 {
 public:
@@ -235,7 +285,7 @@ public:
 	{
 	}
 
-	void dump_message(SinkAdapter& out, ErrorCodeDescriptions::DescriptionType description_type) const override;
+	void dump_message(Sink& out, ErrorCodeDescriptions::DescriptionType description_type) const override;
 
 private:
 	std::string m_filename;
@@ -264,12 +314,11 @@ private:
 #endif
 
 /**
- * Dumps all message of exception to sink adapter, include error message and occur source
- * location.
+ * Dumps all message of exception to sink, include error message and occur source location.
  */
-void dump(const Exception& ex, SinkAdapter& out);
+void dump(const Exception& ex, Sink& out);
 
-inline SinkAdapter& operator<< (SinkAdapter& out, const Exception& ex)
+inline Sink& operator<< (Sink& out, const Exception& ex)
 {
 	dump(ex, out);
 	return out;
@@ -278,36 +327,42 @@ inline SinkAdapter& operator<< (SinkAdapter& out, const Exception& ex)
 
 namespace details {
 
-template <typename Sink>
-class FormatSelfSinkAdapter: public SinkAdapter
+template <typename Backend>
+class FormatSinkAdapter: public Sink
 {
 public:
-	FormatSelfSinkAdapter(FormatSinkAdapter<Sink> out):
-		m_out(out)
+	FormatSinkAdapter(FormatSink<Backend> backend):
+		m_backend(backend)
 	{}
 
 	std::size_t write(SequenceView sequence) override
 	{
-		m_out.append(to_string_view(sequence));
+		m_backend.append(to_string_view(sequence));
 		return sequence.length();
 	};
 private:
-	FormatSinkAdapter<Sink> m_out;
+	FormatSink<Backend> m_backend;
 };
 
 } // namespace details
 
 
-template <typename Sink>
-inline void to_string(FormatSinkAdapter<Sink> out, const Exception& ex)
+/**
+ * Converts exception to string and put to format sink.
+ */
+template <typename Backend>
+inline void to_string(FormatSink<Backend> sink, const Exception& ex)
 {
-	details::FormatSelfSinkAdapter<Sink> adapter(out);
-	adapter << ex;
+	details::FormatSinkAdapter<Backend> sink_adapter(sink);
+	sink_adapter << ex;
 }
 
 
 class BinaryStoreWriter;
 
-void to_string(FormatSinkAdapter<BinaryStoreWriter> out, const Exception& ex);
+/**
+ * Converts exception to string and put to format sink.
+ */
+void to_string(FormatSink<BinaryStoreWriter> sink, const Exception& ex);
 
 } // namespace lights

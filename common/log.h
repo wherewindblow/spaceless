@@ -6,19 +6,30 @@
 
 #pragma once
 
+#include <map>
 #include <lights/logger.h>
+
 
 namespace spaceless {
 
-extern lights::TextLogger logger;
+using Logger = lights::TextLogger;
 
-#define SPACELESS_DEBUG(module, ...) \
-	LIGHTS_DEBUG(spaceless::logger, module, __VA_ARGS__);
-#define SPACELESS_INFO(module, ...) \
-	LIGHTS_INFO(spaceless::logger, module, __VA_ARGS__);
-#define SPACELESS_WARN(module, ...) \
-	LIGHTS_WARN(spaceless::logger, module, __VA_ARGS__);
-#define SPACELESS_ERROR(module, ...) \
-	LIGHTS_ERROR(spaceless::logger, module, __VA_ARGS__);
+class LoggerManager
+{
+public:
+	LIGHTS_SINGLETON_INSTANCE(LoggerManager);
+
+	LoggerManager();
+
+	Logger& register_logger(const std::string& name);
+
+	Logger* find_logger(const std::string& name);
+
+	void for_each(std::function<void(const std::string&, Logger*)> callback);
+
+private:
+	lights::LogSinkPtr m_log_sink_ptr;
+	std::map<std::string, Logger*> m_logger_map;
+};
 
 } // namespace spaceless

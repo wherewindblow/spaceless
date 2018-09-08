@@ -12,13 +12,17 @@
 namespace spaceless {
 namespace resource_server {
 
+static Logger& logger = LoggerManager::instance()->register_logger("resource_server");
+
 const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
 
 int main(int argc, const char* argv[])
 {
 	try
 	{
-		logger.set_level(lights::LogLevel::DEBUG);
+		LoggerManager::instance()->for_each([](const std::string& name, Logger* logger) {
+			logger->set_level(lights::LogLevel::DEBUG);
+		});
 
 		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
 		for (int i = 0;; ++i)
@@ -34,7 +38,7 @@ int main(int argc, const char* argv[])
 			{
 				if (i == 0)
 				{
-					SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "Have not storage node in here");
+					LIGHTS_ERROR(logger, "Have not storage node in here");
 				}
 				else
 				{
@@ -73,15 +77,15 @@ int main(int argc, const char* argv[])
 	}
 	catch (Exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, ex);
+		LIGHTS_ERROR(logger, ex);
 	}
 	catch (Poco::Exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "{}:{}", ex.name(), ex.message());
+		LIGHTS_ERROR(logger, "{}:{}", ex.name(), ex.message());
 	}
 	catch (std::exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_RESOURCE_SERVER, "{}:{}", typeid(ex).name(), ex.what());
+		LIGHTS_ERROR(logger, "{}:{}", typeid(ex).name(), ex.what());
 	}
 	return 0;
 }

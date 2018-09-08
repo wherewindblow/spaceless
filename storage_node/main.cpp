@@ -10,15 +10,19 @@
 namespace spaceless {
 namespace storage_node {
 
+static Logger& logger = LoggerManager::instance()->register_logger("storage_node");
+
 int main(int argc, const char* argv[])
 {
 	try
 	{
-		logger.set_level(lights::LogLevel::DEBUG);
+		LoggerManager::instance()->for_each([](const std::string& name, Logger* logger) {
+			logger->set_level(lights::LogLevel::DEBUG);
+		});
 
 		if (argc < 4)
 		{
-			SPACELESS_ERROR(MODULE_STORAGE_NODE, "Not enought argumets to start up");
+			LIGHTS_ERROR(logger, "Not enought argumets to start up");
 			return -1;
 		}
 
@@ -36,7 +40,7 @@ int main(int argc, const char* argv[])
 	}
 	catch (Exception& ex)
 	{
-		SPACELESS_ERROR(MODULE_STORAGE_NODE, ex);
+		LIGHTS_ERROR(logger, ex);
 	}
 	return 0;
 }

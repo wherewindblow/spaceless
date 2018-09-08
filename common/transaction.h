@@ -55,7 +55,8 @@ void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		SPACELESS_ERROR(MODULE_SCHEDULER, "Network connction {}: Content length {} is too large.", conn_id, size)
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_TOO_LARGE);
+//		LIGHTS_ERROR(logger, "Network connction {}: Content length {} is too large.", conn_id, size)
 		return;
 	}
 
