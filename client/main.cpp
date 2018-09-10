@@ -7,6 +7,8 @@
 #include <common/log.h>
 #include <protocol/all.h>
 
+#include <Poco/Util/JSONConfiguration.h>
+
 #include "core.h"
 
 
@@ -15,6 +17,8 @@ namespace spaceless {
 namespace client {
 
 static Logger& logger = get_logger("client");
+
+const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
 
 void read_handler(int conn_id, const PackageBuffer& package);
 
@@ -27,8 +31,11 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		LoggerManager::instance()->for_each([](const std::string& name, Logger* logger) {
-			logger->set_level(lights::LogLevel::DEBUG);
+		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
+		std::string log_level = configuration.getString("log_level");
+
+		LoggerManager::instance()->for_each([&](const std::string& name, Logger* logger) {
+			logger->set_level(to_log_level(log_level));
 		});
 
 		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRegisterUser, read_handler);
@@ -330,18 +337,19 @@ void read_handler(int conn_id, const PackageBuffer& package)
 		protocol::RspPutFile rsponse;
 		package.parse_as_protobuf(rsponse);
 		FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
-		if (session.fragment_index + 1 >= session.max_fragment)
+		if (rsponse.fragment_index() + 1 >= session.max_fragment)
 		{
-			std::time_t use_sec = std::time(nullptr) - session.start_time;
-			std::cout << lights::format("Put file {} finish. use {} s", session.remote_file_path, use_sec) << std::endl;
+			lights::PreciseTime use_sec = lights::current_precise_time() - session.start_time;
+			std::cout << lights::format("Put file {} finish. use {}", session.remote_file_path, use_sec) << std::endl;
 		}
 		else
 		{
-			++session.fragment_index;
-			SharingGroupManager::instance()->put_file(session.group_id,
-													  session.local_file_path,
-													  session.remote_file_path,
-													  session.fragment_index);
+//			session.fragment_state[]
+//			++session.fragment_index;
+//			SharingGroupManager::instance()->put_file(session.group_id,
+//													  session.local_file_path,
+//													  session.remote_file_path,
+//													  session.fragment_index);
 		}
 	}
 	else if (command == cmd("RspGetFile"))

@@ -56,6 +56,7 @@ void on_put_file(int conn_id, const PackageBuffer& package)
 		FileTransferSessionManager::instance()->remove_session(session->session_id);
 	}
 
+	response.set_fragment_index(request.fragment().fragment_index());
 	Network::send_back_protobuf(conn_id, response, package);
 }
 

@@ -168,6 +168,7 @@ message ReqPutFile
 message RspPutFile
 {
     int32 result = 1;
+    int32 fragment_index = 2;
 }
 
 message ReqGetFile

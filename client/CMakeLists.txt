@@ -13,4 +13,5 @@ target_link_libraries(spaceless_client
         protobuf
         pthread
         PocoFoundation
-        PocoNet)
+        PocoNet
+        PocoUtil)

@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include <lights/sequence.h>
+#include <lights/logger.h>
 
 #include "common/basics.h"
 
@@ -66,7 +67,8 @@ struct FileTransferSession
 	std::string remote_file_path;
 	int max_fragment;
 	int fragment_index;
-	std::time_t start_time;
+	lights::PreciseTime start_time;
+	std::map<int, bool> fragment_state;
 };
 
 class SharingGroupManager

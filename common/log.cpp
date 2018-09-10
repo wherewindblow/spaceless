@@ -12,6 +12,36 @@
 
 namespace spaceless {
 
+lights::LogLevel to_log_level(lights::StringView str)
+{
+	using lights::LogLevel;
+	if (str == "debug")
+	{
+		return LogLevel::DEBUG;
+	}
+	else if (str == "info")
+	{
+		return LogLevel::INFO;
+	}
+	else if (str == "warnning")
+	{
+		return LogLevel::WARN;
+	}
+	else if (str == "error")
+	{
+		return LogLevel::ERROR;
+	}
+	else if (str == "off")
+	{
+		return LogLevel::OFF;
+	}
+	else
+	{
+		return LogLevel::OFF;
+	}
+}
+
+
 LoggerManager::LoggerManager():
 	m_log_sink_ptr(lights::log_sinks::StdoutSink::instance())
 //	m_log_sink_ptr(std::make_shared<lights::log_sinks::SimpleFileSink>(("log"))

@@ -3,6 +3,8 @@
 #include <common/log.h>
 #include <protocol/all.h>
 
+#include <Poco/Util/JSONConfiguration.h>
+
 #include "core.h"
 #include "transaction.h"
 
@@ -12,12 +14,17 @@ namespace storage_node {
 
 static Logger& logger = get_logger("storage_node");
 
+const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
+
 int main(int argc, const char* argv[])
 {
 	try
 	{
-		LoggerManager::instance()->for_each([](const std::string& name, Logger* logger) {
-			logger->set_level(lights::LogLevel::DEBUG);
+		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
+		std::string log_level = configuration.getString("log_level");
+
+		LoggerManager::instance()->for_each([&](const std::string& name, Logger* logger) {
+			logger->set_level(to_log_level(log_level));
 		});
 
 		if (argc < 4)

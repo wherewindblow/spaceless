@@ -20,11 +20,12 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		LoggerManager::instance()->for_each([](const std::string& name, Logger* logger) {
-			logger->set_level(lights::LogLevel::DEBUG);
+		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
+		std::string log_level = configuration.getString("log_level");
+		LoggerManager::instance()->for_each([&](const std::string& name, Logger* logger) {
+			logger->set_level(to_log_level(log_level));
 		});
 
-		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
 		for (int i = 0;; ++i)
 		{
 			std::string key_prefix = "storage_nodes[" + std::to_string(i) + "]";

@@ -34,4 +34,8 @@ private:
 
 Logger& get_logger(const std::string& name);
 
+lights::LogLevel to_log_level(lights::StringView str);
+
 } // namespace spaceless
+
+

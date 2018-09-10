@@ -293,7 +293,7 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	FilePath path = m_request.file_path();
@@ -301,12 +301,12 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	{
 		if (!group.exist_path(path.directory_path()))
 		{
-			return send_back_error(ERR_PATH_NOT_EXIST);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_PATH_NOT_EXIST);
 		}
 
 		if (group.exist_path(path))
 		{
-			return send_back_error(ERR_PATH_ALREADY_EXIST);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_PATH_ALREADY_EXIST);
 		}
 
 		SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
