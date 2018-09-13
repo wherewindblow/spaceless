@@ -47,6 +47,10 @@ public:
 	template <typename ProtobufType>
 	static void send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id = 0);
 
+
+	template <typename ProtobufType>
+	static void send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageTriggerSource& trigger_source, int bind_trans_id = 0);
+
 private:
 	static Logger& logger;
 };
@@ -68,6 +72,7 @@ void Network::send_protobuf(int conn_id, const ProtobufType& msg, int bind_trans
 
 	if (protocol::get_protobuf_name(msg) == "RspError" && trigger_cmd != 0)
 	{
+		// Convert RspError to RspXXX that associate trigger cmd. So dependent on protobuf message name.
 		auto protobuf_name = protocol::get_protobuf_name(trigger_cmd);
 		protobuf_name.replace(0, 3, "Rsp");
 		header.command = protocol::get_command(protobuf_name);
@@ -96,6 +101,13 @@ void Network::send_back_protobuf(int conn_id, const ProtobufType& msg, const Pac
 }
 
 
+template <typename ProtobufType>
+void Network::send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageTriggerSource& trigger_source, int bind_trans_id)
+{
+	send_protobuf(conn_id, msg, bind_trans_id, trigger_source.self_trans_id, trigger_source.command);
+}
+
+
 /**
  * Transaction type.
  */
@@ -105,9 +117,9 @@ enum class TransactionType
 	MULTIPLY_PHASE_TRANSACTION,
 };
 
-using TransactionErrorHandler = void (*)(int conn_id, const PackageBuffer& package, const Exception& ex);
+using TransactionErrorHandler = void (*)(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex);
 
-void on_error(int conn_id, const PackageBuffer& package, const Exception& ex);
+void on_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex);
 
 /**
  * General transaction type.
@@ -168,7 +180,7 @@ public:
 	 */
 	virtual void on_timeout();
 
-	virtual void on_error(int conn_id, const PackageBuffer& package, const Exception& ex);
+	virtual void on_error(int conn_id, const Exception& ex);
 
 	/**
 	 * Sets wait package info.
@@ -206,7 +218,7 @@ public:
 	/**
 	 * Returns package id that first start this transaction.
 	 */
-	int first_package_id() const;
+	const PackageTriggerSource& first_trigger_source() const;
 
 	/**
 	 * Returns waiting connection id that set by @c wait_next_phase
@@ -231,8 +243,8 @@ public:
 private:
 	int m_id;
 	int m_current_phase = 0;
-	int m_first_package_id = 0;
 	int m_first_conn_id = 0;
+	PackageTriggerSource m_first_trigger_source;
 	int m_wait_conn_id = 0;
 	int m_wait_cmd = 0;
 	bool m_is_waiting = false;
@@ -248,8 +260,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, const ProtobufType& 
 template <typename ProtobufType>
 void MultiplyPhaseTransaction::send_back_message(ProtobufType& msg)
 {
-	PackageBuffer& first_package = PackageBufferManager::instance()->get_package(m_first_package_id);
-	Network::send_back_protobuf(m_first_conn_id, msg, first_package);
+	Network::send_back_protobuf(m_first_conn_id, msg, m_first_trigger_source);
 }
 
 

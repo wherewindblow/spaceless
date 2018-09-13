@@ -30,11 +30,11 @@ MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id) :
 {
 }
 
-void on_error(int conn_id, const PackageBuffer& package, const Exception& ex)
+void on_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
 {
 	protocol::RspError error;
 	error.set_result(ex.code());
-	Network::send_back_protobuf(conn_id, error, package);
+	Network::send_back_protobuf(conn_id, error, trigger_source);
 }
 
 
@@ -47,7 +47,7 @@ MultiplyPhaseTransaction* MultiplyPhaseTransaction::register_transaction(int tra
 void MultiplyPhaseTransaction::pre_on_init(int conn_id, const PackageBuffer& package)
 {
 	m_first_conn_id = conn_id;
-	m_first_package_id = package.package_id();
+	m_first_trigger_source = package.get_trigger_source();
 }
 
 
@@ -56,9 +56,9 @@ void MultiplyPhaseTransaction::on_timeout()
 }
 
 
-void MultiplyPhaseTransaction::on_error(int conn_id, const PackageBuffer& package, const Exception& ex)
+void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
 {
-	spaceless::on_error(conn_id, package, ex);
+	spaceless::on_error(m_first_conn_id, m_first_trigger_source, ex);
 }
 
 
@@ -115,9 +115,9 @@ int MultiplyPhaseTransaction::first_connection_id() const
 }
 
 
-int MultiplyPhaseTransaction::first_package_id() const
+const PackageTriggerSource& MultiplyPhaseTransaction::first_trigger_source() const
 {
-	return m_first_package_id;
+	return m_first_trigger_source;
 }
 
 
@@ -230,7 +230,5 @@ Transaction* TransactionManager::find_transaction(int cmd)
 	}
 	return &itr->second;
 }
-
-
 
 } // namespace spaceless

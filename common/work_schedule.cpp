@@ -44,7 +44,7 @@ public:
 private:
 	void trigger_transaction(const NetworkMessageQueue::Message& msg);
 
-	using ErrorHandler = std::function<void(int, const PackageBuffer&, const Exception&)>;
+	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
 
 	int safe_excute(int conn_id, const PackageBuffer& package, ErrorHandler error_handler, std::function<void()> function);
 
@@ -91,7 +91,6 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 {
 	int conn_id = msg.conn_id;
 	int package_id = msg.package_id;
-	bool need_remove_package = false;
 
 	PackageBuffer* package = PackageBufferManager::instance()->find_package(package_id);
 	if (!package)
@@ -112,8 +111,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			{
 				case TransactionType::ONE_PHASE_TRANSACTION:
 				{
-					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}.",
-									conn_id, command, get_name(command));
+					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}.", conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTrancation>(trans->trans_handler);
 
 					safe_excute(conn_id, *package, trans->error_handler, [&]()
@@ -121,7 +119,6 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 						trans_handler(conn_id, *package);
 					});
 
-					need_remove_package = true;
 					break;
 				}
 				case TransactionType::MULTIPLY_PHASE_TRANSACTION:
@@ -129,33 +126,26 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 					auto trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
 					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 
-					LIGHTS_DEBUG(logger, "Connction {}: Trigger cmd {}, name {}, Start trans_id {}.",
+					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}, Start trans_id {}.",
 									conn_id,
 									command,
 									get_name(command),
 									trans_handler.transaction_id());
 					trans_handler.pre_on_init(conn_id, *package);
 
-					auto error_handler = [&](int conn_id, const PackageBuffer& package, const Exception& ex)
+					auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
 					{
-						trans_handler.on_error(conn_id, package, ex);
+						trans_handler.on_error(conn_id, ex);
 					};
 
-					int err = safe_excute(conn_id, *package, error_handler, [&]()
+					safe_excute(conn_id, *package, error_handler, [&]()
 					{
 						trans_handler.on_init(conn_id, *package);
 					});
 
-					if (err)
-					{
-						need_remove_package = true;
-					}
-
 					if (!trans_handler.is_waiting())
 					{
-						LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.",
-										conn_id, trans_handler.transaction_id());
-						need_remove_package = true;
+						LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_handler.transaction_id());
 						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_handler.transaction_id());
 					}
 					break;
@@ -168,7 +158,6 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 		else
 		{
 			LIGHTS_ERROR(logger, "Connction {}: Unkown command {}.", conn_id, command);
-			need_remove_package = true;
 		}
 	}
 	else // Active sleep transaction.
@@ -180,7 +169,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			// Don't give chance to other to interrupt not self transaction.
 			if (conn_id == trans_handler->waiting_connection_id() && command == trans_handler->waiting_command())
 			{
-				LIGHTS_DEBUG(logger, "Connction {}: Trigger cmd {}, name {}, Active trans_id {}, phase {}.",
+				LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}, Active trans_id {}, phase {}.",
 								conn_id,
 								command,
 								get_name(command),
@@ -194,26 +183,19 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 
 				trans_handler->clear_waiting_state();
 
-				auto error_handler = [&](int conn_id, const PackageBuffer& package, const Exception& ex)
+				auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
 				{
-					trans_handler->on_error(conn_id, package, ex);
+					trans_handler->on_error(conn_id, ex);
 				};
 
-				int err = safe_excute(conn_id, *package, error_handler, [&]()
+				safe_excute(conn_id, *package, error_handler, [&]()
 				{
 					trans_handler->on_active(conn_id, *package);
 				});
 
-				if (err)
-				{
-					need_remove_package = true;
-				}
-
 				if (!trans_handler->is_waiting())
 				{
 					LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_id);
-					need_remove_package = true;
-					PackageBufferManager::instance()->remove_package(trans_handler->first_package_id());
 					MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 				}
 			}
@@ -224,20 +206,15 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 								command,
 								trans_handler->waiting_connection_id(),
 								trans_handler->waiting_command());
-				need_remove_package = true;
 			}
 		}
 		else
 		{
 			LIGHTS_ERROR(logger, "Connction {}: Unkown trans_id {}.", conn_id, trans_id);
-			need_remove_package = true;
 		}
 	}
 
-	if (need_remove_package)
-	{
-		PackageBufferManager::instance()->remove_package(package_id);
-	}
+	PackageBufferManager::instance()->remove_package(package_id);
 }
 
 
@@ -253,17 +230,17 @@ int SchedulerImpl::safe_excute(int conn_id,
 	}
 	catch (Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Transaction error {}:{}.", conn_id, ex.code(), ex);
+		LIGHTS_ERROR(logger, "Connction {}: Exception trans_id {}, error {}/{}.",
+					 conn_id, package.header().trigger_trans_id, ex.code(), ex);
 		if (error_handler)
 		{
 			try
 			{
-				error_handler(conn_id, package, ex);
+				error_handler(conn_id, package.get_trigger_source(), ex);
 			}
 			catch (Exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Connction {}: Transaction on_error error {}:{}.",
-								conn_id, ex.code(), ex);
+				LIGHTS_ERROR(logger, "Connction {}: Transaction on_error error {}:{}.", conn_id, ex.code(), ex);
 			}
 			catch (Poco::Exception& ex)
 			{

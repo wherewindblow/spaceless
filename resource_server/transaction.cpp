@@ -289,15 +289,16 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
-	package.parse_as_protobuf(m_request);
-	SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
+	protocol::ReqPutFile request;
+	package.parse_as_protobuf(request);
+	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
-	FilePath path = m_request.file_path();
-	if (m_request.fragment().fragment_index() == 0) // First put request.
+	FilePath path = request.file_path();
+	if (request.fragment().fragment_index() == 0) // First put request.
 	{
 		if (!group.exist_path(path.directory_path()))
 		{
@@ -318,7 +319,7 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 		group.add_file(path.directory_path(), general_file.file_id);
 	}
 
-	protocol::ReqPutFile request_to_storage = m_request;
+	protocol::ReqPutFile request_to_storage = request;
 	request_to_storage.set_file_path(path.filename());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 	Network::send_protobuf(storage_node.conn_id, request_to_storage, transaction_id());
@@ -328,23 +329,18 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 
 void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
+	LIGHTS_THROW_EXCEPTION(Exception, -1);
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
-	package.parse_as_protobuf(m_rsponse);
-	send_back_message(m_rsponse);
+	protocol::RspPutFile rsponse;
+	package.parse_as_protobuf(rsponse);
+	send_back_message(rsponse);
 }
 
 
 void PutFileTrans::on_timeout()
 {
 
-}
-
-
-void PutFileTrans::send_back_error(int error_code)
-{
-	m_rsponse.set_result(error_code);
-	send_back_message(m_rsponse);
 }
 
 

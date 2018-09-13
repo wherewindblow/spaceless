@@ -35,6 +35,13 @@ struct PackageHeader
 } SPACELESS_POD_PACKED_ATTRIBUTE;
 
 
+struct PackageTriggerSource
+{
+	int command;
+	int self_trans_id;
+};
+
+
 /**
  * Network package buffer include header and content.
  */
@@ -138,6 +145,11 @@ public:
 	 */
 	template <typename T>
 	void parse_as_protobuf(T& msg) const;
+
+	PackageTriggerSource get_trigger_source() const
+	{
+		return { header().command, header().self_trans_id };
+	}
 
 	void operator=(const PackageBuffer& rhs)
 	{

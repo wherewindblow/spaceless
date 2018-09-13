@@ -56,12 +56,6 @@ public:
 	void on_active(int conn_id, const PackageBuffer& package) override;
 
 	void on_timeout() override;
-
-	void send_back_error(int error_code);
-
-private:
-	protocol::ReqPutFile m_request;
-	protocol::RspPutFile m_rsponse;
 };
 
 
