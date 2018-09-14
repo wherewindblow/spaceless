@@ -294,7 +294,7 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	FilePath path = request.file_path();
@@ -302,12 +302,12 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	{
 		if (!group.exist_path(path.directory_path()))
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_PATH_NOT_EXIST);
+			return send_back_error(ERR_PATH_NOT_EXIST);
 		}
 
 		if (group.exist_path(path))
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_PATH_ALREADY_EXIST);
+			return send_back_error(ERR_PATH_ALREADY_EXIST);
 		}
 
 		SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
@@ -329,7 +329,6 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 
 void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
-	LIGHTS_THROW_EXCEPTION(Exception, -1);
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
 	protocol::RspPutFile rsponse;
@@ -401,13 +400,6 @@ void GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
 }
 
 
-void GetFileTrans::send_back_error(int error_code)
-{
-	m_rsponse.set_result(error_code);
-	send_back_message(m_rsponse);
-}
-
-
 MultiplyPhaseTransaction* RemovePathTrans::register_transaction(int trans_id)
 {
 	return new RemovePathTrans(trans_id);
@@ -435,13 +427,6 @@ void RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
 
 void RemovePathTrans::on_active(int conn_id, const PackageBuffer& package)
 {
-}
-
-
-void RemovePathTrans::send_back_error(int error_code)
-{
-	m_rsponse.set_result(error_code);
-	send_back_message(m_rsponse);
 }
 
 } // namespace transaction

@@ -75,8 +75,6 @@ public:
 
 	void on_active(int conn_id, const PackageBuffer& package) override;
 
-	void send_back_error(int error_code);
-
 private:
 	protocol::ReqGetFile m_request;
 	protocol::RspGetFile m_rsponse;
@@ -98,8 +96,6 @@ public:
 	void on_init(int conn_id, const PackageBuffer& package) override;
 
 	void on_active(int conn_id, const PackageBuffer& package) override;
-
-	void send_back_error(int error_code);
 
 private:
 	protocol::ReqRemovePath m_request;

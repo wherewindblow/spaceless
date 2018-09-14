@@ -62,6 +62,14 @@ void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
 }
 
 
+void MultiplyPhaseTransaction::send_back_error(int code)
+{
+	protocol::RspError error;
+	error.set_result(code);
+	Network::send_back_protobuf(first_connection_id(), error, m_first_trigger_source);
+}
+
+
 void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current_phase, int timeout)
 {
 	m_wait_conn_id = conn_id;

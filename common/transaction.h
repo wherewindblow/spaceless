@@ -200,6 +200,8 @@ public:
 	template <typename T>
 	void send_back_message(T& msg);
 
+	void send_back_error(int code);
+
 	/**
 	 * Returns tranascation id.
 	 */
