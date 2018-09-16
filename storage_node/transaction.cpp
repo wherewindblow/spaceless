@@ -49,7 +49,8 @@ void on_put_file(int conn_id, const PackageBuffer& package)
 
 	lights::SequenceView file_content(request.fragment().fragment_content());
 	bool is_append = request.fragment().fragment_index() != 0;
-	SharingFileManager::instance()->put_file(request.file_path(), file_content, is_append);
+	bool is_flush = request.fragment().fragment_index() + 1 == session->max_fragment;
+	SharingFileManager::instance()->put_file(request.file_path(), file_content, is_append, is_flush);
 
 	if (request.fragment().fragment_index() + 1 == request.fragment().max_fragment())
 	{

@@ -8,15 +8,21 @@
 
 #include <cmath>
 #include <algorithm>
+#include <memory>
 
 #include <lights/file.h>
+#include <lights/logger.h>
 #include <common/exception.h>
+#include <common/log.h>
+
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Path.h>
 
 
 namespace spaceless {
 namespace storage_node {
+
+static Logger& logger = get_logger("storage_node");
 
 SharingFileManager::SharingFileManager()
 {
@@ -48,21 +54,37 @@ void SharingFileManager::remove_diretory(const std::string& path)
 }
 
 
-void SharingFileManager::put_file(const std::string& filename, lights::SequenceView file_content, bool is_append)
+void SharingFileManager::put_file(const std::string& filename, lights::SequenceView file_content, bool is_append, bool is_flush)
 {
-	const char* mode = is_append ? "a" : "w";
-	lights::FileStream file(get_absolute_path(filename), mode);
+	std::string path = get_absolute_path(filename);
+	lights::FileStream& file = get_file_stream(path);
+	file.clear_error();
+
+	if (!is_append)
+	{
+		file.seek(0, lights::FileSeekWhence::BEGIN);
+	}
+
 	file.write(file_content);
-	// TODO Need to optimize.
+	if (is_flush)
+	{
+		file.flush();
+	}
 }
 
 
 std::size_t SharingFileManager::get_file(const std::string& filename, lights::Sequence file_content, int start_pos)
 {
-	lights::FileStream file(get_absolute_path(filename), "r");
+	std::string path = get_absolute_path(filename);
+	if (!lights::env::file_exists(path.c_str()))
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST)
+	}
+
+	lights::FileStream& file = get_file_stream(path);
+	file.clear_error();
 	file.seek(start_pos, lights::FileSeekWhence::BEGIN);
 	return file.read(file_content);
-	// TODO Need to optimize.
 }
 
 
@@ -81,6 +103,22 @@ void SharingFileManager::set_sharing_path(const std::string& sharing_path)
 std::string SharingFileManager::get_absolute_path(const std::string path) const
 {
 	return m_sharing_path + Poco::Path::separator() + path;
+}
+
+
+lights::FileStream& SharingFileManager::get_file_stream(const std::string& path)
+{
+	auto itr = m_file_cache.find(path);
+	if (itr == m_file_cache.end())
+	{
+		auto file = std::make_shared<lights::FileStream>(path, "wb+");
+		m_file_cache.insert(std::make_pair(path, file));
+		return *file;
+	}
+	else
+	{
+		return *itr->second;
+	}
 }
 
 

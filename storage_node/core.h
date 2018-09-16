@@ -9,8 +9,10 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include <lights/sequence.h>
+#include <lights/file.h>
 #include <common/basics.h>
 
 
@@ -80,7 +82,7 @@ public:
 
 	void remove_diretory(const std::string& path);
 
-	void put_file(const std::string& filename, lights::SequenceView file_content, bool is_append = false);
+	void put_file(const std::string& filename, lights::SequenceView file_content, bool is_append = false, bool is_flush = false);
 
 	std::size_t get_file(const std::string& filename, lights::Sequence file_content, int start_pos = 0);
 
@@ -91,7 +93,10 @@ public:
 	std::string get_absolute_path(const std::string path) const;
 
 private:
+	lights::FileStream& get_file_stream(const std::string& path);
+
 	std::string m_sharing_path;
+	std::map<std::string, std::shared_ptr<lights::FileStream>> m_file_cache;
 };
 
 } // namespace storage_node
