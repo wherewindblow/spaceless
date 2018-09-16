@@ -29,6 +29,7 @@ public:
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization.
+	 * @param conn_id         Network connection id.
 	 * @param cmd             Identifies package content type.
 	 * @param msg             Message of protobuff type.
 	 * @param bind_trans_id   Specific transaction that trigger by response.
@@ -39,6 +40,7 @@ public:
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
+	 * @param conn_id         Network connection id.
 	 * @param cmd             Identifies package content type.
 	 * @param msg             Message of protobuff type.
 	 * @param trigger_package The package that trigger current transaction.
@@ -48,10 +50,41 @@ public:
 	static void send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageBuffer& trigger_package, int bind_trans_id = 0);
 
 
+	/**
+	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
+	 * @param conn_id         Network connection id.
+	 * @param cmd             Identifies package content type.
+	 * @param msg             Message of protobuff type.
+	 * @param trigger_source  Package trigger source of trigger current transaction package.
+	 * @param bind_trans_id   Specific transaction that trigger by response.
+	 */
 	template <typename ProtobufType>
 	static void send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageTriggerSource& trigger_source, int bind_trans_id = 0);
 
+	/**
+	 * Sends package to remote on asynchronization.
+	 */
+	static void service_send_package(int service_id, const PackageBuffer& package);
+
+	/**
+	 * Parses protobuf as package buffer and send to remote on asynchronization.
+	 * @param service_id      Network service id.
+	 * @param cmd             Identifies package content type.
+	 * @param msg             Message of protobuff type.
+	 * @param bind_trans_id   Specific transaction that trigger by response.
+	 * @param is_send_back    Is need to return last request associate transaction.
+	 */
+	template <typename ProtobufType>
+	static void service_send_protobuf(int service_id, const ProtobufType& msg, int bind_trans_id = 0, int trigger_trans_id = 0, int trigger_cmd = 0);
+	
+	/**
+	 * Service only can use to send package, but cannot send back message.
+	 * Because send back message must use network connection id and receive package must from that connection id.
+	 */
+
 private:
+	static int get_connetion_id(int service_id);
+	
 	static Logger& logger;
 };
 
@@ -105,6 +138,18 @@ template <typename ProtobufType>
 void Network::send_back_protobuf(int conn_id, const ProtobufType& msg, const PackageTriggerSource& trigger_source, int bind_trans_id)
 {
 	send_protobuf(conn_id, msg, bind_trans_id, trigger_source.self_trans_id, trigger_source.command);
+}
+
+
+template <typename ProtobufType>
+void Network::service_send_protobuf(int service_id,
+									const ProtobufType& msg,
+									int bind_trans_id,
+									int trigger_trans_id,
+									int trigger_cmd)
+{
+	int conn_id = get_connetion_id(service_id); // Avoid include network in this header file.
+	send_protobuf(conn_id, msg, bind_trans_id, trigger_trans_id, trigger_cmd);
 }
 
 
@@ -184,15 +229,41 @@ public:
 
 	/**
 	 * Sets wait package info.
-	 * @param conn          Network connection that send indicate package.
+	 * @param conn_id       Network connection that send indicate package.
 	 * @param cmd           Waits command.
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
 	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT);
 
+	/**
+	 * Sets wait package info.
+	 * @param conn_id       Network connection that send indicate package.
+	 * @param msg           Waits protobuf type.
+	 * @param current_phase Current phase.
+	 * @param timeout       Time out of waiting next package.
+	 */
 	template <typename ProtobufType>
 	void wait_next_phase(int conn_id, const ProtobufType& msg, int current_phase, int timeout = DEFAULT_TIME_OUT);
+
+	/**
+	 * Sets wait package info.
+	 * @param service_id    Network service that send indicate package.
+	 * @param cmd           Waits command.
+	 * @param current_phase Current phase.
+	 * @param timeout       Time out of waiting next package.
+	 */
+	void service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT);
+
+	/**
+	 * Sets wait package info.
+	 * @param service_id    Network service that send indicate package.
+	 * @param cmd           Waits protobuf type.
+	 * @param current_phase Current phase.
+	 * @param timeout       Time out of waiting next package.
+	 */
+	template <typename ProtobufType>
+	void service_wait_next_phase(int service_id, const ProtobufType& msg, int current_phase, int timeout = DEFAULT_TIME_OUT);
 
 	/**
 	 * Sends back message to first connection.
@@ -257,6 +328,16 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, const ProtobufType& 
 {
 	auto cmd = protocol::get_command(msg);
 	wait_next_phase(conn_id, cmd, current_phase, timeout);
+}
+
+template <typename ProtobufType>
+void MultiplyPhaseTransaction::service_wait_next_phase(int service_id,
+													   const ProtobufType& msg,
+													   int current_phase,
+													   int timeout)
+{
+	auto cmd = protocol::get_command(msg);
+	service_wait_next_phase(service_id, cmd, current_phase, timeout);
 }
 
 template <typename ProtobufType>

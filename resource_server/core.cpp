@@ -731,17 +731,16 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 }
 
 
-StorageNode& StorageNodeManager::register_node(const std::string& node_ip, unsigned short node_port)
+StorageNode& StorageNodeManager::register_node(const std::string& ip, unsigned short port)
 {
-	NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection(node_ip, node_port);
-	StorageNode node = { m_next_id, node_ip, node_port, conn.connection_id() };
+	NetworkService& service = NetworkServiceManager::instance()->register_service(ip, port);
+	StorageNode node = { m_next_id, service.service_id };
 	++m_next_id;
 
 	auto value = std::make_pair(node.node_id, node);
 	auto result = m_node_list.insert(value);
 	if (result.second == false)
 	{
-		NetworkConnectionManager::instance()->remove_connection(conn.connection_id());
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_ALREADY_EXIST);
 	}
 
@@ -754,7 +753,7 @@ void StorageNodeManager::remove_node(int node_id)
 	StorageNode* node = find_node(node_id);
 	if (node)
 	{
-		NetworkConnectionManager::instance()->remove_connection(node->conn_id);
+		NetworkServiceManager::instance()->remove_service(node->service_id);
 		m_node_list.erase(node_id);
 	}
 }
@@ -772,13 +771,18 @@ StorageNode* StorageNodeManager::find_node(int node_id)
 }
 
 
-StorageNode* StorageNodeManager::find_node(const std::string& node_ip, unsigned short node_port)
+StorageNode* StorageNodeManager::find_node(const std::string& ip, unsigned short port)
 {
-	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(),
-							[&](const StorageNodeList::value_type& value_type)
-							{
-								return value_type.second.node_ip == node_ip && value_type.second.node_port == node_port;
-							});
+	NetworkService* service = NetworkServiceManager::instance()->find_service(ip, port);
+	if (service == nullptr)
+	{
+		return nullptr;
+	}
+
+	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(), [&](const StorageNodeList::value_type& value_type)
+	{
+		return value_type.second.service_id == service->service_id;
+	});
 
 	if (itr == m_node_list.end())
 	{
@@ -800,9 +804,9 @@ StorageNode& StorageNodeManager::get_node(int node_id)
 }
 
 
-StorageNode& StorageNodeManager::get_node(const std::string& node_ip, unsigned short node_port)
+StorageNode& StorageNodeManager::get_node(const std::string& ip, unsigned short port)
 {
-	StorageNode* node = find_node(node_ip, node_port);
+	StorageNode* node = find_node(ip, port);
 	if (node == nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_NOT_EXIST);

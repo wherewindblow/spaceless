@@ -253,4 +253,56 @@ private:
 };
 
 
+/**
+ * NetworkService use to indentify service and delay registration of network connection.
+ */
+struct NetworkService
+{
+	int service_id;
+	std::string ip;
+	unsigned short port;
+};
+
+
+class NetworkServiceManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(NetworkServiceManager);
+
+	/**
+	 * Registers network service and delay registration of network connection.
+	 */
+	NetworkService& register_service(const std::string& ip, unsigned short port);
+
+	/**
+	 * Removes network service.
+	 */
+	void remove_service(int service_id);
+
+	/**
+	 * Finds network service.
+	 * @note Returns nullptr if cannot find service.
+	 */
+	NetworkService* find_service(int service_id);
+
+	/**
+	 * Finds network service.
+	 * @note Returns nullptr if cannot find service.
+	 */
+	NetworkService* find_service(const std::string& ip, unsigned short port);
+
+	/**
+	 * Gets network connection id by service. When cannot find connection, will register network connection automaticly.
+	 * @note Throws exception if cannot find service or cannot register network connection.
+	 *       Cannot own it as memeber, becase connection id may be change by some reason.
+	 */
+	int get_connection_id(int service_id);
+
+private:
+	using ServiceList = std::map<int, NetworkService>;
+	ServiceList m_service_list;
+	std::map<int, int> m_conn_list;
+	int m_next_id = 1;
+};
+
 } // namespace spaceless

@@ -282,9 +282,7 @@ private:
 struct StorageNode
 {
 	int node_id;
-	std::string node_ip;
-	unsigned short node_port;
-	int conn_id;
+	int service_id;
 	int use_counting;
 };
 
@@ -294,17 +292,17 @@ class StorageNodeManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(StorageNodeManager);
 
-	StorageNode& register_node(const std::string& node_ip, unsigned short node_port);
+	StorageNode& register_node(const std::string& ip, unsigned short port);
 
 	void remove_node(int node_id);
 
 	StorageNode* find_node(int node_id);
 
-	StorageNode* find_node(const std::string& node_ip, unsigned short node_port);
+	StorageNode* find_node(const std::string& ip, unsigned short port);
 
 	StorageNode& get_node(int node_id);
 
-	StorageNode& get_node(const std::string& node_ip, unsigned short node_port);
+	StorageNode& get_node(const std::string& ip, unsigned short port);
 
 	StorageNode& get_fit_node();
 

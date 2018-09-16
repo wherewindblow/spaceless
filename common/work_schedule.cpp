@@ -160,7 +160,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 			LIGHTS_ERROR(logger, "Connction {}: Unkown command {}.", conn_id, command);
 		}
 	}
-	else // Active sleep transaction.
+	else // Active waiting transaction.
 	{
 		auto trans_handler = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
 		if (trans_handler)

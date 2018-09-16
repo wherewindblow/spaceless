@@ -74,7 +74,7 @@ NetworkConnection::~NetworkConnection()
 {
 	try
 	{
-		LIGHTS_DEBUG(logger, "Destroys network connection {}.", m_id);
+		LIGHTS_INFO(logger, "Destroys network connection {}.", m_id);
 		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
 		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
 		{
@@ -349,14 +349,14 @@ void NetworkReactor::process_send_package()
 		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(msg.conn_id);
 		PackageBuffer* package = PackageBufferManager::instance()->find_package(msg.package_id);
 
-		if (!conn || !package)
+		if (conn == nullptr || package == nullptr)
 		{
-			if (!conn)
+			if (conn == nullptr)
 			{
 				LIGHTS_INFO(logger, "Connction {}: Already close.", msg.conn_id);
 			}
 
-			if (!package)
+			if (package == nullptr)
 			{
 				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.",
 								msg.conn_id, msg.package_id);
@@ -464,6 +464,94 @@ void NetworkConnectionManager::run()
 
 	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
 	m_reactor.run();
+}
+
+
+NetworkService& NetworkServiceManager::register_service(const std::string& ip, unsigned short port)
+{
+	NetworkService* old_service = find_service(ip, port);
+	if (old_service)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
+	}
+
+	NetworkService new_service{ m_next_id, ip, port };
+	auto value = std::make_pair(m_next_id, new_service);
+	++m_next_id;
+
+	auto result = m_service_list.insert(value);
+	if (result.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
+	}
+
+	return result.first->second;
+}
+
+
+void NetworkServiceManager::remove_service(int service_id)
+{
+	auto itr = m_conn_list.find(service_id);
+	if (itr != m_conn_list.end())
+	{
+		NetworkConnectionManager::instance()->remove_connection(itr->second);
+	}
+	m_service_list.erase(service_id);
+}
+
+
+NetworkService* NetworkServiceManager::find_service(int service_id)
+{
+	auto itr = m_service_list.find(service_id);
+	if (itr == m_service_list.end())
+	{
+		return nullptr;
+	}
+
+	return &(itr->second);
+}
+
+NetworkService* NetworkServiceManager::find_service(const std::string& ip, unsigned short port)
+{
+	auto itr = std::find_if(m_service_list.begin(), m_service_list.end(), [&](const ServiceList::value_type& value_type)
+	{
+		return value_type.second.ip == ip && value_type.second.port == port;
+	});
+
+	if (itr == m_service_list.end())
+	{
+		return nullptr;
+	}
+
+	return &(itr->second);
+}
+
+
+int NetworkServiceManager::get_connection_id(int service_id)
+{
+	NetworkService* service = find_service(service_id);
+	if (service == nullptr)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_NOT_EXIST);
+	}
+
+	auto itr = m_conn_list.find(service_id);
+	if (itr == m_conn_list.end())
+	{
+		NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection(service->ip, service->port);
+		m_conn_list.insert(std::make_pair(service_id, conn.connection_id()));
+		return conn.connection_id();
+	}
+
+	NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(itr->second);
+	if (conn == nullptr)
+	{
+		NetworkConnection& new_conn = NetworkConnectionManager::instance()->register_connection(service->ip, service->port);
+		m_conn_list[service_id] = new_conn.connection_id();
+		return new_conn.connection_id();;
+	}
+
+	return conn->connection_id();
 }
 
 } // namespace spaceless

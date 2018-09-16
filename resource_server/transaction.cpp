@@ -322,8 +322,8 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	protocol::ReqPutFile request_to_storage = request;
 	request_to_storage.set_file_path(path.filename());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
-	Network::send_protobuf(storage_node.conn_id, request_to_storage, transaction_id());
-	wait_next_phase(storage_node.conn_id, protocol::RspPutFile(), WAIT_STORAGE_NODE_PUT_FILE);
+	Network::service_send_protobuf(storage_node.service_id, request_to_storage, transaction_id());
+	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE_PUT_FILE);
 }
 
 
@@ -386,8 +386,8 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	protocol::ReqGetFile request_to_storage = m_request;
 	request_to_storage.set_file_path(path.filename());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
-	Network::send_protobuf(storage_node.conn_id, request_to_storage, transaction_id());
-	wait_next_phase(storage_node.conn_id, protocol::RspGetFile(), WAIT_STORAGE_NODE_GET_FILE);
+	Network::service_send_protobuf(storage_node.service_id, request_to_storage, transaction_id());
+	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), WAIT_STORAGE_NODE_GET_FILE);
 }
 
 

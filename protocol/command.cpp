@@ -58,7 +58,7 @@ public:
 		auto name = find_name(cmd);
 		if (!name)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOBUF_NAME_NOT_EXIST);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOCOL_PROTOBUF_NAME_NOT_EXIST);
 		}
 		return *name;
 	}
@@ -86,7 +86,7 @@ public:
 		auto cmd = find_command(protobuf_name);
 		if (!cmd)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_COMMAND_NOT_EXIST);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOCOL_COMMAND_NOT_EXIST);
 		}
 		return *cmd;
 	}

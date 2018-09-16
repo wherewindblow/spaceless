@@ -25,6 +25,19 @@ void Network::send_package(int conn_id, const PackageBuffer& package)
 }
 
 
+void Network::service_send_package(int service_id, const PackageBuffer& package)
+{
+	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
+	send_package(conn_id, package);
+}
+
+
+int Network::get_connetion_id(int service_id)
+{
+	return NetworkServiceManager::instance()->get_connection_id(service_id);
+}
+
+
 MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id) :
 	m_id(trans_id)
 {
@@ -96,12 +109,17 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 		if (!trans->is_waiting())
 		{
-			LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.",
-							trans->waiting_connection_id(),
-							trans_id);
+			LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", trans->waiting_connection_id(), trans_id);
 			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 		}
 	});
+}
+
+
+void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout)
+{
+	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
+	wait_next_phase(conn_id, cmd, current_phase, timeout);
 }
 
 
