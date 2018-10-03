@@ -29,7 +29,7 @@ public:
 
 private:
 	lights::LogSinkPtr m_log_sink_ptr;
-	std::map<std::string, Logger*> m_logger_map;
+	std::map<std::string, Logger*> m_logger_list;
 };
 
 Logger& get_logger(const std::string& name);

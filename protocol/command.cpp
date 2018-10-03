@@ -28,10 +28,10 @@ public:
 	 */
 	CommandTableImpl()
 	{
-		m_cmd_name_map = default_command_name_map;
-		for (auto& pair: m_cmd_name_map)
+		m_name_list = default_command_name_map;
+		for (auto& pair: m_name_list)
 		{
-			m_name_cmd_map.insert(std::make_pair(pair.second, pair.first));
+			m_cmd_list.insert(std::make_pair(pair.second, pair.first));
 		}
 	}
 
@@ -41,8 +41,8 @@ public:
 	 */
 	const std::string* find_name(int cmd)
 	{
-		auto itr = m_cmd_name_map.find(cmd);
-		if (itr == m_cmd_name_map.end())
+		auto itr = m_name_list.find(cmd);
+		if (itr == m_name_list.end())
 		{
 			return nullptr;
 		}
@@ -69,8 +69,8 @@ public:
 	 */
 	const int* find_command(const std::string& name)
 	{
-		auto itr = m_name_cmd_map.find(name);
-		if (itr == m_name_cmd_map.end())
+		auto itr = m_cmd_list.find(name);
+		if (itr == m_cmd_list.end())
 		{
 			return nullptr;
 		}
@@ -92,12 +92,11 @@ public:
 	}
 
 private:
-	std::map<int, std::string> m_cmd_name_map;
-	std::map<std::string, int> m_name_cmd_map;
+	std::map<int, std::string> m_name_list;
+	std::map<std::string, int> m_cmd_list;
 };
 
 } // namespace details
-
 
 
 const int* find_command(const std::string& protobuf_name)

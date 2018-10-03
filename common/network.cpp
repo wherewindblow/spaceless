@@ -52,9 +52,7 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
 	m_reactor.addEventHandler(m_socket, error);
 
-	NetworkConnectionManager::instance()->m_conn_list.push_back(this);
-	m_id = NetworkConnectionManager::instance()->m_next_id;
-	++NetworkConnectionManager::instance()->m_next_id;
+	m_id = NetworkConnectionManager::instance()->on_create_connection(this);
 
 	try
 	{
@@ -75,12 +73,7 @@ NetworkConnection::~NetworkConnection()
 	try
 	{
 		LIGHTS_INFO(logger, "Destroys network connection {}.", m_id);
-		auto& conn_list = NetworkConnectionManager::instance()->m_conn_list;
-		auto need_delete = std::find_if(conn_list.begin(), conn_list.end(), [this](const NetworkConnection* conn)
-		{
-			return conn->connection_id() == this->connection_id();
-		});
-		conn_list.erase(need_delete);
+		NetworkConnectionManager::instance()->on_destroy_connection(m_id);
 
 		Poco::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable);
 		m_reactor.removeEventHandler(m_socket, readable);
@@ -281,7 +274,7 @@ void NetworkConnection::read_for_state(int deep)
 
 				PackageBuffer& package = PackageBufferManager::instance()->register_package();
 				package = m_read_buffer;
-				NetworkMessageQueue::Message msg = { connection_id(), package.package_id() };
+				NetworkMessageQueue::Message msg = { m_id, package.package_id() };
 				NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
 			}
 			break;
@@ -358,8 +351,7 @@ void NetworkReactor::process_send_package()
 
 			if (package == nullptr)
 			{
-				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.",
-								msg.conn_id, msg.package_id);
+				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.", msg.conn_id, msg.package_id);
 			}
 
 			if (package)
@@ -420,17 +412,13 @@ void NetworkConnectionManager::remove_connection(int conn_id)
 
 NetworkConnection* NetworkConnectionManager::find_connection(int conn_id)
 {
-	auto itr = std::find_if(m_conn_list.begin(), m_conn_list.end(), [conn_id](const NetworkConnection* connection)
-	{
-		return connection->connection_id() == conn_id;
-	});
-
+	auto itr = m_conn_list.find(conn_id);
 	if (itr == m_conn_list.end())
 	{
 		return nullptr;
 	}
 
-	return *itr;
+	return itr->second;
 }
 
 
@@ -451,7 +439,8 @@ void NetworkConnectionManager::stop_all()
 	// Cannot use iterator to for each to close, becase close will erase itself on m_conn_list.
 	while (!m_conn_list.empty())
 	{
-		(*m_conn_list.begin())->close();
+		NetworkConnection* conn =  m_conn_list.begin()->second;
+		conn->close();
 	}
 	m_conn_list.clear();
 	m_acceptor_list.clear();
@@ -464,6 +453,21 @@ void NetworkConnectionManager::run()
 
 	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
 	m_reactor.run();
+}
+
+
+int NetworkConnectionManager::on_create_connection(NetworkConnection* conn)
+{
+	int conn_id = m_next_id;
+	++m_next_id;
+	m_conn_list.insert(std::make_pair(conn_id, conn));
+	return conn_id;
+}
+
+
+void NetworkConnectionManager::on_destroy_connection(int conn_id)
+{
+	m_conn_list.erase(conn_id);
 }
 
 

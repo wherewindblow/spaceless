@@ -246,8 +246,12 @@ public:
 private:
 	friend class NetworkConnection;
 
+	int on_create_connection(NetworkConnection* conn);
+
+	void on_destroy_connection(int conn_id);
+
 	int m_next_id = 1;
-	std::list<NetworkConnection*> m_conn_list;
+	std::map<int, NetworkConnection*> m_conn_list;
 	std::list<SocketAcceptor<NetworkConnection>> m_acceptor_list;
 	NetworkReactor m_reactor;
 };
