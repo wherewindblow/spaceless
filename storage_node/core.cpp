@@ -202,5 +202,17 @@ FileSession* FileSessionManager::find_session(const std::string& filename)
 }
 
 
+FileSession& FileSessionManager::get_session(int session_id)
+{
+	FileSession* session = find_session(session_id);
+	if (session == nullptr)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_NOT_EXIST);
+	}
+
+	return *session;
+}
+
+
 } // namespace storage_node
 } // namespace spaceless

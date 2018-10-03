@@ -364,6 +364,10 @@ public:
 
 	GetFileSession* find_get_session(int session_id);
 
+	PutFileSession& get_put_session(int session_id);
+
+	GetFileSession& get_get_session(int session_id);
+
 private:
 	std::map<int, Session> m_session_list;
 	int m_next_id = 1;

@@ -384,22 +384,17 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	protocol::ReqPutFile request;
 	package.parse_as_protobuf(request);
 
-	PutFileSession* session = FileSessionManager::instance()->find_put_session(request.session_id());
-	if (session == nullptr)
-	{
-		return send_back_error(ERR_FILE_SESSION_NOT_EXIST);
-	}
-
-	if (session->user_id != user.user_id)
+	PutFileSession& session = FileSessionManager::instance()->get_put_session(request.session_id());
+	if (session.user_id != user.user_id)
 	{
 		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
 	}
 
-	m_session_id = session->session_id;
+	m_session_id = session.session_id;
 
 	protocol::ReqPutFile node_request = request;
-	node_request.set_session_id(session->node_session_id);
-	SharingGroup& group = SharingGroupManager::instance()->get_group(session->group_id);
+	node_request.set_session_id(session.node_session_id);
+	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE_PUT_FILE);
@@ -523,19 +518,14 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	protocol::ReqGetFile request;
 	package.parse_as_protobuf(request);
 
-	GetFileSession* session = FileSessionManager::instance()->find_get_session(request.session_id());
-	if (session == nullptr)
-	{
-		return send_back_error(ERR_FILE_SESSION_NOT_EXIST);
-	}
-
-	if (session->user_id != user.user_id)
+	GetFileSession& session = FileSessionManager::instance()->get_get_session(request.session_id());
+	if (session.user_id != user.user_id)
 	{
 		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
 	}
 
-	SharingGroup& group = SharingGroupManager::instance()->get_group(session->group_id);
-	FilePath path = session->file_path;
+	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
+	FilePath path = session.file_path;
 	if (!group.exist_path(path))
 	{
 		return send_back_error(ERR_PATH_NOT_EXIST);
@@ -548,7 +538,7 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 		return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
 	}
 
-	m_session_id = session->session_id;
+	m_session_id = session.session_id;
 
 	auto& general_file = dynamic_cast<SharingGeneralFile&>(sharing_file);
 	SharingFile& storage_sharing_file = SharingFileManager::instance()->get_file(general_file.storage_file_id);
@@ -556,7 +546,7 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	auto& storage_file = dynamic_cast<SharingStorageFile&>(storage_sharing_file);
 
 	protocol::ReqGetFile node_request = request;
-	node_request.set_session_id(session->node_session_id);
+	node_request.set_session_id(session.node_session_id);
 	node_request.set_fragment_index(request.fragment_index());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
 	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());

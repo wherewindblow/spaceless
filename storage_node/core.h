@@ -58,6 +58,8 @@ public:
 
 	FileSession* find_session(const std::string& filename);
 
+	FileSession& get_session(int session_id);
+
 private:
 	using SessionList = std::map<int, FileSession>;
 	SessionList m_session_list;

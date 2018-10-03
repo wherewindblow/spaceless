@@ -934,5 +934,29 @@ GetFileSession* FileSessionManager::find_get_session(int session_id)
 	return reinterpret_cast<GetFileSession*>(itr->second.entry);
 }
 
+
+PutFileSession& FileSessionManager::get_put_session(int session_id)
+{
+	PutFileSession* session = find_put_session(session_id);
+	if (session == nullptr)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_NOT_EXIST);
+	}
+
+	return *session;
+}
+
+
+GetFileSession& FileSessionManager::get_get_session(int session_id)
+{
+	GetFileSession* session = find_get_session(session_id);
+	if (session == nullptr)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_NOT_EXIST);
+	}
+
+	return *session;
+}
+
 } // namespace resource_server
 } // namespace spaceless
