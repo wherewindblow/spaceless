@@ -60,11 +60,12 @@ class SharingGroup
 	std::vector<int> m_member_list;
 };
 
-struct FileTransferSession
+struct FileSession
 {
-	std::string local_file_path;
+	int session_id;
+	std::string local_path;
 	int group_id;
-	std::string remote_file_path;
+	std::string remote_path;
 	int max_fragment;
 	int fragment_index;
 	lights::PreciseTime start_time;
@@ -92,27 +93,28 @@ public:
 
 	void kick_out_user(int group_id, int user_id);
 
-	void put_file(int group_id,
-			 const std::string& local_file_path,
-			 const std::string& remote_file_path,
-			 int fragment_index = 0);
+	void put_file(int group_id, const std::string& local_path, const std::string& remote_path);
+	
+	void start_put_file();
 
-	void get_file(int group_id, const std::string& remote_file_path, const std::string& local_file_path);
+	void get_file(int group_id, const std::string& remote_path, const std::string& local_path);
+
+	void start_get_file();
 
 	void create_path(int group_id, const std::string& directory_path);
 
 	void remove_path(int group_id, const std::string& directory_path, bool force_remove_all);
 
-	FileTransferSession& putting_file_session();
+	FileSession& put_file_session();
 
-	FileTransferSession& getting_file_session();
+	FileSession& get_file_session();
 
 private:
 	using GroupList = std::map<int, SharingGroup>;
 	GroupList m_group_list;
 	int m_next_id = 1;
-	FileTransferSession m_putting_file_session;
-	FileTransferSession m_getting_file_session;
+	FileSession m_put_session;
+	FileSession m_get_session;
 };
 
 

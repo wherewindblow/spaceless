@@ -39,6 +39,31 @@ void on_kick_out_user(int conn_id, const PackageBuffer& package);
 void on_create_path(int conn_id, const PackageBuffer& package);
 
 
+class PutFileSessionTrans: public MultiplyPhaseTransaction
+{
+public:
+	enum
+	{
+		WAIT_STORAGE_NODE,
+	};
+
+	static MultiplyPhaseTransaction* factory(int trans_id);
+
+	PutFileSessionTrans(int trans_id);
+
+	void on_init(int conn_id, const PackageBuffer& package) override;
+
+	void on_active(int conn_id, const PackageBuffer& package) override;
+
+	void on_timeout() override;
+
+	void on_error(int conn_id, const Exception& ex) override;
+
+private:
+	int m_session_id;
+};
+
+
 class PutFileTrans: public MultiplyPhaseTransaction
 {
 public:
@@ -47,7 +72,7 @@ public:
 		WAIT_STORAGE_NODE_PUT_FILE,
 	};
 
-	static MultiplyPhaseTransaction* register_transaction(int trans_id);
+	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	PutFileTrans(int trans_id);
 
@@ -55,7 +80,33 @@ public:
 
 	void on_active(int conn_id, const PackageBuffer& package) override;
 
+private:
+	int m_session_id;
+};
+
+
+class GetFileSessionTrans: public MultiplyPhaseTransaction
+{
+public:
+	enum
+	{
+		WAIT_STORAGE_NODE,
+	};
+
+	static MultiplyPhaseTransaction* factory(int trans_id);
+
+	GetFileSessionTrans(int trans_id);
+
+	void on_init(int conn_id, const PackageBuffer& package) override;
+
+	void on_active(int conn_id, const PackageBuffer& package) override;
+
 	void on_timeout() override;
+
+	void on_error(int conn_id, const Exception& ex) override;
+
+private:
+	int m_session_id;
 };
 
 
@@ -67,7 +118,7 @@ public:
 		WAIT_STORAGE_NODE_GET_FILE,
 	};
 
-	static MultiplyPhaseTransaction* register_transaction(int trans_id);
+	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	GetFileTrans(int trans_id);
 
@@ -76,8 +127,7 @@ public:
 	void on_active(int conn_id, const PackageBuffer& package) override;
 
 private:
-	protocol::ReqGetFile m_request;
-	protocol::RspGetFile m_rsponse;
+	int m_session_id;
 };
 
 
@@ -89,17 +139,13 @@ public:
 		WAIT_STORAGE_NODE_GET_FILE,
 	};
 
-	static MultiplyPhaseTransaction* register_transaction(int trans_id);
+	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	RemovePathTrans(int trans_id);
 
 	void on_init(int conn_id, const PackageBuffer& package) override;
 
 	void on_active(int conn_id, const PackageBuffer& package) override;
-
-private:
-	protocol::ReqRemovePath m_request;
-	protocol::RspRemovePath m_rsponse;
 };
 
 } // namespace transaction

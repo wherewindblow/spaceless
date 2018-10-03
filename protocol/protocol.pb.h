@@ -39,7 +39,7 @@ namespace protobuf_protocol_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[34];
+  static const ::google::protobuf::internal::ParseTable schema[41];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -48,9 +48,6 @@ void AddDescriptors();
 }  // namespace protobuf_protocol_2eproto
 namespace spaceless {
 namespace protocol {
-class FileFragment;
-class FileFragmentDefaultTypeInternal;
-extern FileFragmentDefaultTypeInternal _FileFragment_default_instance_;
 class ReqAssignAsManager;
 class ReqAssignAsManagerDefaultTypeInternal;
 extern ReqAssignAsManagerDefaultTypeInternal _ReqAssignAsManager_default_instance_;
@@ -69,6 +66,9 @@ extern ReqFindUserDefaultTypeInternal _ReqFindUser_default_instance_;
 class ReqGetFile;
 class ReqGetFileDefaultTypeInternal;
 extern ReqGetFileDefaultTypeInternal _ReqGetFile_default_instance_;
+class ReqGetFileSession;
+class ReqGetFileSessionDefaultTypeInternal;
+extern ReqGetFileSessionDefaultTypeInternal _ReqGetFileSession_default_instance_;
 class ReqJoinGroup;
 class ReqJoinGroupDefaultTypeInternal;
 extern ReqJoinGroupDefaultTypeInternal _ReqJoinGroup_default_instance_;
@@ -78,9 +78,18 @@ extern ReqKickOutUserDefaultTypeInternal _ReqKickOutUser_default_instance_;
 class ReqLoginUser;
 class ReqLoginUserDefaultTypeInternal;
 extern ReqLoginUserDefaultTypeInternal _ReqLoginUser_default_instance_;
+class ReqNodeGetFileSession;
+class ReqNodeGetFileSessionDefaultTypeInternal;
+extern ReqNodeGetFileSessionDefaultTypeInternal _ReqNodeGetFileSession_default_instance_;
+class ReqNodePutFileSession;
+class ReqNodePutFileSessionDefaultTypeInternal;
+extern ReqNodePutFileSessionDefaultTypeInternal _ReqNodePutFileSession_default_instance_;
 class ReqPutFile;
 class ReqPutFileDefaultTypeInternal;
 extern ReqPutFileDefaultTypeInternal _ReqPutFile_default_instance_;
+class ReqPutFileSession;
+class ReqPutFileSessionDefaultTypeInternal;
+extern ReqPutFileSessionDefaultTypeInternal _ReqPutFileSession_default_instance_;
 class ReqRegisterGroup;
 class ReqRegisterGroupDefaultTypeInternal;
 extern ReqRegisterGroupDefaultTypeInternal _ReqRegisterGroup_default_instance_;
@@ -117,6 +126,9 @@ extern RspFindUserDefaultTypeInternal _RspFindUser_default_instance_;
 class RspGetFile;
 class RspGetFileDefaultTypeInternal;
 extern RspGetFileDefaultTypeInternal _RspGetFile_default_instance_;
+class RspGetFileSession;
+class RspGetFileSessionDefaultTypeInternal;
+extern RspGetFileSessionDefaultTypeInternal _RspGetFileSession_default_instance_;
 class RspJoinGroup;
 class RspJoinGroupDefaultTypeInternal;
 extern RspJoinGroupDefaultTypeInternal _RspJoinGroup_default_instance_;
@@ -126,9 +138,18 @@ extern RspKickOutUserDefaultTypeInternal _RspKickOutUser_default_instance_;
 class RspLoginUser;
 class RspLoginUserDefaultTypeInternal;
 extern RspLoginUserDefaultTypeInternal _RspLoginUser_default_instance_;
+class RspNodeGetFileSession;
+class RspNodeGetFileSessionDefaultTypeInternal;
+extern RspNodeGetFileSessionDefaultTypeInternal _RspNodeGetFileSession_default_instance_;
+class RspNodePutFileSession;
+class RspNodePutFileSessionDefaultTypeInternal;
+extern RspNodePutFileSessionDefaultTypeInternal _RspNodePutFileSession_default_instance_;
 class RspPutFile;
 class RspPutFileDefaultTypeInternal;
 extern RspPutFileDefaultTypeInternal _RspPutFile_default_instance_;
+class RspPutFileSession;
+class RspPutFileSessionDefaultTypeInternal;
+extern RspPutFileSessionDefaultTypeInternal _RspPutFileSession_default_instance_;
 class RspRegisterGroup;
 class RspRegisterGroupDefaultTypeInternal;
 extern RspRegisterGroupDefaultTypeInternal _RspRegisterGroup_default_instance_;
@@ -154,17 +175,20 @@ extern UserDefaultTypeInternal _User_default_instance_;
 }  // namespace spaceless
 namespace google {
 namespace protobuf {
-template<> ::spaceless::protocol::FileFragment* Arena::CreateMaybeMessage<::spaceless::protocol::FileFragment>(Arena*);
 template<> ::spaceless::protocol::ReqAssignAsManager* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsManager>(Arena*);
 template<> ::spaceless::protocol::ReqAssignAsMemeber* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsMemeber>(Arena*);
 template<> ::spaceless::protocol::ReqCreatePath* Arena::CreateMaybeMessage<::spaceless::protocol::ReqCreatePath>(Arena*);
 template<> ::spaceless::protocol::ReqFindGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqFindGroup>(Arena*);
 template<> ::spaceless::protocol::ReqFindUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqFindUser>(Arena*);
 template<> ::spaceless::protocol::ReqGetFile* Arena::CreateMaybeMessage<::spaceless::protocol::ReqGetFile>(Arena*);
+template<> ::spaceless::protocol::ReqGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqGetFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqJoinGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqJoinGroup>(Arena*);
 template<> ::spaceless::protocol::ReqKickOutUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqKickOutUser>(Arena*);
 template<> ::spaceless::protocol::ReqLoginUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqLoginUser>(Arena*);
+template<> ::spaceless::protocol::ReqNodeGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqNodeGetFileSession>(Arena*);
+template<> ::spaceless::protocol::ReqNodePutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqNodePutFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqPutFile* Arena::CreateMaybeMessage<::spaceless::protocol::ReqPutFile>(Arena*);
+template<> ::spaceless::protocol::ReqPutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqPutFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqRegisterGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqRegisterGroup>(Arena*);
 template<> ::spaceless::protocol::ReqRegisterUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqRegisterUser>(Arena*);
 template<> ::spaceless::protocol::ReqRemoveGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqRemoveGroup>(Arena*);
@@ -177,10 +201,14 @@ template<> ::spaceless::protocol::RspError* Arena::CreateMaybeMessage<::spaceles
 template<> ::spaceless::protocol::RspFindGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspFindGroup>(Arena*);
 template<> ::spaceless::protocol::RspFindUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspFindUser>(Arena*);
 template<> ::spaceless::protocol::RspGetFile* Arena::CreateMaybeMessage<::spaceless::protocol::RspGetFile>(Arena*);
+template<> ::spaceless::protocol::RspGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspGetFileSession>(Arena*);
 template<> ::spaceless::protocol::RspJoinGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspJoinGroup>(Arena*);
 template<> ::spaceless::protocol::RspKickOutUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspKickOutUser>(Arena*);
 template<> ::spaceless::protocol::RspLoginUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspLoginUser>(Arena*);
+template<> ::spaceless::protocol::RspNodeGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspNodeGetFileSession>(Arena*);
+template<> ::spaceless::protocol::RspNodePutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspNodePutFileSession>(Arena*);
 template<> ::spaceless::protocol::RspPutFile* Arena::CreateMaybeMessage<::spaceless::protocol::RspPutFile>(Arena*);
+template<> ::spaceless::protocol::RspPutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspPutFileSession>(Arena*);
 template<> ::spaceless::protocol::RspRegisterGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspRegisterGroup>(Arena*);
 template<> ::spaceless::protocol::RspRegisterUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspRegisterUser>(Arena*);
 template<> ::spaceless::protocol::RspRemoveGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspRemoveGroup>(Arena*);
@@ -3020,24 +3048,24 @@ class RspKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
 };
 // -------------------------------------------------------------------
 
-class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.FileFragment) */ {
+class ReqPutFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqPutFileSession) */ {
  public:
-  FileFragment();
-  virtual ~FileFragment();
+  ReqPutFileSession();
+  virtual ~ReqPutFileSession();
 
-  FileFragment(const FileFragment& from);
+  ReqPutFileSession(const ReqPutFileSession& from);
 
-  inline FileFragment& operator=(const FileFragment& from) {
+  inline ReqPutFileSession& operator=(const ReqPutFileSession& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  FileFragment(FileFragment&& from) noexcept
-    : FileFragment() {
+  ReqPutFileSession(ReqPutFileSession&& from) noexcept
+    : ReqPutFileSession() {
     *this = ::std::move(from);
   }
 
-  inline FileFragment& operator=(FileFragment&& from) noexcept {
+  inline ReqPutFileSession& operator=(ReqPutFileSession&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -3047,34 +3075,34 @@ class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_po
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const FileFragment& default_instance();
+  static const ReqPutFileSession& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const FileFragment* internal_default_instance() {
-    return reinterpret_cast<const FileFragment*>(
-               &_FileFragment_default_instance_);
+  static inline const ReqPutFileSession* internal_default_instance() {
+    return reinterpret_cast<const ReqPutFileSession*>(
+               &_ReqPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     25;
 
-  void Swap(FileFragment* other);
-  friend void swap(FileFragment& a, FileFragment& b) {
+  void Swap(ReqPutFileSession* other);
+  friend void swap(ReqPutFileSession& a, ReqPutFileSession& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline FileFragment* New() const final {
-    return CreateMaybeMessage<FileFragment>(NULL);
+  inline ReqPutFileSession* New() const final {
+    return CreateMaybeMessage<ReqPutFileSession>(NULL);
   }
 
-  FileFragment* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<FileFragment>(arena);
+  ReqPutFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqPutFileSession>(arena);
   }
   void CopyFrom(const ::google::protobuf::Message& from) final;
   void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const FileFragment& from);
-  void MergeFrom(const FileFragment& from);
+  void CopyFrom(const ReqPutFileSession& from);
+  void MergeFrom(const ReqPutFileSession& from);
   void Clear() final;
   bool IsInitialized() const final;
 
@@ -3091,7 +3119,7 @@ class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_po
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(FileFragment* other);
+  void InternalSwap(ReqPutFileSession* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -3107,39 +3135,377 @@ class FileFragment : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // bytes fragment_content = 3;
-  void clear_fragment_content();
-  static const int kFragmentContentFieldNumber = 3;
-  const ::std::string& fragment_content() const;
-  void set_fragment_content(const ::std::string& value);
+  // string file_path = 2;
+  void clear_file_path();
+  static const int kFilePathFieldNumber = 2;
+  const ::std::string& file_path() const;
+  void set_file_path(const ::std::string& value);
   #if LANG_CXX11
-  void set_fragment_content(::std::string&& value);
+  void set_file_path(::std::string&& value);
   #endif
-  void set_fragment_content(const char* value);
-  void set_fragment_content(const void* value, size_t size);
-  ::std::string* mutable_fragment_content();
-  ::std::string* release_fragment_content();
-  void set_allocated_fragment_content(::std::string* fragment_content);
+  void set_file_path(const char* value);
+  void set_file_path(const char* value, size_t size);
+  ::std::string* mutable_file_path();
+  ::std::string* release_file_path();
+  void set_allocated_file_path(::std::string* file_path);
 
-  // int32 max_fragment = 1;
+  // int32 group_id = 1;
+  void clear_group_id();
+  static const int kGroupIdFieldNumber = 1;
+  ::google::protobuf::int32 group_id() const;
+  void set_group_id(::google::protobuf::int32 value);
+
+  // int32 max_fragment = 3;
   void clear_max_fragment();
-  static const int kMaxFragmentFieldNumber = 1;
+  static const int kMaxFragmentFieldNumber = 3;
   ::google::protobuf::int32 max_fragment() const;
   void set_max_fragment(::google::protobuf::int32 value);
 
-  // int32 fragment_index = 2;
-  void clear_fragment_index();
-  static const int kFragmentIndexFieldNumber = 2;
-  ::google::protobuf::int32 fragment_index() const;
-  void set_fragment_index(::google::protobuf::int32 value);
-
-  // @@protoc_insertion_point(class_scope:spaceless.protocol.FileFragment)
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqPutFileSession)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr fragment_content_;
+  ::google::protobuf::internal::ArenaStringPtr file_path_;
+  ::google::protobuf::int32 group_id_;
   ::google::protobuf::int32 max_fragment_;
-  ::google::protobuf::int32 fragment_index_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspPutFileSession) */ {
+ public:
+  RspPutFileSession();
+  virtual ~RspPutFileSession();
+
+  RspPutFileSession(const RspPutFileSession& from);
+
+  inline RspPutFileSession& operator=(const RspPutFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RspPutFileSession(RspPutFileSession&& from) noexcept
+    : RspPutFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline RspPutFileSession& operator=(RspPutFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspPutFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RspPutFileSession* internal_default_instance() {
+    return reinterpret_cast<const RspPutFileSession*>(
+               &_RspPutFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    26;
+
+  void Swap(RspPutFileSession* other);
+  friend void swap(RspPutFileSession& a, RspPutFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RspPutFileSession* New() const final {
+    return CreateMaybeMessage<RspPutFileSession>(NULL);
+  }
+
+  RspPutFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspPutFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const RspPutFileSession& from);
+  void MergeFrom(const RspPutFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RspPutFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // int32 session_id = 2;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 2;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspPutFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 session_id_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class ReqNodePutFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqNodePutFileSession) */ {
+ public:
+  ReqNodePutFileSession();
+  virtual ~ReqNodePutFileSession();
+
+  ReqNodePutFileSession(const ReqNodePutFileSession& from);
+
+  inline ReqNodePutFileSession& operator=(const ReqNodePutFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ReqNodePutFileSession(ReqNodePutFileSession&& from) noexcept
+    : ReqNodePutFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline ReqNodePutFileSession& operator=(ReqNodePutFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqNodePutFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ReqNodePutFileSession* internal_default_instance() {
+    return reinterpret_cast<const ReqNodePutFileSession*>(
+               &_ReqNodePutFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    27;
+
+  void Swap(ReqNodePutFileSession* other);
+  friend void swap(ReqNodePutFileSession& a, ReqNodePutFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ReqNodePutFileSession* New() const final {
+    return CreateMaybeMessage<ReqNodePutFileSession>(NULL);
+  }
+
+  ReqNodePutFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqNodePutFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ReqNodePutFileSession& from);
+  void MergeFrom(const ReqNodePutFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReqNodePutFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string file_path = 2;
+  void clear_file_path();
+  static const int kFilePathFieldNumber = 2;
+  const ::std::string& file_path() const;
+  void set_file_path(const ::std::string& value);
+  #if LANG_CXX11
+  void set_file_path(::std::string&& value);
+  #endif
+  void set_file_path(const char* value);
+  void set_file_path(const char* value, size_t size);
+  ::std::string* mutable_file_path();
+  ::std::string* release_file_path();
+  void set_allocated_file_path(::std::string* file_path);
+
+  // int32 max_fragment = 3;
+  void clear_max_fragment();
+  static const int kMaxFragmentFieldNumber = 3;
+  ::google::protobuf::int32 max_fragment() const;
+  void set_max_fragment(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqNodePutFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr file_path_;
+  ::google::protobuf::int32 max_fragment_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspNodePutFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspNodePutFileSession) */ {
+ public:
+  RspNodePutFileSession();
+  virtual ~RspNodePutFileSession();
+
+  RspNodePutFileSession(const RspNodePutFileSession& from);
+
+  inline RspNodePutFileSession& operator=(const RspNodePutFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RspNodePutFileSession(RspNodePutFileSession&& from) noexcept
+    : RspNodePutFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline RspNodePutFileSession& operator=(RspNodePutFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspNodePutFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RspNodePutFileSession* internal_default_instance() {
+    return reinterpret_cast<const RspNodePutFileSession*>(
+               &_RspNodePutFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    28;
+
+  void Swap(RspNodePutFileSession* other);
+  friend void swap(RspNodePutFileSession& a, RspNodePutFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RspNodePutFileSession* New() const final {
+    return CreateMaybeMessage<RspNodePutFileSession>(NULL);
+  }
+
+  RspNodePutFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspNodePutFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const RspNodePutFileSession& from);
+  void MergeFrom(const RspNodePutFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RspNodePutFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // int32 session_id = 2;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 2;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspNodePutFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 session_id_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3180,7 +3546,7 @@ class ReqPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    26;
+    29;
 
   void Swap(ReqPutFile* other);
   friend void swap(ReqPutFile& a, ReqPutFile& b) {
@@ -3232,45 +3598,39 @@ class ReqPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   // accessors -------------------------------------------------------
 
-  // string file_path = 2;
-  void clear_file_path();
-  static const int kFilePathFieldNumber = 2;
-  const ::std::string& file_path() const;
-  void set_file_path(const ::std::string& value);
+  // bytes fragment_content = 3;
+  void clear_fragment_content();
+  static const int kFragmentContentFieldNumber = 3;
+  const ::std::string& fragment_content() const;
+  void set_fragment_content(const ::std::string& value);
   #if LANG_CXX11
-  void set_file_path(::std::string&& value);
+  void set_fragment_content(::std::string&& value);
   #endif
-  void set_file_path(const char* value);
-  void set_file_path(const char* value, size_t size);
-  ::std::string* mutable_file_path();
-  ::std::string* release_file_path();
-  void set_allocated_file_path(::std::string* file_path);
+  void set_fragment_content(const char* value);
+  void set_fragment_content(const void* value, size_t size);
+  ::std::string* mutable_fragment_content();
+  ::std::string* release_fragment_content();
+  void set_allocated_fragment_content(::std::string* fragment_content);
 
-  // .spaceless.protocol.FileFragment fragment = 3;
-  bool has_fragment() const;
-  void clear_fragment();
-  static const int kFragmentFieldNumber = 3;
-  private:
-  const ::spaceless::protocol::FileFragment& _internal_fragment() const;
-  public:
-  const ::spaceless::protocol::FileFragment& fragment() const;
-  ::spaceless::protocol::FileFragment* release_fragment();
-  ::spaceless::protocol::FileFragment* mutable_fragment();
-  void set_allocated_fragment(::spaceless::protocol::FileFragment* fragment);
+  // int32 session_id = 1;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 1;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
 
-  // int32 group_id = 1;
-  void clear_group_id();
-  static const int kGroupIdFieldNumber = 1;
-  ::google::protobuf::int32 group_id() const;
-  void set_group_id(::google::protobuf::int32 value);
+  // int32 fragment_index = 2;
+  void clear_fragment_index();
+  static const int kFragmentIndexFieldNumber = 2;
+  ::google::protobuf::int32 fragment_index() const;
+  void set_fragment_index(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqPutFile)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr file_path_;
-  ::spaceless::protocol::FileFragment* fragment_;
-  ::google::protobuf::int32 group_id_;
+  ::google::protobuf::internal::ArenaStringPtr fragment_content_;
+  ::google::protobuf::int32 session_id_;
+  ::google::protobuf::int32 fragment_index_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3311,7 +3671,7 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    27;
+    30;
 
   void Swap(RspPutFile* other);
   friend void swap(RspPutFile& a, RspPutFile& b) {
@@ -3369,9 +3729,15 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::int32 result() const;
   void set_result(::google::protobuf::int32 value);
 
-  // int32 fragment_index = 2;
+  // int32 session_id = 2;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 2;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
+
+  // int32 fragment_index = 3;
   void clear_fragment_index();
-  static const int kFragmentIndexFieldNumber = 2;
+  static const int kFragmentIndexFieldNumber = 3;
   ::google::protobuf::int32 fragment_index() const;
   void set_fragment_index(::google::protobuf::int32 value);
 
@@ -3380,7 +3746,471 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 session_id_;
   ::google::protobuf::int32 fragment_index_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class ReqGetFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqGetFileSession) */ {
+ public:
+  ReqGetFileSession();
+  virtual ~ReqGetFileSession();
+
+  ReqGetFileSession(const ReqGetFileSession& from);
+
+  inline ReqGetFileSession& operator=(const ReqGetFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ReqGetFileSession(ReqGetFileSession&& from) noexcept
+    : ReqGetFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline ReqGetFileSession& operator=(ReqGetFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqGetFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ReqGetFileSession* internal_default_instance() {
+    return reinterpret_cast<const ReqGetFileSession*>(
+               &_ReqGetFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    31;
+
+  void Swap(ReqGetFileSession* other);
+  friend void swap(ReqGetFileSession& a, ReqGetFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ReqGetFileSession* New() const final {
+    return CreateMaybeMessage<ReqGetFileSession>(NULL);
+  }
+
+  ReqGetFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqGetFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ReqGetFileSession& from);
+  void MergeFrom(const ReqGetFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReqGetFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string file_path = 2;
+  void clear_file_path();
+  static const int kFilePathFieldNumber = 2;
+  const ::std::string& file_path() const;
+  void set_file_path(const ::std::string& value);
+  #if LANG_CXX11
+  void set_file_path(::std::string&& value);
+  #endif
+  void set_file_path(const char* value);
+  void set_file_path(const char* value, size_t size);
+  ::std::string* mutable_file_path();
+  ::std::string* release_file_path();
+  void set_allocated_file_path(::std::string* file_path);
+
+  // int32 group_id = 1;
+  void clear_group_id();
+  static const int kGroupIdFieldNumber = 1;
+  ::google::protobuf::int32 group_id() const;
+  void set_group_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqGetFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr file_path_;
+  ::google::protobuf::int32 group_id_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspGetFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspGetFileSession) */ {
+ public:
+  RspGetFileSession();
+  virtual ~RspGetFileSession();
+
+  RspGetFileSession(const RspGetFileSession& from);
+
+  inline RspGetFileSession& operator=(const RspGetFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RspGetFileSession(RspGetFileSession&& from) noexcept
+    : RspGetFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline RspGetFileSession& operator=(RspGetFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspGetFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RspGetFileSession* internal_default_instance() {
+    return reinterpret_cast<const RspGetFileSession*>(
+               &_RspGetFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    32;
+
+  void Swap(RspGetFileSession* other);
+  friend void swap(RspGetFileSession& a, RspGetFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RspGetFileSession* New() const final {
+    return CreateMaybeMessage<RspGetFileSession>(NULL);
+  }
+
+  RspGetFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspGetFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const RspGetFileSession& from);
+  void MergeFrom(const RspGetFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RspGetFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // int32 session_id = 2;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 2;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
+
+  // int32 max_fragment = 3;
+  void clear_max_fragment();
+  static const int kMaxFragmentFieldNumber = 3;
+  ::google::protobuf::int32 max_fragment() const;
+  void set_max_fragment(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspGetFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 session_id_;
+  ::google::protobuf::int32 max_fragment_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class ReqNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqNodeGetFileSession) */ {
+ public:
+  ReqNodeGetFileSession();
+  virtual ~ReqNodeGetFileSession();
+
+  ReqNodeGetFileSession(const ReqNodeGetFileSession& from);
+
+  inline ReqNodeGetFileSession& operator=(const ReqNodeGetFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ReqNodeGetFileSession(ReqNodeGetFileSession&& from) noexcept
+    : ReqNodeGetFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline ReqNodeGetFileSession& operator=(ReqNodeGetFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqNodeGetFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ReqNodeGetFileSession* internal_default_instance() {
+    return reinterpret_cast<const ReqNodeGetFileSession*>(
+               &_ReqNodeGetFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    33;
+
+  void Swap(ReqNodeGetFileSession* other);
+  friend void swap(ReqNodeGetFileSession& a, ReqNodeGetFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ReqNodeGetFileSession* New() const final {
+    return CreateMaybeMessage<ReqNodeGetFileSession>(NULL);
+  }
+
+  ReqNodeGetFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqNodeGetFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ReqNodeGetFileSession& from);
+  void MergeFrom(const ReqNodeGetFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReqNodeGetFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string file_path = 2;
+  void clear_file_path();
+  static const int kFilePathFieldNumber = 2;
+  const ::std::string& file_path() const;
+  void set_file_path(const ::std::string& value);
+  #if LANG_CXX11
+  void set_file_path(::std::string&& value);
+  #endif
+  void set_file_path(const char* value);
+  void set_file_path(const char* value, size_t size);
+  ::std::string* mutable_file_path();
+  ::std::string* release_file_path();
+  void set_allocated_file_path(::std::string* file_path);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqNodeGetFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr file_path_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspNodeGetFileSession) */ {
+ public:
+  RspNodeGetFileSession();
+  virtual ~RspNodeGetFileSession();
+
+  RspNodeGetFileSession(const RspNodeGetFileSession& from);
+
+  inline RspNodeGetFileSession& operator=(const RspNodeGetFileSession& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RspNodeGetFileSession(RspNodeGetFileSession&& from) noexcept
+    : RspNodeGetFileSession() {
+    *this = ::std::move(from);
+  }
+
+  inline RspNodeGetFileSession& operator=(RspNodeGetFileSession&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspNodeGetFileSession& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RspNodeGetFileSession* internal_default_instance() {
+    return reinterpret_cast<const RspNodeGetFileSession*>(
+               &_RspNodeGetFileSession_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    34;
+
+  void Swap(RspNodeGetFileSession* other);
+  friend void swap(RspNodeGetFileSession& a, RspNodeGetFileSession& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RspNodeGetFileSession* New() const final {
+    return CreateMaybeMessage<RspNodeGetFileSession>(NULL);
+  }
+
+  RspNodeGetFileSession* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspNodeGetFileSession>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const RspNodeGetFileSession& from);
+  void MergeFrom(const RspNodeGetFileSession& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RspNodeGetFileSession* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // int32 session_id = 2;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 2;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
+
+  // int32 max_fragment = 3;
+  void clear_max_fragment();
+  static const int kMaxFragmentFieldNumber = 3;
+  ::google::protobuf::int32 max_fragment() const;
+  void set_max_fragment(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspNodeGetFileSession)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 session_id_;
+  ::google::protobuf::int32 max_fragment_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3421,7 +4251,7 @@ class ReqGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    28;
+    35;
 
   void Swap(ReqGetFile* other);
   friend void swap(ReqGetFile& a, ReqGetFile& b) {
@@ -3473,32 +4303,24 @@ class ReqGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   // accessors -------------------------------------------------------
 
-  // string file_path = 2;
-  void clear_file_path();
-  static const int kFilePathFieldNumber = 2;
-  const ::std::string& file_path() const;
-  void set_file_path(const ::std::string& value);
-  #if LANG_CXX11
-  void set_file_path(::std::string&& value);
-  #endif
-  void set_file_path(const char* value);
-  void set_file_path(const char* value, size_t size);
-  ::std::string* mutable_file_path();
-  ::std::string* release_file_path();
-  void set_allocated_file_path(::std::string* file_path);
+  // int32 session_id = 1;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 1;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
 
-  // int32 group_id = 1;
-  void clear_group_id();
-  static const int kGroupIdFieldNumber = 1;
-  ::google::protobuf::int32 group_id() const;
-  void set_group_id(::google::protobuf::int32 value);
+  // int32 fragment_index = 2;
+  void clear_fragment_index();
+  static const int kFragmentIndexFieldNumber = 2;
+  ::google::protobuf::int32 fragment_index() const;
+  void set_fragment_index(::google::protobuf::int32 value);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqGetFile)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr file_path_;
-  ::google::protobuf::int32 group_id_;
+  ::google::protobuf::int32 session_id_;
+  ::google::protobuf::int32 fragment_index_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3539,7 +4361,7 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    29;
+    36;
 
   void Swap(RspGetFile* other);
   friend void swap(RspGetFile& a, RspGetFile& b) {
@@ -3591,17 +4413,19 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   // accessors -------------------------------------------------------
 
-  // .spaceless.protocol.FileFragment fragment = 2;
-  bool has_fragment() const;
-  void clear_fragment();
-  static const int kFragmentFieldNumber = 2;
-  private:
-  const ::spaceless::protocol::FileFragment& _internal_fragment() const;
-  public:
-  const ::spaceless::protocol::FileFragment& fragment() const;
-  ::spaceless::protocol::FileFragment* release_fragment();
-  ::spaceless::protocol::FileFragment* mutable_fragment();
-  void set_allocated_fragment(::spaceless::protocol::FileFragment* fragment);
+  // bytes fragment_content = 4;
+  void clear_fragment_content();
+  static const int kFragmentContentFieldNumber = 4;
+  const ::std::string& fragment_content() const;
+  void set_fragment_content(const ::std::string& value);
+  #if LANG_CXX11
+  void set_fragment_content(::std::string&& value);
+  #endif
+  void set_fragment_content(const char* value);
+  void set_fragment_content(const void* value, size_t size);
+  ::std::string* mutable_fragment_content();
+  ::std::string* release_fragment_content();
+  void set_allocated_fragment_content(::std::string* fragment_content);
 
   // int32 result = 1;
   void clear_result();
@@ -3609,12 +4433,26 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::google::protobuf::int32 result() const;
   void set_result(::google::protobuf::int32 value);
 
+  // int32 session_id = 2;
+  void clear_session_id();
+  static const int kSessionIdFieldNumber = 2;
+  ::google::protobuf::int32 session_id() const;
+  void set_session_id(::google::protobuf::int32 value);
+
+  // int32 fragment_index = 3;
+  void clear_fragment_index();
+  static const int kFragmentIndexFieldNumber = 3;
+  ::google::protobuf::int32 fragment_index() const;
+  void set_fragment_index(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspGetFile)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::spaceless::protocol::FileFragment* fragment_;
+  ::google::protobuf::internal::ArenaStringPtr fragment_content_;
   ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 session_id_;
+  ::google::protobuf::int32 fragment_index_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3655,7 +4493,7 @@ class ReqCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    30;
+    37;
 
   void Swap(ReqCreatePath* other);
   friend void swap(ReqCreatePath& a, ReqCreatePath& b) {
@@ -3773,7 +4611,7 @@ class RspCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    31;
+    38;
 
   void Swap(RspCreatePath* other);
   friend void swap(RspCreatePath& a, RspCreatePath& b) {
@@ -3876,7 +4714,7 @@ class ReqRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    32;
+    39;
 
   void Swap(ReqRemovePath* other);
   friend void swap(ReqRemovePath& a, ReqRemovePath& b) {
@@ -4001,7 +4839,7 @@ class RspRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    33;
+    40;
 
   void Swap(RspRemovePath* other);
   friend void swap(RspRemovePath& a, RspRemovePath& b) {
@@ -5258,212 +6096,307 @@ inline void RspKickOutUser::set_result(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
-// FileFragment
-
-// int32 max_fragment = 1;
-inline void FileFragment::clear_max_fragment() {
-  max_fragment_ = 0;
-}
-inline ::google::protobuf::int32 FileFragment::max_fragment() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.max_fragment)
-  return max_fragment_;
-}
-inline void FileFragment::set_max_fragment(::google::protobuf::int32 value) {
-  
-  max_fragment_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.max_fragment)
-}
-
-// int32 fragment_index = 2;
-inline void FileFragment::clear_fragment_index() {
-  fragment_index_ = 0;
-}
-inline ::google::protobuf::int32 FileFragment::fragment_index() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.fragment_index)
-  return fragment_index_;
-}
-inline void FileFragment::set_fragment_index(::google::protobuf::int32 value) {
-  
-  fragment_index_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.fragment_index)
-}
-
-// bytes fragment_content = 3;
-inline void FileFragment::clear_fragment_content() {
-  fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& FileFragment::fragment_content() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.FileFragment.fragment_content)
-  return fragment_content_.GetNoArena();
-}
-inline void FileFragment::set_fragment_content(const ::std::string& value) {
-  
-  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:spaceless.protocol.FileFragment.fragment_content)
-}
-#if LANG_CXX11
-inline void FileFragment::set_fragment_content(::std::string&& value) {
-  
-  fragment_content_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.FileFragment.fragment_content)
-}
-#endif
-inline void FileFragment::set_fragment_content(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  
-  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:spaceless.protocol.FileFragment.fragment_content)
-}
-inline void FileFragment::set_fragment_content(const void* value, size_t size) {
-  
-  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.FileFragment.fragment_content)
-}
-inline ::std::string* FileFragment::mutable_fragment_content() {
-  
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.FileFragment.fragment_content)
-  return fragment_content_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* FileFragment::release_fragment_content() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.FileFragment.fragment_content)
-  
-  return fragment_content_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void FileFragment::set_allocated_fragment_content(::std::string* fragment_content) {
-  if (fragment_content != NULL) {
-    
-  } else {
-    
-  }
-  fragment_content_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), fragment_content);
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.FileFragment.fragment_content)
-}
-
-// -------------------------------------------------------------------
-
-// ReqPutFile
+// ReqPutFileSession
 
 // int32 group_id = 1;
-inline void ReqPutFile::clear_group_id() {
+inline void ReqPutFileSession::clear_group_id() {
   group_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqPutFile::group_id() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFile.group_id)
+inline ::google::protobuf::int32 ReqPutFileSession::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFileSession.group_id)
   return group_id_;
 }
-inline void ReqPutFile::set_group_id(::google::protobuf::int32 value) {
+inline void ReqPutFileSession::set_group_id(::google::protobuf::int32 value) {
   
   group_id_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFile.group_id)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFileSession.group_id)
 }
 
 // string file_path = 2;
-inline void ReqPutFile::clear_file_path() {
+inline void ReqPutFileSession::clear_file_path() {
   file_path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& ReqPutFile::file_path() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFile.file_path)
+inline const ::std::string& ReqPutFileSession::file_path() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFileSession.file_path)
   return file_path_.GetNoArena();
 }
-inline void ReqPutFile::set_file_path(const ::std::string& value) {
+inline void ReqPutFileSession::set_file_path(const ::std::string& value) {
   
   file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFile.file_path)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFileSession.file_path)
 }
 #if LANG_CXX11
-inline void ReqPutFile::set_file_path(::std::string&& value) {
+inline void ReqPutFileSession::set_file_path(::std::string&& value) {
   
   file_path_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqPutFile.file_path)
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqPutFileSession.file_path)
 }
 #endif
-inline void ReqPutFile::set_file_path(const char* value) {
+inline void ReqPutFileSession::set_file_path(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqPutFile.file_path)
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqPutFileSession.file_path)
 }
-inline void ReqPutFile::set_file_path(const char* value, size_t size) {
+inline void ReqPutFileSession::set_file_path(const char* value, size_t size) {
   
   file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqPutFile.file_path)
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqPutFileSession.file_path)
 }
-inline ::std::string* ReqPutFile::mutable_file_path() {
+inline ::std::string* ReqPutFileSession::mutable_file_path() {
   
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqPutFile.file_path)
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqPutFileSession.file_path)
   return file_path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* ReqPutFile::release_file_path() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqPutFile.file_path)
+inline ::std::string* ReqPutFileSession::release_file_path() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqPutFileSession.file_path)
   
   return file_path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void ReqPutFile::set_allocated_file_path(::std::string* file_path) {
+inline void ReqPutFileSession::set_allocated_file_path(::std::string* file_path) {
   if (file_path != NULL) {
     
   } else {
     
   }
   file_path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), file_path);
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqPutFile.file_path)
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqPutFileSession.file_path)
 }
 
-// .spaceless.protocol.FileFragment fragment = 3;
-inline bool ReqPutFile::has_fragment() const {
-  return this != internal_default_instance() && fragment_ != NULL;
+// int32 max_fragment = 3;
+inline void ReqPutFileSession::clear_max_fragment() {
+  max_fragment_ = 0;
 }
-inline void ReqPutFile::clear_fragment() {
-  if (GetArenaNoVirtual() == NULL && fragment_ != NULL) {
-    delete fragment_;
-  }
-  fragment_ = NULL;
+inline ::google::protobuf::int32 ReqPutFileSession::max_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFileSession.max_fragment)
+  return max_fragment_;
 }
-inline const ::spaceless::protocol::FileFragment& ReqPutFile::_internal_fragment() const {
-  return *fragment_;
-}
-inline const ::spaceless::protocol::FileFragment& ReqPutFile::fragment() const {
-  const ::spaceless::protocol::FileFragment* p = fragment_;
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFile.fragment)
-  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::FileFragment*>(
-      &::spaceless::protocol::_FileFragment_default_instance_);
-}
-inline ::spaceless::protocol::FileFragment* ReqPutFile::release_fragment() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqPutFile.fragment)
+inline void ReqPutFileSession::set_max_fragment(::google::protobuf::int32 value) {
   
-  ::spaceless::protocol::FileFragment* temp = fragment_;
-  fragment_ = NULL;
-  return temp;
+  max_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFileSession.max_fragment)
 }
-inline ::spaceless::protocol::FileFragment* ReqPutFile::mutable_fragment() {
+
+// -------------------------------------------------------------------
+
+// RspPutFileSession
+
+// int32 result = 1;
+inline void RspPutFileSession::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspPutFileSession::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFileSession.result)
+  return result_;
+}
+inline void RspPutFileSession::set_result(::google::protobuf::int32 value) {
   
-  if (fragment_ == NULL) {
-    auto* p = CreateMaybeMessage<::spaceless::protocol::FileFragment>(GetArenaNoVirtual());
-    fragment_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqPutFile.fragment)
-  return fragment_;
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFileSession.result)
 }
-inline void ReqPutFile::set_allocated_fragment(::spaceless::protocol::FileFragment* fragment) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete fragment_;
-  }
-  if (fragment) {
-    ::google::protobuf::Arena* submessage_arena = NULL;
-    if (message_arena != submessage_arena) {
-      fragment = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, fragment, submessage_arena);
-    }
+
+// int32 session_id = 2;
+inline void RspPutFileSession::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 RspPutFileSession::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFileSession.session_id)
+  return session_id_;
+}
+inline void RspPutFileSession::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFileSession.session_id)
+}
+
+// -------------------------------------------------------------------
+
+// ReqNodePutFileSession
+
+// string file_path = 2;
+inline void ReqNodePutFileSession::clear_file_path() {
+  file_path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ReqNodePutFileSession::file_path() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqNodePutFileSession.file_path)
+  return file_path_.GetNoArena();
+}
+inline void ReqNodePutFileSession::set_file_path(const ::std::string& value) {
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqNodePutFileSession.file_path)
+}
+#if LANG_CXX11
+inline void ReqNodePutFileSession::set_file_path(::std::string&& value) {
+  
+  file_path_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqNodePutFileSession.file_path)
+}
+#endif
+inline void ReqNodePutFileSession::set_file_path(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqNodePutFileSession.file_path)
+}
+inline void ReqNodePutFileSession::set_file_path(const char* value, size_t size) {
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqNodePutFileSession.file_path)
+}
+inline ::std::string* ReqNodePutFileSession::mutable_file_path() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqNodePutFileSession.file_path)
+  return file_path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ReqNodePutFileSession::release_file_path() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqNodePutFileSession.file_path)
+  
+  return file_path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ReqNodePutFileSession::set_allocated_file_path(::std::string* file_path) {
+  if (file_path != NULL) {
     
   } else {
     
   }
-  fragment_ = fragment;
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqPutFile.fragment)
+  file_path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), file_path);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqNodePutFileSession.file_path)
+}
+
+// int32 max_fragment = 3;
+inline void ReqNodePutFileSession::clear_max_fragment() {
+  max_fragment_ = 0;
+}
+inline ::google::protobuf::int32 ReqNodePutFileSession::max_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqNodePutFileSession.max_fragment)
+  return max_fragment_;
+}
+inline void ReqNodePutFileSession::set_max_fragment(::google::protobuf::int32 value) {
+  
+  max_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqNodePutFileSession.max_fragment)
+}
+
+// -------------------------------------------------------------------
+
+// RspNodePutFileSession
+
+// int32 result = 1;
+inline void RspNodePutFileSession::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspNodePutFileSession::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodePutFileSession.result)
+  return result_;
+}
+inline void RspNodePutFileSession::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodePutFileSession.result)
+}
+
+// int32 session_id = 2;
+inline void RspNodePutFileSession::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 RspNodePutFileSession::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodePutFileSession.session_id)
+  return session_id_;
+}
+inline void RspNodePutFileSession::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodePutFileSession.session_id)
+}
+
+// -------------------------------------------------------------------
+
+// ReqPutFile
+
+// int32 session_id = 1;
+inline void ReqPutFile::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqPutFile::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFile.session_id)
+  return session_id_;
+}
+inline void ReqPutFile::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFile.session_id)
+}
+
+// int32 fragment_index = 2;
+inline void ReqPutFile::clear_fragment_index() {
+  fragment_index_ = 0;
+}
+inline ::google::protobuf::int32 ReqPutFile::fragment_index() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFile.fragment_index)
+  return fragment_index_;
+}
+inline void ReqPutFile::set_fragment_index(::google::protobuf::int32 value) {
+  
+  fragment_index_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFile.fragment_index)
+}
+
+// bytes fragment_content = 3;
+inline void ReqPutFile::clear_fragment_content() {
+  fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ReqPutFile::fragment_content() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPutFile.fragment_content)
+  return fragment_content_.GetNoArena();
+}
+inline void ReqPutFile::set_fragment_content(const ::std::string& value) {
+  
+  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPutFile.fragment_content)
+}
+#if LANG_CXX11
+inline void ReqPutFile::set_fragment_content(::std::string&& value) {
+  
+  fragment_content_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqPutFile.fragment_content)
+}
+#endif
+inline void ReqPutFile::set_fragment_content(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqPutFile.fragment_content)
+}
+inline void ReqPutFile::set_fragment_content(const void* value, size_t size) {
+  
+  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqPutFile.fragment_content)
+}
+inline ::std::string* ReqPutFile::mutable_fragment_content() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqPutFile.fragment_content)
+  return fragment_content_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ReqPutFile::release_fragment_content() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqPutFile.fragment_content)
+  
+  return fragment_content_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ReqPutFile::set_allocated_fragment_content(::std::string* fragment_content) {
+  if (fragment_content != NULL) {
+    
+  } else {
+    
+  }
+  fragment_content_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), fragment_content);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqPutFile.fragment_content)
 }
 
 // -------------------------------------------------------------------
@@ -5484,7 +6417,21 @@ inline void RspPutFile::set_result(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFile.result)
 }
 
-// int32 fragment_index = 2;
+// int32 session_id = 2;
+inline void RspPutFile::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 RspPutFile::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFile.session_id)
+  return session_id_;
+}
+inline void RspPutFile::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFile.session_id)
+}
+
+// int32 fragment_index = 3;
 inline void RspPutFile::clear_fragment_index() {
   fragment_index_ = 0;
 }
@@ -5500,73 +6447,254 @@ inline void RspPutFile::set_fragment_index(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
-// ReqGetFile
+// ReqGetFileSession
 
 // int32 group_id = 1;
-inline void ReqGetFile::clear_group_id() {
+inline void ReqGetFileSession::clear_group_id() {
   group_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqGetFile::group_id() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqGetFile.group_id)
+inline ::google::protobuf::int32 ReqGetFileSession::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqGetFileSession.group_id)
   return group_id_;
 }
-inline void ReqGetFile::set_group_id(::google::protobuf::int32 value) {
+inline void ReqGetFileSession::set_group_id(::google::protobuf::int32 value) {
   
   group_id_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqGetFile.group_id)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqGetFileSession.group_id)
 }
 
 // string file_path = 2;
-inline void ReqGetFile::clear_file_path() {
+inline void ReqGetFileSession::clear_file_path() {
   file_path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& ReqGetFile::file_path() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqGetFile.file_path)
+inline const ::std::string& ReqGetFileSession::file_path() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqGetFileSession.file_path)
   return file_path_.GetNoArena();
 }
-inline void ReqGetFile::set_file_path(const ::std::string& value) {
+inline void ReqGetFileSession::set_file_path(const ::std::string& value) {
   
   file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqGetFile.file_path)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqGetFileSession.file_path)
 }
 #if LANG_CXX11
-inline void ReqGetFile::set_file_path(::std::string&& value) {
+inline void ReqGetFileSession::set_file_path(::std::string&& value) {
   
   file_path_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqGetFile.file_path)
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqGetFileSession.file_path)
 }
 #endif
-inline void ReqGetFile::set_file_path(const char* value) {
+inline void ReqGetFileSession::set_file_path(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqGetFile.file_path)
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqGetFileSession.file_path)
 }
-inline void ReqGetFile::set_file_path(const char* value, size_t size) {
+inline void ReqGetFileSession::set_file_path(const char* value, size_t size) {
   
   file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqGetFile.file_path)
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqGetFileSession.file_path)
 }
-inline ::std::string* ReqGetFile::mutable_file_path() {
+inline ::std::string* ReqGetFileSession::mutable_file_path() {
   
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqGetFile.file_path)
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqGetFileSession.file_path)
   return file_path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* ReqGetFile::release_file_path() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqGetFile.file_path)
+inline ::std::string* ReqGetFileSession::release_file_path() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqGetFileSession.file_path)
   
   return file_path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void ReqGetFile::set_allocated_file_path(::std::string* file_path) {
+inline void ReqGetFileSession::set_allocated_file_path(::std::string* file_path) {
   if (file_path != NULL) {
     
   } else {
     
   }
   file_path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), file_path);
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqGetFile.file_path)
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqGetFileSession.file_path)
+}
+
+// -------------------------------------------------------------------
+
+// RspGetFileSession
+
+// int32 result = 1;
+inline void RspGetFileSession::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspGetFileSession::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFileSession.result)
+  return result_;
+}
+inline void RspGetFileSession::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFileSession.result)
+}
+
+// int32 session_id = 2;
+inline void RspGetFileSession::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 RspGetFileSession::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFileSession.session_id)
+  return session_id_;
+}
+inline void RspGetFileSession::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFileSession.session_id)
+}
+
+// int32 max_fragment = 3;
+inline void RspGetFileSession::clear_max_fragment() {
+  max_fragment_ = 0;
+}
+inline ::google::protobuf::int32 RspGetFileSession::max_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFileSession.max_fragment)
+  return max_fragment_;
+}
+inline void RspGetFileSession::set_max_fragment(::google::protobuf::int32 value) {
+  
+  max_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFileSession.max_fragment)
+}
+
+// -------------------------------------------------------------------
+
+// ReqNodeGetFileSession
+
+// string file_path = 2;
+inline void ReqNodeGetFileSession::clear_file_path() {
+  file_path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ReqNodeGetFileSession::file_path() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqNodeGetFileSession.file_path)
+  return file_path_.GetNoArena();
+}
+inline void ReqNodeGetFileSession::set_file_path(const ::std::string& value) {
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqNodeGetFileSession.file_path)
+}
+#if LANG_CXX11
+inline void ReqNodeGetFileSession::set_file_path(::std::string&& value) {
+  
+  file_path_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqNodeGetFileSession.file_path)
+}
+#endif
+inline void ReqNodeGetFileSession::set_file_path(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqNodeGetFileSession.file_path)
+}
+inline void ReqNodeGetFileSession::set_file_path(const char* value, size_t size) {
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqNodeGetFileSession.file_path)
+}
+inline ::std::string* ReqNodeGetFileSession::mutable_file_path() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqNodeGetFileSession.file_path)
+  return file_path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ReqNodeGetFileSession::release_file_path() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqNodeGetFileSession.file_path)
+  
+  return file_path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ReqNodeGetFileSession::set_allocated_file_path(::std::string* file_path) {
+  if (file_path != NULL) {
+    
+  } else {
+    
+  }
+  file_path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), file_path);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqNodeGetFileSession.file_path)
+}
+
+// -------------------------------------------------------------------
+
+// RspNodeGetFileSession
+
+// int32 result = 1;
+inline void RspNodeGetFileSession::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspNodeGetFileSession::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodeGetFileSession.result)
+  return result_;
+}
+inline void RspNodeGetFileSession::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodeGetFileSession.result)
+}
+
+// int32 session_id = 2;
+inline void RspNodeGetFileSession::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 RspNodeGetFileSession::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodeGetFileSession.session_id)
+  return session_id_;
+}
+inline void RspNodeGetFileSession::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodeGetFileSession.session_id)
+}
+
+// int32 max_fragment = 3;
+inline void RspNodeGetFileSession::clear_max_fragment() {
+  max_fragment_ = 0;
+}
+inline ::google::protobuf::int32 RspNodeGetFileSession::max_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodeGetFileSession.max_fragment)
+  return max_fragment_;
+}
+inline void RspNodeGetFileSession::set_max_fragment(::google::protobuf::int32 value) {
+  
+  max_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodeGetFileSession.max_fragment)
+}
+
+// -------------------------------------------------------------------
+
+// ReqGetFile
+
+// int32 session_id = 1;
+inline void ReqGetFile::clear_session_id() {
+  session_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqGetFile::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqGetFile.session_id)
+  return session_id_;
+}
+inline void ReqGetFile::set_session_id(::google::protobuf::int32 value) {
+  
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqGetFile.session_id)
+}
+
+// int32 fragment_index = 2;
+inline void ReqGetFile::clear_fragment_index() {
+  fragment_index_ = 0;
+}
+inline ::google::protobuf::int32 ReqGetFile::fragment_index() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqGetFile.fragment_index)
+  return fragment_index_;
+}
+inline void ReqGetFile::set_fragment_index(::google::protobuf::int32 value) {
+  
+  fragment_index_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqGetFile.fragment_index)
 }
 
 // -------------------------------------------------------------------
@@ -5587,58 +6715,85 @@ inline void RspGetFile::set_result(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFile.result)
 }
 
-// .spaceless.protocol.FileFragment fragment = 2;
-inline bool RspGetFile::has_fragment() const {
-  return this != internal_default_instance() && fragment_ != NULL;
+// int32 session_id = 2;
+inline void RspGetFile::clear_session_id() {
+  session_id_ = 0;
 }
-inline void RspGetFile::clear_fragment() {
-  if (GetArenaNoVirtual() == NULL && fragment_ != NULL) {
-    delete fragment_;
-  }
-  fragment_ = NULL;
+inline ::google::protobuf::int32 RspGetFile::session_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFile.session_id)
+  return session_id_;
 }
-inline const ::spaceless::protocol::FileFragment& RspGetFile::_internal_fragment() const {
-  return *fragment_;
-}
-inline const ::spaceless::protocol::FileFragment& RspGetFile::fragment() const {
-  const ::spaceless::protocol::FileFragment* p = fragment_;
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFile.fragment)
-  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::FileFragment*>(
-      &::spaceless::protocol::_FileFragment_default_instance_);
-}
-inline ::spaceless::protocol::FileFragment* RspGetFile::release_fragment() {
-  // @@protoc_insertion_point(field_release:spaceless.protocol.RspGetFile.fragment)
+inline void RspGetFile::set_session_id(::google::protobuf::int32 value) {
   
-  ::spaceless::protocol::FileFragment* temp = fragment_;
-  fragment_ = NULL;
-  return temp;
+  session_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFile.session_id)
 }
-inline ::spaceless::protocol::FileFragment* RspGetFile::mutable_fragment() {
+
+// int32 fragment_index = 3;
+inline void RspGetFile::clear_fragment_index() {
+  fragment_index_ = 0;
+}
+inline ::google::protobuf::int32 RspGetFile::fragment_index() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFile.fragment_index)
+  return fragment_index_;
+}
+inline void RspGetFile::set_fragment_index(::google::protobuf::int32 value) {
   
-  if (fragment_ == NULL) {
-    auto* p = CreateMaybeMessage<::spaceless::protocol::FileFragment>(GetArenaNoVirtual());
-    fragment_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspGetFile.fragment)
-  return fragment_;
+  fragment_index_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFile.fragment_index)
 }
-inline void RspGetFile::set_allocated_fragment(::spaceless::protocol::FileFragment* fragment) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete fragment_;
-  }
-  if (fragment) {
-    ::google::protobuf::Arena* submessage_arena = NULL;
-    if (message_arena != submessage_arena) {
-      fragment = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, fragment, submessage_arena);
-    }
+
+// bytes fragment_content = 4;
+inline void RspGetFile::clear_fragment_content() {
+  fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& RspGetFile::fragment_content() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFile.fragment_content)
+  return fragment_content_.GetNoArena();
+}
+inline void RspGetFile::set_fragment_content(const ::std::string& value) {
+  
+  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFile.fragment_content)
+}
+#if LANG_CXX11
+inline void RspGetFile::set_fragment_content(::std::string&& value) {
+  
+  fragment_content_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.RspGetFile.fragment_content)
+}
+#endif
+inline void RspGetFile::set_fragment_content(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.RspGetFile.fragment_content)
+}
+inline void RspGetFile::set_fragment_content(const void* value, size_t size) {
+  
+  fragment_content_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.RspGetFile.fragment_content)
+}
+inline ::std::string* RspGetFile::mutable_fragment_content() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspGetFile.fragment_content)
+  return fragment_content_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* RspGetFile::release_fragment_content() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspGetFile.fragment_content)
+  
+  return fragment_content_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void RspGetFile::set_allocated_fragment_content(::std::string* fragment_content) {
+  if (fragment_content != NULL) {
     
   } else {
     
   }
-  fragment_ = fragment;
-  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspGetFile.fragment)
+  fragment_content_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), fragment_content);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspGetFile.fragment_content)
 }
 
 // -------------------------------------------------------------------
@@ -5836,6 +6991,20 @@ inline void RspRemovePath::set_result(::google::protobuf::int32 value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -293,8 +293,8 @@ public:
 
 	/**
 	 * Gets network connection id by service. When cannot find connection, will register network connection automaticly.
-	 * @note Throws exception if cannot find service or cannot register network connection.
-	 *       Cannot own it as memeber, becase connection id may be change by some reason.
+	 * @throw Throws exception if cannot find service or cannot register network connection.
+	 * @note  Cannot own it as memeber, becase connection id may be change by some reason.
 	 */
 	int get_connection_id(int service_id);
 

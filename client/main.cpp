@@ -38,21 +38,23 @@ int main(int argc, const char* argv[])
 			logger->set_level(to_log_level(log_level));
 		});
 
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRegisterUser, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspLoginUser, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRemoveUser, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspFindUser, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRegisterGroup, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRemoveGroup, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspFindGroup, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspJoinGroup, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspAssignAsManager, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspAssignAsMemeber, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspKickOutUser, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspPutFile, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspGetFile, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspCreatePath, read_handler);
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::RspRemovePath, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspRegisterUser, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspLoginUser, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspRemoveUser, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspFindUser, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspRegisterGroup, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspRemoveGroup, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspFindGroup, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspJoinGroup, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspAssignAsManager, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspAssignAsMemeber, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspKickOutUser, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspPutFileSession, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspPutFile, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspGetFileSession, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspGetFile, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspCreatePath, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspRemovePath, read_handler);
 
 		NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection("127.0.0.1", 10240);
 		conn_id = conn.connection_id();
@@ -332,45 +334,63 @@ void read_handler(int conn_id, const PackageBuffer& package)
 
 		std::cout << msg << std::endl;
 	}
+	else if (command == cmd("RspPutFileSession"))
+	{
+		protocol::RspPutFileSession rsponse;
+		package.parse_as_protobuf(rsponse);
+		FileSession& session = SharingGroupManager::instance()->put_file_session();
+		session.session_id = rsponse.session_id();
+		SharingGroupManager::instance()->start_put_file();
+	}
 	else if (command == cmd("RspPutFile"))
 	{
 		protocol::RspPutFile rsponse;
 		package.parse_as_protobuf(rsponse);
-		FileTransferSession& session = SharingGroupManager::instance()->putting_file_session();
+		FileSession& session = SharingGroupManager::instance()->put_file_session();
 		if (rsponse.fragment_index() + 1 >= session.max_fragment)
 		{
 			lights::PreciseTime use_sec = lights::current_precise_time() - session.start_time;
-			std::cout << lights::format("Put file {} finish. use {}", session.remote_file_path, use_sec) << std::endl;
+			std::cout << lights::format("Put file {} finish. use {}", session.remote_path, use_sec) << std::endl;
 		}
 		else
 		{
 //			session.fragment_state[]
 //			++session.fragment_index;
 //			SharingGroupManager::instance()->put_file(session.group_id,
-//													  session.local_file_path,
-//													  session.remote_file_path,
+//													  session.local_path,
+//													  session.remote_path,
 //													  session.fragment_index);
 		}
+	}
+	else if (command == cmd("RspGetFileSession"))
+	{
+		protocol::RspGetFileSession rsponse;
+		package.parse_as_protobuf(rsponse);
+		FileSession& session = SharingGroupManager::instance()->get_file_session();
+		session.session_id = rsponse.session_id();
+		session.max_fragment = rsponse.max_fragment();
+		SharingGroupManager::instance()->start_get_file();
 	}
 	else if (command == cmd("RspGetFile"))
 	{
 		protocol::RspGetFile rsponse;
 		package.parse_as_protobuf(rsponse);
-		FileTransferSession& session = SharingGroupManager::instance()->getting_file_session();
-		lights::FileStream file(session.local_file_path, "a");
-		int offset = rsponse.fragment().fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;
+		FileSession& session = SharingGroupManager::instance()->get_file_session();
+		lights::FileStream file(session.local_path, "a");
+		int offset = rsponse.fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;
 		file.seek(offset, lights::FileSeekWhence::BEGIN);
-		file.write({rsponse.fragment().fragment_content()});
+		file.write({rsponse.fragment_content()});
 
-		if (rsponse.fragment().fragment_index() + 1 < rsponse.fragment().max_fragment())
+		if (rsponse.fragment_index() + 1 < session.max_fragment)
 		{
-			SharingGroupManager::instance()->get_file(session.group_id,
-													  session.remote_file_path,
-													  session.local_file_path);
+//			SharingGroupManager::instance()->get_file(session.group_id,
+//													  session.remote_path,
+//													  session.local_path);
 		}
 		else
 		{
-			std::cout << lights::format("Get file {} finish.", session.remote_file_path) << std::endl;
+			lights::PreciseTime use_sec = lights::current_precise_time() - session.start_time;
+			std::cout << lights::format("Get file {} finish. use {}", session.remote_path, use_sec) << std::endl;
 		}
 	}
 }

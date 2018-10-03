@@ -58,21 +58,24 @@ int main(int argc, const char* argv[])
 		std::string root_group_name = configuration.getString("root_user.group");
 		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
 
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqRegisterUser, transaction::on_register_user)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqLoginUser, transaction::on_login_user)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqRemoveUser, transaction::on_remove_user)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqFindUser, transaction::on_find_user)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqRegisterGroup, transaction::on_register_group)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqFindGroup, transaction::on_find_group)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqJoinGroup, transaction::on_join_group)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqAssignAsManager, transaction::on_assign_as_manager)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqAssignAsMemeber, transaction::on_assign_as_memeber)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqKickOutUser, transaction::on_kick_out_user)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqCreatePath, transaction::on_create_path)
+		using namespace transaction;
+		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterUser, on_register_user)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqLoginUser, on_login_user)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqRemoveUser, on_remove_user)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqFindUser, on_find_user)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterGroup, on_register_group)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqFindGroup, on_find_group)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqJoinGroup, on_join_group)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsManager, on_assign_as_manager)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsMemeber, on_assign_as_memeber)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqKickOutUser, on_kick_out_user)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqCreatePath, on_create_path)
 
-		SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protocol::ReqPutFile, transaction::PutFileTrans::register_transaction);
-		SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protocol::ReqGetFile, transaction::GetFileTrans::register_transaction);
-		SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protocol::ReqRemovePath, transaction::RemovePathTrans::register_transaction);
+		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqPutFileSession, PutFileSessionTrans::factory);
+		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqPutFile, PutFileTrans::factory);
+		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqGetFileSession, GetFileSessionTrans::factory);
+		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqGetFile, GetFileTrans::factory);
+		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqRemovePath, RemovePathTrans::factory);
 
 		NetworkConnectionManager::instance()->run();
 	}

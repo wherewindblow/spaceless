@@ -275,7 +275,99 @@ void on_create_path(int conn_id, const PackageBuffer& package)
 }
 
 
-MultiplyPhaseTransaction* PutFileTrans::register_transaction(int trans_id)
+MultiplyPhaseTransaction* PutFileSessionTrans::factory(int trans_id)
+{
+	return new PutFileSessionTrans(trans_id);
+}
+
+
+PutFileSessionTrans::PutFileSessionTrans(int trans_id) :
+	MultiplyPhaseTransaction(trans_id) {}
+
+
+void PutFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
+{
+	User& user = UserManager::instance()->get_login_user(conn_id);
+	protocol::ReqPutFileSession request;
+	package.parse_as_protobuf(request);
+
+	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+	if (!group.is_manager(user.user_id))
+	{
+		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+	}
+
+	FilePath path = request.file_path();
+	if (!group.exist_path(path.directory_path()))
+	{
+		return send_back_error(ERR_PATH_NOT_EXIST);
+	}
+
+	if (group.exist_path(path))
+	{
+		return send_back_error(ERR_PATH_ALREADY_EXIST);
+	}
+
+	SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
+																			  path.filename(),
+																			  group.storage_node_id());
+	SharingFile& general_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
+																			  path.filename(),
+																			  storage_file.file_id);
+	group.add_file(path.directory_path(), general_file.file_id);
+
+
+	PutFileSession& session = FileSessionManager::instance()->register_put_session(user.user_id,
+																				   request.group_id(),
+																				   request.file_path(),
+																				   request.max_fragment());
+	m_session_id = session.session_id;
+
+	protocol::ReqNodePutFileSession storage_request;
+	storage_request.set_file_path(path.filename());
+	storage_request.set_max_fragment(request.max_fragment());
+
+	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
+	Network::service_send_protobuf(storage_node.service_id, storage_request, transaction_id());
+	service_wait_next_phase(storage_node.service_id, protocol::RspNodePutFileSession(), WAIT_STORAGE_NODE);
+}
+
+
+void PutFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
+{
+	protocol::RspNodePutFileSession node_response;
+	package.parse_as_protobuf(node_response);
+	if (node_response.result())
+	{
+		FileSessionManager::instance()->remove_session(m_session_id);
+		send_back_error(node_response.result());
+		return;
+	}
+
+	PutFileSession* session = FileSessionManager::instance()->find_put_session(m_session_id);
+	session->node_session_id = node_response.session_id();
+
+	protocol::RspPutFileSession response;
+	response.set_session_id(m_session_id);
+	send_back_message(response);
+}
+
+
+void PutFileSessionTrans::on_timeout()
+{
+	FileSessionManager::instance()->remove_session(m_session_id);
+	MultiplyPhaseTransaction::on_timeout();
+}
+
+
+void PutFileSessionTrans::on_error(int conn_id, const Exception& ex)
+{
+	FileSessionManager::instance()->remove_session(m_session_id);
+	MultiplyPhaseTransaction::on_error(conn_id, ex);
+}
+
+
+MultiplyPhaseTransaction* PutFileTrans::factory(int trans_id)
 {
 	return new PutFileTrans(trans_id);
 }
@@ -291,38 +383,25 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 
 	protocol::ReqPutFile request;
 	package.parse_as_protobuf(request);
-	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
-	if (!group.is_manager(user.user_id))
+
+	PutFileSession* session = FileSessionManager::instance()->find_put_session(request.session_id());
+	if (session == nullptr)
 	{
-		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		return send_back_error(ERR_FILE_SESSION_NOT_EXIST);
 	}
 
-	FilePath path = request.file_path();
-	if (request.fragment().fragment_index() == 0) // First put request.
+	if (session->user_id != user.user_id)
 	{
-		if (!group.exist_path(path.directory_path()))
-		{
-			return send_back_error(ERR_PATH_NOT_EXIST);
-		}
-
-		if (group.exist_path(path))
-		{
-			return send_back_error(ERR_PATH_ALREADY_EXIST);
-		}
-
-		SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
-																				  path.filename(),
-																				  group.storage_node_id());
-		SharingFile& general_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
-																				  path.filename(),
-																				  storage_file.file_id);
-		group.add_file(path.directory_path(), general_file.file_id);
+		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
 	}
 
-	protocol::ReqPutFile request_to_storage = request;
-	request_to_storage.set_file_path(path.filename());
+	m_session_id = session->session_id;
+
+	protocol::ReqPutFile node_request = request;
+	node_request.set_session_id(session->node_session_id);
+	SharingGroup& group = SharingGroupManager::instance()->get_group(session->group_id);
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
-	Network::service_send_protobuf(storage_node.service_id, request_to_storage, transaction_id());
+	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE_PUT_FILE);
 }
 
@@ -333,17 +412,101 @@ void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 
 	protocol::RspPutFile rsponse;
 	package.parse_as_protobuf(rsponse);
+	rsponse.set_session_id(m_session_id);
 	send_back_message(rsponse);
 }
 
 
-void PutFileTrans::on_timeout()
+MultiplyPhaseTransaction* GetFileSessionTrans::factory(int trans_id)
 {
-
+	return new GetFileSessionTrans(trans_id);
 }
 
 
-MultiplyPhaseTransaction* GetFileTrans::register_transaction(int trans_id)
+GetFileSessionTrans::GetFileSessionTrans(int trans_id) :
+	MultiplyPhaseTransaction(trans_id) {}
+
+
+void GetFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
+{
+	User& user = UserManager::instance()->get_login_user(conn_id);
+
+	protocol::ReqGetFileSession request;
+	package.parse_as_protobuf(request);
+	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+	if (!group.is_member(user.user_id))
+	{
+		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+	}
+
+	FilePath path = request.file_path();
+	if (!group.exist_path(path))
+	{
+		return send_back_error(ERR_PATH_NOT_EXIST);
+	}
+
+	int file_id = group.get_file_id(path);
+	SharingFile& sharing_file = SharingFileManager::instance()->get_file(file_id);
+	if (sharing_file.file_type != SharingFile::GENERAL_FILE)
+	{
+		return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
+	}
+
+	auto& general_file = dynamic_cast<SharingGeneralFile&>(sharing_file);
+	SharingFile& storage_sharing_file = SharingFileManager::instance()->get_file(general_file.storage_file_id);
+	LIGHTS_ASSERT(storage_sharing_file.file_type == SharingFile::STORAGE_FILE);
+	auto& storage_file = dynamic_cast<SharingStorageFile&>(storage_sharing_file);
+
+	GetFileSession& session = FileSessionManager::instance()->register_get_session(user.user_id,
+																				   request.group_id(),
+																				   request.file_path());
+	m_session_id = session.session_id;
+
+	protocol::ReqNodeGetFileSession node_request;
+	node_request.set_file_path(path.filename());
+	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
+	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
+	service_wait_next_phase(storage_node.service_id, protocol::RspNodeGetFileSession(), WAIT_STORAGE_NODE);
+}
+
+
+void GetFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
+{
+	protocol::RspNodeGetFileSession node_response;
+	package.parse_as_protobuf(node_response);
+
+	if (node_response.result())
+	{
+		FileSessionManager::instance()->remove_session(m_session_id);
+		send_back_error(node_response.result());
+		return;
+	}
+
+	GetFileSession* session = FileSessionManager::instance()->find_get_session(m_session_id);
+	session->node_session_id = node_response.session_id();
+
+	protocol::RspGetFileSession response;
+	response.set_session_id(m_session_id);
+	response.set_max_fragment(node_response.max_fragment());
+	send_back_message(response);
+}
+
+
+void GetFileSessionTrans::on_timeout()
+{
+	FileSessionManager::instance()->remove_session(m_session_id);
+	MultiplyPhaseTransaction::on_timeout();
+}
+
+
+void GetFileSessionTrans::on_error(int conn_id, const Exception& ex)
+{
+	FileSessionManager::instance()->remove_session(m_session_id);
+	MultiplyPhaseTransaction::on_error(conn_id, ex);
+}
+
+
+MultiplyPhaseTransaction* GetFileTrans::factory(int trans_id)
 {
 	return new GetFileTrans(trans_id);
 }
@@ -357,36 +520,46 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
-//	protocol::ReqGetFile m_request;
-	package.parse_as_protobuf(m_request);
-	SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
-	if (!group.is_member(user.user_id))
+	protocol::ReqGetFile request;
+	package.parse_as_protobuf(request);
+
+	GetFileSession* session = FileSessionManager::instance()->find_get_session(request.session_id());
+	if (session == nullptr)
 	{
-		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+		return send_back_error(ERR_FILE_SESSION_NOT_EXIST);
 	}
 
-	FilePath path = m_request.file_path();
+	if (session->user_id != user.user_id)
+	{
+		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
+	}
+
+	SharingGroup& group = SharingGroupManager::instance()->get_group(session->group_id);
+	FilePath path = session->file_path;
 	if (!group.exist_path(path))
 	{
 		return send_back_error(ERR_PATH_NOT_EXIST);
 	}
 
 	int file_id = group.get_file_id(path);
-	SharingFile& general_file = SharingFileManager::instance()->get_file(file_id);
-	if (general_file.file_type != SharingFile::GENERAL_FILE)
+	SharingFile& sharing_file = SharingFileManager::instance()->get_file(file_id);
+	if (sharing_file.file_type != SharingFile::GENERAL_FILE)
 	{
 		return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
 	}
 
-	auto& real_general_file = dynamic_cast<SharingGeneralFile&>(general_file);
-	SharingFile& storage_file = SharingFileManager::instance()->get_file(real_general_file.storage_file_id);
-	LIGHTS_ASSERT(storage_file.file_type == SharingFile::STORAGE_FILE);
-	auto& real_storage_file = dynamic_cast<SharingStorageFile&>(storage_file);
+	m_session_id = session->session_id;
 
-	protocol::ReqGetFile request_to_storage = m_request;
-	request_to_storage.set_file_path(path.filename());
-	StorageNode& storage_node = StorageNodeManager::instance()->get_node(real_storage_file.node_id);
-	Network::service_send_protobuf(storage_node.service_id, request_to_storage, transaction_id());
+	auto& general_file = dynamic_cast<SharingGeneralFile&>(sharing_file);
+	SharingFile& storage_sharing_file = SharingFileManager::instance()->get_file(general_file.storage_file_id);
+	LIGHTS_ASSERT(storage_sharing_file.file_type == SharingFile::STORAGE_FILE);
+	auto& storage_file = dynamic_cast<SharingStorageFile&>(storage_sharing_file);
+
+	protocol::ReqGetFile node_request = request;
+	node_request.set_session_id(session->node_session_id);
+	node_request.set_fragment_index(request.fragment_index());
+	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
+	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), WAIT_STORAGE_NODE_GET_FILE);
 }
 
@@ -395,12 +568,14 @@ void GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
-	package.parse_as_protobuf(m_rsponse);
-	send_back_message(m_rsponse);
+	protocol::RspGetFile response;
+	package.parse_as_protobuf(response);
+	response.set_session_id(m_session_id);
+	send_back_message(response);
 }
 
 
-MultiplyPhaseTransaction* RemovePathTrans::register_transaction(int trans_id)
+MultiplyPhaseTransaction* RemovePathTrans::factory(int trans_id)
 {
 	return new RemovePathTrans(trans_id);
 }
@@ -414,14 +589,15 @@ void RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
-	package.parse_as_protobuf(m_request);
-	SharingGroup& group = SharingGroupManager::instance()->get_group(m_request.group_id());
+	protocol::ReqRemovePath request;
+	package.parse_as_protobuf(request);
+	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
 		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
-	group.remove_path(m_request.path());
+	group.remove_path(request.path());
 }
 
 

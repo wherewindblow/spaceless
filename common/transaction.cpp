@@ -171,9 +171,9 @@ void MultiplyPhaseTransaction::clear_waiting_state()
 }
 
 
-MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(TransactionFatory trans_fatory)
+MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(TransactionFatory trans_factory)
 {
-	MultiplyPhaseTransaction* trans = trans_fatory(m_next_id);
+	MultiplyPhaseTransaction* trans = trans_factory(m_next_id);
 	++m_next_id;
 
 	auto value = std::make_pair(trans->transaction_id(), trans);
@@ -234,9 +234,9 @@ void TransactionManager::register_one_phase_transaction(int cmd,
 }
 
 
-void TransactionManager::register_multiply_phase_transaction(int cmd, TransactionFatory trans_fatory)
+void TransactionManager::register_multiply_phase_transaction(int cmd, TransactionFatory trans_factory)
 {
-	void* handler = reinterpret_cast<void*>(trans_fatory);
+	void* handler = reinterpret_cast<void*>(trans_factory);
 	register_transaction(cmd, TransactionType::MULTIPLY_PHASE_TRANSACTION, handler);
 }
 

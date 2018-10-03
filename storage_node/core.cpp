@@ -122,48 +122,43 @@ lights::FileStream& SharingFileManager::get_file_stream(const std::string& path)
 }
 
 
-FileTransferSession& FileTransferSessionManager::register_session(int group_id, const std::string& filename)
+FileSession& FileSessionManager::register_session(const std::string& filename)
 {
-	FileTransferSession* session = find_session(group_id, filename);
+	FileSession* session = find_session(filename);
 	if (session)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
-	FileTransferSession new_session;
+	FileSession new_session;
 	new_session.session_id = m_next_id;
-	new_session.group_id = group_id;
 	new_session.filename = filename;
 	new_session.max_fragment = 0;
-	new_session.fragment_index = 0;
+	new_session.fragment_index = -1;
 	++m_next_id;
 
 	auto value = std::make_pair(new_session.session_id, new_session);
 	auto result = m_session_list.insert(value);
 	if (result.second == false)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSFER_SESSION_ALREADY_EXIST);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	return result.first->second;
 }
 
 
-FileTransferSession& FileTransferSessionManager::register_put_session(int group_id,
-																	  const std::string& filename,
-																	  int max_fragment)
+FileSession& FileSessionManager::register_put_session(const std::string& filename, int max_fragment)
 {
-	FileTransferSession& session = register_session(group_id, filename);
+	FileSession& session = register_session(filename);
 	session.max_fragment = max_fragment;
 	return session;
 }
 
 
-FileTransferSession& FileTransferSessionManager::register_get_session(int group_id,
-																	  const std::string& filename,
-																	  int fragment_content_len)
+FileSession& FileSessionManager::register_get_session(const std::string& filename, int fragment_content_len)
 {
-	FileTransferSession& session = register_session(group_id, filename);
+	FileSession& session = register_session(filename);
 
 	std::string local_filename = SharingFileManager::instance()->get_absolute_path(filename);
 	lights::FileStream file(local_filename, "r");
@@ -174,13 +169,13 @@ FileTransferSession& FileTransferSessionManager::register_get_session(int group_
 }
 
 
-void FileTransferSessionManager::remove_session(int session_id)
+void FileSessionManager::remove_session(int session_id)
 {
 	m_session_list.erase(session_id);
 }
 
 
-FileTransferSession* FileTransferSessionManager::find_session(int session_id)
+FileSession* FileSessionManager::find_session(int session_id)
 {
 	auto itr = m_session_list.find(session_id);
 	if (itr == m_session_list.end())
@@ -191,11 +186,11 @@ FileTransferSession* FileTransferSessionManager::find_session(int session_id)
 }
 
 
-FileTransferSession* FileTransferSessionManager::find_session(int uid, const std::string& filename)
+FileSession* FileSessionManager::find_session(const std::string& filename)
 {
 	auto itr = std::find_if(m_session_list.begin(), m_session_list.end(), [&](const SessionList::value_type& value_type)
 	{
-		return value_type.second.group_id == uid && value_type.second.filename == filename;
+		return value_type.second.filename == filename;
 	});
 
 	if (itr == m_session_list.end())

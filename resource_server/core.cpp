@@ -379,19 +379,17 @@ bool SharingGroup::exist_path(const FilePath& path)
 }
 
 
-void SharingGroup::add_file(const FilePath& path, int file_id)
+void SharingGroup::add_file(const FilePath& dir_path, int file_id)
 {
-	int path_file_id = get_file_id(path);
-	SharingFile& path_file = SharingFileManager::instance()->get_file(path_file_id);
-	if (path_file.file_type == SharingFile::DIRECTORY)
+	int dir_id = get_file_id(dir_path);
+	SharingFile& dir_file = SharingFileManager::instance()->get_file(dir_id);
+	if (dir_file.file_type != SharingFile::DIRECTORY)
 	{
-		auto& dir = dynamic_cast<SharingDirectory&>(path_file);
-		dir.file_list.push_back(file_id);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIR);
 	}
-	else
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, -1);
-	}
+
+	auto& dir = dynamic_cast<SharingDirectory&>(dir_file);
+	dir.file_list.push_back(file_id);
 }
 
 
@@ -567,10 +565,8 @@ SharingGroup* SharingGroupManager::find_group(int group_id)
 	{
 		return nullptr;
 	}
-	else
-	{
-		return &(itr->second);
-	}
+
+	return &(itr->second);
 }
 
 
@@ -841,6 +837,102 @@ StorageNode& StorageNodeManager::get_fit_node()
 
 StorageNode* default_storage_node = nullptr;
 NetworkConnection* default_storage_conn = nullptr;
+
+
+PutFileSession& FileSessionManager::register_put_session(int user_id,
+														 int group_id,
+														 const std::string& file_path,
+														 int max_fragment)
+{
+	PutFileSession* session_entry = new PutFileSession { m_next_id, user_id, group_id, file_path, max_fragment };
+	++m_next_id;
+
+	Session session { SessionType::PUT_SESSION, session_entry };
+
+	auto value = std::make_pair(session_entry->session_id, session);
+	auto result = m_session_list.insert(value);
+	if (result.second == false)
+	{
+		delete session_entry;
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
+	}
+
+	return *session_entry;
+}
+
+
+GetFileSession& FileSessionManager::register_get_session(int user_id, int group_id, const std::string& file_path)
+{
+	GetFileSession* session_entry = new GetFileSession { m_next_id, user_id, group_id, file_path };
+	++m_next_id;
+
+	Session session { SessionType::GET_SESSION, session_entry };
+
+	auto value = std::make_pair(session_entry->session_id, session);
+	auto result = m_session_list.insert(value);
+	if (result.second == false)
+	{
+		delete session_entry;
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
+	}
+
+	return *session_entry;
+}
+
+
+void FileSessionManager::remove_session(int session_id)
+{
+	auto itr = m_session_list.find(session_id);
+	if (itr == m_session_list.end())
+	{
+		return;
+	}
+
+	if (itr->second.type == SessionType::PUT_SESSION)
+	{
+		delete reinterpret_cast<PutFileSession*>(itr->second.entry);
+	}
+	else if (itr->second.type == SessionType::GET_SESSION)
+	{
+		delete reinterpret_cast<GetFileSession*>(itr->second.entry);
+	}
+
+	m_session_list.erase(session_id);
+}
+
+
+PutFileSession* FileSessionManager::find_put_session(int session_id)
+{
+	auto itr = m_session_list.find(session_id);
+	if (itr == m_session_list.end())
+	{
+		return nullptr;
+	}
+
+	if (itr->second.type != SessionType::PUT_SESSION)
+	{
+		return nullptr;
+	}
+
+	return reinterpret_cast<PutFileSession*>(itr->second.entry);
+}
+
+
+GetFileSession* FileSessionManager::find_get_session(int session_id)
+{
+	auto itr = m_session_list.find(session_id);
+	if (itr == m_session_list.end())
+	{
+		return nullptr;
+	}
+
+	if (itr->second.type != SessionType::GET_SESSION)
+	{
+		return nullptr;
+	}
+
+	return reinterpret_cast<GetFileSession*>(itr->second.entry);
+}
 
 } // namespace resource_server
 } // namespace spaceless

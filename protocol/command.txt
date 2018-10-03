@@ -21,11 +21,19 @@
    21 RspAssignAsMemeber
    22 ReqKickOutUser
    23 RspKickOutUser
-   24 ReqPutFile
-   25 RspPutFile
-   26 ReqGetFile
-   27 RspGetFile
-   28 ReqCreatePath
-   29 RspCreatePath
-   30 ReqRemovePath
-   31 RspRemovePath
+   24 ReqPutFileSession
+   25 RspPutFileSession
+   26 ReqNodePutFileSession
+   27 RspNodePutFileSession
+   28 ReqPutFile
+   29 RspPutFile
+   30 ReqGetFileSession
+   31 RspGetFileSession
+   32 ReqNodeGetFileSession
+   33 RspNodeGetFileSession
+   34 ReqGetFile
+   35 RspGetFile
+   36 ReqCreatePath
+   37 RspCreatePath
+   38 ReqRemovePath
+   39 RspRemovePath

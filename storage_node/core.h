@@ -19,49 +19,47 @@
 namespace spaceless {
 namespace storage_node {
 
-const int MODULE_STORAGE_NODE = 1001;
-
 enum
 {
 	ERR_FILE_ALREADY_EXIST = 1200,
 	ERR_FILE_CANNOT_CREATE = 1201,
 	ERR_FILE_NOT_EXIST = 1202,
 
-	ERR_TRANSFER_SESSION_ALREADY_EXIST = 5000,
-	ERR_TRANSFER_SESSION_CANNOT_CREATE = 5001,
-	ERR_TRANSFER_SESSION_NOT_EXIST = 5002,
+	ERR_FILE_SESSION_ALREADY_EXIST = 5000,
+	ERR_FILE_SESSION_CANNOT_CREATE = 5001,
+	ERR_FILE_SESSION_NOT_EXIST = 5002,
+	ERR_FILE_SESSION_INVALID_INDEX = 5003,
 };
 
 
-struct FileTransferSession
+struct FileSession
 {
 	int session_id;
-	int group_id;
 	std::string filename;
 	int max_fragment;
 	int fragment_index;
 };
 
 
-class FileTransferSessionManager
+class FileSessionManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(FileTransferSessionManager);
+	SPACELESS_SINGLETON_INSTANCE(FileSessionManager);
 
-	FileTransferSession& register_session(int group_id, const std::string& filename);
+	FileSession& register_session(const std::string& filename);
 
-	FileTransferSession& register_put_session(int group_id, const std::string& filename, int max_fragment);
+	FileSession& register_put_session(const std::string& filename, int max_fragment);
 
-	FileTransferSession& register_get_session(int group_id, const std::string& filename, int fragment_content_len);
+	FileSession& register_get_session(const std::string& filename, int fragment_content_len);
 
 	void remove_session(int session_id);
 
-	FileTransferSession* find_session(int session_id);
+	FileSession* find_session(int session_id);
 
-	FileTransferSession* find_session(int uid, const std::string& filename);
+	FileSession* find_session(const std::string& filename);
 
 private:
-	using SessionList = std::map<int, FileTransferSession>;
+	using SessionList = std::map<int, FileSession>;
 	SessionList m_session_list;
 	int m_next_id = 1;
 };

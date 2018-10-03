@@ -40,8 +40,10 @@ int main(int argc, const char* argv[])
 		SharingFileManager::instance()->set_sharing_path(sharing_path);
 		NetworkConnectionManager::instance()->register_listener(ip, port);
 
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqPutFile, transaction::on_put_file)
-		SPACE_REGISTER_ONE_PHASE_TRANSACTION(protocol::ReqGetFile, transaction::on_get_file)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqNodePutFileSession, transaction::on_put_file_session)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqPutFile, transaction::on_put_file)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqNodeGetFileSession, transaction::on_get_file_session)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqGetFile, transaction::on_get_file)
 
 		NetworkConnectionManager::instance()->run();
 	}

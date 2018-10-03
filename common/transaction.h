@@ -225,6 +225,9 @@ public:
 	 */
 	virtual void on_timeout();
 
+	/**
+	 * Processes exception.
+	 */
 	virtual void on_error(int conn_id, const Exception& ex);
 
 	/**
@@ -364,7 +367,7 @@ public:
 	/**
 	 * Registers multiply phase transaction.
 	 */
-	MultiplyPhaseTransaction& register_transaction(TransactionFatory trans_fatory);
+	MultiplyPhaseTransaction& register_transaction(TransactionFatory trans_factory);
 
 	/**
 	 * Removes multiply phase transaction.
@@ -419,14 +422,14 @@ public:
 
 	/**
 	 * Registers association of command with multiply phase transaction.
- 	 * @param trans_fatory  Fatory of multiply phase transaction.
+ 	 * @param trans_factory  Fatory of multiply phase transaction.
      * @note A command only can associate one transaction.
      * @throw Throws exception if register failure.
 	 */
-	void register_multiply_phase_transaction(int cmd, TransactionFatory trans_fatory);
+	void register_multiply_phase_transaction(int cmd, TransactionFatory trans_factory);
 
 	template <typename ProtoBufType>
-	void register_multiply_phase_transaction(const ProtoBufType& msg, TransactionFatory trans_fatory);
+	void register_multiply_phase_transaction(const ProtoBufType& msg, TransactionFatory trans_factory);
 
 	/**
 	 * Removes association of command with transaction.
@@ -455,17 +458,17 @@ void TransactionManager::register_one_phase_transaction(const ProtoBufType& msg,
 
 
 template <typename ProtoBufType>
-void TransactionManager::register_multiply_phase_transaction(const ProtoBufType& msg, TransactionFatory trans_fatory)
+void TransactionManager::register_multiply_phase_transaction(const ProtoBufType& msg, TransactionFatory trans_factory)
 {
 	auto cmd = protocol::get_command(msg);
-	register_multiply_phase_transaction(cmd, trans_fatory);
+	register_multiply_phase_transaction(cmd, trans_factory);
 }
 
 
-#define SPACE_REGISTER_ONE_PHASE_TRANSACTION(protobuf_type, ...) \
+#define SPACELESS_REG_ONE_TRANS(protobuf_type, ...) \
 		TransactionManager::instance()->register_one_phase_transaction(protobuf_type(), __VA_ARGS__);
 
-#define SPACE_REGISTER_MULTIPLE_PHASE_TRANSACTION(protobuf_type, ...) \
+#define SPACELESS_REG_MULTIPLE_TRANS(protobuf_type, ...) \
 		TransactionManager::instance()->register_multiply_phase_transaction(protobuf_type(), __VA_ARGS__);
 
 } // namespace spaceless
