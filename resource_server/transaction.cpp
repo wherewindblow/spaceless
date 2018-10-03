@@ -105,18 +105,18 @@ void on_find_user(int conn_id, const PackageBuffer& package)
 }
 
 
-void convert_group(const SharingGroup& server_group, protocol::SharingGroup& rsponse_group)
+void convert_group(const SharingGroup& server_group, protocol::SharingGroup& response_group)
 {
-	rsponse_group.set_group_id(server_group.group_id());
-	rsponse_group.set_group_name(server_group.group_name());
-	rsponse_group.set_owner_id(server_group.owner_id());
+	response_group.set_group_id(server_group.group_id());
+	response_group.set_group_name(server_group.group_name());
+	response_group.set_owner_id(server_group.owner_id());
 	for (std::size_t i = 0; i < server_group.manager_list().size(); ++i)
 	{
-		*rsponse_group.mutable_manager_list()->Add() = server_group.manager_list()[i];
+		*response_group.mutable_manager_list()->Add() = server_group.manager_list()[i];
 	}
 	for (std::size_t i = 0; i < server_group.member_list().size(); ++i)
 	{
-		*rsponse_group.mutable_member_list()->Add() = server_group.member_list()[i];
+		*response_group.mutable_member_list()->Add() = server_group.member_list()[i];
 	}
 }
 
@@ -405,10 +405,10 @@ void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
-	protocol::RspPutFile rsponse;
-	package.parse_as_protobuf(rsponse);
-	rsponse.set_session_id(m_session_id);
-	send_back_message(rsponse);
+	protocol::RspPutFile response;
+	package.parse_as_protobuf(response);
+	response.set_session_id(m_session_id);
+	send_back_message(response);
 }
 
 

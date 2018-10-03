@@ -165,7 +165,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
 		auto trans_handler = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
 		if (trans_handler)
 		{
-			// Check the send rsponse connection is same as send request connection.
+			// Check the send response connection is same as send request connection.
 			// Don't give chance to other to interrupt not self transaction.
 			if (conn_id == trans_handler->waiting_connection_id() && command == trans_handler->waiting_command())
 			{
