@@ -47,8 +47,6 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	m_reactor.addEventHandler(m_socket, readable);
 	Poco::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown);
 	m_reactor.addEventHandler(m_socket, shutdown);
-//	Poco::Observer<NetworkConnection, TimeoutNotification> timeout(*this, &NetworkConnection::on_timeout);
-//	m_reactor.addEventHandler(m_socket, timeout);
 	Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
 	m_reactor.addEventHandler(m_socket, error);
 
@@ -77,12 +75,19 @@ NetworkConnection::~NetworkConnection()
 
 		Poco::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable);
 		m_reactor.removeEventHandler(m_socket, readable);
+		Poco::Observer<NetworkConnection, WritableNotification> writable(*this, &NetworkConnection::on_writable);
+		m_reactor.removeEventHandler(m_socket, writable);
 		Poco::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown);
 		m_reactor.removeEventHandler(m_socket, shutdown);
-		//	Poco::Observer<NetworkConnection, TimeoutNotification> timeout(*this, &NetworkConnection::on_timeout);
-		//	m_reactor.removeEventHandler(m_socket, timeout);
 		Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
 		m_reactor.removeEventHandler(m_socket, error);
+
+		while (!m_send_list.empty())
+		{
+			int package_id = m_send_list.front();
+			m_send_list.pop();
+			PackageBufferManager::instance()->remove_package(package_id);
+		}
 
 		try
 		{
@@ -319,6 +324,7 @@ void NetworkReactor::onIdle()
 {
 	LIGHTS_DEBUG(logger, "onIdle");
 	process_send_package();
+	SocketReactor::onIdle();
 }
 
 
@@ -326,6 +332,7 @@ void NetworkReactor::onBusy()
 {
 	LIGHTS_DEBUG(logger, "onBusy");
 	process_send_package();
+	SocketReactor::onBusy();
 }
 
 
@@ -333,6 +340,7 @@ void NetworkReactor::onTimeout()
 {
 //	LIGHTS_DEBUG(logger, "onTimeout");
 	process_send_package();
+	SocketReactor::onTimeout();
 }
 
 

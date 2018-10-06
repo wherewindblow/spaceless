@@ -90,22 +90,22 @@ private:
 	void on_readable(ReadableNotification* notification);
 
 	/**
-	 * Handlers writable notification (send buffer is not full).
+	 * Handlers writable notification of socket (send buffer is not full).
 	 */
 	void on_writable(WritableNotification* notification);
 
 	/**
-	 * Handlers shutdown notification.
+	 * Handlers shutdown notification of reactor.
 	 */
 	void on_shutdown(ShutdownNotification* notification);
 
 	/**
-	 * Handlers timeout notification.
+	 * Handlers timeout notification of reactor.
 	 */
 	void on_timeout(TimeoutNotification* notification);
 
 	/**
-	 * Handlers error notification.
+	 * Handlers error notification of socket.
 	 */
 	void on_error(ErrorNotification* notification);
 
