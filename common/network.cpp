@@ -261,6 +261,13 @@ void NetworkConnection::read_for_state(int deep)
 				{
 					return;
 				}
+
+				if (len == 0 && deep == 0) // Closes by peer.
+				{
+					close();
+					return;
+				}
+
 				m_readed_len += len;
 			}
 
