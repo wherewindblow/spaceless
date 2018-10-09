@@ -9,8 +9,8 @@
 #include <execinfo.h>
 #include <Poco/Net/NetException.h>
 #include <Poco/Net/SocketAddress.h>
-#include <Poco/Observer.h>
-
+#include <Poco/AbstractObserver.h>
+#include <Poco/NObserver.h>
 #include "log.h"
 #include "work_schedule.h"
 
@@ -33,6 +33,142 @@ static Logger& logger = get_logger("network");
 
 using Poco::Net::SocketAddress;
 
+namespace details {
+
+template <class C, class N>
+class Observer: public Poco::NObserver<C, N>
+{
+public:
+	typedef Poco::NObserver<C, N> BaseObserver;
+	typedef Poco::AutoPtr<N> NotificationPtr;
+	typedef void (C::*Callback)(const NotificationPtr&);
+
+	Observer(C& object, Callback method, int conn_id):
+		BaseObserver(object, method),
+		m_conn_id(conn_id)
+	{
+	}
+
+	Observer(const Observer& observer):
+		BaseObserver(observer),
+		m_conn_id(observer.m_conn_id)
+	{
+	}
+
+	Observer& operator=(const Observer& observer)
+	{
+		if (&observer != this)
+		{
+			static_cast<BaseObserver&>(*this) = observer;
+			m_conn_id = observer.m_conn_id;
+		}
+		return *this;
+	}
+
+	void notify(Poco::Notification* pNf) const
+	{
+		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(m_conn_id);
+		if (conn != nullptr)
+		{
+			BaseObserver::notify(pNf);
+		}
+	}
+
+private:
+	int m_conn_id;
+};
+
+//template <class C, class N>
+//class Observer: public Poco::AbstractObserver
+//{
+//public:
+//	typedef Poco::AutoPtr<N> NotificationPtr;
+//	typedef void (C::*Callback)(const NotificationPtr&);
+//
+//	Observer(C& object, Callback method, int conn_id):
+//		_pObject(&object),
+//		_method(method),
+//		_conn_id(conn_id)
+//	{
+//	}
+//
+//	Observer(const Observer& observer):
+//		AbstractObserver(observer),
+//		_pObject(observer._pObject),
+//		_method(observer._method),
+//		_conn_id(observer._conn_id)
+//	{
+//	}
+//
+//	~Observer()
+//	{
+//	}
+//
+//	Observer& operator = (const Observer& observer)
+//	{
+//		if (&observer != this)
+//		{
+//			_pObject = observer._pObject;
+//			_method  = observer._method;
+//			_conn_id = observer._conn_id;
+//		}
+//		return *this;
+//	}
+//
+//	void notify(Poco::Notification* pNf) const
+//	{
+//		Poco::Mutex::ScopedLock lock(_mutex);
+//
+//		if (_pObject)
+//		{
+//			N* pCastNf = dynamic_cast<N*>(pNf);
+//			if (pCastNf)
+//			{
+//				NotificationPtr ptr(pCastNf, true);
+//				NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(_conn_id);
+//				if (conn != nullptr)
+//				{
+//					(_pObject->*_method)(ptr);
+//				}
+//			}
+//		}
+//	}
+//
+//	bool equals(const AbstractObserver& abstractObserver) const
+//	{
+//		const Observer* pObs = dynamic_cast<const Observer*>(&abstractObserver);
+//		return pObs && pObs->_pObject == _pObject && pObs->_method == _method && pObs->_conn_id == _conn_id;
+//	}
+//
+//	bool accepts(Poco::Notification* pNf) const
+//	{
+//		return dynamic_cast<N*>(pNf) != 0;
+//	}
+//
+//	AbstractObserver* clone() const
+//	{
+//		return new Observer(*this);
+//	}
+//
+//	void disable()
+//	{
+//		Poco::Mutex::ScopedLock lock(_mutex);
+//
+//		_pObject = 0;
+//	}
+//
+//private:
+//	Observer();
+//
+//	C*       _pObject;
+//	Callback _method;
+//	int      _conn_id;
+//	mutable Poco::Mutex _mutex;
+//};
+
+} // namespace details
+
+
 NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor) :
 	m_socket(socket),
 	m_reactor(reactor),
@@ -43,11 +179,11 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 {
 	m_socket.setBlocking(false);
 
-	Poco::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable);
+	details::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable, m_id);
 	m_reactor.addEventHandler(m_socket, readable);
-	Poco::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown);
+	details::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown, m_id);
 	m_reactor.addEventHandler(m_socket, shutdown);
-	Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
+	details::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error, m_id);
 	m_reactor.addEventHandler(m_socket, error);
 
 	m_id = NetworkConnectionManager::instance()->on_create_connection(this);
@@ -73,13 +209,13 @@ NetworkConnection::~NetworkConnection()
 		LIGHTS_INFO(logger, "Destroys network connection {}.", m_id);
 		NetworkConnectionManager::instance()->on_destroy_connection(m_id);
 
-		Poco::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable);
+		details::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable, m_id);
 		m_reactor.removeEventHandler(m_socket, readable);
-		Poco::Observer<NetworkConnection, WritableNotification> writable(*this, &NetworkConnection::on_writable);
+		details::Observer<NetworkConnection, WritableNotification> writable(*this, &NetworkConnection::on_writable, m_id);
 		m_reactor.removeEventHandler(m_socket, writable);
-		Poco::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown);
+		details::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown, m_id);
 		m_reactor.removeEventHandler(m_socket, shutdown);
-		Poco::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error);
+		details::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error, m_id);
 		m_reactor.removeEventHandler(m_socket, error);
 
 		while (!m_send_list.empty())
@@ -115,16 +251,14 @@ int NetworkConnection::connection_id() const
 }
 
 
-void NetworkConnection::on_readable(ReadableNotification* notification)
+void NetworkConnection::on_readable(const Poco::AutoPtr<ReadableNotification>& notification)
 {
-	notification->release();
 	read_for_state();
 }
 
 
-void NetworkConnection::on_writable(WritableNotification* notification)
+void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& notification)
 {
-	notification->release();
 	const PackageBuffer* package = nullptr;
 	while (!m_send_list.empty())
 	{
@@ -156,29 +290,20 @@ void NetworkConnection::on_writable(WritableNotification* notification)
 
 	if (m_send_list.empty())
 	{
-		Poco::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable);
+		details::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable, m_id);
 		m_reactor.removeEventHandler(m_socket, observer);
 	}
 }
 
 
-void NetworkConnection::on_shutdown(ShutdownNotification* notification)
+void NetworkConnection::on_shutdown(const Poco::AutoPtr<ShutdownNotification>& notification)
 {
-	notification->release();
 	close();
 }
 
 
-void NetworkConnection::on_timeout(TimeoutNotification* notification)
+void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notification)
 {
-	notification->release();
-	LIGHTS_ERROR(logger, "Connction {}: On time out.", m_id);
-}
-
-
-void NetworkConnection::on_error(ErrorNotification* notification)
-{
-	notification->release();
 	LIGHTS_ERROR(logger, "Connction {}: On error.", m_id);
 }
 
@@ -204,7 +329,7 @@ void NetworkConnection::send_package(const PackageBuffer& package)
 	else if (m_sended_len < len)
 	{
 		m_send_list.push(package.package_id());
-		Poco::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable);
+		details::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable, m_id);
 		m_reactor.addEventHandler(m_socket, observer);
 	}
 }

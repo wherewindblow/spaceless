@@ -87,27 +87,22 @@ private:
 	/**
 	 * Handlers readable notification.
 	 */
-	void on_readable(ReadableNotification* notification);
+	void on_readable(const Poco::AutoPtr<ReadableNotification>& notification);
 
 	/**
 	 * Handlers writable notification of socket (send buffer is not full).
 	 */
-	void on_writable(WritableNotification* notification);
+	void on_writable(const Poco::AutoPtr<WritableNotification>& notification);
 
 	/**
 	 * Handlers shutdown notification of reactor.
 	 */
-	void on_shutdown(ShutdownNotification* notification);
-
-	/**
-	 * Handlers timeout notification of reactor.
-	 */
-	void on_timeout(TimeoutNotification* notification);
+	void on_shutdown(const Poco::AutoPtr<ShutdownNotification>& notification);
 
 	/**
 	 * Handlers error notification of socket.
 	 */
-	void on_error(ErrorNotification* notification);
+	void on_error(const Poco::AutoPtr<ErrorNotification>& notification);
 
 	/**
 	 * Read input according to read state.
