@@ -17,6 +17,7 @@
 
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Path.h>
+#include <Poco/File.h>
 
 
 namespace spaceless {
@@ -54,18 +55,14 @@ void SharingFileManager::remove_diretory(const std::string& path)
 }
 
 
-void SharingFileManager::put_file(const std::string& filename, lights::SequenceView file_content, bool is_append, bool is_flush)
+void SharingFileManager::put_file(const std::string& filename, lights::SequenceView file_content, int start_pos, bool is_flush)
 {
 	std::string path = get_absolute_path(filename);
 	lights::FileStream& file = get_file_stream(path);
 	file.clear_error();
-
-	if (!is_append)
-	{
-		file.seek(0, lights::FileSeekWhence::BEGIN);
-	}
-
+	file.seek(start_pos, lights::FileSeekWhence::BEGIN);
 	file.write(file_content);
+
 	if (is_flush)
 	{
 		file.flush();
@@ -96,6 +93,8 @@ const std::string& SharingFileManager::get_sharing_path() const
 
 void SharingFileManager::set_sharing_path(const std::string& sharing_path)
 {
+	Poco::File file(sharing_path);
+	file.createDirectories();
 	m_sharing_path = sharing_path;
 }
 
@@ -134,7 +133,6 @@ FileSession& FileSessionManager::register_session(const std::string& filename)
 	new_session.session_id = m_next_id;
 	new_session.filename = filename;
 	new_session.max_fragment = 0;
-	new_session.fragment_index = -1;
 	++m_next_id;
 
 	auto value = std::make_pair(new_session.session_id, new_session);

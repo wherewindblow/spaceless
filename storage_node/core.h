@@ -28,7 +28,8 @@ enum
 	ERR_FILE_SESSION_ALREADY_EXIST = 5000,
 	ERR_FILE_SESSION_CANNOT_CREATE = 5001,
 	ERR_FILE_SESSION_NOT_EXIST = 5002,
-	ERR_FILE_SESSION_INVALID_INDEX = 5003,
+	ERR_FILE_SESSION_INVALID_FRAGMENT = 5003,
+	ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT = 5004,
 };
 
 
@@ -37,7 +38,6 @@ struct FileSession
 	int session_id;
 	std::string filename;
 	int max_fragment;
-	int fragment_index;
 };
 
 
@@ -82,7 +82,7 @@ public:
 
 	void remove_diretory(const std::string& path);
 
-	void put_file(const std::string& filename, lights::SequenceView file_content, bool is_append = false, bool is_flush = false);
+	void put_file(const std::string& filename, lights::SequenceView file_content, int start_pos, bool is_flush = false);
 
 	std::size_t get_file(const std::string& filename, lights::Sequence file_content, int start_pos = 0);
 

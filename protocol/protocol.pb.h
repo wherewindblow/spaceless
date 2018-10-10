@@ -3272,12 +3272,19 @@ class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
   ::google::protobuf::int32 session_id() const;
   void set_session_id(::google::protobuf::int32 value);
 
+  // int32 next_fragment = 3;
+  void clear_next_fragment();
+  static const int kNextFragmentFieldNumber = 3;
+  ::google::protobuf::int32 next_fragment() const;
+  void set_next_fragment(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspPutFileSession)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::int32 result_;
   ::google::protobuf::int32 session_id_;
+  ::google::protobuf::int32 next_fragment_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -6209,6 +6216,20 @@ inline void RspPutFileSession::set_session_id(::google::protobuf::int32 value) {
   
   session_id_ = value;
   // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFileSession.session_id)
+}
+
+// int32 next_fragment = 3;
+inline void RspPutFileSession::clear_next_fragment() {
+  next_fragment_ = 0;
+}
+inline ::google::protobuf::int32 RspPutFileSession::next_fragment() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFileSession.next_fragment)
+  return next_fragment_;
+}
+inline void RspPutFileSession::set_next_fragment(::google::protobuf::int32 value) {
+  
+  next_fragment_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFileSession.next_fragment)
 }
 
 // -------------------------------------------------------------------

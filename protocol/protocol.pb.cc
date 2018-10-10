@@ -1041,6 +1041,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, result_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, session_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, next_fragment_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqNodePutFileSession, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1172,20 +1173,20 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROT
   { 162, -1, sizeof(::spaceless::protocol::RspKickOutUser)},
   { 168, -1, sizeof(::spaceless::protocol::ReqPutFileSession)},
   { 176, -1, sizeof(::spaceless::protocol::RspPutFileSession)},
-  { 183, -1, sizeof(::spaceless::protocol::ReqNodePutFileSession)},
-  { 190, -1, sizeof(::spaceless::protocol::RspNodePutFileSession)},
-  { 197, -1, sizeof(::spaceless::protocol::ReqPutFile)},
-  { 205, -1, sizeof(::spaceless::protocol::RspPutFile)},
-  { 213, -1, sizeof(::spaceless::protocol::ReqGetFileSession)},
-  { 220, -1, sizeof(::spaceless::protocol::RspGetFileSession)},
-  { 228, -1, sizeof(::spaceless::protocol::ReqNodeGetFileSession)},
-  { 234, -1, sizeof(::spaceless::protocol::RspNodeGetFileSession)},
-  { 242, -1, sizeof(::spaceless::protocol::ReqGetFile)},
-  { 249, -1, sizeof(::spaceless::protocol::RspGetFile)},
-  { 258, -1, sizeof(::spaceless::protocol::ReqCreatePath)},
-  { 265, -1, sizeof(::spaceless::protocol::RspCreatePath)},
-  { 271, -1, sizeof(::spaceless::protocol::ReqRemovePath)},
-  { 279, -1, sizeof(::spaceless::protocol::RspRemovePath)},
+  { 184, -1, sizeof(::spaceless::protocol::ReqNodePutFileSession)},
+  { 191, -1, sizeof(::spaceless::protocol::RspNodePutFileSession)},
+  { 198, -1, sizeof(::spaceless::protocol::ReqPutFile)},
+  { 206, -1, sizeof(::spaceless::protocol::RspPutFile)},
+  { 214, -1, sizeof(::spaceless::protocol::ReqGetFileSession)},
+  { 221, -1, sizeof(::spaceless::protocol::RspGetFileSession)},
+  { 229, -1, sizeof(::spaceless::protocol::ReqNodeGetFileSession)},
+  { 235, -1, sizeof(::spaceless::protocol::RspNodeGetFileSession)},
+  { 243, -1, sizeof(::spaceless::protocol::ReqGetFile)},
+  { 250, -1, sizeof(::spaceless::protocol::RspGetFile)},
+  { 259, -1, sizeof(::spaceless::protocol::ReqCreatePath)},
+  { 266, -1, sizeof(::spaceless::protocol::RspCreatePath)},
+  { 272, -1, sizeof(::spaceless::protocol::ReqRemovePath)},
+  { 280, -1, sizeof(::spaceless::protocol::RspRemovePath)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -1287,36 +1288,37 @@ void AddDescriptorsImpl() {
       "\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\" \n\016Rs"
       "pKickOutUser\022\016\n\006result\030\001 \001(\005\"N\n\021ReqPutFi"
       "leSession\022\020\n\010group_id\030\001 \001(\005\022\021\n\tfile_path"
-      "\030\002 \001(\t\022\024\n\014max_fragment\030\003 \001(\005\"7\n\021RspPutFi"
+      "\030\002 \001(\t\022\024\n\014max_fragment\030\003 \001(\005\"N\n\021RspPutFi"
       "leSession\022\016\n\006result\030\001 \001(\005\022\022\n\nsession_id\030"
-      "\002 \001(\005\"@\n\025ReqNodePutFileSession\022\021\n\tfile_p"
-      "ath\030\002 \001(\t\022\024\n\014max_fragment\030\003 \001(\005\";\n\025RspNo"
-      "dePutFileSession\022\016\n\006result\030\001 \001(\005\022\022\n\nsess"
-      "ion_id\030\002 \001(\005\"R\n\nReqPutFile\022\022\n\nsession_id"
-      "\030\001 \001(\005\022\026\n\016fragment_index\030\002 \001(\005\022\030\n\020fragme"
-      "nt_content\030\003 \001(\014\"H\n\nRspPutFile\022\016\n\006result"
-      "\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\022\026\n\016fragment_i"
-      "ndex\030\003 \001(\005\"8\n\021ReqGetFileSession\022\020\n\010group"
-      "_id\030\001 \001(\005\022\021\n\tfile_path\030\002 \001(\t\"M\n\021RspGetFi"
-      "leSession\022\016\n\006result\030\001 \001(\005\022\022\n\nsession_id\030"
-      "\002 \001(\005\022\024\n\014max_fragment\030\003 \001(\005\"*\n\025ReqNodeGe"
-      "tFileSession\022\021\n\tfile_path\030\002 \001(\t\"Q\n\025RspNo"
-      "deGetFileSession\022\016\n\006result\030\001 \001(\005\022\022\n\nsess"
-      "ion_id\030\002 \001(\005\022\024\n\014max_fragment\030\003 \001(\005\"8\n\nRe"
-      "qGetFile\022\022\n\nsession_id\030\001 \001(\005\022\026\n\016fragment"
-      "_index\030\002 \001(\005\"b\n\nRspGetFile\022\016\n\006result\030\001 \001"
-      "(\005\022\022\n\nsession_id\030\002 \001(\005\022\026\n\016fragment_index"
-      "\030\003 \001(\005\022\030\n\020fragment_content\030\004 \001(\014\"/\n\rReqC"
-      "reatePath\022\020\n\010group_id\030\001 \001(\005\022\014\n\004path\030\002 \001("
-      "\t\"\037\n\rRspCreatePath\022\016\n\006result\030\001 \001(\005\"I\n\rRe"
-      "qRemovePath\022\020\n\010group_id\030\001 \001(\005\022\014\n\004path\030\002 "
-      "\001(\t\022\030\n\020force_remove_all\030\003 \001(\010\"\037\n\rRspRemo"
-      "vePath\022\016\n\006result\030\001 \001(\005*N\n\021MiscellaneousT"
-      "ype\022\031\n\025INVALID_MISCELLANEOUS\020\000\022\036\n\030MAX_FR"
-      "AGMENT_CONTENT_LEN\020\320\206\003b\006proto3"
+      "\002 \001(\005\022\025\n\rnext_fragment\030\003 \001(\005\"@\n\025ReqNodeP"
+      "utFileSession\022\021\n\tfile_path\030\002 \001(\t\022\024\n\014max_"
+      "fragment\030\003 \001(\005\";\n\025RspNodePutFileSession\022"
+      "\016\n\006result\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\"R\n\nR"
+      "eqPutFile\022\022\n\nsession_id\030\001 \001(\005\022\026\n\016fragmen"
+      "t_index\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001(\014\""
+      "H\n\nRspPutFile\022\016\n\006result\030\001 \001(\005\022\022\n\nsession"
+      "_id\030\002 \001(\005\022\026\n\016fragment_index\030\003 \001(\005\"8\n\021Req"
+      "GetFileSession\022\020\n\010group_id\030\001 \001(\005\022\021\n\tfile"
+      "_path\030\002 \001(\t\"M\n\021RspGetFileSession\022\016\n\006resu"
+      "lt\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\022\024\n\014max_frag"
+      "ment\030\003 \001(\005\"*\n\025ReqNodeGetFileSession\022\021\n\tf"
+      "ile_path\030\002 \001(\t\"Q\n\025RspNodeGetFileSession\022"
+      "\016\n\006result\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\022\024\n\014m"
+      "ax_fragment\030\003 \001(\005\"8\n\nReqGetFile\022\022\n\nsessi"
+      "on_id\030\001 \001(\005\022\026\n\016fragment_index\030\002 \001(\005\"b\n\nR"
+      "spGetFile\022\016\n\006result\030\001 \001(\005\022\022\n\nsession_id\030"
+      "\002 \001(\005\022\026\n\016fragment_index\030\003 \001(\005\022\030\n\020fragmen"
+      "t_content\030\004 \001(\014\"/\n\rReqCreatePath\022\020\n\010grou"
+      "p_id\030\001 \001(\005\022\014\n\004path\030\002 \001(\t\"\037\n\rRspCreatePat"
+      "h\022\016\n\006result\030\001 \001(\005\"I\n\rReqRemovePath\022\020\n\010gr"
+      "oup_id\030\001 \001(\005\022\014\n\004path\030\002 \001(\t\022\030\n\020force_remo"
+      "ve_all\030\003 \001(\010\"\037\n\rRspRemovePath\022\016\n\006result\030"
+      "\001 \001(\005*N\n\021MiscellaneousType\022\031\n\025INVALID_MI"
+      "SCELLANEOUS\020\000\022\036\n\030MAX_FRAGMENT_CONTENT_LE"
+      "N\020\320\206\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2430);
+      descriptor, 2453);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
 }
@@ -8229,6 +8231,7 @@ void RspPutFileSession::InitAsDefaultInstance() {
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int RspPutFileSession::kResultFieldNumber;
 const int RspPutFileSession::kSessionIdFieldNumber;
+const int RspPutFileSession::kNextFragmentFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspPutFileSession::RspPutFileSession()
@@ -8243,15 +8246,15 @@ RspPutFileSession::RspPutFileSession(const RspPutFileSession& from)
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::memcpy(&result_, &from.result_,
-    static_cast<size_t>(reinterpret_cast<char*>(&session_id_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(session_id_));
+    static_cast<size_t>(reinterpret_cast<char*>(&next_fragment_) -
+    reinterpret_cast<char*>(&result_)) + sizeof(next_fragment_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspPutFileSession)
 }
 
 void RspPutFileSession::SharedCtor() {
   ::memset(&result_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&session_id_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(session_id_));
+      reinterpret_cast<char*>(&next_fragment_) -
+      reinterpret_cast<char*>(&result_)) + sizeof(next_fragment_));
 }
 
 RspPutFileSession::~RspPutFileSession() {
@@ -8283,8 +8286,8 @@ void RspPutFileSession::Clear() {
   (void) cached_has_bits;
 
   ::memset(&result_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&session_id_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(session_id_));
+      reinterpret_cast<char*>(&next_fragment_) -
+      reinterpret_cast<char*>(&result_)) + sizeof(next_fragment_));
   _internal_metadata_.Clear();
 }
 
@@ -8320,6 +8323,20 @@ bool RspPutFileSession::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &session_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 next_fragment = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &next_fragment_)));
         } else {
           goto handle_unusual;
         }
@@ -8362,6 +8379,11 @@ void RspPutFileSession::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->session_id(), output);
   }
 
+  // int32 next_fragment = 3;
+  if (this->next_fragment() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->next_fragment(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -8384,6 +8406,11 @@ void RspPutFileSession::SerializeWithCachedSizes(
   // int32 session_id = 2;
   if (this->session_id() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->session_id(), target);
+  }
+
+  // int32 next_fragment = 3;
+  if (this->next_fragment() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->next_fragment(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -8415,6 +8442,13 @@ size_t RspPutFileSession::ByteSizeLong() const {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->session_id());
+  }
+
+  // int32 next_fragment = 3;
+  if (this->next_fragment() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->next_fragment());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -8450,6 +8484,9 @@ void RspPutFileSession::MergeFrom(const RspPutFileSession& from) {
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
   }
+  if (from.next_fragment() != 0) {
+    set_next_fragment(from.next_fragment());
+  }
 }
 
 void RspPutFileSession::CopyFrom(const ::google::protobuf::Message& from) {
@@ -8478,6 +8515,7 @@ void RspPutFileSession::InternalSwap(RspPutFileSession* other) {
   using std::swap;
   swap(result_, other->result_);
   swap(session_id_, other->session_id_);
+  swap(next_fragment_, other->next_fragment_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 

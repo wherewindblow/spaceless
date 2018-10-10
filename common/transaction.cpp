@@ -77,6 +77,7 @@ void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
 
 void MultiplyPhaseTransaction::send_back_error(int code)
 {
+	LIGHTS_ERROR(logger, "Connction {}: Error {}.", first_connection_id(), code);
 	protocol::RspError error;
 	error.set_result(code);
 	Network::send_back_protobuf(first_connection_id(), error, m_first_trigger_source);

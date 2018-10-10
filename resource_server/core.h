@@ -51,6 +51,8 @@ enum
 	ERR_FILE_SESSION_CANNOT_CREATE = 1401,
 	ERR_FILE_SESSION_NOT_EXIST = 1402,
 	ERR_FILE_SESSION_NOT_REGISTER_USER = 1403,
+	ERR_FILE_SESSION_INVALID_FRAGMENT = 1404,
+	ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT = 1405,
 };
 
 
@@ -324,6 +326,7 @@ struct PutFileSession
 	int group_id;
 	std::string file_path;
 	int max_fragment;
+	int next_fragment;
 	int node_session_id;
 };
 
@@ -364,12 +367,21 @@ public:
 
 	GetFileSession* find_get_session(int session_id);
 
+	PutFileSession* find_put_session(int user_id, int group_id, const std::string& file_path);
+
+	GetFileSession* find_get_session(int user_id, int group_id, const std::string& file_path);
+
 	PutFileSession& get_put_session(int session_id);
 
 	GetFileSession& get_get_session(int session_id);
 
 private:
+	void on_register_session(int group_id, const std::string& file_path, int session_id);
+
+	Session* find_session(int group_id, const std::string& file_path);
+
 	std::map<int, Session> m_session_list;
+	std::map<int, std::map<std::string, int>> m_group_session_list;
 	int m_next_id = 1;
 };
 

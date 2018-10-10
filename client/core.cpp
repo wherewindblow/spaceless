@@ -8,6 +8,7 @@
 #include "core.h"
 
 #include <cmath>
+#include <fstream>
 #include <common/transaction.h>
 #include <protocol/all.h>
 
@@ -126,6 +127,7 @@ void SharingGroupManager::kick_out_user(int group_id, int user_id)
 	Network::send_protobuf(conn_id, request);
 }
 
+
 void SharingGroupManager::put_file(int group_id, const std::string& local_path, const std::string& remote_path)
 {
 	m_put_session.local_path = local_path;
@@ -145,10 +147,11 @@ void SharingGroupManager::put_file(int group_id, const std::string& local_path, 
 	Network::send_protobuf(conn_id, request);
 }
 
-void SharingGroupManager::start_put_file()
+
+void SharingGroupManager::start_put_file(int next_fragment)
 {
 	lights::FileStream file(m_put_session.local_path, "r");
-	for (int fragment_index = 0; fragment_index < m_put_session.max_fragment; ++fragment_index)
+	for (int fragment_index = next_fragment; fragment_index < m_put_session.max_fragment; ++fragment_index)
 	{
 		protocol::ReqPutFile request;
 		request.set_session_id(m_put_session.session_id);
@@ -180,13 +183,35 @@ void SharingGroupManager::get_file(int group_id, const std::string& remote_path,
 
 void SharingGroupManager::start_get_file()
 {
-	for (int fragment_index = 0; fragment_index < m_get_session.max_fragment; ++fragment_index)
+	int next_fragment = get_next_fragment(m_get_session.local_path);
+	for (int fragment_index = next_fragment; fragment_index < m_get_session.max_fragment; ++fragment_index)
 	{
 		protocol::ReqGetFile request;
 		request.set_session_id(m_get_session.session_id);
 		request.set_fragment_index(fragment_index);
 		Network::send_protobuf(conn_id, request);
 	}
+}
+
+
+int SharingGroupManager::get_next_fragment(const std::string& local_path)
+{
+	std::string meta_filename = m_get_session.local_path + ".meta";
+	int next_fragment = 0;
+	std::ifstream meta_file(meta_filename);
+	while (meta_file)
+	{
+		meta_file >> next_fragment;
+	}
+	return next_fragment;
+}
+
+
+void SharingGroupManager::set_next_fragment(const std::string& local_path, int next_fragment)
+{
+	std::string meta_filename = m_get_session.local_path + ".meta";
+	lights::FileStream meta_file(meta_filename, "a");
+	meta_file << lights::format("{}\n", next_fragment);
 }
 
 

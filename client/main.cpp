@@ -340,7 +340,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 		package.parse_as_protobuf(response);
 		FileSession& session = SharingGroupManager::instance()->put_file_session();
 		session.session_id = response.session_id();
-		SharingGroupManager::instance()->start_put_file();
+		SharingGroupManager::instance()->start_put_file(response.next_fragment());
 	}
 	else if (command == cmd("RspPutFile"))
 	{
@@ -383,9 +383,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 
 		if (response.fragment_index() + 1 < session.max_fragment)
 		{
-//			SharingGroupManager::instance()->get_file(session.group_id,
-//													  session.remote_path,
-//													  session.local_path);
+			SharingGroupManager::instance()->set_next_fragment(session.local_path, response.fragment_index() + 1);
 		}
 		else
 		{

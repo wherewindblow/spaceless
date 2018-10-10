@@ -69,7 +69,7 @@ class PutFileTrans: public MultiplyPhaseTransaction
 public:
 	enum
 	{
-		WAIT_STORAGE_NODE_PUT_FILE,
+		WAIT_STORAGE_NODE,
 	};
 
 	static MultiplyPhaseTransaction* factory(int trans_id);
@@ -115,7 +115,7 @@ class GetFileTrans: public MultiplyPhaseTransaction
 public:
 	enum
 	{
-		WAIT_STORAGE_NODE_GET_FILE,
+		WAIT_STORAGE_NODE,
 	};
 
 	static MultiplyPhaseTransaction* factory(int trans_id);
@@ -136,7 +136,7 @@ class RemovePathTrans: public MultiplyPhaseTransaction
 public:
 	enum
 	{
-		WAIT_STORAGE_NODE_GET_FILE,
+		WAIT_STORAGE_NODE,
 	};
 
 	static MultiplyPhaseTransaction* factory(int trans_id);

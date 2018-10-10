@@ -297,35 +297,48 @@ void PutFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
-	FilePath path = request.file_path();
-	if (!group.exist_path(path.directory_path()))
+	PutFileSession* session = FileSessionManager::instance()->find_put_session(user.user_id,
+																			   request.group_id(),
+																			   request.file_path());
+	if (session != nullptr)
 	{
-		return send_back_error(ERR_PATH_NOT_EXIST);
+		if (request.max_fragment() != session->max_fragment)
+		{
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
+		}
+	}
+	else
+	{
+		FilePath path = request.file_path();
+		if (!group.exist_path(path.directory_path()))
+		{
+			return send_back_error(ERR_PATH_NOT_EXIST);
+		}
+
+		if (group.exist_path(path))
+		{
+			return send_back_error(ERR_PATH_ALREADY_EXIST);
+		}
+
+		SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
+																				  path.filename(),
+																				  group.storage_node_id());
+		SharingFile& general_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
+																				  path.filename(),
+																				  storage_file.file_id);
+		group.add_file(path.directory_path(), general_file.file_id);
+		session = &FileSessionManager::instance()->register_put_session(user.user_id,
+																		request.group_id(),
+																		request.file_path(),
+																		request.max_fragment());
 	}
 
-	if (group.exist_path(path))
-	{
-		return send_back_error(ERR_PATH_ALREADY_EXIST);
-	}
-
-	SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
-																			  path.filename(),
-																			  group.storage_node_id());
-	SharingFile& general_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
-																			  path.filename(),
-																			  storage_file.file_id);
-	group.add_file(path.directory_path(), general_file.file_id);
-
-
-	PutFileSession& session = FileSessionManager::instance()->register_put_session(user.user_id,
-																				   request.group_id(),
-																				   request.file_path(),
-																				   request.max_fragment());
-	m_session_id = session.session_id;
+	m_session_id = session->session_id;
 
 	protocol::ReqNodePutFileSession storage_request;
+	FilePath path = session->file_path;
 	storage_request.set_file_path(path.filename());
-	storage_request.set_max_fragment(request.max_fragment());
+	storage_request.set_max_fragment(session->max_fragment);
 
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 	Network::service_send_protobuf(storage_node.service_id, storage_request, transaction_id());
@@ -349,6 +362,7 @@ void PutFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
 
 	protocol::RspPutFileSession response;
 	response.set_session_id(m_session_id);
+	response.set_next_fragment(session->next_fragment);
 	send_back_message(response);
 }
 
@@ -390,6 +404,12 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
 	}
 
+	if (request.fragment_index() != session.next_fragment)
+	{
+		return send_back_error(ERR_FILE_SESSION_INVALID_FRAGMENT);
+	}
+
+	++session.next_fragment;
 	m_session_id = session.session_id;
 
 	protocol::ReqPutFile node_request = request;
@@ -397,7 +417,7 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
 	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
-	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE_PUT_FILE);
+	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE);
 }
 
 
@@ -452,10 +472,20 @@ void GetFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 	LIGHTS_ASSERT(storage_sharing_file.file_type == SharingFile::STORAGE_FILE);
 	auto& storage_file = dynamic_cast<SharingStorageFile&>(storage_sharing_file);
 
-	GetFileSession& session = FileSessionManager::instance()->register_get_session(user.user_id,
-																				   request.group_id(),
-																				   request.file_path());
-	m_session_id = session.session_id;
+	GetFileSession* previous_session = FileSessionManager::instance()->find_get_session(user.user_id,
+																						request.group_id(),
+																						request.file_path());
+	if (previous_session != nullptr)
+	{
+		m_session_id = previous_session->session_id;
+	}
+	else
+	{
+		GetFileSession& session = FileSessionManager::instance()->register_get_session(user.user_id,
+																					   request.group_id(),
+																					   request.file_path());
+		m_session_id = session.session_id;
+	}
 
 	protocol::ReqNodeGetFileSession node_request;
 	node_request.set_file_path(path.filename());
@@ -545,12 +575,12 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	LIGHTS_ASSERT(storage_sharing_file.file_type == SharingFile::STORAGE_FILE);
 	auto& storage_file = dynamic_cast<SharingStorageFile&>(storage_sharing_file);
 
-	protocol::ReqGetFile node_request = request;
+	protocol::ReqGetFile node_request;
 	node_request.set_session_id(session.node_session_id);
 	node_request.set_fragment_index(request.fragment_index());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
 	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
-	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), WAIT_STORAGE_NODE_GET_FILE);
+	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), WAIT_STORAGE_NODE);
 }
 
 

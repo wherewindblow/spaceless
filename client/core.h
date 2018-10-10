@@ -95,11 +95,15 @@ public:
 
 	void put_file(int group_id, const std::string& local_path, const std::string& remote_path);
 	
-	void start_put_file();
+	void start_put_file(int next_fragment);
 
 	void get_file(int group_id, const std::string& remote_path, const std::string& local_path);
 
 	void start_get_file();
+	
+	int get_next_fragment(const std::string& local_path);
+	
+	void set_next_fragment(const std::string& local_path, int next_fragment);
 
 	void create_path(int group_id, const std::string& directory_path);
 

@@ -844,7 +844,15 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 														 const std::string& file_path,
 														 int max_fragment)
 {
-	PutFileSession* session_entry = new PutFileSession { m_next_id, user_id, group_id, file_path, max_fragment };
+	PutFileSession* session_entry = new PutFileSession{
+		m_next_id,
+		user_id,
+		group_id,
+		file_path,
+		max_fragment,
+		0,
+		0,
+	};
 	++m_next_id;
 
 	Session session { SessionType::PUT_SESSION, session_entry };
@@ -857,13 +865,20 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
 	}
 
+	on_register_session(group_id, file_path, session_entry->session_id);
 	return *session_entry;
 }
 
 
 GetFileSession& FileSessionManager::register_get_session(int user_id, int group_id, const std::string& file_path)
 {
-	GetFileSession* session_entry = new GetFileSession { m_next_id, user_id, group_id, file_path };
+	GetFileSession* session_entry = new GetFileSession {
+		m_next_id,
+		user_id,
+		group_id,
+		file_path,
+		0,
+	};
 	++m_next_id;
 
 	Session session { SessionType::GET_SESSION, session_entry };
@@ -876,6 +891,7 @@ GetFileSession& FileSessionManager::register_get_session(int user_id, int group_
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
 	}
 
+	on_register_session(group_id, file_path, session_entry->session_id);
 	return *session_entry;
 }
 
@@ -935,6 +951,52 @@ GetFileSession* FileSessionManager::find_get_session(int session_id)
 }
 
 
+PutFileSession* FileSessionManager::find_put_session(int user_id, int group_id, const std::string& file_path)
+{
+	Session* session = find_session(group_id, file_path);
+	if (session == nullptr)
+	{
+		return nullptr;
+	}
+
+	if (session->type != SessionType::PUT_SESSION)
+	{
+		return nullptr;
+	}
+
+	auto put_session = reinterpret_cast<PutFileSession*>(session->entry);
+	if (put_session->user_id != user_id)
+	{
+		return nullptr;
+	}
+
+	return put_session;
+}
+
+
+GetFileSession* FileSessionManager::find_get_session(int user_id, int group_id, const std::string& file_path)
+{
+	Session* session = find_session(group_id, file_path);
+	if (session == nullptr)
+	{
+		return nullptr;
+	}
+
+	if (session->type != SessionType::GET_SESSION)
+	{
+		return nullptr;
+	}
+
+	auto get_session = reinterpret_cast<GetFileSession*>(session->entry);
+	if (get_session->user_id != user_id)
+	{
+		return nullptr;
+	}
+
+	return get_session;
+}
+
+
 PutFileSession& FileSessionManager::get_put_session(int session_id)
 {
 	PutFileSession* session = find_put_session(session_id);
@@ -956,6 +1018,39 @@ GetFileSession& FileSessionManager::get_get_session(int session_id)
 	}
 
 	return *session;
+}
+
+
+void FileSessionManager::on_register_session(int group_id, const std::string& file_path, int session_id)
+{
+	auto& group_session = m_group_session_list[group_id];
+	group_session[file_path] = session_id;
+}
+
+
+FileSessionManager::Session* FileSessionManager::find_session(int group_id, const std::string& file_path)
+{
+	auto group_session_itr = m_group_session_list.find(group_id);
+	if (group_session_itr == m_group_session_list.end())
+	{
+		return nullptr;
+	}
+
+	auto& group_session = group_session_itr->second;
+	auto file_session_itr = group_session.find(file_path);
+	if (file_session_itr == group_session.end())
+	{
+		return nullptr;
+	}
+
+	auto session_itr = m_session_list.find(file_session_itr->second);
+	if (session_itr == m_session_list.end())
+	{
+		group_session.erase(file_path); // Delay removing.
+		return nullptr;
+	}
+
+	return &session_itr->second;
 }
 
 } // namespace resource_server
