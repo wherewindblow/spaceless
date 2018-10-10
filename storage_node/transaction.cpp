@@ -20,7 +20,7 @@ namespace transaction {
 void on_put_file_session(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqNodePutFileSession request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	FileSession* session = FileSessionManager::instance()->find_session(request.file_path());
 	if (session != nullptr)
@@ -44,7 +44,7 @@ void on_put_file_session(int conn_id, const PackageBuffer& package)
 void on_put_file(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqPutFile request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	FileSession& session = FileSessionManager::instance()->get_session(request.session_id());
 
@@ -73,7 +73,7 @@ void on_put_file(int conn_id, const PackageBuffer& package)
 void on_get_file_session(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqNodeGetFileSession request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	FileSession* session = FileSessionManager::instance()->find_session(request.file_path());
 	if (session == nullptr)
@@ -92,7 +92,7 @@ void on_get_file_session(int conn_id, const PackageBuffer& package)
 void on_get_file(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqGetFile request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	FileSession& session = FileSessionManager::instance()->get_session(request.session_id());
 	if (request.fragment_index() >= session.max_fragment)

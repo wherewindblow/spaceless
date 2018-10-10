@@ -24,7 +24,7 @@ void UserManager::register_user(const std::string& username, const std::string& 
 	protocol::ReqRegisterUser request;
 	request.set_username(username);
 	request.set_password(password);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -33,7 +33,7 @@ void UserManager::login_user(int user_id, const std::string& password)
 	protocol::ReqLoginUser request;
 	request.set_user_id(user_id);
 	request.set_password(password);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -41,7 +41,7 @@ void UserManager::remove_user(int user_id)
 {
 	protocol::ReqRemoveUser request;
 	request.set_user_id(user_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -49,7 +49,7 @@ void UserManager::find_user(int user_id)
 {
 	protocol::ReqFindUser request;
 	request.set_user_id(user_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -57,7 +57,7 @@ void UserManager::find_user(const std::string& username)
 {
 	protocol::ReqFindUser request;
 	request.set_username(username);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -65,7 +65,7 @@ void SharingGroupManager::register_group(const std::string& group_name)
 {
 	protocol::ReqRegisterGroup request;
 	request.set_group_name(group_name);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -73,7 +73,7 @@ void SharingGroupManager::remove_group(int group_id)
 {
 	protocol::ReqRemoveGroup request;
 	request.set_group_id(group_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -81,7 +81,7 @@ void SharingGroupManager::find_group(int group_id)
 {
 	protocol::ReqFindGroup request;
 	request.set_group_id(group_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -89,7 +89,7 @@ void SharingGroupManager::find_group(const std::string& group_name)
 {
 	protocol::ReqFindGroup request;
 	request.set_group_name(group_name);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -97,7 +97,7 @@ void SharingGroupManager::join_group(int group_id)
 {
 	protocol::ReqJoinGroup request;
 	request.set_group_id(group_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -106,7 +106,7 @@ void SharingGroupManager::assign_as_manager(int group_id, int user_id)
 	protocol::ReqAssignAsManager request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -115,7 +115,7 @@ void SharingGroupManager::assign_as_memeber(int group_id, int user_id)
 	protocol::ReqAssignAsMemeber request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -124,7 +124,7 @@ void SharingGroupManager::kick_out_user(int group_id, int user_id)
 	protocol::ReqKickOutUser request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -144,7 +144,7 @@ void SharingGroupManager::put_file(int group_id, const std::string& local_path, 
 	request.set_group_id(group_id);
 	request.set_file_path(remote_path);
 	request.set_max_fragment(m_put_session.max_fragment);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -161,7 +161,7 @@ void SharingGroupManager::start_put_file(int next_fragment)
 		file.seek(fragment_index * protocol::MAX_FRAGMENT_CONTENT_LEN, lights::FileSeekWhence::BEGIN);
 		std::size_t content_len = file.read({content, protocol::MAX_FRAGMENT_CONTENT_LEN});
 		request.set_fragment_content(content, content_len);
-		Network::send_protobuf(conn_id, request);
+		Network::send_protocol(conn_id, request);
 		m_put_session.fragment_state[fragment_index] = true;
 	}
 }
@@ -177,7 +177,7 @@ void SharingGroupManager::get_file(int group_id, const std::string& remote_path,
 	protocol::ReqGetFileSession request;
 	request.set_group_id(group_id);
 	request.set_file_path(remote_path);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -189,7 +189,7 @@ void SharingGroupManager::start_get_file()
 		protocol::ReqGetFile request;
 		request.set_session_id(m_get_session.session_id);
 		request.set_fragment_index(fragment_index);
-		Network::send_protobuf(conn_id, request);
+		Network::send_protocol(conn_id, request);
 	}
 }
 
@@ -220,7 +220,7 @@ void SharingGroupManager::create_path(int group_id, const std::string& path)
 	protocol::ReqCreatePath request;
 	request.set_group_id(group_id);
 	request.set_path(path);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 
@@ -230,7 +230,7 @@ void SharingGroupManager::remove_path(int group_id, const std::string& path, boo
 	request.set_group_id(group_id);
 	request.set_path(path);
 	request.set_force_remove_all(force_remove_all);
-	Network::send_protobuf(conn_id, request);
+	Network::send_protocol(conn_id, request);
 }
 
 

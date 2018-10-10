@@ -2,6 +2,7 @@ include_directories(..)
 
 set(SPACELESS_PROTOCOL_SRC
         all.h
+        message_declare.h message.h
         protocol.pb.h protocol.pb.cc
         command.h command.cpp)
 

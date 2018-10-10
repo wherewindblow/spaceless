@@ -6,5 +6,6 @@
 
 #pragma once
 
+#include "message.h"
 #include "protocol.pb.h"
 #include "command.h"

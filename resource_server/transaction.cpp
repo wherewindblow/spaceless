@@ -40,7 +40,7 @@ void on_register_user(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqRegisterUser request;
 	protocol::RspRegisterUser response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->register_user(request.username(), request.password());
 	convert_user(user, *response.mutable_user());
@@ -52,7 +52,7 @@ void on_login_user(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqLoginUser request;
 	protocol::RspLoginUser response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	bool pass = UserManager::instance()->login_user(request.user_id(), request.password(), conn_id);
 	if (!pass)
@@ -68,7 +68,7 @@ void on_remove_user(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqRemoveUser request;
 	protocol::RspRemoveUser response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	UserManager::instance()->remove_user(request.user_id());
 
@@ -80,7 +80,7 @@ void on_find_user(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqFindUser request;
 	protocol::RspFindUser response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User* user = nullptr;
 	if (request.user_id())
@@ -125,7 +125,7 @@ void on_register_group(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqRegisterGroup request;
 	protocol::RspRegisterGroup response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->register_group(user.user_id, request.group_name());
@@ -139,7 +139,7 @@ void on_remove_group(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqRemoveGroup request;
 	protocol::RspRemoveGroup response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroupManager::instance()->remove_group(user.user_id, request.group_id());
@@ -152,7 +152,7 @@ void on_find_group(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqFindGroup request;
 	protocol::RspFindGroup response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
@@ -183,7 +183,7 @@ void on_join_group(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqJoinGroup request;
 	protocol::RspJoinGroup response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -197,7 +197,7 @@ void on_assign_as_manager(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqAssignAsManager request;
 	protocol::RspAssignAsManager response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -218,7 +218,7 @@ void on_assign_as_memeber(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqAssignAsMemeber request;
 	protocol::RspAssignAsMemeber response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -239,7 +239,7 @@ void on_kick_out_user(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqKickOutUser request;
 	protocol::RspKickOutUser response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -260,7 +260,7 @@ void on_create_path(int conn_id, const PackageBuffer& package)
 {
 	protocol::ReqCreatePath request;
 	protocol::RspCreatePath response;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
@@ -289,7 +289,7 @@ void PutFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	protocol::ReqPutFileSession request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
@@ -349,7 +349,7 @@ void PutFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 void PutFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	protocol::RspNodePutFileSession node_response;
-	package.parse_as_protobuf(node_response);
+	package.parse_as_protocol(node_response);
 	if (node_response.result())
 	{
 		FileSessionManager::instance()->remove_session(m_session_id);
@@ -396,7 +396,7 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
 	protocol::ReqPutFile request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	PutFileSession& session = FileSessionManager::instance()->get_put_session(request.session_id());
 	if (session.user_id != user.user_id)
@@ -426,7 +426,7 @@ void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
 	protocol::RspPutFile response;
-	package.parse_as_protobuf(response);
+	package.parse_as_protocol(response);
 	response.set_session_id(m_session_id);
 	send_back_message(response);
 }
@@ -447,7 +447,7 @@ void GetFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
 	protocol::ReqGetFileSession request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_member(user.user_id))
 	{
@@ -498,7 +498,7 @@ void GetFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 void GetFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
 {
 	protocol::RspNodeGetFileSession node_response;
-	package.parse_as_protobuf(node_response);
+	package.parse_as_protocol(node_response);
 
 	if (node_response.result())
 	{
@@ -546,7 +546,7 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
 	protocol::ReqGetFile request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 
 	GetFileSession& session = FileSessionManager::instance()->get_get_session(request.session_id());
 	if (session.user_id != user.user_id)
@@ -589,7 +589,7 @@ void GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
 	protocol::RspGetFile response;
-	package.parse_as_protobuf(response);
+	package.parse_as_protocol(response);
 	response.set_session_id(m_session_id);
 	send_back_message(response);
 }
@@ -610,7 +610,7 @@ void RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
 	protocol::ReqRemovePath request;
-	package.parse_as_protobuf(request);
+	package.parse_as_protocol(request);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{

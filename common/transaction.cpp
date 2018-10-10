@@ -18,10 +18,82 @@ namespace spaceless {
 static Logger& logger = get_logger("worker");
 Logger& Network::logger = get_logger("worker");
 
+
 void Network::send_package(int conn_id, const PackageBuffer& package)
 {
 	NetworkMessageQueue::Message msg = {conn_id, package.package_id()};
 	NetworkMessageQueue::instance()->push(NetworkMessageQueue::OUT_QUEUE, msg);
+}
+
+
+void Network::send_protocol(int conn_id,
+							const protocol::Message& msg,
+							int bind_trans_id,
+							int trigger_trans_id,
+							int trigger_cmd)
+{
+	int size = msg.ByteSize();
+	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
+	{
+		// LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_TOO_LARGE);
+		LIGHTS_ERROR(logger, "Connction {}: Content length {} is too large.", conn_id, size)
+		return;
+	}
+
+	PackageBuffer& package = PackageBufferManager::instance()->register_package();
+	PackageHeader& header = package.header();
+
+	if (protocol::get_message_name(msg) == "RspError" && trigger_cmd != 0)
+	{
+		// Convert RspError to RspXXX that associate trigger cmd. So dependent on protobuf message name.
+		auto msg_name = protocol::get_message_name(trigger_cmd);
+		msg_name.replace(0, 3, "Rsp");
+		header.command = protocol::get_command(msg_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.command, msg_name);
+	}
+	else
+	{
+		auto& msg_name = protocol::get_message_name(msg);
+		header.command = protocol::get_command(msg_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.command, msg_name);
+	}
+
+	header.self_trans_id = bind_trans_id;
+	header.trigger_trans_id = trigger_trans_id;
+	header.content_length = size;
+	lights::Sequence storage = package.content_buffer();
+	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
+
+	send_package(conn_id, package);
+}
+
+
+void Network::send_back_protobuf(int conn_id,
+								 const protocol::Message& msg,
+								 const PackageBuffer& trigger_package,
+								 int bind_trans_id)
+{
+	send_protocol(conn_id, msg, bind_trans_id, trigger_package.header().self_trans_id, trigger_package.header().command);
+}
+
+
+void Network::send_back_protobuf(int conn_id,
+								 const protocol::Message& msg,
+								 const PackageTriggerSource& trigger_source,
+								 int bind_trans_id)
+{
+	send_protocol(conn_id, msg, bind_trans_id, trigger_source.self_trans_id, trigger_source.command);
+}
+
+
+void Network::service_send_protobuf(int service_id,
+									const protocol::Message& msg,
+									int bind_trans_id,
+									int trigger_trans_id,
+									int trigger_cmd)
+{
+	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
+	send_protocol(conn_id, msg, bind_trans_id, trigger_trans_id, trigger_cmd);
 }
 
 
@@ -32,22 +104,9 @@ void Network::service_send_package(int service_id, const PackageBuffer& package)
 }
 
 
-int Network::get_connetion_id(int service_id)
-{
-	return NetworkServiceManager::instance()->get_connection_id(service_id);
-}
-
-
 MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id) :
 	m_id(trans_id)
 {
-}
-
-void on_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
-{
-	protocol::RspError error;
-	error.set_result(ex.code());
-	Network::send_back_protobuf(conn_id, error, trigger_source);
 }
 
 
@@ -71,16 +130,7 @@ void MultiplyPhaseTransaction::on_timeout()
 
 void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
 {
-	spaceless::on_error(m_first_conn_id, m_first_trigger_source, ex);
-}
-
-
-void MultiplyPhaseTransaction::send_back_error(int code)
-{
-	LIGHTS_ERROR(logger, "Connction {}: Error {}.", first_connection_id(), code);
-	protocol::RspError error;
-	error.set_result(code);
-	Network::send_back_protobuf(first_connection_id(), error, m_first_trigger_source);
+	spaceless::on_transaction_error(m_first_conn_id, m_first_trigger_source, ex);
 }
 
 
@@ -117,10 +167,42 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 }
 
 
+void MultiplyPhaseTransaction::wait_next_phase(int conn_id, const protocol::Message& msg, int current_phase, int timeout)
+{
+	auto cmd = protocol::get_command(msg);
+	wait_next_phase(conn_id, cmd, current_phase, timeout);
+}
+
+
 void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout)
 {
 	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
 	wait_next_phase(conn_id, cmd, current_phase, timeout);
+}
+
+
+void MultiplyPhaseTransaction::service_wait_next_phase(int service_id,
+													   const protocol::Message& msg,
+													   int current_phase,
+													   int timeout)
+{
+	auto cmd = protocol::get_command(msg);
+	service_wait_next_phase(service_id, cmd, current_phase, timeout);
+}
+
+
+void MultiplyPhaseTransaction::send_back_message(const protocol::Message& msg)
+{
+	Network::send_back_protobuf(m_first_conn_id, msg, m_first_trigger_source);
+}
+
+
+void MultiplyPhaseTransaction::send_back_error(int code)
+{
+	LIGHTS_ERROR(logger, "Connction {}: Error {}.", first_connection_id(), code);
+	protocol::RspError error;
+	error.set_result(code);
+	Network::send_back_protobuf(first_connection_id(), error, m_first_trigger_source);
 }
 
 
@@ -212,6 +294,14 @@ MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_transaction(int 
 }
 
 
+void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
+{
+	protocol::RspError error;
+	error.set_result(ex.code());
+	Network::send_back_protobuf(conn_id, error, trigger_source);
+}
+
+
 void TransactionManager::register_transaction(int cmd,
 											  TransactionType trans_type,
 											  void* handler,
@@ -235,10 +325,26 @@ void TransactionManager::register_one_phase_transaction(int cmd,
 }
 
 
+void TransactionManager::register_one_phase_transaction(const protocol::Message& msg,
+														OnePhaseTrancation trancation,
+														TransactionErrorHandler error_handler)
+{
+	auto cmd = protocol::get_command(msg);
+	register_one_phase_transaction(cmd, trancation, error_handler);
+}
+
+
 void TransactionManager::register_multiply_phase_transaction(int cmd, TransactionFatory trans_factory)
 {
 	void* handler = reinterpret_cast<void*>(trans_factory);
 	register_transaction(cmd, TransactionType::MULTIPLY_PHASE_TRANSACTION, handler);
+}
+
+
+void TransactionManager::register_multiply_phase_transaction(const protocol::Message& msg, TransactionFatory trans_factory)
+{
+	auto cmd = protocol::get_command(msg);
+	register_multiply_phase_transaction(cmd, trans_factory);
 }
 
 

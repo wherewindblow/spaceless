@@ -258,15 +258,15 @@ void cmd_ui_interface(ConnectionList& conn_list)
 	}
 }
 
-int cmd(const std::string& protobuf_name)
+int cmd(const std::string& protocol_name)
 {
-	return protocol::get_command(protobuf_name);
+	return protocol::get_command(protocol_name);
 }
 
 void read_handler(int conn_id, const PackageBuffer& package)
 {
 	protocol::RspError error;
-	package.parse_as_protobuf(error);
+	package.parse_as_protocol(error);
 	if (error.result())
 	{
 		std::cout << lights::format("Failure {} by {}.", error.result(), package.header().command) << std::endl;
@@ -277,13 +277,13 @@ void read_handler(int conn_id, const PackageBuffer& package)
 	if (command == cmd("RspRegisterUser"))
 	{
 		protocol::RspRegisterUser response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		std::cout << lights::format("Your user id is {}.", response.user().user_id()) << std::endl;
 	}
 	else if (command == cmd("RspFindUser"))
 	{
 		protocol::RspFindUser response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		std::cout << lights::format("Your user id is {} and username is {}.",
 									response.user().user_id(), response.user().user_name())
 				  << std::endl;
@@ -291,13 +291,13 @@ void read_handler(int conn_id, const PackageBuffer& package)
 	else if (command == cmd("RspRegisterGroup"))
 	{
 		protocol::RspRegisterGroup response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		std::cout << lights::format("Group id is {}.", response.group_id()) << std::endl;
 	}
 	else if (command == cmd("RspFindGroup"))
 	{
 		protocol::RspFindGroup response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		std::string msg;
 		auto sink = lights::make_format_sink(msg);
 
@@ -337,7 +337,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 	else if (command == cmd("RspPutFileSession"))
 	{
 		protocol::RspPutFileSession response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		FileSession& session = SharingGroupManager::instance()->put_file_session();
 		session.session_id = response.session_id();
 		SharingGroupManager::instance()->start_put_file(response.next_fragment());
@@ -345,7 +345,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 	else if (command == cmd("RspPutFile"))
 	{
 		protocol::RspPutFile response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		FileSession& session = SharingGroupManager::instance()->put_file_session();
 		if (response.fragment_index() + 1 >= session.max_fragment)
 		{
@@ -365,7 +365,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 	else if (command == cmd("RspGetFileSession"))
 	{
 		protocol::RspGetFileSession response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		FileSession& session = SharingGroupManager::instance()->get_file_session();
 		session.session_id = response.session_id();
 		session.max_fragment = response.max_fragment();
@@ -374,7 +374,7 @@ void read_handler(int conn_id, const PackageBuffer& package)
 	else if (command == cmd("RspGetFile"))
 	{
 		protocol::RspGetFile response;
-		package.parse_as_protobuf(response);
+		package.parse_as_protocol(response);
 		FileSession& session = SharingGroupManager::instance()->get_file_session();
 		lights::FileStream file(session.local_path, "a");
 		int offset = response.fragment_index() * protocol::MAX_FRAGMENT_CONTENT_LEN;

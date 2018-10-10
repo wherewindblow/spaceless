@@ -9,7 +9,10 @@
 #include <cstddef>
 #include <map>
 #include <mutex>
+
+#include <lights/env.h>
 #include <lights/sequence.h>
+#include <protocol/message_declare.h>
 
 #include "basics.h"
 #include "exception.h"
@@ -32,7 +35,7 @@ struct PackageHeader
 	int trigger_trans_id;
 	// The length of content.
 	int content_length;
-} SPACELESS_POD_PACKED_ATTRIBUTE;
+} LIGHTS_NOT_MEMEORY_ALIGNMENT;
 
 
 struct PackageTriggerSource
@@ -141,10 +144,9 @@ public:
 	}
 
 	/**
-	 * Parses package content as protobuf.
+	 * Parses package content as protocol message.
 	 */
-	template <typename T>
-	void parse_as_protobuf(T& msg) const;
+	void parse_as_protocol(protocol::Message& msg) const;
 
 	PackageTriggerSource get_trigger_source() const
 	{
@@ -162,18 +164,6 @@ private:
 	int m_id;
 	char m_buffer[MAX_BUFFER_LEN];
 };
-
-
-template <typename T>
-void PackageBuffer::parse_as_protobuf(T& msg) const
-{
-	lights::SequenceView storage = content();
-	bool ok = msg.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
-	if (!ok)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOBUF);
-	}
-}
 
 
 /**

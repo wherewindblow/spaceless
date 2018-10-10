@@ -12,7 +12,7 @@
 #include <common/exception.h>
 
 #include "command.details"
-
+#include "message.h"
 
 namespace spaceless {
 namespace protocol {
@@ -58,7 +58,7 @@ public:
 		auto name = find_name(cmd);
 		if (!name)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOCOL_PROTOBUF_NAME_NOT_EXIST);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOCOL_NAME_NOT_EXIST);
 		}
 		return *name;
 	}
@@ -81,9 +81,9 @@ public:
 	 * Gets command.
 	 * @throw Throws exception if cannot find it.
 	 */
-	int get_command(const std::string& protobuf_name)
+	int get_command(const std::string& name)
 	{
-		auto cmd = find_command(protobuf_name);
+		auto cmd = find_command(name);
 		if (!cmd)
 		{
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_PROTOCOL_COMMAND_NOT_EXIST);
@@ -99,24 +99,29 @@ private:
 } // namespace details
 
 
-const int* find_command(const std::string& protobuf_name)
+const int* find_command(const std::string& msg_name)
 {
-	return details::CommandTableImpl::instance()->find_command(protobuf_name);
+	return details::CommandTableImpl::instance()->find_command(msg_name);
 }
 
-const std::string* find_protobuf_name(int cmd)
+const std::string* find_message_name(int cmd)
 {
 	return details::CommandTableImpl::instance()->find_name(cmd);
 }
 
-int get_command(const std::string& protobuf_name)
+int get_command(const std::string& msg_name)
 {
-	return details::CommandTableImpl::instance()->get_command(protobuf_name);
+	return details::CommandTableImpl::instance()->get_command(msg_name);
 }
 
-const std::string& get_protobuf_name(int cmd)
+const std::string& get_message_name(int cmd)
 {
 	return details::CommandTableImpl::instance()->get_name(cmd);
+}
+
+const std::string& get_message_name(const Message& msg)
+{
+	return msg.GetDescriptor()->name();
 }
 
 } // namespace protocol

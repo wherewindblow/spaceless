@@ -286,7 +286,7 @@ int SchedulerImpl::safe_excute(int conn_id,
 
 const std::string& SchedulerImpl::get_name(int cmd)
 {
-	auto name = protocol::find_protobuf_name(cmd);
+	auto name = protocol::find_message_name(cmd);
 	if (!name)
 	{
 		static const std::string INVALID;
