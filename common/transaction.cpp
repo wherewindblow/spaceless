@@ -21,7 +21,7 @@ Logger& Network::logger = get_logger("worker");
 
 void Network::send_package(int conn_id, const PackageBuffer& package)
 {
-	NetworkMessageQueue::Message msg = {conn_id, package.package_id()};
+	NetworkMessage msg = {conn_id, package.package_id()};
 	NetworkMessageQueue::instance()->push(NetworkMessageQueue::OUT_QUEUE, msg);
 }
 
@@ -130,7 +130,7 @@ void MultiplyPhaseTransaction::on_timeout()
 
 void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
 {
-	spaceless::on_transaction_error(m_first_conn_id, m_first_trigger_source, ex);
+	on_transaction_error(m_first_conn_id, m_first_trigger_source, ex);
 }
 
 
@@ -142,7 +142,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 	m_is_waiting = true;
 
 	int trans_id = m_id; // Cannot capture this. It maybe remove on timeout.
-	TimerManager::instance()->start_timer(PreciseTime(timeout, 0), [trans_id]()
+	TimerManager::instance()->start_timer(lights::PreciseTime(timeout, 0), [trans_id]()
 	{
 		auto trans = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
 		if (!trans)

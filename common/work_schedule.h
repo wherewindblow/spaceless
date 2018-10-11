@@ -38,7 +38,12 @@ public:
 };
 
 
-using lights::PreciseTime;
+enum class TimerCallPolicy : bool
+{
+	CALL_ONCE,
+	CALL_FREQUENTLY,
+};
+
 
 /**
  * Manager all timer.
@@ -48,27 +53,15 @@ class TimerManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(TimerManager)
 
-	struct Timer
-	{
-		int timer_id;
-		PreciseTime interval;
-		PreciseTime expiry_time;
-		std::function<void()> expiry_action;
-	};
-
-	struct TimerCompare
-	{
-		bool operator()(const Timer& left, const Timer& right)
-		{
-			return left.expiry_time < right.expiry_time;
-		}
-	};
-
 	/**
 	 * Starts timer and call @c expiry_action at time expriy.
+	 * @param delay Default is using value of @c interval.
 	 * @return Returns time id.
 	 */
-	int start_timer(PreciseTime interval, std::function<void()> expiry_action);
+	int start_timer(lights::PreciseTime interval,
+					std::function<void()> expiry_action,
+					TimerCallPolicy call_policy = TimerCallPolicy::CALL_ONCE,
+					lights::PreciseTime delay = lights::PreciseTime(0, 0));
 
 	/**
 	 * Stops timer.
@@ -83,6 +76,23 @@ public:
 	int process_expiry_timer();
 
 private:
+	struct Timer
+	{
+		int timer_id;
+		lights::PreciseTime interval;
+		lights::PreciseTime expiry_time;
+		std::function<void()> expiry_action;
+		TimerCallPolicy call_policy;
+	};
+
+	struct TimerCompare
+	{
+		bool operator()(const Timer& left, const Timer& right)
+		{
+			return left.expiry_time < right.expiry_time;
+		}
+	};
+
 	std::vector<Timer> m_timer_queue;
 	int m_next_id = 1;
 };

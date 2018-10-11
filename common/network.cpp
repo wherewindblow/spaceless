@@ -78,94 +78,6 @@ private:
 	int m_conn_id;
 };
 
-//template <class C, class N>
-//class Observer: public Poco::AbstractObserver
-//{
-//public:
-//	typedef Poco::AutoPtr<N> NotificationPtr;
-//	typedef void (C::*Callback)(const NotificationPtr&);
-//
-//	Observer(C& object, Callback method, int conn_id):
-//		_pObject(&object),
-//		_method(method),
-//		_conn_id(conn_id)
-//	{
-//	}
-//
-//	Observer(const Observer& observer):
-//		AbstractObserver(observer),
-//		_pObject(observer._pObject),
-//		_method(observer._method),
-//		_conn_id(observer._conn_id)
-//	{
-//	}
-//
-//	~Observer()
-//	{
-//	}
-//
-//	Observer& operator = (const Observer& observer)
-//	{
-//		if (&observer != this)
-//		{
-//			_pObject = observer._pObject;
-//			_method  = observer._method;
-//			_conn_id = observer._conn_id;
-//		}
-//		return *this;
-//	}
-//
-//	void notify(Poco::Notification* pNf) const
-//	{
-//		Poco::Mutex::ScopedLock lock(_mutex);
-//
-//		if (_pObject)
-//		{
-//			N* pCastNf = dynamic_cast<N*>(pNf);
-//			if (pCastNf)
-//			{
-//				NotificationPtr ptr(pCastNf, true);
-//				NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(_conn_id);
-//				if (conn != nullptr)
-//				{
-//					(_pObject->*_method)(ptr);
-//				}
-//			}
-//		}
-//	}
-//
-//	bool equals(const AbstractObserver& abstractObserver) const
-//	{
-//		const Observer* pObs = dynamic_cast<const Observer*>(&abstractObserver);
-//		return pObs && pObs->_pObject == _pObject && pObs->_method == _method && pObs->_conn_id == _conn_id;
-//	}
-//
-//	bool accepts(Poco::Notification* pNf) const
-//	{
-//		return dynamic_cast<N*>(pNf) != 0;
-//	}
-//
-//	AbstractObserver* clone() const
-//	{
-//		return new Observer(*this);
-//	}
-//
-//	void disable()
-//	{
-//		Poco::Mutex::ScopedLock lock(_mutex);
-//
-//		_pObject = 0;
-//	}
-//
-//private:
-//	Observer();
-//
-//	C*       _pObject;
-//	Callback _method;
-//	int      _conn_id;
-//	mutable Poco::Mutex _mutex;
-//};
-
 } // namespace details
 
 
@@ -192,8 +104,7 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	{
 		std::string address = m_socket.address().toString();
 		std::string peer_address = m_socket.peerAddress().toString();
-		LIGHTS_INFO(logger, "Creates network connection {}: local {} and peer {}.",
-						m_id, address, peer_address);
+		LIGHTS_INFO(logger, "Creates network connection {}: local {} and peer {}.", m_id, address, peer_address);
 	}
 	catch (Poco::Exception& ex)
 	{
@@ -411,7 +322,7 @@ void NetworkConnection::read_for_state(int deep)
 
 				PackageBuffer& package = PackageBufferManager::instance()->register_package();
 				package = m_read_buffer;
-				NetworkMessageQueue::Message msg = { m_id, package.package_id() };
+				NetworkMessage msg = { m_id, package.package_id() };
 				NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
 			}
 			break;
@@ -422,17 +333,17 @@ void NetworkConnection::read_for_state(int deep)
 }
 
 
-void NetworkMessageQueue::push(QueueType queue_type, const Message& msg)
+void NetworkMessageQueue::push(QueueType queue_type, const NetworkMessage& msg)
 {
 	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
 	m_queue[queue_type].push(msg);
 }
 
 
-NetworkMessageQueue::Message NetworkMessageQueue::pop(QueueType queue_type)
+NetworkMessage NetworkMessageQueue::pop(QueueType queue_type)
 {
 	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
-	Message msg = m_queue[queue_type].front();
+	NetworkMessage msg = m_queue[queue_type].front();
 	m_queue[queue_type].pop();
 	return msg;
 }
@@ -442,6 +353,13 @@ bool NetworkMessageQueue::empty(NetworkMessageQueue::QueueType queue_type)
 {
 	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
 	return m_queue[queue_type].empty();
+}
+
+
+std::size_t NetworkMessageQueue::size(NetworkMessageQueue::QueueType queue_type)
+{
+	std::lock_guard<std::mutex> lock(m_mutex[queue_type]);
+	return m_queue[queue_type].size();
 }
 
 

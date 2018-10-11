@@ -120,6 +120,13 @@ private:
 };
 
 
+struct NetworkMessage
+{
+	int conn_id;
+	int package_id;
+};
+
+
 /**
  * Network message queue include input queue and output queue. It's use to seperate network conncetion and transaction.
  */
@@ -127,12 +134,6 @@ class NetworkMessageQueue
 {
 public:
 	SPACELESS_SINGLETON_INSTANCE(NetworkMessageQueue)
-
-	struct Message
-	{
-		int conn_id;
-		int package_id;
-	};
 
 	enum QueueType
 	{
@@ -144,20 +145,25 @@ public:
 	/**
 	 * Pushs message to indicate queue.
 	 */
-	void push(QueueType queue_type, const Message& msg);
+	void push(QueueType queue_type, const NetworkMessage& msg);
 
 	/**
 	 * Pops message of indicate queue.
 	 */
-	Message pop(QueueType queue_type);
+	NetworkMessage pop(QueueType queue_type);
 
 	/**
 	 * Check indicate queue is empty.
 	 */
 	bool empty(QueueType queue_type);
 
+	/**
+	 * Gets size of indicate queue.
+	 */
+	std::size_t size(QueueType queue_type);
+
 private:
-	std::queue<Message> m_queue[QueueType::MAX];
+	std::queue<NetworkMessage> m_queue[QueueType::MAX];
 	std::mutex m_mutex[QueueType::MAX];
 };
 

@@ -42,7 +42,7 @@ public:
 	std::atomic<bool> stop_flag = ATOMIC_VAR_INIT(false);
 
 private:
-	void trigger_transaction(const NetworkMessageQueue::Message& msg);
+	void trigger_transaction(const NetworkMessage& msg);
 
 	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
 
@@ -87,7 +87,7 @@ void SchedulerImpl::run()
 }
 
 
-void SchedulerImpl::trigger_transaction(const NetworkMessageQueue::Message& msg)
+void SchedulerImpl::trigger_transaction(const NetworkMessage& msg)
 {
 	int conn_id = msg.conn_id;
 	int package_id = msg.package_id;
@@ -328,10 +328,24 @@ void WorkScheduler::stop()
 }
 
 
-int TimerManager::start_timer(lights::PreciseTime interval, std::function<void()> expiry_action)
+int TimerManager::start_timer(lights::PreciseTime interval,
+							  std::function<void()> expiry_action,
+							  TimerCallPolicy call_policy,
+							  lights::PreciseTime delay)
 {
-	lights::PreciseTime expiry_time = lights::current_precise_time() + interval;
-	Timer timer = { m_next_id, interval,  expiry_time, expiry_action };
+	if (delay.seconds == 0)
+	{
+		delay = interval;
+	}
+
+	lights::PreciseTime expiry_time = lights::current_precise_time() + delay;
+	Timer timer = {
+		m_next_id,
+		interval,
+		expiry_time,
+		expiry_action,
+		call_policy,
+	};
 	++m_next_id;
 	m_timer_queue.push_back(timer);
 	std::push_heap(m_timer_queue.begin(), m_timer_queue.end(), TimerCompare());
@@ -363,6 +377,7 @@ int TimerManager::process_expiry_timer()
 		return 0;
 	}
 
+	// Need to copy.
 	Timer top = m_timer_queue.front();
 	if (lights::current_precise_time() < top.expiry_time)
 	{
@@ -372,6 +387,13 @@ int TimerManager::process_expiry_timer()
 	top.expiry_action();
 	std::pop_heap(m_timer_queue.begin(), m_timer_queue.end(), TimerCompare());
 	m_timer_queue.pop_back();
+
+	if (top.call_policy == TimerCallPolicy::CALL_FREQUENTLY)
+	{
+		top.expiry_time = lights::current_precise_time() + top.interval;
+		m_timer_queue.push_back(top);
+		std::push_heap(m_timer_queue.begin(), m_timer_queue.end(), TimerCompare());
+	}
 	return 1;
 }
 
