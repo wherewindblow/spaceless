@@ -9,7 +9,7 @@
 #include <vector>
 #include <functional>
 
-#include <lights/logger.h>
+#include <lights/precise_time.h>
 
 #include "basics.h"
 

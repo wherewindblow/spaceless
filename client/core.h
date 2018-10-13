@@ -10,7 +10,7 @@
 #include <vector>
 #include <map>
 #include <lights/sequence.h>
-#include <lights/logger.h>
+#include <lights/precise_time.h>
 
 #include "common/basics.h"
 

@@ -47,78 +47,6 @@ inline const StringView to_string(LogLevel level)
 
 
 /**
- * PreciseTime use to record hight resolution time point.
- */
-struct PreciseTime
-{
-	PreciseTime() = default;
-
-	PreciseTime(std::int64_t seconds, std::int64_t nanoseconds):
-		seconds(seconds), nanoseconds(nanoseconds)
-	{}
-
-	std::int64_t seconds;
-	std::int64_t nanoseconds;
-};
-
-
-inline bool is_over_flow(std::int64_t a, std::int64_t b)
-{
-	std::int64_t x = a + b;
-	return ((x^a) < 0 && (x^b) < 0);
-}
-
-inline PreciseTime operator+(const PreciseTime& left, const PreciseTime& right)
-{
-	PreciseTime result(left.seconds + right.seconds, left.nanoseconds + right.nanoseconds);
-	if (is_over_flow(left.nanoseconds, right.nanoseconds))
-	{
-		++result.seconds;
-	}
-	return result;
-}
-
-inline PreciseTime operator-(const PreciseTime& left, const PreciseTime& right)
-{
-	PreciseTime result(left.seconds - right.seconds, left.nanoseconds - right.nanoseconds);
-	if (left.nanoseconds < right.nanoseconds)
-	{
-		--result.seconds;
-		result.nanoseconds = std::abs(result.nanoseconds);
-	}
-	return result;
-}
-
-inline bool operator<(const PreciseTime& left, const PreciseTime& right)
-{
-	if (left.seconds < right.seconds)
-	{
-		return true;
-	}
-	return left.nanoseconds < right.nanoseconds;
-}
-
-inline bool operator>(const PreciseTime& left, const PreciseTime& right)
-{
-	return !(left < right);
-}
-
-/**
- * Returns the current time point.
- */
-PreciseTime current_precise_time();
-
-/**
- * Puts precise time to format sink.
- */
-template <typename Backend>
-inline void to_string(FormatSink<Backend> sink, const PreciseTime& time)
-{
-	sink << time.seconds << '.' << time.nanoseconds << 's';
-}
-
-
-/**
  * General log sink pointer.
  */
 using LogSinkPtr = std::shared_ptr<Sink>;
@@ -273,7 +201,7 @@ public:
 	std::uint32_t function_id;
 	std::uint32_t source_line;
 	std::uint32_t description_id;
-	std::uint16_t logger_id;
+	std::uint32_t logger_id;
 	std::uint16_t argument_length;
 	LogLevel level;
 } LIGHTS_NOT_MEMEORY_ALIGNMENT;
@@ -291,14 +219,14 @@ public:
 	/**
 	 * Creates binary logger.
 	 */
-	BinaryLogger(std::uint16_t logger_id, LogSinkPtr sink_ptr, StringTablePtr str_table_ptr);
+	BinaryLogger(const std::string& name, LogSinkPtr sink_ptr, StringTablePtr str_table_ptr);
 
 	/**
-	 * Gets logger id.
+	 * Gets logger name.
 	 */
-	std::uint16_t get_logger_id() const
+	std::string get_name() const
 	{
-		return m_signature->logger_id;
+		return m_name;
 	}
 
 	/**
@@ -310,7 +238,7 @@ public:
 	}
 
 	/**
-	 * Sets the logger level.
+	 * Sets logger level.
 	 */
 	void set_level(LogLevel level)
 	{
@@ -366,6 +294,7 @@ private:
 		m_sink_ptr->write(view);
 	}
 
+	std::string m_name;
 	LogLevel m_level = LogLevel::INFO;
 	LogSinkPtr m_sink_ptr;
 	StringTablePtr m_str_table_ptr;
