@@ -89,7 +89,7 @@ private:
 	{
 		bool operator()(const Timer& left, const Timer& right)
 		{
-			return left.expiry_time < right.expiry_time;
+			return left.expiry_time > right.expiry_time;
 		}
 	};
 
