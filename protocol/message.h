@@ -14,5 +14,31 @@ namespace protocol {
 
 using Message = google::protobuf::Message;
 
+/**
+ * Gets message name.
+ */
+inline const std::string& get_message_name(const Message& msg)
+{
+	return msg.GetDescriptor()->name();
+}
+
+/**
+ * Parses sequence to message.
+ * @return Return is success or failure.
+ */
+inline bool parse_to_message(lights::SequenceView sequence, Message& msg)
+{
+	return msg.ParseFromArray(sequence.data(), static_cast<int>(sequence.length()));
+}
+
+/**
+ * Parses message to sequence.
+ * @return Return is success or failure.
+ */
+inline bool parse_to_sequence(const Message& msg, lights::Sequence sequence)
+{
+	return msg.SerializeToArray(sequence.data(), static_cast<int>(sequence.length()));
+}
+
 } // namespace protocol
 } // namespace spaceless

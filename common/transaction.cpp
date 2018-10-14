@@ -35,7 +35,6 @@ void Network::send_protocol(int conn_id,
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		// LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_TOO_LARGE);
 		LIGHTS_ERROR(logger, "Connction {}: Content length {} is too large.", conn_id, size)
 		return;
 	}
@@ -61,8 +60,13 @@ void Network::send_protocol(int conn_id,
 	header.self_trans_id = bind_trans_id;
 	header.trigger_trans_id = trigger_trans_id;
 	header.content_length = size;
-	lights::Sequence storage = package.content_buffer();
-	msg.SerializeToArray(storage.data(), static_cast<int>(storage.length()));
+
+	bool ok = protocol::parse_to_sequence(msg, package.content_buffer());
+	if (!ok)
+	{
+		LIGHTS_ERROR(logger, "Connction {}: Parse to sequence failure cmd {}.", conn_id, header.command);
+		return;
+	}
 
 	send_package(conn_id, package);
 }

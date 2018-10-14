@@ -104,14 +104,14 @@ const int* find_command(const std::string& msg_name)
 	return details::CommandTableImpl::instance()->find_command(msg_name);
 }
 
-const std::string* find_message_name(int cmd)
-{
-	return details::CommandTableImpl::instance()->find_name(cmd);
-}
-
 int get_command(const std::string& msg_name)
 {
 	return details::CommandTableImpl::instance()->get_command(msg_name);
+}
+
+const std::string* find_message_name(int cmd)
+{
+	return details::CommandTableImpl::instance()->find_name(cmd);
 }
 
 const std::string& get_message_name(int cmd)
@@ -119,9 +119,14 @@ const std::string& get_message_name(int cmd)
 	return details::CommandTableImpl::instance()->get_name(cmd);
 }
 
-const std::string& get_message_name(const Message& msg)
+const int* find_command(const Message& msg)
 {
-	return msg.GetDescriptor()->name();
+	return find_command(get_message_name(msg));
+}
+
+int get_command(const Message& msg)
+{
+	return get_command(get_message_name(msg));
 }
 
 } // namespace protocol

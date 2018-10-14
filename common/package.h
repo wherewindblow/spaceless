@@ -146,7 +146,7 @@ public:
 	/**
 	 * Parses package content as protocol message.
 	 */
-	void parse_as_protocol(protocol::Message& msg) const;
+	void parse_to_protocol(protocol::Message& msg) const;
 
 	PackageTriggerSource get_trigger_source() const
 	{

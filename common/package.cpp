@@ -10,13 +10,12 @@
 
 namespace spaceless {
 
-void PackageBuffer::parse_as_protocol(protocol::Message& msg) const
+void PackageBuffer::parse_to_protocol(protocol::Message& msg) const
 {
-	lights::SequenceView storage = content();
-	bool ok = msg.ParseFromArray(storage.data(), static_cast<int>(storage.length()));
+	bool ok = protocol::parse_to_message(content(), msg);
 	if (!ok)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_AS_PROTOCOL);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_TO_PROTOCOL);
 	}
 }
 
