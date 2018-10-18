@@ -306,12 +306,15 @@ void WorkScheduler::start()
 	{
 		scheduler->run_state = SchedulerImpl::STARTING;
 
-		Poco::Thread thread;
+		// Use static to avoid destroy thread and throw NullPointerException (Poco internal bug).
+		// Because new thread will use this thread object data. When it destroy before get it's internal data
+		// will get a null data and throw NullPointerException when use it.
+		static Poco::Thread thread;
 		thread.start(*scheduler);
 	}
 	else if (scheduler->run_state == SchedulerImpl::STARTED)
 	{
-		assert(false && "scheduler already started");
+		LIGHTS_ASSERT(false && "scheduler already started");
 	}
 }
 

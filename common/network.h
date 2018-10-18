@@ -128,7 +128,8 @@ struct NetworkMessage
 
 
 /**
- * Network message queue include input queue and output queue. It's use to seperate network conncetion and transaction.
+ * Network message queue include input queue and output queue. It's use to seperate network layer and worker layer.
+ * So all operation of this class is thread safe.
  */
 class NetworkMessageQueue
 {
