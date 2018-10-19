@@ -1,5 +1,6 @@
 #include <common/network.h>
 #include <common/transaction.h>
+#include <common/scheduler.h>
 #include <common/log.h>
 #include <protocol/all.h>
 
@@ -77,7 +78,7 @@ int main(int argc, const char* argv[])
 		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqGetFile, GetFileTrans::factory);
 		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqRemovePath, RemovePathTrans::factory);
 
-		NetworkConnectionManager::instance()->run();
+		Scheduler::instance()->start();
 	}
 	catch (Exception& ex)
 	{

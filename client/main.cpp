@@ -4,6 +4,7 @@
 #include <lights/ostream.h>
 #include <common/network.h>
 #include <common/transaction.h>
+#include <common/scheduler.h>
 #include <common/log.h>
 #include <protocol/all.h>
 
@@ -63,7 +64,7 @@ int main(int argc, const char* argv[])
 
 		// Must run after have a event in loop. Just after reading.
 		std::thread thread([]() {
-			NetworkConnectionManager::instance()->run();
+			Scheduler::instance()->start();
 		});
 		thread.detach();
 

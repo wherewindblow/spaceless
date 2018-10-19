@@ -236,14 +236,21 @@ public:
 	NetworkConnection& get_connection(int conn_id);
 
 	/**
-	 * Stop all network connection and listener.
+	 * Stops all network connection and listener.
 	 */
 	void stop_all();
 
 	/**
-	 * To run underlying reactor.
+	 * Starts to schedule network.
+	 * @note It'll block until it's stopped.
 	 */
-	void run();
+	void start();
+
+	/**
+	 * Stops of schedule network. Sets stop flag to let scheduler to stop running.
+	 * @note After this function return, the scheduler may be still running.
+	 */
+	void stop();
 
 private:
 	friend class NetworkConnection;

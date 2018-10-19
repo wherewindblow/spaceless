@@ -1,5 +1,5 @@
 /**
- * scheduler.h
+ * worker.h
  * @author wherewindblow
  * @date   Jun 08, 2018
  */
@@ -19,22 +19,28 @@
 namespace spaceless {
 
 /**
- * Schedule work execution.
+ * Schedule worker execution.
  */
-class WorkScheduler
+class WorkerScheduler
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(WorkScheduler);
+	SPACELESS_SINGLETON_INSTANCE(WorkerScheduler);
 
 	/**
-	 * Starts to schedule.
+	 * Starts to schedule worker. Worker is running in other thread.
 	 */
 	void start();
 
 	/**
-	 * Stops of schedule.
+	 * Stops of schedule worker. Sets stop flag to let worker to stop running.
+	 * @note After this function return, the worker may be still running in other thread.
 	 */
 	void stop();
+
+	/**
+	 * Check worker is running.
+	 */
+	bool is_worker_running();
 };
 
 
@@ -47,6 +53,7 @@ enum class TimerCallPolicy : bool
 
 /**
  * Manager all timer.
+ * @note TimerManager are scheduling by worker.
  */
 class TimerManager
 {

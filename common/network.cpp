@@ -11,8 +11,9 @@
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/AbstractObserver.h>
 #include <Poco/NObserver.h>
+
 #include "log.h"
-#include "work_schedule.h"
+#include "worker.h"
 
 
 namespace lights {
@@ -505,12 +506,19 @@ void NetworkConnectionManager::stop_all()
 }
 
 
-void NetworkConnectionManager::run()
+void NetworkConnectionManager::start()
 {
-	WorkScheduler::instance()->start();
-
+	LIGHTS_INFO(logger, "Starting netowk scheduler.");
 	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
 	m_reactor.run();
+	LIGHTS_INFO(logger, "Stopped netowk scheduler.");
+}
+
+
+void NetworkConnectionManager::stop()
+{
+	LIGHTS_INFO(logger, "Stopping netowk scheduler.");
+	m_reactor.stop();
 }
 
 

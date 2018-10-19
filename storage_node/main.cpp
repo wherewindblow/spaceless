@@ -1,5 +1,6 @@
 #include <common/network.h>
 #include <common/transaction.h>
+#include <common/scheduler.h>
 #include <common/log.h>
 #include <protocol/all.h>
 
@@ -45,7 +46,7 @@ int main(int argc, const char* argv[])
 		SPACELESS_REG_ONE_TRANS(protocol::ReqNodeGetFileSession, transaction::on_get_file_session)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqGetFile, transaction::on_get_file)
 
-		NetworkConnectionManager::instance()->run();
+		Scheduler::instance()->start();
 	}
 	catch (Exception& ex)
 	{

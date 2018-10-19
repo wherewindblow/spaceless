@@ -10,7 +10,7 @@
 #include <protocol/all.h>
 
 #include "network.h"
-#include "work_schedule.h"
+#include "worker.h"
 
 
 namespace spaceless {

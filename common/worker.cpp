@@ -1,10 +1,10 @@
 /**
- * scheduler.cpp
+ * worker.cpp
  * @author wherewindblow
  * @date   Jun 08, 2018
  */
 
-#include "work_schedule.h"
+#include "worker.h"
 
 #include <atomic>
 #include <functional>
@@ -23,10 +23,10 @@ static Logger& logger = get_logger("worker");
 
 namespace details {
 
-class SchedulerImpl: public Poco::Runnable
+class Worker: public Poco::Runnable
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(SchedulerImpl)
+	SPACELESS_SINGLETON_INSTANCE(Worker)
 
 	virtual void run();
 
@@ -34,11 +34,11 @@ public:
 	{
 		STARTING,
 		STARTED,
-		STOPING,
-		STOPED,
+		STOPPING,
+		STOPPED,
 	};
 
-	std::atomic<int> run_state = ATOMIC_VAR_INIT(STOPED);
+	std::atomic<int> run_state = ATOMIC_VAR_INIT(STOPPED);
 	std::atomic<bool> stop_flag = ATOMIC_VAR_INIT(false);
 
 private:
@@ -52,10 +52,12 @@ private:
 };
 
 
-void SchedulerImpl::run()
+void Worker::run()
 {
 	run_state = STARTED;
 	prctl(PR_SET_NAME, WORKER_THREAD_NAME);
+
+	LIGHTS_INFO(logger, "Running worker.");
 
 	while (!stop_flag)
 	{
@@ -83,11 +85,12 @@ void SchedulerImpl::run()
 		}
 	}
 
-	run_state = STOPED;
+	LIGHTS_INFO(logger, "Stopped worker.");
+	run_state = STOPPED;
 }
 
 
-void SchedulerImpl::trigger_transaction(const NetworkMessage& msg)
+void Worker::trigger_transaction(const NetworkMessage& msg)
 {
 	int conn_id = msg.conn_id;
 	int package_id = msg.package_id;
@@ -218,7 +221,7 @@ void SchedulerImpl::trigger_transaction(const NetworkMessage& msg)
 }
 
 
-int SchedulerImpl::safe_excute(int conn_id,
+int Worker::safe_excute(int conn_id,
 							   const PackageBuffer& package,
 							   ErrorHandler error_handler,
 							   std::function<void()> function)
@@ -284,7 +287,7 @@ int SchedulerImpl::safe_excute(int conn_id,
 }
 
 
-const std::string& SchedulerImpl::get_name(int cmd)
+const std::string& Worker::get_name(int cmd)
 {
 	auto name = protocol::find_message_name(cmd);
 	if (!name)
@@ -298,36 +301,45 @@ const std::string& SchedulerImpl::get_name(int cmd)
 } // namespace details
 
 
-void WorkScheduler::start()
+void WorkerScheduler::start()
 {
 	using namespace details;
-	auto scheduler = SchedulerImpl::instance();
-	if (scheduler->run_state == SchedulerImpl::STOPED)
+	auto worker = Worker::instance();
+	if (worker->run_state == Worker::STOPPED)
 	{
-		scheduler->run_state = SchedulerImpl::STARTING;
+		worker->run_state = Worker::STARTING;
+		LIGHTS_INFO(logger, "Starting worker scheduler.");
 
 		// Use static to avoid destroy thread and throw NullPointerException (Poco internal bug).
 		// Because new thread will use this thread object data. When it destroy before get it's internal data
 		// will get a null data and throw NullPointerException when use it.
 		static Poco::Thread thread;
-		thread.start(*scheduler);
+		thread.start(*worker);
 	}
-	else if (scheduler->run_state == SchedulerImpl::STARTED)
+	else if (worker->run_state == Worker::STARTED)
 	{
-		LIGHTS_ASSERT(false && "scheduler already started");
+		LIGHTS_ASSERT(false && "worker already started");
 	}
 }
 
 
-void WorkScheduler::stop()
+void WorkerScheduler::stop()
 {
 	using namespace details;
-	auto scheduler = SchedulerImpl::instance();
-	if (scheduler->run_state == SchedulerImpl::STARTED)
+	auto worker = Worker::instance();
+	if (worker->run_state == Worker::STARTED)
 	{
-		scheduler->stop_flag = true;
-		scheduler->run_state = SchedulerImpl::STOPING;
+		worker->stop_flag = true;
+		worker->run_state = Worker::STOPPING;
+		LIGHTS_INFO(logger, "Stopping worker scheduler.");
 	}
+}
+
+
+bool WorkerScheduler::is_worker_running()
+{
+	using namespace details;
+	return Worker::instance()->run_state != Worker::STOPPED;
 }
 
 
