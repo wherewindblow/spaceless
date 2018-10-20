@@ -8,7 +8,8 @@ set(SPACELESS_COMMON_SRC
         network.h network.cpp
         transaction.h transaction.cpp
         worker.h worker.cpp
-        scheduler.h scheduler.cpp)
+        scheduler.h scheduler.cpp
+        configuration.h configuration.cpp)
 
 add_library(spaceless_common STATIC ${SPACELESS_COMMON_SRC})
 set_target_properties(spaceless_common PROPERTIES OUTPUT_NAME "spaceless_common")

@@ -1,14 +1,14 @@
 #include <iostream>
 #include <thread>
 
-#include <lights/ostream.h>
 #include <common/network.h>
 #include <common/transaction.h>
 #include <common/scheduler.h>
 #include <common/log.h>
+#include <common/configuration.h>
 #include <protocol/all.h>
 
-#include <Poco/Util/JSONConfiguration.h>
+#include <lights/ostream.h>
 
 #include "core.h"
 
@@ -18,8 +18,6 @@ namespace spaceless {
 namespace client {
 
 static Logger& logger = get_logger("client");
-
-const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
 
 void read_handler(int conn_id, const PackageBuffer& package);
 
@@ -32,11 +30,13 @@ int main(int argc, const char* argv[])
 {
 	try
 	{
-		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
-		std::string log_level = configuration.getString("log_level");
+		Configuration::PathList path_list = {"../configuration/client_conf.json", "../configuration/global_conf.json"};
+		Configuration configuration(path_list);
 
+		std::string str_log_level = configuration.getString("log_level");
+		lights::LogLevel log_level = to_log_level(str_log_level);
 		LoggerManager::instance()->for_each([&](const std::string& name, Logger* logger) {
-			logger->set_level(to_log_level(log_level));
+			logger->set_level(log_level);
 		});
 
 		SPACELESS_REG_ONE_TRANS(protocol::RspRegisterUser, read_handler);

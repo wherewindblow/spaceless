@@ -2,9 +2,10 @@
 #include <common/transaction.h>
 #include <common/scheduler.h>
 #include <common/log.h>
+#include <common/configuration.h>
 #include <protocol/all.h>
 
-#include <Poco/Util/JSONConfiguration.h>
+#include <lights/precise_time.h>
 
 #include "core.h"
 #include "transaction.h"
@@ -15,18 +16,20 @@ namespace resource_server {
 
 static Logger& logger = get_logger("resource_server");
 
-const std::string CONFIGURATION_PATH = "../configuration/resource_server_conf.json";
-
 int main(int argc, const char* argv[])
 {
 	try
 	{
-		Poco::Util::JSONConfiguration configuration(CONFIGURATION_PATH);
-		std::string log_level = configuration.getString("log_level");
+		Configuration::PathList path_list = {"../configuration/resource_server_conf.json", "../configuration/global_conf.json"};
+		Configuration configuration(path_list);
+
+		std::string str_log_level = configuration.getString("log_level");
+		lights::LogLevel log_level = to_log_level(str_log_level);
 		LoggerManager::instance()->for_each([&](const std::string& name, Logger* logger) {
-			logger->set_level(to_log_level(log_level));
+			logger->set_level(log_level);
 		});
 
+		Configuration::Keys keys;
 		for (int i = 0;; ++i)
 		{
 			std::string key_prefix = "storage_nodes[" + std::to_string(i) + "]";
