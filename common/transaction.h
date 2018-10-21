@@ -26,7 +26,7 @@ public:
 	/**
 	 * Sends package to remote on asynchronization.
 	 */
-	static void send_package(int conn_id, const PackageBuffer& package);
+	static void send_package(int conn_id, Package package);
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization.
@@ -52,7 +52,7 @@ public:
 	 */
 	static void send_back_protobuf(int conn_id,
 								   const protocol::Message& msg,
-								   const PackageBuffer& trigger_package,
+								   Package trigger_package,
 								   int bind_trans_id = 0);
 
 
@@ -72,7 +72,7 @@ public:
 	/**
 	 * Sends package to remote on asynchronization.
 	 */
-	static void service_send_package(int service_id, const PackageBuffer& package);
+	static void service_send_package(int service_id, Package package);
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization.
@@ -125,21 +125,21 @@ public:
 	/**
 	 * Initializes this base class interal variables.
 	 */
-	void pre_on_init(int conn_id, const PackageBuffer& package);
+	void pre_on_init(int conn_id, Package package);
 
 	/**
 	 * Processes the package that trigger by associate command.
 	 * @param conn     Network connection of send package.
 	 * @param package  Pakcage of trigger this function.
 	 */
-	virtual void on_init(int conn_id, const PackageBuffer& package) = 0;
+	virtual void on_init(int conn_id, Package package) = 0;
 
 	/**
 	 * Processes the package of wait phase.
 	 * @param conn     Network connection of send package.
 	 * @param package  Pakcage of trigger this function.
 	 */
-	virtual void on_active(int conn_id, const PackageBuffer& package) = 0;
+	virtual void on_active(int conn_id, Package package) = 0;
 
 	/**
 	 * Processes wait time out.
@@ -281,7 +281,7 @@ private:
 };
 
 
-using OnePhaseTrancation = void (*)(int conn_id, const PackageBuffer&);
+using OnePhaseTrancation = void (*)(int conn_id, Package);
 
 
 /**

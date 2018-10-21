@@ -85,7 +85,6 @@ private:
 NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor) :
 	m_socket(socket),
 	m_reactor(reactor),
-	m_read_buffer(0),
 	m_readed_len(0),
 	m_read_state(ReadState::READ_HEADER),
 	m_sended_len(0)
@@ -134,7 +133,7 @@ NetworkConnection::~NetworkConnection()
 		{
 			int package_id = m_send_list.front();
 			m_send_list.pop();
-			PackageBufferManager::instance()->remove_package(package_id);
+			PackageManager::instance()->remove_package(package_id);
 		}
 
 		try
@@ -171,11 +170,11 @@ void NetworkConnection::on_readable(const Poco::AutoPtr<ReadableNotification>& n
 
 void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& notification)
 {
-	const PackageBuffer* package = nullptr;
+	Package package;
 	while (!m_send_list.empty())
 	{
-		package = PackageBufferManager::instance()->find_package(m_send_list.front());
-		if (package == nullptr)
+		package = PackageManager::instance()->find_package(m_send_list.front());
+		if (!package.is_valid())
 		{
 			m_send_list.pop();
 		}
@@ -185,19 +184,19 @@ void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& n
 		}
 	}
 
-	if (package == nullptr)
+	if (!package.is_valid())
 	{
 		return;
 	}
 
-	int len = static_cast<int>(package->total_length());
-	m_sended_len += m_socket.sendBytes(package->data() + m_sended_len, len - m_sended_len);
+	int len = static_cast<int>(package.total_length());
+	m_sended_len += m_socket.sendBytes(package.data() + m_sended_len, len - m_sended_len);
 
 	if (m_sended_len == len)
 	{
 		m_sended_len = 0;
 		m_send_list.pop();
-		PackageBufferManager::instance()->remove_package(package->package_id());
+		PackageManager::instance()->remove_package(package.package_id());
 	}
 
 	if (m_send_list.empty())
@@ -220,7 +219,7 @@ void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notific
 }
 
 
-void NetworkConnection::send_package(const PackageBuffer& package)
+void NetworkConnection::send_package(Package package)
 {
 	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}.",
 					m_id, package.header().command, package.header().trigger_trans_id)
@@ -236,7 +235,7 @@ void NetworkConnection::send_package(const PackageBuffer& package)
 	if (m_sended_len == len)
 	{
 		m_sended_len = 0;
-		PackageBufferManager::instance()->remove_package(package.package_id());
+		PackageManager::instance()->remove_package(package.package_id());
 	}
 	else if (m_sended_len < len)
 	{
@@ -271,7 +270,7 @@ void NetworkConnection::read_for_state(int deep)
 		case ReadState::READ_HEADER:
 		{
 			int len = m_socket.receiveBytes(m_read_buffer.data() + m_readed_len,
-											static_cast<int>(PackageBuffer::MAX_HEADER_LEN) - m_readed_len);
+											static_cast<int>(PackageBuffer::HEADER_LEN) - m_readed_len);
 
 			if (len == -1) // Not available bytes in buffer.
 			{
@@ -285,7 +284,7 @@ void NetworkConnection::read_for_state(int deep)
 			}
 
 			m_readed_len += len;
-			if (m_readed_len == PackageBuffer::MAX_HEADER_LEN)
+			if (m_readed_len == PackageBuffer::HEADER_LEN)
 			{
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_CONTENT;
@@ -297,7 +296,7 @@ void NetworkConnection::read_for_state(int deep)
 		{
 			if (m_read_buffer.header().content_length != 0)
 			{
-				int len = m_socket.receiveBytes(m_read_buffer.data() + PackageBuffer::MAX_HEADER_LEN + m_readed_len,
+				int len = m_socket.receiveBytes(m_read_buffer.data() + PackageBuffer::HEADER_LEN + m_readed_len,
 												m_read_buffer.header().content_length - m_readed_len);
 				if (len == -1) // Not available bytes in buffer.
 				{
@@ -321,8 +320,8 @@ void NetworkConnection::read_for_state(int deep)
 				LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}.",
 								m_id, m_read_buffer.header().command, m_read_buffer.header().trigger_trans_id)
 
-				PackageBuffer& package = PackageBufferManager::instance()->register_package();
-				package = m_read_buffer;
+				lights::Sequence data = { m_read_buffer.data(), m_read_buffer.total_length() };
+				Package package = PackageManager::instance()->register_package(data);
 				NetworkMessage msg = { m_id, package.package_id() };
 				NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
 			}
@@ -399,29 +398,29 @@ void NetworkReactor::process_send_package()
 
 		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
 		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(msg.conn_id);
-		PackageBuffer* package = PackageBufferManager::instance()->find_package(msg.package_id);
+		Package package = PackageManager::instance()->find_package(msg.package_id);
 
-		if (conn == nullptr || package == nullptr)
+		if (conn == nullptr || !package.is_valid())
 		{
 			if (conn == nullptr)
 			{
 				LIGHTS_INFO(logger, "Connction {}: Already close.", msg.conn_id);
 			}
 
-			if (package == nullptr)
+			if (!package.is_valid())
 			{
 				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.", msg.conn_id, msg.package_id);
 			}
 
-			if (package)
+			if (package.is_valid())
 			{
-				PackageBufferManager::instance()->remove_package(msg.package_id);
+				PackageManager::instance()->remove_package(msg.package_id);
 			}
 
 			continue;
 		}
 
-		conn->send_package(*package);
+		conn->send_package(package);
 	}
 }
 

@@ -19,7 +19,7 @@ static Logger& logger = get_logger("worker");
 Logger& Network::logger = get_logger("worker");
 
 
-void Network::send_package(int conn_id, const PackageBuffer& package)
+void Network::send_package(int conn_id, Package package)
 {
 	NetworkMessage msg = {conn_id, package.package_id()};
 	NetworkMessageQueue::instance()->push(NetworkMessageQueue::OUT_QUEUE, msg);
@@ -39,7 +39,7 @@ void Network::send_protocol(int conn_id,
 		return;
 	}
 
-	PackageBuffer& package = PackageBufferManager::instance()->register_package();
+	Package package = PackageManager::instance()->register_package(size);
 	PackageHeader& header = package.header();
 
 	if (protocol::get_message_name(msg) == "RspError" && trigger_cmd != 0)
@@ -74,7 +74,7 @@ void Network::send_protocol(int conn_id,
 
 void Network::send_back_protobuf(int conn_id,
 								 const protocol::Message& msg,
-								 const PackageBuffer& trigger_package,
+								 Package trigger_package,
 								 int bind_trans_id)
 {
 	send_protocol(conn_id, msg, bind_trans_id, trigger_package.header().self_trans_id, trigger_package.header().command);
@@ -101,7 +101,7 @@ void Network::service_send_protobuf(int service_id,
 }
 
 
-void Network::service_send_package(int service_id, const PackageBuffer& package)
+void Network::service_send_package(int service_id, Package package)
 {
 	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
 	send_package(conn_id, package);
@@ -120,7 +120,7 @@ MultiplyPhaseTransaction* MultiplyPhaseTransaction::register_transaction(int tra
 }
 
 
-void MultiplyPhaseTransaction::pre_on_init(int conn_id, const PackageBuffer& package)
+void MultiplyPhaseTransaction::pre_on_init(int conn_id, Package package)
 {
 	m_first_conn_id = conn_id;
 	m_first_trigger_source = package.get_trigger_source();

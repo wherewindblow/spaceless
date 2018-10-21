@@ -46,7 +46,7 @@ private:
 
 	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
 
-	int safe_excute(int conn_id, const PackageBuffer& package, ErrorHandler error_handler, std::function<void()> function);
+	int safe_excute(int conn_id, Package package, ErrorHandler error_handler, std::function<void()> function);
 
 	const std::string& get_name(int cmd);
 };
@@ -95,15 +95,15 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 	int conn_id = msg.conn_id;
 	int package_id = msg.package_id;
 
-	PackageBuffer* package = PackageBufferManager::instance()->find_package(package_id);
-	if (!package)
+	Package package = PackageManager::instance()->find_package(package_id);
+	if (!package.is_valid())
 	{
 		LIGHTS_ERROR(logger, "Connction {}: Package {} already removed.", conn_id, package_id);
 		return;
 	}
 
-	int trans_id = package->header().trigger_trans_id;
-	int command = package->header().command;
+	int trans_id = package.header().trigger_trans_id;
+	int command = package.header().command;
 
 	if (trans_id == 0) // Create new transaction.
 	{
@@ -117,9 +117,9 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}.", conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTrancation>(trans->trans_handler);
 
-					safe_excute(conn_id, *package, trans->error_handler, [&]()
+					safe_excute(conn_id, package, trans->error_handler, [&]()
 					{
-						trans_handler(conn_id, *package);
+						trans_handler(conn_id, package);
 					});
 
 					break;
@@ -134,16 +134,16 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 									command,
 									get_name(command),
 									trans_handler.transaction_id());
-					trans_handler.pre_on_init(conn_id, *package);
+					trans_handler.pre_on_init(conn_id, package);
 
 					auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
 					{
 						trans_handler.on_error(conn_id, ex);
 					};
 
-					safe_excute(conn_id, *package, error_handler, [&]()
+					safe_excute(conn_id, package, error_handler, [&]()
 					{
-						trans_handler.on_init(conn_id, *package);
+						trans_handler.on_init(conn_id, package);
 					});
 
 					if (!trans_handler.is_waiting())
@@ -191,9 +191,9 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 					trans_handler->on_error(conn_id, ex);
 				};
 
-				safe_excute(conn_id, *package, error_handler, [&]()
+				safe_excute(conn_id, package, error_handler, [&]()
 				{
-					trans_handler->on_active(conn_id, *package);
+					trans_handler->on_active(conn_id, package);
 				});
 
 				if (!trans_handler->is_waiting())
@@ -217,14 +217,14 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		}
 	}
 
-	PackageBufferManager::instance()->remove_package(package_id);
+	PackageManager::instance()->remove_package(package_id);
 }
 
 
 int Worker::safe_excute(int conn_id,
-							   const PackageBuffer& package,
-							   ErrorHandler error_handler,
-							   std::function<void()> function)
+						Package package,
+						ErrorHandler error_handler,
+						std::function<void()> function)
 {
 	try
 	{

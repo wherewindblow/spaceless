@@ -70,7 +70,7 @@ public:
 	/**
 	 * Sends package to remote on asynchronization.
 	 */
-	void send_package(const PackageBuffer& package);
+	void send_package(Package package);
 
 	/**
 	 * Destroys connection.

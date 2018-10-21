@@ -36,7 +36,7 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 }
 
 
-void on_register_user(int conn_id, const PackageBuffer& package)
+void on_register_user(int conn_id, Package package)
 {
 	protocol::ReqRegisterUser request;
 	protocol::RspRegisterUser response;
@@ -48,7 +48,7 @@ void on_register_user(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_login_user(int conn_id, const PackageBuffer& package)
+void on_login_user(int conn_id, Package package)
 {
 	protocol::ReqLoginUser request;
 	protocol::RspLoginUser response;
@@ -64,7 +64,7 @@ void on_login_user(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_remove_user(int conn_id, const PackageBuffer& package)
+void on_remove_user(int conn_id, Package package)
 {
 	protocol::ReqRemoveUser request;
 	protocol::RspRemoveUser response;
@@ -76,7 +76,7 @@ void on_remove_user(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_find_user(int conn_id, const PackageBuffer& package)
+void on_find_user(int conn_id, Package package)
 {
 	protocol::ReqFindUser request;
 	protocol::RspFindUser response;
@@ -121,7 +121,7 @@ void convert_group(const SharingGroup& server_group, protocol::SharingGroup& res
 }
 
 
-void on_register_group(int conn_id, const PackageBuffer& package)
+void on_register_group(int conn_id, Package package)
 {
 	protocol::ReqRegisterGroup request;
 	protocol::RspRegisterGroup response;
@@ -135,7 +135,7 @@ void on_register_group(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_remove_group(int conn_id, const PackageBuffer& package)
+void on_remove_group(int conn_id, Package package)
 {
 	protocol::ReqRemoveGroup request;
 	protocol::RspRemoveGroup response;
@@ -148,7 +148,7 @@ void on_remove_group(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_find_group(int conn_id, const PackageBuffer& package)
+void on_find_group(int conn_id, Package package)
 {
 	protocol::ReqFindGroup request;
 	protocol::RspFindGroup response;
@@ -179,7 +179,7 @@ void on_find_group(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_join_group(int conn_id, const PackageBuffer& package)
+void on_join_group(int conn_id, Package package)
 {
 	protocol::ReqJoinGroup request;
 	protocol::RspJoinGroup response;
@@ -193,7 +193,7 @@ void on_join_group(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_assign_as_manager(int conn_id, const PackageBuffer& package)
+void on_assign_as_manager(int conn_id, Package package)
 {
 	protocol::ReqAssignAsManager request;
 	protocol::RspAssignAsManager response;
@@ -214,7 +214,7 @@ void on_assign_as_manager(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_assign_as_memeber(int conn_id, const PackageBuffer& package)
+void on_assign_as_memeber(int conn_id, Package package)
 {
 	protocol::ReqAssignAsMemeber request;
 	protocol::RspAssignAsMemeber response;
@@ -235,7 +235,7 @@ void on_assign_as_memeber(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_kick_out_user(int conn_id, const PackageBuffer& package)
+void on_kick_out_user(int conn_id, Package package)
 {
 	protocol::ReqKickOutUser request;
 	protocol::RspKickOutUser response;
@@ -256,7 +256,7 @@ void on_kick_out_user(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_create_path(int conn_id, const PackageBuffer& package)
+void on_create_path(int conn_id, Package package)
 {
 	protocol::ReqCreatePath request;
 	protocol::RspCreatePath response;
@@ -285,7 +285,7 @@ PutFileSessionTrans::PutFileSessionTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-void PutFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
+void PutFileSessionTrans::on_init(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	protocol::ReqPutFileSession request;
@@ -346,7 +346,7 @@ void PutFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 }
 
 
-void PutFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
+void PutFileSessionTrans::on_active(int conn_id, Package package)
 {
 	protocol::RspNodePutFileSession node_response;
 	package.parse_to_protocol(node_response);
@@ -391,7 +391,7 @@ PutFileTrans::PutFileTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
+void PutFileTrans::on_init(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
@@ -421,7 +421,7 @@ void PutFileTrans::on_init(int conn_id, const PackageBuffer& package)
 }
 
 
-void PutFileTrans::on_active(int conn_id, const PackageBuffer& package)
+void PutFileTrans::on_active(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
@@ -442,7 +442,7 @@ GetFileSessionTrans::GetFileSessionTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-void GetFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
+void GetFileSessionTrans::on_init(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
@@ -495,7 +495,7 @@ void GetFileSessionTrans::on_init(int conn_id, const PackageBuffer& package)
 }
 
 
-void GetFileSessionTrans::on_active(int conn_id, const PackageBuffer& package)
+void GetFileSessionTrans::on_active(int conn_id, Package package)
 {
 	protocol::RspNodeGetFileSession node_response;
 	package.parse_to_protocol(node_response);
@@ -541,7 +541,7 @@ GetFileTrans::GetFileTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
+void GetFileTrans::on_init(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
@@ -584,7 +584,7 @@ void GetFileTrans::on_init(int conn_id, const PackageBuffer& package)
 }
 
 
-void GetFileTrans::on_active(int conn_id, const PackageBuffer& package)
+void GetFileTrans::on_active(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(first_connection_id());
 
@@ -605,7 +605,7 @@ RemovePathTrans::RemovePathTrans(int trans_id) :
 	MultiplyPhaseTransaction(trans_id) {}
 
 
-void RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
+void RemovePathTrans::on_init(int conn_id, Package package)
 {
 	User& user = UserManager::instance()->get_login_user(conn_id);
 
@@ -621,7 +621,7 @@ void RemovePathTrans::on_init(int conn_id, const PackageBuffer& package)
 }
 
 
-void RemovePathTrans::on_active(int conn_id, const PackageBuffer& package)
+void RemovePathTrans::on_active(int conn_id, Package package)
 {
 }
 

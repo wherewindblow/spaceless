@@ -17,7 +17,7 @@ namespace spaceless {
 namespace storage_node {
 namespace transaction {
 
-void on_put_file_session(int conn_id, const PackageBuffer& package)
+void on_put_file_session(int conn_id, Package package)
 {
 	protocol::ReqNodePutFileSession request;
 	package.parse_to_protocol(request);
@@ -41,7 +41,7 @@ void on_put_file_session(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_put_file(int conn_id, const PackageBuffer& package)
+void on_put_file(int conn_id, Package package)
 {
 	protocol::ReqPutFile request;
 	package.parse_to_protocol(request);
@@ -70,7 +70,7 @@ void on_put_file(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_get_file_session(int conn_id, const PackageBuffer& package)
+void on_get_file_session(int conn_id, Package package)
 {
 	protocol::ReqNodeGetFileSession request;
 	package.parse_to_protocol(request);
@@ -89,7 +89,7 @@ void on_get_file_session(int conn_id, const PackageBuffer& package)
 }
 
 
-void on_get_file(int conn_id, const PackageBuffer& package)
+void on_get_file(int conn_id, Package package)
 {
 	protocol::ReqGetFile request;
 	package.parse_to_protocol(request);

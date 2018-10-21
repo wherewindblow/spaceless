@@ -14,29 +14,29 @@ namespace spaceless {
 namespace resource_server {
 namespace transaction {
 
-void on_register_user(int conn_id, const PackageBuffer& package);
+void on_register_user(int conn_id, Package package);
 
-void on_login_user(int conn_id, const PackageBuffer& package);
+void on_login_user(int conn_id, Package package);
 
-void on_remove_user(int conn_id, const PackageBuffer& package);
+void on_remove_user(int conn_id, Package package);
 
-void on_find_user(int conn_id, const PackageBuffer& package);
+void on_find_user(int conn_id, Package package);
 
-void on_register_group(int conn_id, const PackageBuffer& package);
+void on_register_group(int conn_id, Package package);
 
-void on_remove_group(int conn_id, const PackageBuffer& package);
+void on_remove_group(int conn_id, Package package);
 
-void on_find_group(int conn_id, const PackageBuffer& package);
+void on_find_group(int conn_id, Package package);
 
-void on_join_group(int conn_id, const PackageBuffer& package);
+void on_join_group(int conn_id, Package package);
 
-void on_assign_as_manager(int conn_id, const PackageBuffer& package);
+void on_assign_as_manager(int conn_id, Package package);
 
-void on_assign_as_memeber(int conn_id, const PackageBuffer& package);
+void on_assign_as_memeber(int conn_id, Package package);
 
-void on_kick_out_user(int conn_id, const PackageBuffer& package);
+void on_kick_out_user(int conn_id, Package package);
 
-void on_create_path(int conn_id, const PackageBuffer& package);
+void on_create_path(int conn_id, Package package);
 
 
 class PutFileSessionTrans: public MultiplyPhaseTransaction
@@ -51,9 +51,9 @@ public:
 
 	PutFileSessionTrans(int trans_id);
 
-	void on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, Package package) override;
 
 	void on_timeout() override;
 
@@ -76,9 +76,9 @@ public:
 
 	PutFileTrans(int trans_id);
 
-	void on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, Package package) override;
 
 private:
 	int m_session_id;
@@ -97,9 +97,9 @@ public:
 
 	GetFileSessionTrans(int trans_id);
 
-	void on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, Package package) override;
 
 	void on_timeout() override;
 
@@ -122,9 +122,9 @@ public:
 
 	GetFileTrans(int trans_id);
 
-	void on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, Package package) override;
 
 private:
 	int m_session_id;
@@ -143,9 +143,9 @@ public:
 
 	RemovePathTrans(int trans_id);
 
-	void on_init(int conn_id, const PackageBuffer& package) override;
+	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, const PackageBuffer& package) override;
+	void on_active(int conn_id, Package package) override;
 };
 
 } // namespace transaction

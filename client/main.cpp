@@ -19,7 +19,7 @@ namespace client {
 
 static Logger& logger = get_logger("client");
 
-void read_handler(int conn_id, const PackageBuffer& package);
+void read_handler(int conn_id, Package package);
 
 using ConnectionList = std::vector<int>;
 
@@ -264,7 +264,7 @@ int cmd(const std::string& protocol_name)
 	return protocol::get_command(protocol_name);
 }
 
-void read_handler(int conn_id, const PackageBuffer& package)
+void read_handler(int conn_id, Package package)
 {
 	protocol::RspError error;
 	package.parse_to_protocol(error);

@@ -29,7 +29,6 @@ int main(int argc, const char* argv[])
 			logger->set_level(log_level);
 		});
 
-		Configuration::Keys keys;
 		for (int i = 0;; ++i)
 		{
 			std::string key_prefix = "storage_nodes[" + std::to_string(i) + "]";

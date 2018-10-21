@@ -10,7 +10,7 @@
 
 namespace spaceless {
 
-void PackageBuffer::parse_to_protocol(protocol::Message& msg) const
+void Package::parse_to_protocol(protocol::Message& msg) const
 {
 	bool ok = protocol::parse_to_message(content(), msg);
 	if (!ok)
@@ -20,11 +20,14 @@ void PackageBuffer::parse_to_protocol(protocol::Message& msg) const
 }
 
 
-PackageBuffer& PackageBufferManager::register_package()
+Package PackageManager::register_package(lights::SequenceView data)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 
-	auto value = std::make_pair(m_next_id, PackageBuffer(m_next_id));
+	char* new_data = new char[data.length()];
+	lights::copy_array(new_data, static_cast<const char*>(data.data()), data.length());
+	lights::Sequence sequence(new_data, data.length());
+	auto value = std::make_pair(m_next_id, sequence);
 	++m_next_id;
 
 	auto result = m_package_list.insert(value);
@@ -33,40 +36,72 @@ PackageBuffer& PackageBufferManager::register_package()
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
 	}
 
-	return result.first->second;
+	return { result.first->first, result.first->second };
 }
 
 
-void PackageBufferManager::remove_package(int package_id)
+Package PackageManager::register_package(int content_len)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
-	m_package_list.erase(package_id);
+
+	std::size_t len = Package::HEADER_LEN + content_len;
+	char* data = new char[len];
+	lights::Sequence sequence(data, len);
+	auto value = std::make_pair(m_next_id, sequence);
+	++m_next_id;
+
+	auto result = m_package_list.insert(value);
+	if (result.second == false)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
+	}
+
+	return { result.first->first, result.first->second };
 }
 
 
-PackageBuffer* PackageBufferManager::find_package(int package_id)
+void PackageManager::remove_package(int package_id)
+{
+	std::lock_guard<std::mutex> lock(m_mutex);
+
+	auto itr = m_package_list.find(package_id);
+	if (itr != m_package_list.end())
+	{
+		delete[] static_cast<char*>(itr->second.data());
+		m_package_list.erase(itr);
+	}
+}
+
+
+Package PackageManager::find_package(int package_id)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 
 	auto itr = m_package_list.find(package_id);
 	if (itr == m_package_list.end())
 	{
-		return nullptr;
+		return {};
 	}
 
-	return &itr->second;
+	return { itr->first, itr->second };
 }
 
 
-PackageBuffer& PackageBufferManager::get_package(int package_id)
+Package PackageManager::get_package(int package_id)
 {
-	PackageBuffer* package = find_package(package_id);
-	if (package == nullptr)
+	Package package = find_package(package_id);
+	if (!package.is_valid())
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_NOT_EXIST);
 	}
 
-	return *package;
+	return package;
+}
+
+
+std::size_t PackageManager::size()
+{
+	return m_package_list.size();
 }
 
 
