@@ -24,8 +24,8 @@ int main(int argc, const char* argv[])
 
 		std::string str_log_level = configuration.getString("log_level");
 		lights::LogLevel log_level = to_log_level(str_log_level);
-		LoggerManager::instance()->for_each([&](const std::string& name, Logger* logger) {
-			logger->set_level(log_level);
+		LoggerManager::instance()->for_each([&](const std::string& name, Logger& logger) {
+			logger.set_level(log_level);
 		});
 
 		if (argc < 4)
