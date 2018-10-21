@@ -51,9 +51,9 @@ struct PackageTriggerSource
 class PackageBuffer
 {
 public:
-	static const std::size_t MAX_BUFFER_LEN = 65536;
+	static const std::size_t BUFFER_LEN = 65536;
 	static const std::size_t HEADER_LEN = sizeof(PackageHeader);
-	static const std::size_t MAX_CONTENT_LEN = MAX_BUFFER_LEN - HEADER_LEN;
+	static const std::size_t MAX_CONTENT_LEN = BUFFER_LEN - HEADER_LEN;
 
 	/**
 	 * Creates the PackageBuffer.
@@ -97,7 +97,7 @@ public:
 	}
 
 private:
-	char m_buffer[MAX_BUFFER_LEN];
+	char m_buffer[BUFFER_LEN];
 };
 
 

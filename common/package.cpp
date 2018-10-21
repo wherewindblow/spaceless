@@ -101,6 +101,7 @@ Package PackageManager::get_package(int package_id)
 
 std::size_t PackageManager::size()
 {
+	// Underlying have storage a size of list. So don't need mutex.
 	return m_package_list.size();
 }
 
