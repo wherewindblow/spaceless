@@ -75,11 +75,11 @@ Logger* LoggerManager::find_logger(const std::string& name)
 }
 
 
-void LoggerManager::for_each(std::function<void(const std::string&, Logger*)> callback)
+void LoggerManager::for_each(std::function<void(const std::string&, Logger&)> callback)
 {
 	for (auto& pair :m_logger_list)
 	{
-		callback(pair.first, pair.second);
+		callback(pair.first, *pair.second);
 	}
 }
 

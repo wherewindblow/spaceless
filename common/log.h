@@ -46,7 +46,7 @@ public:
 	/**
 	 * For each logger to do something.
 	 */
-	void for_each(std::function<void(const std::string& logger_name, Logger* logger)> callback);
+	void for_each(std::function<void(const std::string& logger_name, Logger& logger)> callback);
 
 private:
 	lights::LogSinkPtr m_log_sink_ptr;
