@@ -298,6 +298,12 @@ MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_transaction(int 
 }
 
 
+std::size_t MultiplyPhaseTransactionManager::size()
+{
+	return m_trans_list.size();
+}
+
+
 void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
 {
 	protocol::RspError error;

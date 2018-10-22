@@ -16,6 +16,7 @@
 
 #include "basics.h"
 #include "exception.h"
+#include "monitor.h"
 
 
 namespace spaceless {
@@ -270,7 +271,7 @@ public:
 	Package get_package(int package_id);
 
 	/**
-	 * Returns number of all package.
+	 * Returns number of package.
 	 */
 	std::size_t size();
 

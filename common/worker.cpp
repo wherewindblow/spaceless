@@ -59,6 +59,11 @@ void Worker::run()
 
 	LIGHTS_INFO(logger, "Running worker.");
 
+	// Package manager instance may be create in network thread. But monitor only can be use in worker thread.
+	SPACELESS_REG_MANAGER(PackageManager);
+	// Monitor constructor need timer manager. If register in timer constructor will lead to dead lock.
+	SPACELESS_REG_MANAGER(TimerManager);
+
 	while (!stop_flag)
 	{
 		bool need_sleep = false;
@@ -410,6 +415,12 @@ int TimerManager::process_expiry_timer()
 		std::push_heap(m_timer_queue.begin(), m_timer_queue.end(), TimerCompare());
 	}
 	return 1;
+}
+
+
+std::size_t TimerManager::size()
+{
+	return m_timer_queue.size();
 }
 
 } // namespace spaceless

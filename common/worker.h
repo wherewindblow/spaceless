@@ -12,6 +12,7 @@
 #include <lights/precise_time.h>
 
 #include "basics.h"
+#include "monitor.h"
 
 /**
  * @note All function that use in framework cannot throw exception. Because don't know who can catch it.
@@ -58,7 +59,7 @@ enum class TimerCallPolicy : bool
 class TimerManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(TimerManager)
+	SPACELESS_SINGLETON_INSTANCE(TimerManager);
 
 	/**
 	 * Starts timer and call @c expiry_action at time expriy.
@@ -81,6 +82,11 @@ public:
 	 * @note Only use in internal.
 	 */
 	int process_expiry_timer();
+
+	/**
+	 * Returns number of timer.
+	 */
+	std::size_t size();
 
 private:
 	struct Timer

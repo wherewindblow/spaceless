@@ -6,7 +6,9 @@
 
 #pragma once
 
-
+/**
+ * Generate instance method of class.
+ */
 #define SPACELESS_SINGLETON_INSTANCE(class_name) \
 static class_name* instance() \
 { \
@@ -22,6 +24,7 @@ const int MAX_SEND_PACKAGE_PROCESS_PER_TIMES = 10;
 const int REACTOR_TIME_OUT_US = 5000;
 const int TRANSACTION_IDLE_SLEEP_MS = 2;
 const int SCHEDULER_WAITTING_STOP_PERIOD_MS = 100;
+const int MONITOR_MANAGER_STATE_PERIOD_SEC = 5;
 
 extern const char* WORKER_THREAD_NAME;
 
@@ -38,6 +41,7 @@ enum
 	ERR_PROTOCOL_NAME_NOT_EXIST = 116,
 	ERR_TRANSACTION_ALREADY_EXIST = 120,
 	ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST = 121,
+	ERR_MONITOR_MANAGER_ALREADY_EXIST = 125,
 	ERR_EVENT_ALREADY_EXIST = 140,
 };
 

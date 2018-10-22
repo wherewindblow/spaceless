@@ -5,7 +5,11 @@
  */
 
 #include "package.h"
+
+#include <string>
 #include <protocol/message.h>
+
+#include "monitor.h"
 
 
 namespace spaceless {
@@ -101,7 +105,7 @@ Package PackageManager::get_package(int package_id)
 
 std::size_t PackageManager::size()
 {
-	// Underlying have storage a size of list. So don't need mutex.
+	std::lock_guard<std::mutex> lock(m_mutex);
 	return m_package_list.size();
 }
 

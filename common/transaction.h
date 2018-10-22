@@ -259,6 +259,8 @@ class MultiplyPhaseTransactionManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(MultiplyPhaseTransactionManager);
 
+	SPACELESS_AUTO_REG_MANAGER(MultiplyPhaseTransactionManager);
+
 	/**
 	 * Registers multiply phase transaction.
 	 */
@@ -274,6 +276,11 @@ public:
 	 * @note Returns nullptr if cannot find multiply phase transaction.
 	 */
 	MultiplyPhaseTransaction* find_transaction(int trans_id);
+
+	/**
+	 * Returns number of multiply phase transaction.
+	 */
+	std::size_t size();
 
 private:
 	int m_next_id = 1;
