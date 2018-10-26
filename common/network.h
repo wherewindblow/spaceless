@@ -196,17 +196,17 @@ private:
 
 
 /**
- * Manager of all network connection and listener.
+ * Manager of all network connection and listener. And schedule network event.
  */
-class NetworkConnectionManager
+class NetworkManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(NetworkConnectionManager);
+	SPACELESS_SINGLETON_INSTANCE(NetworkManager);
 
 	/**
 	 * Destroys the network connection manager.
 	 */
-	~NetworkConnectionManager();
+	~NetworkManager();
 
 	/**
 	 * Registers network connection.
@@ -241,13 +241,13 @@ public:
 	void stop_all();
 
 	/**
-	 * Starts to schedule network.
+	 * Starts to schedule network event.
 	 * @note It'll block until it's stopped.
 	 */
 	void start();
 
 	/**
-	 * Stops of schedule network. Sets stop flag to let scheduler to stop running.
+	 * Stops of schedule network event. Sets stop flag to let scheduler to stop running.
 	 * @note After this function return, the scheduler may be still running.
 	 */
 	void stop();
@@ -277,6 +277,9 @@ struct NetworkService
 };
 
 
+/**
+ * Manager of netwokr service.
+ */
 class NetworkServiceManager
 {
 public:

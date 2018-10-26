@@ -53,7 +53,7 @@ enum class TimerCallPolicy : bool
 
 
 /**
- * Manager all timer.
+ * Manager of all timer. And provide bacis sheduling function.
  * @note TimerManager are scheduling by worker.
  */
 class TimerManager

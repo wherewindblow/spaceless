@@ -68,7 +68,7 @@ public:
 
 	void notify(Poco::Notification* pNf) const
 	{
-		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(m_conn_id);
+		NetworkConnection* conn = NetworkManager::instance()->find_connection(m_conn_id);
 		if (conn != nullptr)
 		{
 			BaseObserver::notify(pNf);
@@ -98,7 +98,7 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	details::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error, m_id);
 	m_reactor.addEventHandler(m_socket, error);
 
-	m_id = NetworkConnectionManager::instance()->on_create_connection(this);
+	m_id = NetworkManager::instance()->on_create_connection(this);
 
 	try
 	{
@@ -118,7 +118,7 @@ NetworkConnection::~NetworkConnection()
 	try
 	{
 		LIGHTS_INFO(logger, "Destroys network connection {}.", m_id);
-		NetworkConnectionManager::instance()->on_destroy_connection(m_id);
+		NetworkManager::instance()->on_destroy_connection(m_id);
 
 		details::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable, m_id);
 		m_reactor.removeEventHandler(m_socket, readable);
@@ -397,7 +397,7 @@ void NetworkReactor::process_send_package()
 		}
 
 		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
-		NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(msg.conn_id);
+		NetworkConnection* conn = NetworkManager::instance()->find_connection(msg.conn_id);
 		Package package = PackageManager::instance()->find_package(msg.package_id);
 
 		if (conn == nullptr || !package.is_valid())
@@ -425,7 +425,7 @@ void NetworkReactor::process_send_package()
 }
 
 
-NetworkConnectionManager::~NetworkConnectionManager()
+NetworkManager::~NetworkManager()
 {
 	try
 	{
@@ -442,7 +442,7 @@ NetworkConnectionManager::~NetworkConnectionManager()
 }
 
 
-NetworkConnection& NetworkConnectionManager::register_connection(const std::string& host, unsigned short port)
+NetworkConnection& NetworkManager::register_connection(const std::string& host, unsigned short port)
 {
 	StreamSocket stream_socket(SocketAddress(host, port));
 	NetworkConnection* conn = new NetworkConnection(stream_socket, m_reactor);
@@ -450,7 +450,7 @@ NetworkConnection& NetworkConnectionManager::register_connection(const std::stri
 }
 
 
-void NetworkConnectionManager::register_listener(const std::string& host, unsigned short port)
+void NetworkManager::register_listener(const std::string& host, unsigned short port)
 {
 	ServerSocket server_socket(SocketAddress(host, port));
 	m_acceptor_list.emplace_back(server_socket, m_reactor);
@@ -458,7 +458,7 @@ void NetworkConnectionManager::register_listener(const std::string& host, unsign
 }
 
 
-void NetworkConnectionManager::remove_connection(int conn_id)
+void NetworkManager::remove_connection(int conn_id)
 {
 	NetworkConnection* conn = find_connection(conn_id);
 	if (conn)
@@ -468,7 +468,7 @@ void NetworkConnectionManager::remove_connection(int conn_id)
 }
 
 
-NetworkConnection* NetworkConnectionManager::find_connection(int conn_id)
+NetworkConnection* NetworkManager::find_connection(int conn_id)
 {
 	auto itr = m_conn_list.find(conn_id);
 	if (itr == m_conn_list.end())
@@ -480,7 +480,7 @@ NetworkConnection* NetworkConnectionManager::find_connection(int conn_id)
 }
 
 
-NetworkConnection& NetworkConnectionManager::get_connection(int conn_id)
+NetworkConnection& NetworkManager::get_connection(int conn_id)
 {
 	NetworkConnection* conn = find_connection(conn_id);
 	if (conn == nullptr)
@@ -492,7 +492,7 @@ NetworkConnection& NetworkConnectionManager::get_connection(int conn_id)
 }
 
 
-void NetworkConnectionManager::stop_all()
+void NetworkManager::stop_all()
 {
 	// Cannot use iterator to for each to close, becase close will erase itself on m_conn_list.
 	while (!m_conn_list.empty())
@@ -505,7 +505,7 @@ void NetworkConnectionManager::stop_all()
 }
 
 
-void NetworkConnectionManager::start()
+void NetworkManager::start()
 {
 	LIGHTS_INFO(logger, "Starting netowk scheduler.");
 	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
@@ -514,14 +514,14 @@ void NetworkConnectionManager::start()
 }
 
 
-void NetworkConnectionManager::stop()
+void NetworkManager::stop()
 {
 	LIGHTS_INFO(logger, "Stopping netowk scheduler.");
 	m_reactor.stop();
 }
 
 
-int NetworkConnectionManager::on_create_connection(NetworkConnection* conn)
+int NetworkManager::on_create_connection(NetworkConnection* conn)
 {
 	int conn_id = m_next_id;
 	++m_next_id;
@@ -530,7 +530,7 @@ int NetworkConnectionManager::on_create_connection(NetworkConnection* conn)
 }
 
 
-void NetworkConnectionManager::on_destroy_connection(int conn_id)
+void NetworkManager::on_destroy_connection(int conn_id)
 {
 	m_conn_list.erase(conn_id);
 }
@@ -563,7 +563,7 @@ void NetworkServiceManager::remove_service(int service_id)
 	auto itr = m_conn_list.find(service_id);
 	if (itr != m_conn_list.end())
 	{
-		NetworkConnectionManager::instance()->remove_connection(itr->second);
+		NetworkManager::instance()->remove_connection(itr->second);
 	}
 	m_service_list.erase(service_id);
 }
@@ -607,15 +607,15 @@ int NetworkServiceManager::get_connection_id(int service_id)
 	auto itr = m_conn_list.find(service_id);
 	if (itr == m_conn_list.end())
 	{
-		NetworkConnection& conn = NetworkConnectionManager::instance()->register_connection(service->ip, service->port);
+		NetworkConnection& conn = NetworkManager::instance()->register_connection(service->ip, service->port);
 		m_conn_list.insert(std::make_pair(service_id, conn.connection_id()));
 		return conn.connection_id();
 	}
 
-	NetworkConnection* conn = NetworkConnectionManager::instance()->find_connection(itr->second);
+	NetworkConnection* conn = NetworkManager::instance()->find_connection(itr->second);
 	if (conn == nullptr)
 	{
-		NetworkConnection& new_conn = NetworkConnectionManager::instance()->register_connection(service->ip, service->port);
+		NetworkConnection& new_conn = NetworkManager::instance()->register_connection(service->ip, service->port);
 		m_conn_list[service_id] = new_conn.connection_id();
 		return new_conn.connection_id();;
 	}

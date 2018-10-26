@@ -221,6 +221,9 @@ public:
 	 */
 	void parse_to_protocol(protocol::Message& msg) const;
 
+	/**
+	 * Gets trigger source that is neccessary for send back package.
+	 */
 	PackageTriggerSource get_trigger_source() const
 	{
 		return { header().command, header().self_trans_id };

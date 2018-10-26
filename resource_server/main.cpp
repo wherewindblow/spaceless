@@ -53,7 +53,7 @@ int main(int argc, const char* argv[])
 
 		std::string ip = configuration.getString("resource_server.ip");
 		unsigned int port = configuration.getUInt("resource_server.port");
-		NetworkConnectionManager::instance()->register_listener(ip, static_cast<unsigned short>(port));
+		NetworkManager::instance()->register_listener(ip, static_cast<unsigned short>(port));
 
 		std::string root_user_name = configuration.getString("root_user.name");
 		std::string root_user_pwd = configuration.getString("root_user.password");

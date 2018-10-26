@@ -49,7 +49,7 @@ void Scheduler::start()
 	catch_signal(SIGUSR1, safe_exit);
 
 	WorkerScheduler::instance()->start();
-	NetworkConnectionManager::instance()->start();
+	NetworkManager::instance()->start();
 
 	WorkerScheduler* worker_scheduler = WorkerScheduler::instance();
 	worker_scheduler->stop();
@@ -65,7 +65,7 @@ void Scheduler::start()
 void Scheduler::stop()
 {
 	LIGHTS_INFO(logger, "Stopping scheduler.")
-	NetworkConnectionManager::instance()->stop();
+	NetworkManager::instance()->stop();
 	WorkerScheduler* worker_scheduler = WorkerScheduler::instance();
 	worker_scheduler->stop();
 	while (worker_scheduler->is_worker_running())

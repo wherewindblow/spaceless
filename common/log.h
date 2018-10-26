@@ -9,6 +9,8 @@
 #include <map>
 #include <lights/logger.h>
 
+#include "basics.h"
+
 
 namespace spaceless {
 
@@ -19,12 +21,12 @@ using Logger = lights::TextLogger;
 
 
 /**
- * Record all logger to reuse it.
+ * Manager of logger. Record all logger to reuse it.
  */
 class LoggerManager
 {
 public:
-	LIGHTS_SINGLETON_INSTANCE(LoggerManager);
+	SPACELESS_SINGLETON_INSTANCE(LoggerManager);
 
 	/**
 	 * Creates logger manager.
