@@ -9,7 +9,7 @@
 
 #include <cmath>
 #include <fstream>
-#include <common/transaction.h>
+#include <foundation/transaction.h>
 #include <protocol/all.h>
 
 

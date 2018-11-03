@@ -278,7 +278,7 @@ struct NetworkService
 
 
 /**
- * Manager of netwokr service.
+ * Manager of network service.
  */
 class NetworkServiceManager
 {

@@ -7,7 +7,7 @@ add_executable(spaceless_client ${SPACELESS_CLIENT_SRC})
 
 target_link_libraries(spaceless_client
         pthread
-        spaceless_common
+        spaceless_foundation
         spaceless_protocol
         lights_static
         protobuf

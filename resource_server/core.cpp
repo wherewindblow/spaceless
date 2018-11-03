@@ -10,8 +10,8 @@
 #include <utility>
 
 #include <lights/file.h>
-#include <common/exception.h>
-#include <common/network.h>
+#include <foundation/exception.h>
+#include <foundation/network.h>
 #include <Poco/String.h>
 #include <Poco/StringTokenizer.h>
 

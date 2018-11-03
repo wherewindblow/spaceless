@@ -7,7 +7,7 @@
 #include "transaction.h"
 
 #include <cmath>
-#include <common/transaction.h>
+#include <foundation/transaction.h>
 #include <protocol/all.h>
 
 #include "core.h"

@@ -9,7 +9,7 @@ add_executable(spaceless_storage_node ${SPACELESS_STORAGE_NODE_SRC})
 
 target_link_libraries(spaceless_storage_node
         pthread
-        spaceless_common
+        spaceless_foundation
         spaceless_protocol
         lights_static
         protobuf

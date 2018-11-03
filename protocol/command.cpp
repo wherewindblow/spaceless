@@ -8,8 +8,8 @@
 #include "command.h"
 
 #include <map>
-#include <common/basics.h>
-#include <common/exception.h>
+#include <foundation/basics.h>
+#include <foundation/exception.h>
 
 #include "command.details"
 #include "message.h"

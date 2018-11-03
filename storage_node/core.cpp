@@ -12,8 +12,8 @@
 
 #include <lights/file.h>
 #include <lights/logger.h>
-#include <common/exception.h>
-#include <common/log.h>
+#include <foundation/exception.h>
+#include <foundation/log.h>
 
 #include <Poco/DirectoryIterator.h>
 #include <Poco/Path.h>

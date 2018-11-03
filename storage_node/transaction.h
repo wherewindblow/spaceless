@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/package.h>
+#include <foundation/package.h>
 
 namespace spaceless {
 namespace storage_node {

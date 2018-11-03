@@ -1,11 +1,11 @@
 #include <iostream>
 #include <thread>
 
-#include <common/network.h>
-#include <common/transaction.h>
-#include <common/scheduler.h>
-#include <common/log.h>
-#include <common/configuration.h>
+#include <foundation/network.h>
+#include <foundation/transaction.h>
+#include <foundation/scheduler.h>
+#include <foundation/log.h>
+#include <foundation/configuration.h>
 #include <protocol/all.h>
 
 #include <lights/ostream.h>
@@ -37,6 +37,10 @@ int main(int argc, const char* argv[])
 		lights::LogLevel log_level = to_log_level(str_log_level);
 		LoggerManager::instance()->for_each([&](const std::string& name, Logger& logger) {
 			logger.set_level(log_level);
+			if (name == "monitor")
+			{
+				logger.set_level(lights::LogLevel::OFF);
+			}
 		});
 
 		SPACELESS_REG_ONE_TRANS(protocol::RspRegisterUser, read_handler);

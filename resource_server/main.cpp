@@ -1,8 +1,8 @@
-#include <common/network.h>
-#include <common/transaction.h>
-#include <common/scheduler.h>
-#include <common/log.h>
-#include <common/configuration.h>
+#include <foundation/network.h>
+#include <foundation/transaction.h>
+#include <foundation/scheduler.h>
+#include <foundation/log.h>
+#include <foundation/configuration.h>
 #include <protocol/all.h>
 
 #include <lights/precise_time.h>

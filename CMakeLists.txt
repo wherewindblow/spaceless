@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0")
 
 
 add_subdirectory(lights)
-add_subdirectory(common)
+add_subdirectory(foundation)
 add_subdirectory(protocol)
 add_subdirectory(command_generator)
 add_subdirectory(client)

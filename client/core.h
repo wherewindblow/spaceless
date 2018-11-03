@@ -12,7 +12,7 @@
 #include <lights/sequence.h>
 #include <lights/precise_time.h>
 
-#include "common/basics.h"
+#include <foundation/basics.h>
 
 
 namespace spaceless {
