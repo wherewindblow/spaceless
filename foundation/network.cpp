@@ -365,25 +365,22 @@ std::size_t NetworkMessageQueue::size(NetworkMessageQueue::QueueType queue_type)
 
 void NetworkReactor::onIdle()
 {
-	LIGHTS_DEBUG(logger, "onIdle");
 	process_send_package();
-	SocketReactor::onIdle();
+//	SocketReactor::onIdle(); // Avoid sending event to all network connection, because it's not efficient.
 }
 
 
 void NetworkReactor::onBusy()
 {
-	LIGHTS_DEBUG(logger, "onBusy");
 	process_send_package();
-	SocketReactor::onBusy();
+//	SocketReactor::onBusy(); // There is nothing in this function.
 }
 
 
 void NetworkReactor::onTimeout()
 {
-//	LIGHTS_DEBUG(logger, "onTimeout");
 	process_send_package();
-	SocketReactor::onTimeout();
+//	SocketReactor::onTimeout(); // Avoid sending event to all network connection, because it's not efficient.
 }
 
 
