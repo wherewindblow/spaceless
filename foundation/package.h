@@ -13,6 +13,7 @@
 #include <lights/env.h>
 #include <lights/sequence.h>
 #include <protocol/message_declare.h>
+#include <crypto/aes.h>
 
 #include "basics.h"
 #include "exception.h"
@@ -61,7 +62,7 @@ public:
 	 */
 	PackageBuffer()
 	{
-		header().version = PROTOCOL_PACKAGE_VERSION;
+		header().version = PACKAGE_VERSION;
 	}
 
 	/**
@@ -86,6 +87,11 @@ public:
 	char* data()
 	{
 		return m_buffer;
+	}
+
+	char* content_data()
+	{
+		return m_buffer + HEADER_LEN;
 	}
 
 	/**
@@ -127,7 +133,7 @@ public:
 	{}
 
 	/**
-	 * Check package is valid.
+	 * Checks package is valid.
 	 */
 	bool is_valid() const
 	{
@@ -135,11 +141,27 @@ public:
 	}
 
 	/**
-	 * Return package id.
+	 * Returns package id.
 	 */
 	int package_id() const
 	{
 		return m_id;
+	}
+
+	/**
+	 * Sets content is cipher.
+	 */
+	void set_is_cipher(bool is_cipher)
+	{
+		m_is_cipher = is_cipher;
+	}
+
+	/**
+	 * Returns is cipher.
+	 */
+	bool is_cipher() const
+	{
+		return m_is_cipher;
 	}
 
 	/**
@@ -209,11 +231,26 @@ public:
 	}
 
 	/**
-	 * Returns header and content length.
+	 * Returns header and content length according is cipher.
 	 */
-	std::size_t total_length() const
+	std::size_t valid_length() const
 	{
-		return PackageBuffer::HEADER_LEN + header().content_length;
+		if (m_is_cipher)
+		{
+			return HEADER_LEN + crypto::aes_cipher_length(static_cast<std::size_t>(header().content_length));
+		}
+		else
+		{
+			return HEADER_LEN + header().content_length;
+		}
+	}
+
+	/**
+	 * Returns underlying buffer length.
+	 */
+	std::size_t buffer_length() const
+	{
+		return m_length;
 	}
 
 	/**
@@ -233,6 +270,7 @@ private:
 	int m_id;
 	char* m_data;
 	std::size_t m_length;
+	bool m_is_cipher = false;
 };
 
 
@@ -243,12 +281,6 @@ class PackageManager
 {
 public:
 	SPACELESS_SINGLETON_INSTANCE(PackageManager);
-
-	/**
-	 * Registers package buffer.
-	 * @throw Throws exception if register failure.
-	 */
-	Package register_package(lights::SequenceView data);
 
 	/**
 	 * Registers package buffer.

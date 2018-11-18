@@ -41,6 +41,7 @@ void Network::send_protocol(int conn_id,
 
 	Package package = PackageManager::instance()->register_package(size);
 	PackageHeader& header = package.header();
+	header.version = PACKAGE_VERSION;
 
 	if (protocol::get_message_name(msg) == "RspError" && trigger_cmd != 0)
 	{

@@ -11,8 +11,10 @@ target_link_libraries(spaceless_storage_node
         pthread
         spaceless_foundation
         spaceless_protocol
+        spaceless_crypto
         lights_static
         protobuf
+        cryptopp
         PocoFoundation
         PocoNet
         PocoUtil)

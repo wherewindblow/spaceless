@@ -11,6 +11,8 @@
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/AbstractObserver.h>
 #include <Poco/NObserver.h>
+#include <crypto/rsa.h>
+#include <protocol/all.h>
 
 #include "log.h"
 #include "worker.h"
@@ -36,6 +38,7 @@ using Poco::Net::SocketAddress;
 
 namespace details {
 
+// Check network connection is valid to avoid notifying a not exist network connection.
 template <class C, class N>
 class Observer: public Poco::NObserver<C, N>
 {
@@ -82,12 +85,15 @@ private:
 } // namespace details
 
 
-NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor) :
+NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reactor, OpenType open_type) :
 	m_socket(socket),
 	m_reactor(reactor),
 	m_readed_len(0),
 	m_read_state(ReadState::READ_HEADER),
-	m_sended_len(0)
+	m_sended_len(0),
+	m_open_type(open_type),
+	m_crypto_state(CryptoState::STARTING),
+	m_key("", crypto::AesKeyBits::BITS_256)
 {
 	m_socket.setBlocking(false);
 
@@ -109,6 +115,22 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	catch (Poco::Exception& ex)
 	{
 		LIGHTS_INFO(logger, "Creates network connection {}: local unknow and peer unknow.", m_id);
+	}
+
+	if (open_type == PASSIVE_OPEN)
+	{
+		// Start crypto connection.
+		crypto::RsaKeyPair key_pair = crypto::generate_rsa_key_pair();
+		m_private_key = key_pair.private_key;
+		std::string public_key = key_pair.public_key.save_to_string();
+		int content_len = static_cast<int>(public_key.length());
+
+		Package package = PackageManager::instance()->register_package(content_len);
+		package.header().version = PACKAGE_VERSION;
+		package.header().command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
+		package.header().content_length = content_len;
+		lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()), public_key.c_str(), public_key.length());
+		send_package(package);
 	}
 }
 
@@ -189,7 +211,7 @@ void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& n
 		return;
 	}
 
-	int len = static_cast<int>(package.total_length());
+	int len = static_cast<int>(package.valid_length());
 	m_sended_len += m_socket.sendBytes(package.data() + m_sended_len, len - m_sended_len);
 
 	if (m_sended_len == len)
@@ -224,13 +246,30 @@ void NetworkConnection::send_package(Package package)
 	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}.",
 					m_id, package.header().command, package.header().trigger_trans_id)
 
+	if (m_crypto_state == CryptoState::STARTED)
+	{
+		crypto::AesBlockEncryptor encryptor;
+		encryptor.set_key(m_key);
+
+		std::size_t content_len = static_cast<std::size_t>(package.header().content_length);
+		std::size_t cipher_len = crypto::aes_cipher_length(content_len);
+
+		lights::Sequence content = package.content();
+		for (std::size_t i = 0; i + crypto::AES_BLOCK_SIZE <= cipher_len; i += crypto::AES_BLOCK_SIZE)
+		{
+			encryptor.encrypt(&content.at<char>(i));
+		}
+
+		package.set_is_cipher(true);
+	}
+
 	if (!m_send_list.empty())
 	{
 		m_send_list.push(package.package_id());
 		return;
 	}
 
-	int len = static_cast<int>(package.total_length());
+	int len = static_cast<int>(package.valid_length());
 	m_sended_len = m_socket.sendBytes(package.data(), len);
 	if (m_sended_len == len)
 	{
@@ -294,10 +333,17 @@ void NetworkConnection::read_for_state(int deep)
 
 		case ReadState::READ_CONTENT:
 		{
-			if (m_read_buffer.header().content_length != 0)
+			int read_content_len = m_read_buffer.header().content_length;
+			if (m_crypto_state == CryptoState::STARTED)
+			{
+				auto plain_len = static_cast<std::size_t>(read_content_len);
+				read_content_len = static_cast<int>(crypto::aes_cipher_length(plain_len));
+			}
+
+			if (read_content_len != 0)
 			{
 				int len = m_socket.receiveBytes(m_read_buffer.data() + PackageBuffer::HEADER_LEN + m_readed_len,
-												m_read_buffer.header().content_length - m_readed_len);
+												read_content_len - m_readed_len);
 				if (len == -1) // Not available bytes in buffer.
 				{
 					return;
@@ -312,24 +358,83 @@ void NetworkConnection::read_for_state(int deep)
 				m_readed_len += len;
 			}
 
-			if (m_readed_len == m_read_buffer.header().content_length)
+			if (m_readed_len == read_content_len)
 			{
 				m_readed_len = 0;
 				m_read_state = ReadState::READ_HEADER;
 
-				LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}.",
-								m_id, m_read_buffer.header().command, m_read_buffer.header().trigger_trans_id)
-
-				lights::Sequence data = { m_read_buffer.data(), m_read_buffer.total_length() };
-				Package package = PackageManager::instance()->register_package(data);
-				NetworkMessage msg = { m_id, package.package_id() };
-				NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
+				on_read_complete_package(read_content_len);
 			}
 			break;
 		}
 	}
 
 	read_for_state(++deep);
+}
+
+
+void NetworkConnection::on_read_complete_package(int read_content_len)
+{
+	PackageHeader& header = m_read_buffer.header();
+	LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}.",
+				 m_id, header.command, header.trigger_trans_id);
+
+	switch (m_crypto_state)
+	{
+		case CryptoState::STARTING:
+		{
+			auto cmd = static_cast<BuildinCommand>(header.command);
+			if (m_open_type == PASSIVE_OPEN && cmd == BuildinCommand::RSP_START_CRYPTO)
+			{
+				std::string cipher(m_read_buffer.content_data(), static_cast<std::size_t>(header.content_length));
+				std::string plain = rsa_decrypt(cipher, m_private_key);
+				m_key.reset(plain, crypto::AesKeyBits::BITS_256);
+				m_crypto_state = CryptoState::STARTED;
+			}
+			else if (m_open_type == ACTIVE_OPEN && cmd == BuildinCommand::REQ_START_CRYPTO)
+			{
+				crypto::RsaPublicKey public_key;
+				std::string public_key_str(m_read_buffer.content_data(),
+										   static_cast<std::size_t>(header.content_length));
+				public_key.load_from_string(public_key_str);
+
+				m_key.reset(crypto::AesKeyBits::BITS_256);
+
+				std::string cipher = rsa_encrypt(m_key.get_value(), public_key);
+				int content_len = static_cast<int>(cipher.length());
+
+				Package package = PackageManager::instance()->register_package(content_len);
+				package.header().version = PACKAGE_VERSION;
+				package.header().command = static_cast<int>(BuildinCommand::RSP_START_CRYPTO);
+				package.header().content_length = content_len;
+				lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
+								   cipher.c_str(), cipher.length());
+				send_package(package);
+
+				// Must set state after send_package, because it depend on this state.
+				m_crypto_state = CryptoState::STARTED;
+			}
+			else
+			{
+				// Ignore package when not started crypto.
+				LIGHTS_DEBUG(logger, "Connction {}: Ignore package cmd {}, trans_id {}.",
+							 m_id, header.command, header.trigger_trans_id);
+			}
+			break;
+		}
+
+		case CryptoState::STARTED:
+		{
+			Package package = PackageManager::instance()->register_package(read_content_len);
+			package.header() = header;
+			lights::SequenceView cipher(m_read_buffer.content_data(), static_cast<std::size_t>(read_content_len));
+			crypto::aes_decrypt(cipher, package.content_buffer(), m_key);
+
+			NetworkMessage msg = {m_id, package.package_id()}; // TODO: Remove all initialization without constructor.
+			NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
+			break;
+		}
+	}
 }
 
 
@@ -442,7 +547,7 @@ NetworkManager::~NetworkManager()
 NetworkConnection& NetworkManager::register_connection(const std::string& host, unsigned short port)
 {
 	StreamSocket stream_socket(SocketAddress(host, port));
-	NetworkConnection* conn = new NetworkConnection(stream_socket, m_reactor);
+	NetworkConnection* conn = new NetworkConnection(stream_socket, m_reactor, NetworkConnection::ACTIVE_OPEN);
 	return *conn;
 }
 

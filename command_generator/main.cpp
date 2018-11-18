@@ -12,6 +12,7 @@
 
 #include <lights/format.h>
 #include <lights/exception.h>
+#include <foundation/basics.h>
 
 
 using CommandTable = std::vector<std::pair<int, std::string>>;
@@ -82,7 +83,8 @@ int main(int argc, const char* argv[])
 
 	// Generate cmd.
 	MatchPatterns match_patterns = { "Req", "Rsp" };
-	CommandTable cmd_table = generate_commands(proto_filename, match_patterns);
+	int next_cmd = static_cast<int>(spaceless::BuildinCommand::MAX); // Avoid using buildin cmd.
+	CommandTable cmd_table = generate_commands(proto_filename, match_patterns, next_cmd);
 
 	// Save cmd in txt.
 	std::ofstream txt_cmd_file(txt_cmd_filename);

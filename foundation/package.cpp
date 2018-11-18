@@ -8,6 +8,7 @@
 
 #include <string>
 #include <protocol/message.h>
+#include <crypto/aes.h>
 
 #include "monitor.h"
 
@@ -24,31 +25,14 @@ void Package::parse_to_protocol(protocol::Message& msg) const
 }
 
 
-Package PackageManager::register_package(lights::SequenceView data)
-{
-	std::lock_guard<std::mutex> lock(m_mutex);
-
-	char* new_data = new char[data.length()];
-	lights::copy_array(new_data, static_cast<const char*>(data.data()), data.length());
-	lights::Sequence sequence(new_data, data.length());
-	auto value = std::make_pair(m_next_id, sequence);
-	++m_next_id;
-
-	auto result = m_package_list.insert(value);
-	if (result.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
-	}
-
-	return { result.first->first, result.first->second };
-}
-
-
 Package PackageManager::register_package(int content_len)
 {
 	std::lock_guard<std::mutex> lock(m_mutex);
 
-	std::size_t len = Package::HEADER_LEN + content_len;
+	// To support crypto in-place operation.
+	std::size_t cipher_content_len = crypto::aes_cipher_length(static_cast<size_t>(content_len));
+	
+	std::size_t len = Package::HEADER_LEN + cipher_content_len;
 	char* data = new char[len];
 	lights::Sequence sequence(data, len);
 	auto value = std::make_pair(m_next_id, sequence);

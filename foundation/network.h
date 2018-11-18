@@ -16,6 +16,8 @@
 #include <Poco/Net/SocketReactor.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/StreamSocket.h>
+#include <crypto/aes.h>
+#include <crypto/rsa.h>
 
 #include "basics.h"
 #include "exception.h"
@@ -45,17 +47,17 @@ using Poco::Net::ErrorNotification;
 class NetworkConnection
 {
 public:
-	enum class ReadState
+	enum OpenType
 	{
-		READ_HEADER,
-		READ_CONTENT,
+		ACTIVE_OPEN,
+		PASSIVE_OPEN,
 	};
 
 	/**
 	 * Creates the NetworkConnection and add event handler.
 	 * @note Do not create in stack.
 	 */
-	NetworkConnection(StreamSocket& socket, SocketReactor& reactor);
+	NetworkConnection(StreamSocket& socket, SocketReactor& reactor, OpenType open_type = PASSIVE_OPEN);
 
 	/**
 	 * Destroys the NetworkConnection and remove event handler。
@@ -84,6 +86,18 @@ public:
 	StreamSocket& stream_socket();
 
 private:
+	enum class ReadState
+	{
+		READ_HEADER,
+		READ_CONTENT,
+	};
+
+	enum class CryptoState
+	{
+		STARTING,
+		STARTED,
+	};
+
 	/**
 	 * Handlers readable notification.
 	 */
@@ -109,6 +123,8 @@ private:
 	 */
 	void read_for_state(int deep = 0);
 
+	void on_read_complete_package(int read_content_len);
+
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
@@ -117,6 +133,10 @@ private:
 	ReadState m_read_state;
 	std::queue<int> m_send_list;
 	int m_sended_len;
+	OpenType m_open_type;
+	CryptoState m_crypto_state;
+	crypto::RsaPrivateKey m_private_key;
+	crypto::AesKey m_key;
 };
 
 
