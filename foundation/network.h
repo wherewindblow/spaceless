@@ -142,6 +142,11 @@ private:
 
 struct NetworkMessage
 {
+	NetworkMessage(int conn_id, int package_id):
+		conn_id(conn_id),
+		package_id(package_id)
+	{}
+
 	int conn_id;
 	int package_id;
 };

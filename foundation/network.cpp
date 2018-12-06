@@ -430,7 +430,7 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			lights::SequenceView cipher(m_read_buffer.content_data(), static_cast<std::size_t>(read_content_len));
 			crypto::aes_decrypt(cipher, package.content_buffer(), m_key);
 
-			NetworkMessage msg = {m_id, package.package_id()}; // TODO: Remove all initialization without constructor.
+			NetworkMessage msg(m_id, package.package_id());
 			NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
 			break;
 		}
