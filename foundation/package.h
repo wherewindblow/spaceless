@@ -203,7 +203,7 @@ public:
 	 */
 	lights::Sequence content_buffer()
 	{
-		return {m_data + HEADER_LEN, m_length};
+		return {m_data + HEADER_LEN, m_length - HEADER_LEN};
 	}
 
 	/**
@@ -211,7 +211,7 @@ public:
 	 */
 	lights::SequenceView content_buffer() const
 	{
-		return {m_data + HEADER_LEN, m_length};
+		return {m_data + HEADER_LEN, m_length - HEADER_LEN};
 	}
 
 	/**
