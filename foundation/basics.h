@@ -51,8 +51,9 @@ enum
 
 enum class BuildinCommand
 {
-	REQ_START_CRYPTO = 1,
-	RSP_START_CRYPTO = 2,
+	NTF_INVALID_VERSION = 1,
+	REQ_START_CRYPTO = 2,
+	RSP_START_CRYPTO = 3,
 	MAX = 1000,
 };
 

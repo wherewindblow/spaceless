@@ -126,9 +126,9 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 		int content_len = static_cast<int>(public_key.length());
 
 		Package package = PackageManager::instance()->register_package(content_len);
-		package.header().version = PACKAGE_VERSION;
-		package.header().command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
-		package.header().content_length = content_len;
+		PackageHeader::Base& header_base = package.header().base;
+		header_base.command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
+		header_base.content_length = content_len;
 		lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()), public_key.c_str(), public_key.length());
 		send_package(package);
 	}
@@ -244,14 +244,14 @@ void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notific
 void NetworkConnection::send_package(Package package)
 {
 	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}.",
-					m_id, package.header().command, package.header().trigger_trans_id)
+					m_id, package.header().base.command, package.header().extend.trigger_trans_id)
 
 	if (m_crypto_state == CryptoState::STARTED)
 	{
 		crypto::AesBlockEncryptor encryptor;
 		encryptor.set_key(m_key);
 
-		std::size_t content_len = static_cast<std::size_t>(package.header().content_length);
+		std::size_t content_len = static_cast<std::size_t>(package.header().base.content_length);
 		std::size_t cipher_len = crypto::aes_cipher_length(content_len);
 
 		lights::Sequence content = package.content();
@@ -323,6 +323,36 @@ void NetworkConnection::read_for_state(int deep)
 			}
 
 			m_readed_len += len;
+
+			// Check package version.
+			if (m_readed_len >= static_cast<int>(sizeof(PackageHeader::Base)))
+			{
+				auto read_header_base = reinterpret_cast<PackageHeader::Base*>(m_read_buffer.data());
+				if (read_header_base->version != PACKAGE_VERSION)
+				{
+					if (read_header_base->command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
+					{
+						// Notify peer and logic layer package version is invalid.
+						Package package = PackageManager::instance()->register_package(0);
+						PackageHeader::Base& header_base = package.header().base;
+						header_base.command = static_cast<int>(BuildinCommand::NTF_INVALID_VERSION);
+						header_base.content_length = 0;
+						send_package(package);
+
+						LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
+						close();
+						return;
+					}
+					else
+					{
+						// Notify logic layer package version is invalid.
+						LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
+						close();
+						return;
+					}
+				}
+			}
+
 			if (m_readed_len == PackageBuffer::HEADER_LEN)
 			{
 				m_readed_len = 0;
@@ -333,7 +363,7 @@ void NetworkConnection::read_for_state(int deep)
 
 		case ReadState::READ_CONTENT:
 		{
-			int read_content_len = m_read_buffer.header().content_length;
+			int read_content_len = m_read_buffer.header().base.content_length;
 			if (m_crypto_state == CryptoState::STARTED)
 			{
 				auto plain_len = static_cast<std::size_t>(read_content_len);
@@ -377,16 +407,16 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 {
 	PackageHeader& header = m_read_buffer.header();
 	LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}.",
-				 m_id, header.command, header.trigger_trans_id);
+				 m_id, header.base.command, header.extend.trigger_trans_id);
 
 	switch (m_crypto_state)
 	{
 		case CryptoState::STARTING:
 		{
-			auto cmd = static_cast<BuildinCommand>(header.command);
+			auto cmd = static_cast<BuildinCommand>(header.base.command);
 			if (m_open_type == PASSIVE_OPEN && cmd == BuildinCommand::RSP_START_CRYPTO)
 			{
-				std::string cipher(m_read_buffer.content_data(), static_cast<std::size_t>(header.content_length));
+				std::string cipher(m_read_buffer.content_data(), static_cast<std::size_t>(header.base.content_length));
 				std::string plain = rsa_decrypt(cipher, m_private_key);
 				m_key.reset(plain, crypto::AesKeyBits::BITS_256);
 				m_crypto_state = CryptoState::STARTED;
@@ -395,7 +425,7 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			{
 				crypto::RsaPublicKey public_key;
 				std::string public_key_str(m_read_buffer.content_data(),
-										   static_cast<std::size_t>(header.content_length));
+										   static_cast<std::size_t>(header.base.content_length));
 				public_key.load_from_string(public_key_str);
 
 				m_key.reset(crypto::AesKeyBits::BITS_256);
@@ -404,9 +434,9 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 				int content_len = static_cast<int>(cipher.length());
 
 				Package package = PackageManager::instance()->register_package(content_len);
-				package.header().version = PACKAGE_VERSION;
-				package.header().command = static_cast<int>(BuildinCommand::RSP_START_CRYPTO);
-				package.header().content_length = content_len;
+				PackageHeader::Base& header_base = package.header().base;
+				header_base.command = static_cast<int>(BuildinCommand::RSP_START_CRYPTO);
+				header_base.content_length = content_len;
 				lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
 								   cipher.c_str(), cipher.length());
 				send_package(package);
@@ -418,7 +448,7 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			{
 				// Ignore package when not started crypto.
 				LIGHTS_DEBUG(logger, "Connction {}: Ignore package cmd {}, trans_id {}.",
-							 m_id, header.command, header.trigger_trans_id);
+							 m_id, header.base.command, header.extend.trigger_trans_id);
 			}
 			break;
 		}

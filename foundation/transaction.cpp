@@ -41,31 +41,30 @@ void Network::send_protocol(int conn_id,
 
 	Package package = PackageManager::instance()->register_package(size);
 	PackageHeader& header = package.header();
-	header.version = PACKAGE_VERSION;
 
 	if (protocol::get_message_name(msg) == "RspError" && trigger_cmd != 0)
 	{
 		// Convert RspError to RspXXX that associate trigger cmd. So dependent on protobuf message name.
 		auto msg_name = protocol::get_message_name(trigger_cmd);
 		msg_name.replace(0, 3, "Rsp");
-		header.command = protocol::get_command(msg_name);
-		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.command, msg_name);
+		header.base.command = protocol::get_command(msg_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.base.command, msg_name);
 	}
 	else
 	{
 		auto& msg_name = protocol::get_message_name(msg);
-		header.command = protocol::get_command(msg_name);
-		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.command, msg_name);
+		header.base.command = protocol::get_command(msg_name);
+		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.base.command, msg_name);
 	}
 
-	header.self_trans_id = bind_trans_id;
-	header.trigger_trans_id = trigger_trans_id;
-	header.content_length = size;
+	header.base.content_length = size;
+	header.extend.self_trans_id = bind_trans_id;
+	header.extend.trigger_trans_id = trigger_trans_id;
 
 	bool ok = protocol::parse_to_sequence(msg, package.content_buffer());
 	if (!ok)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Parse to sequence failure cmd {}.", conn_id, header.command);
+		LIGHTS_ERROR(logger, "Connction {}: Parse to sequence failure cmd {}.", conn_id, header.base.command);
 		return;
 	}
 
@@ -78,7 +77,11 @@ void Network::send_back_protobuf(int conn_id,
 								 Package trigger_package,
 								 int bind_trans_id)
 {
-	send_protocol(conn_id, msg, bind_trans_id, trigger_package.header().self_trans_id, trigger_package.header().command);
+	send_protocol(conn_id,
+				  msg,
+				  bind_trans_id,
+				  trigger_package.header().extend.self_trans_id,
+				  trigger_package.header().base.command);
 }
 
 

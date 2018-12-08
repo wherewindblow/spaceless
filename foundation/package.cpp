@@ -44,7 +44,9 @@ Package PackageManager::register_package(int content_len)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
 	}
 
-	return { result.first->first, result.first->second };
+	Package package(result.first->first, result.first->second);
+	package.header().reset();
+	return package;
 }
 
 
@@ -68,10 +70,10 @@ Package PackageManager::find_package(int package_id)
 	auto itr = m_package_list.find(package_id);
 	if (itr == m_package_list.end())
 	{
-		return {};
+		return Package();
 	}
 
-	return { itr->first, itr->second };
+	return Package(itr->first, itr->second);
 }
 
 

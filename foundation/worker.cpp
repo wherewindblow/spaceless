@@ -107,8 +107,8 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		return;
 	}
 
-	int trans_id = package.header().trigger_trans_id;
-	int command = package.header().command;
+	int trans_id = package.header().extend.trigger_trans_id;
+	int command = package.header().base.command;
 
 	if (trans_id == 0) // Create new transaction.
 	{
@@ -239,7 +239,7 @@ int Worker::safe_excute(int conn_id,
 	catch (Exception& ex)
 	{
 		LIGHTS_ERROR(logger, "Connction {}: Exception trans_id {}, error {}/{}.",
-					 conn_id, package.header().trigger_trans_id, ex.code(), ex);
+					 conn_id, package.header().extend.trigger_trans_id, ex.code(), ex);
 		if (error_handler)
 		{
 			try

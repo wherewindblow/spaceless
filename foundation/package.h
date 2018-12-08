@@ -27,21 +27,57 @@ namespace spaceless {
  */
 struct PackageHeader
 {
-	// Version of protocol.
-	short version;
-	// Indicates how of use content.
-	int command;
-	// Recieves side will transfer as trigger_trans_id when send back message.
-	int self_trans_id;
-	// self_trans_id of request.
-	int trigger_trans_id;
-	// The length of content.
-	int content_length;
+	/**
+	 * It's same for all package header with difference version.
+	 * @note Cannot add new field.
+	 */
+	struct Base
+	{
+		// Version of protocol.
+		short version;
+		// Indicates how of use content.
+		int command;
+		// The length of content.
+		int content_length;
+	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
+
+	/**
+	 * To extend package header, only can add new field in the end of extend structue.
+	 * And must increase PACKAGE_VERSION after extend package header.
+	 * @note Only can add new field in this structure.
+	 */
+	struct Extend
+	{
+		// Recieves side will transfer as trigger_trans_id when send back message.
+		int self_trans_id;
+		// self_trans_id of request.
+		int trigger_trans_id;
+	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
+
+
+	// Base structure.
+	Base base;
+
+	// Extend structure.
+	Extend extend;
+
+	void reset()
+	{
+		std::memset(this, 0, sizeof(*this));
+		base.version = PACKAGE_VERSION;
+	}
 } LIGHTS_NOT_MEMEORY_ALIGNMENT;
 
 
 struct PackageTriggerSource
 {
+	PackageTriggerSource() = default;
+
+	PackageTriggerSource(int command, int self_trans_id):
+		command(command),
+		self_trans_id(self_trans_id)
+	{}
+
 	int command;
 	int self_trans_id;
 };
@@ -62,7 +98,7 @@ public:
 	 */
 	PackageBuffer()
 	{
-		header().version = PACKAGE_VERSION;
+		header().base.version = PACKAGE_VERSION;
 	}
 
 	/**
@@ -100,7 +136,7 @@ public:
 	std::size_t total_length() const
 	{
 		auto header = reinterpret_cast<const PackageHeader*>(m_buffer);
-		return PackageBuffer::HEADER_LEN + header->content_length;
+		return HEADER_LEN + header->base.content_length;
 	}
 
 private:
@@ -186,7 +222,7 @@ public:
 	 */
 	lights::Sequence content()
 	{
-		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().content_length)};
+		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
 	}
 
 	/**
@@ -195,7 +231,7 @@ public:
 	 */
 	lights::SequenceView content() const
 	{
-		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().content_length)};
+		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
 	}
 
 	/**
@@ -237,11 +273,11 @@ public:
 	{
 		if (m_is_cipher)
 		{
-			return HEADER_LEN + crypto::aes_cipher_length(static_cast<std::size_t>(header().content_length));
+			return HEADER_LEN + crypto::aes_cipher_length(static_cast<std::size_t>(header().base.content_length));
 		}
 		else
 		{
-			return HEADER_LEN + header().content_length;
+			return HEADER_LEN + header().base.content_length;
 		}
 	}
 
@@ -263,7 +299,7 @@ public:
 	 */
 	PackageTriggerSource get_trigger_source() const
 	{
-		return { header().command, header().self_trans_id };
+		return PackageTriggerSource(header().base.command, header().extend.self_trans_id);
 	}
 
 private:

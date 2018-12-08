@@ -270,15 +270,16 @@ int cmd(const std::string& protocol_name)
 
 void read_handler(int conn_id, Package package)
 {
+	int command = package.header().base.command;
+
 	protocol::RspError error;
 	package.parse_to_protocol(error);
 	if (error.result())
 	{
-		std::cout << lights::format("Failure {} by {}.", error.result(), package.header().command) << std::endl;
+		std::cout << lights::format("Failure {} by {}.", error.result(), command) << std::endl;
 		return;
 	}
 
-	int command = package.header().command;
 	if (command == cmd("RspRegisterUser"))
 	{
 		protocol::RspRegisterUser response;
