@@ -81,9 +81,9 @@ public:
 	void close();
 
 	/**
-	 * Returns underlying stream socket.
+	 * Returns connection is open.
 	 */
-	StreamSocket& stream_socket();
+	bool is_open() const;
 
 private:
 	enum class ReadState
@@ -109,11 +109,6 @@ private:
 	void on_writable(const Poco::AutoPtr<WritableNotification>& notification);
 
 	/**
-	 * Handlers shutdown notification of reactor.
-	 */
-	void on_shutdown(const Poco::AutoPtr<ShutdownNotification>& notification);
-
-	/**
 	 * Handlers error notification of socket.
 	 */
 	void on_error(const Poco::AutoPtr<ErrorNotification>& notification);
@@ -137,6 +132,7 @@ private:
 	CryptoState m_crypto_state;
 	crypto::RsaPrivateKey m_private_key;
 	crypto::AesKey m_key;
+	bool m_is_closing;
 };
 
 
@@ -259,6 +255,12 @@ public:
 	 * @throw Throws exception if cannot find connection.
 	 */
 	NetworkConnection& get_connection(int conn_id);
+
+	/**
+	 * Finds network connection.
+	 * @note Returns nullptr if cannot find connection.
+	 */
+	NetworkConnection* find_open_connection(int conn_id);
 
 	/**
 	 * Stops all network connection and listener.

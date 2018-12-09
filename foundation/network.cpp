@@ -71,6 +71,7 @@ public:
 
 	void notify(Poco::Notification* pNf) const
 	{
+		// Closing connection need to proccess writeable event.
 		NetworkConnection* conn = NetworkManager::instance()->find_connection(m_conn_id);
 		if (conn != nullptr)
 		{
@@ -93,14 +94,13 @@ NetworkConnection::NetworkConnection(StreamSocket& socket, SocketReactor& reacto
 	m_sended_len(0),
 	m_open_type(open_type),
 	m_crypto_state(CryptoState::STARTING),
-	m_key("", crypto::AesKeyBits::BITS_256)
+	m_key("", crypto::AesKeyBits::BITS_256),
+	m_is_closing(false)
 {
 	m_socket.setBlocking(false);
 
 	details::Observer<NetworkConnection, ReadableNotification> readable(*this, &NetworkConnection::on_readable, m_id);
 	m_reactor.addEventHandler(m_socket, readable);
-	details::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown, m_id);
-	m_reactor.addEventHandler(m_socket, shutdown);
 	details::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error, m_id);
 	m_reactor.addEventHandler(m_socket, error);
 
@@ -146,8 +146,6 @@ NetworkConnection::~NetworkConnection()
 		m_reactor.removeEventHandler(m_socket, readable);
 		details::Observer<NetworkConnection, WritableNotification> writable(*this, &NetworkConnection::on_writable, m_id);
 		m_reactor.removeEventHandler(m_socket, writable);
-		details::Observer<NetworkConnection, ShutdownNotification> shutdown(*this, &NetworkConnection::on_shutdown, m_id);
-		m_reactor.removeEventHandler(m_socket, shutdown);
 		details::Observer<NetworkConnection, ErrorNotification> error(*this, &NetworkConnection::on_error, m_id);
 		m_reactor.removeEventHandler(m_socket, error);
 
@@ -186,6 +184,11 @@ int NetworkConnection::connection_id() const
 
 void NetworkConnection::on_readable(const Poco::AutoPtr<ReadableNotification>& notification)
 {
+	if (m_is_closing)
+	{
+		return;
+	}
+
 	read_for_state();
 }
 
@@ -225,13 +228,13 @@ void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& n
 	{
 		details::Observer<NetworkConnection, WritableNotification> observer(*this, &NetworkConnection::on_writable, m_id);
 		m_reactor.removeEventHandler(m_socket, observer);
+
+		if (m_is_closing)
+		{
+			delete this;
+			return;
+		}
 	}
-}
-
-
-void NetworkConnection::on_shutdown(const Poco::AutoPtr<ShutdownNotification>& notification)
-{
-	close();
 }
 
 
@@ -243,8 +246,15 @@ void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notific
 
 void NetworkConnection::send_package(Package package)
 {
+	if (m_is_closing)
+	{
+		LIGHTS_ERROR(logger, "Connction {}: Send package on closing connection: cmd {}, trans_id {}.",
+					 m_id, package.header().base.command, package.header().extend.trigger_trans_id);
+		return;
+	}
+
 	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}.",
-					m_id, package.header().base.command, package.header().extend.trigger_trans_id)
+					m_id, package.header().base.command, package.header().extend.trigger_trans_id);
 
 	if (m_crypto_state == CryptoState::STARTED)
 	{
@@ -287,13 +297,20 @@ void NetworkConnection::send_package(Package package)
 
 void NetworkConnection::close()
 {
-	delete this;
+	if (m_send_list.empty())
+	{
+		delete this;
+		return;
+	}
+
+	// Delay to delete this after send all message. Ensure all message in m_send_list to be sended.
+	m_is_closing = true;
 }
 
 
-StreamSocket& NetworkConnection::stream_socket()
+bool NetworkConnection::is_open() const
 {
-	return m_socket;
+	return !m_is_closing;
 }
 
 
@@ -529,7 +546,7 @@ void NetworkReactor::process_send_package()
 		}
 
 		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
-		NetworkConnection* conn = NetworkManager::instance()->find_connection(msg.conn_id);
+		NetworkConnection* conn = NetworkManager::instance()->find_open_connection(msg.conn_id);
 		Package package = PackageManager::instance()->find_package(msg.package_id);
 
 		if (conn == nullptr || !package.is_valid())
@@ -621,6 +638,18 @@ NetworkConnection& NetworkManager::get_connection(int conn_id)
 	}
 
 	return *conn;
+}
+
+
+NetworkConnection* NetworkManager::find_open_connection(int conn_id)
+{
+	NetworkConnection* conn = find_connection(conn_id);
+	if (conn != nullptr && conn->is_open())
+	{
+		return conn;
+	}
+
+	return nullptr;
 }
 
 
@@ -744,7 +773,7 @@ int NetworkServiceManager::get_connection_id(int service_id)
 		return conn.connection_id();
 	}
 
-	NetworkConnection* conn = NetworkManager::instance()->find_connection(itr->second);
+	NetworkConnection* conn = NetworkManager::instance()->find_open_connection(itr->second);
 	if (conn == nullptr)
 	{
 		NetworkConnection& new_conn = NetworkManager::instance()->register_connection(service->ip, service->port);
