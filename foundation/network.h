@@ -120,6 +120,8 @@ private:
 
 	void on_read_complete_package(int read_content_len);
 
+	void close_without_waiting();
+
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;

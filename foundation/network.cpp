@@ -231,7 +231,7 @@ void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& n
 
 		if (m_is_closing)
 		{
-			delete this;
+			close_without_waiting();
 			return;
 		}
 	}
@@ -240,7 +240,9 @@ void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& n
 
 void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notification)
 {
+	// Closes by peer without general notification.
 	LIGHTS_ERROR(logger, "Connction {}: On error.", m_id);
+	close_without_waiting();
 }
 
 
@@ -335,7 +337,7 @@ void NetworkConnection::read_for_state(int deep)
 
 			if (len == 0 && deep == 0) // Closes by peer.
 			{
-				close();
+				close_without_waiting();
 				return;
 			}
 
@@ -398,7 +400,7 @@ void NetworkConnection::read_for_state(int deep)
 
 				if (len == 0 && deep == 0) // Closes by peer.
 				{
-					close();
+					close_without_waiting();
 					return;
 				}
 
@@ -482,6 +484,12 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			break;
 		}
 	}
+}
+
+
+void NetworkConnection::close_without_waiting()
+{
+	delete this;
 }
 
 
