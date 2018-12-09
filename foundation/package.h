@@ -312,6 +312,7 @@ private:
 
 /**
  * Manager of package and guarantee package are valid when connetion underlying write is call.
+ * All operation in this class is thread safe.
  */
 class PackageManager
 {

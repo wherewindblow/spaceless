@@ -122,18 +122,23 @@ private:
 
 	void close_without_waiting();
 
+	void send_raw_package(Package package);
+
+	void send_not_crypto_package();
+
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
-	PackageBuffer m_read_buffer;
-	int m_readed_len;
+	PackageBuffer m_receive_buffer;
+	int m_receive_len;
 	ReadState m_read_state;
 	std::queue<int> m_send_list;
-	int m_sended_len;
+	int m_send_len;
 	OpenType m_open_type;
 	CryptoState m_crypto_state;
 	crypto::RsaPrivateKey m_private_key;
 	crypto::AesKey m_key;
+	std::queue<int> m_not_crypto_list;
 	bool m_is_closing;
 };
 
@@ -151,7 +156,7 @@ struct NetworkMessage
 
 
 /**
- * Network message queue include input queue and output queue. It's use to seperate network layer and worker layer.
+ * Network message queue include input queue and output queue. It's use to seperate network thread and worker thread.
  * So all operation of this class is thread safe.
  */
 class NetworkMessageQueue

@@ -19,7 +19,7 @@
 namespace spaceless {
 
 /**
- * Network connection operation set that is thread safe.
+ * Network connection operation set that can be call in worker thread.
  */
 class Network
 {
