@@ -583,19 +583,25 @@ void NetworkReactor::process_send_package()
 		}
 
 		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
-		NetworkConnection* conn = NetworkManager::instance()->find_open_connection(msg.conn_id);
+		int conn_id = msg.conn_id;
+		if (conn_id == 0)
+		{
+			conn_id = NetworkServiceManager::instance()->get_connection_id(msg.service_id);
+		}
+
+		NetworkConnection* conn = NetworkManager::instance()->find_open_connection(conn_id);
 		Package package = PackageManager::instance()->find_package(msg.package_id);
 
 		if (conn == nullptr || !package.is_valid())
 		{
 			if (conn == nullptr)
 			{
-				LIGHTS_INFO(logger, "Connction {}: Already close.", msg.conn_id);
+				LIGHTS_INFO(logger, "Connction {}: Already close.", conn_id);
 			}
 
 			if (!package.is_valid())
 			{
-				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.", msg.conn_id, msg.package_id);
+				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.", conn_id, msg.package_id);
 			}
 
 			if (package.is_valid())
@@ -807,18 +813,35 @@ int NetworkServiceManager::get_connection_id(int service_id)
 	{
 		NetworkConnection& conn = NetworkManager::instance()->register_connection(service->ip, service->port);
 		m_conn_list.insert(std::make_pair(service_id, conn.connection_id()));
+		m_conn_service_list.insert(std::make_pair(conn.connection_id(), service_id));
 		return conn.connection_id();
 	}
 
-	NetworkConnection* conn = NetworkManager::instance()->find_open_connection(itr->second);
+	int conn_id = itr->second;
+	NetworkConnection* conn = NetworkManager::instance()->find_open_connection(conn_id);
 	if (conn == nullptr)
 	{
 		NetworkConnection& new_conn = NetworkManager::instance()->register_connection(service->ip, service->port);
 		m_conn_list[service_id] = new_conn.connection_id();
-		return new_conn.connection_id();;
+		m_conn_service_list.erase(conn_id);
+		m_conn_service_list.insert(std::make_pair(new_conn.connection_id(), service_id));
+		return new_conn.connection_id();
 	}
 
 	return conn->connection_id();
 }
+
+
+NetworkService* NetworkServiceManager::find_service_by_connection(int conn_id)
+{
+	auto itr = m_conn_service_list.find(conn_id);
+	if (itr == m_conn_service_list.end())
+	{
+		return nullptr;
+	}
+
+	return find_service(itr->second);
+}
+
 
 } // namespace spaceless

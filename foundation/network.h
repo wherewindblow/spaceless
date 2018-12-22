@@ -42,7 +42,7 @@ using Poco::Net::ErrorNotification;
 
 /**
  * NetworkConnection handler socket notification and cache receive message.
- * @note Only operate this class in the thread that run @ NetworkConnectionManager::run
+ * @note Only operate this class in the thread that run @ NetworkConnectionManager::run.
  */
 class NetworkConnection
 {
@@ -60,7 +60,7 @@ public:
 	NetworkConnection(StreamSocket& socket, SocketReactor& reactor, OpenType open_type = PASSIVE_OPEN);
 
 	/**
-	 * Destroys the NetworkConnection and remove event handler。
+	 * Destroys the NetworkConnection and remove event handler.
 	 */
 	~NetworkConnection();
 
@@ -145,12 +145,14 @@ private:
 
 struct NetworkMessage
 {
-	NetworkMessage(int conn_id, int package_id):
+	NetworkMessage(int conn_id, int package_id, int service_id = 0):
 		conn_id(conn_id),
+		service_id(service_id),
 		package_id(package_id)
 	{}
 
 	int conn_id;
+	int service_id;
 	int package_id;
 };
 
@@ -348,10 +350,16 @@ public:
 	 */
 	int get_connection_id(int service_id);
 
+	/**
+	 * Finds network service by connection.
+	 */
+	NetworkService* find_service_by_connection(int conn_id);
+
 private:
 	using ServiceList = std::map<int, NetworkService>;
 	ServiceList m_service_list;
 	std::map<int, int> m_conn_list;
+	std::map<int, int> m_conn_service_list;
 	int m_next_id = 1;
 };
 

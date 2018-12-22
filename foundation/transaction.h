@@ -27,26 +27,27 @@ public:
 	/**
 	 * Sends package to remote on asynchronization.
 	 */
-	static void send_package(int conn_id, Package package);
+	static void send_package(int conn_id, Package package, int service_id = 0);
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization.
-	 * @param conn_id         Network connection id.
-	 * @param cmd             Identifies package content type.
-	 * @param msg             Message of protobuff type.
-	 * @param bind_trans_id   Specific transaction that trigger by response.
-	 * @param is_send_back    Is need to return last request associate transaction.
+	 * @param conn_id           Network connection id.
+	 * @param msg               Message of protobuff type.
+	 * @param bind_trans_id     Specific transaction that trigger by response.
+	 * @param trigger_trans_id  Transaction id that trigger proccess. It's only need for send back message.
+	 * @param trigger_cmd       Command that trigger proccess. It's only need for send back message.
+	 * @param service_id        Network service id. Uses to replace conn_id.
 	 */
 	static void send_protocol(int conn_id,
 							  const protocol::Message& msg,
 							  int bind_trans_id = 0,
 							  int trigger_trans_id = 0,
-							  int trigger_cmd = 0);
+							  int trigger_cmd = 0,
+							  int service_id = 0);
 
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
 	 * @param conn_id         Network connection id.
-	 * @param cmd             Identifies package content type.
 	 * @param msg             Message of protobuff type.
 	 * @param trigger_package The package that trigger current transaction.
 	 * @param bind_trans_id   Specific transaction that trigger by response.
@@ -56,11 +57,9 @@ public:
 								   Package trigger_package,
 								   int bind_trans_id = 0);
 
-
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
 	 * @param conn_id         Network connection id.
-	 * @param cmd             Identifies package content type.
 	 * @param msg             Message of protobuff type.
 	 * @param trigger_source  Package trigger source of trigger current transaction package.
 	 * @param bind_trans_id   Specific transaction that trigger by response.
@@ -78,7 +77,6 @@ public:
 	/**
 	 * Parses protobuf as package buffer and send to remote on asynchronization.
 	 * @param service_id      Network service id.
-	 * @param cmd             Identifies package content type.
 	 * @param msg             Message of protobuff type.
 	 * @param bind_trans_id   Specific transaction that trigger by response.
 	 * @param is_send_back    Is need to return last request associate transaction.
@@ -158,8 +156,9 @@ public:
 	 * @param cmd           Waits command.
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
+	 * @param service_id    Network service that send indicate package. Uses to replace conn_id.
 	 */
-	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT);
+	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT, int service_id = 0);
 
 	/**
 	 * Sets wait package info.
@@ -221,6 +220,11 @@ public:
 	int waiting_connection_id() const;
 
 	/**
+	 * Returns waiting service id that set by @c wait_next_phase
+	 */
+	int waiting_service_id() const;
+
+	/**
 	 * Returns waiting command that set by @c wait_next_phase.
 	 */
 	int waiting_command() const;
@@ -241,6 +245,7 @@ private:
 	int m_first_conn_id = 0;
 	PackageTriggerSource m_first_trigger_source;
 	int m_wait_conn_id = 0;
+	int m_wait_service_id = 0;
 	int m_wait_cmd = 0;
 	bool m_is_waiting = false;
 };

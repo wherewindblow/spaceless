@@ -175,7 +175,19 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		{
 			// Check the send response connection is same as send request connection.
 			// Don't give chance to other to interrupt not self transaction.
-			if (conn_id == trans_handler->waiting_connection_id() && command == trans_handler->waiting_command())
+
+			bool is_fit_conn;
+			if (trans_handler->waiting_connection_id() != 0)
+			{
+				is_fit_conn = conn_id == trans_handler->waiting_connection_id();
+			}
+			else
+			{
+				NetworkService* service = NetworkServiceManager::instance()->find_service_by_connection(conn_id);
+				is_fit_conn = service->service_id == trans_handler->waiting_service_id();
+			}
+
+			if (is_fit_conn && command == trans_handler->waiting_command())
 			{
 				LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}, Active trans_id {}, phase {}.",
 								conn_id,

@@ -19,9 +19,9 @@ static Logger& logger = get_logger("worker");
 Logger& Network::logger = get_logger("worker");
 
 
-void Network::send_package(int conn_id, Package package)
+void Network::send_package(int conn_id, Package package, int service_id)
 {
-	NetworkMessage msg(conn_id, package.package_id());
+	NetworkMessage msg(conn_id, package.package_id(), service_id);
 	NetworkMessageQueue::instance()->push(NetworkMessageQueue::OUT_QUEUE, msg);
 }
 
@@ -30,12 +30,16 @@ void Network::send_protocol(int conn_id,
 							const protocol::Message& msg,
 							int bind_trans_id,
 							int trigger_trans_id,
-							int trigger_cmd)
+							int trigger_cmd,
+							int service_id)
 {
+	const char* target_type = conn_id ? "Connection" : "Service";
+	int target_id = conn_id ? conn_id : service_id;
+
 	int size = msg.ByteSize();
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Content length {} is too large.", conn_id, size)
+		LIGHTS_ERROR(logger, "{} {}: Content length {} is too large.", target_type, target_id, size)
 		return;
 	}
 
@@ -48,13 +52,13 @@ void Network::send_protocol(int conn_id,
 		auto msg_name = protocol::get_message_name(trigger_cmd);
 		msg_name.replace(0, 3, "Rsp");
 		header.base.command = protocol::get_command(msg_name);
-		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.base.command, msg_name);
+		LIGHTS_DEBUG(logger, "{} {}: Send cmd {}, name {}.", target_type, target_id, header.base.command, msg_name);
 	}
 	else
 	{
 		auto& msg_name = protocol::get_message_name(msg);
 		header.base.command = protocol::get_command(msg_name);
-		LIGHTS_DEBUG(logger, "Connction {}: Send cmd {}, name {}.", conn_id, header.base.command, msg_name);
+		LIGHTS_DEBUG(logger, "{} {}: Send cmd {}, name {}.", target_type, target_id, header.base.command, msg_name);
 	}
 
 	header.base.content_length = size;
@@ -64,11 +68,11 @@ void Network::send_protocol(int conn_id,
 	bool ok = protocol::parse_to_sequence(msg, package.content_buffer());
 	if (!ok)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Parse to sequence failure cmd {}.", conn_id, header.base.command);
+		LIGHTS_ERROR(logger, "{} {}: Parse to sequence failure cmd {}.", target_type, target_id, header.base.command);
 		return;
 	}
 
-	send_package(conn_id, package);
+	send_package(conn_id, package, service_id);
 }
 
 
@@ -94,21 +98,20 @@ void Network::send_back_protobuf(int conn_id,
 }
 
 
+
+void Network::service_send_package(int service_id, Package package)
+{
+	send_package(0, package, service_id);
+}
+
+
 void Network::service_send_protobuf(int service_id,
 									const protocol::Message& msg,
 									int bind_trans_id,
 									int trigger_trans_id,
 									int trigger_cmd)
 {
-	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
-	send_protocol(conn_id, msg, bind_trans_id, trigger_trans_id, trigger_cmd);
-}
-
-
-void Network::service_send_package(int service_id, Package package)
-{
-	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
-	send_package(conn_id, package);
+	send_protocol(0, msg, bind_trans_id, trigger_trans_id, trigger_cmd, service_id);
 }
 
 
@@ -142,9 +145,10 @@ void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
 }
 
 
-void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current_phase, int timeout)
+void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current_phase, int timeout, int service_id)
 {
 	m_wait_conn_id = conn_id;
+	m_wait_service_id = service_id;
 	m_wait_cmd = cmd;
 	m_current_phase = current_phase;
 	m_is_waiting = true;
@@ -184,8 +188,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, const protocol::Mess
 
 void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout)
 {
-	int conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
-	wait_next_phase(conn_id, cmd, current_phase, timeout);
+	wait_next_phase(0, cmd, current_phase, timeout, service_id);
 }
 
 
@@ -241,6 +244,12 @@ const PackageTriggerSource& MultiplyPhaseTransaction::first_trigger_source() con
 int MultiplyPhaseTransaction::waiting_connection_id() const
 {
 	return m_wait_conn_id;
+}
+
+
+int MultiplyPhaseTransaction::waiting_service_id() const
+{
+	return m_wait_service_id;
 }
 
 
