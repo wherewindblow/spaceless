@@ -467,6 +467,11 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			crypto::aes_decrypt(cipher, package.content_buffer(), m_key);
 
 			NetworkMessage msg(m_id, package.package_id());
+			NetworkService* service = NetworkServiceManager::instance()->find_service_by_connection(m_id);
+			if (service != nullptr)
+			{
+				msg.service_id = service->service_id;
+			}
 			NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
 			break;
 		}
