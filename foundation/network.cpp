@@ -299,109 +299,105 @@ void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notific
 }
 
 
-void NetworkConnection::read_for_state(int deep)
+void NetworkConnection::read_for_state()
 {
-	if (deep > 5) // Reduce call recursive too deeply.
+	while (true)
 	{
-		return;
-	}
-
-	switch (m_read_state)
-	{
-		case ReadState::READ_HEADER:
+		switch (m_read_state)
 		{
-			int len = m_socket.receiveBytes(m_receive_buffer.data() + m_receive_len,
-											static_cast<int>(PackageBuffer::HEADER_LEN) - m_receive_len);
-
-			if (len == -1) // Not available bytes in buffer.
+			case ReadState::READ_HEADER:
 			{
-				return;
-			}
+				int len = m_socket.receiveBytes(m_receive_buffer.data() + m_receive_len,
+												static_cast<int>(PackageBuffer::HEADER_LEN) - m_receive_len);
 
-			if (len == 0 && deep == 0) // Closes by peer.
-			{
-				close_without_waiting();
-				return;
-			}
-
-			m_receive_len += len;
-
-			// Check package version.
-			if (m_receive_len >= static_cast<int>(sizeof(PackageHeader::Base)))
-			{
-				auto read_header_base = reinterpret_cast<PackageHeader::Base*>(m_receive_buffer.data());
-				if (read_header_base->version != PACKAGE_VERSION)
-				{
-					if (read_header_base->command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
-					{
-						// Notify peer and logic layer package version is invalid.
-						Package package = PackageManager::instance()->register_package(0);
-						PackageHeader::Base& header_base = package.header().base;
-						header_base.command = static_cast<int>(BuildinCommand::NTF_INVALID_VERSION);
-						header_base.content_length = 0;
-						send_raw_package(package);
-
-						LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
-						close();
-						return;
-					}
-					else
-					{
-						// Notify logic layer package version is invalid.
-						LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
-						close();
-						return;
-					}
-				}
-			}
-
-			if (m_receive_len == PackageBuffer::HEADER_LEN)
-			{
-				m_receive_len = 0;
-				m_read_state = ReadState::READ_CONTENT;
-			}
-			break;
-		}
-
-		case ReadState::READ_CONTENT:
-		{
-			int read_content_len = m_receive_buffer.header().base.content_length;
-			if (m_crypto_state == CryptoState::STARTED)
-			{
-				auto plain_len = static_cast<std::size_t>(read_content_len);
-				read_content_len = static_cast<int>(crypto::aes_cipher_length(plain_len));
-			}
-
-			if (read_content_len != 0)
-			{
-				int len = m_socket.receiveBytes(m_receive_buffer.data() + PackageBuffer::HEADER_LEN + m_receive_len,
-												read_content_len - m_receive_len);
 				if (len == -1) // Not available bytes in buffer.
 				{
 					return;
 				}
 
-				if (len == 0 && deep == 0) // Closes by peer.
+				if (len == 0) // Closes by peer.
 				{
 					close_without_waiting();
 					return;
 				}
 
 				m_receive_len += len;
+
+				// Check package version.
+				if (m_receive_len >= static_cast<int>(sizeof(PackageHeader::Base)))
+				{
+					auto read_header_base = reinterpret_cast<PackageHeader::Base*>(m_receive_buffer.data());
+					if (read_header_base->version != PACKAGE_VERSION)
+					{
+						if (read_header_base->command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
+						{
+							// Notify peer and logic layer package version is invalid.
+							Package package = PackageManager::instance()->register_package(0);
+							PackageHeader::Base& header_base = package.header().base;
+							header_base.command = static_cast<int>(BuildinCommand::NTF_INVALID_VERSION);
+							header_base.content_length = 0;
+							send_raw_package(package);
+
+							LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
+							close();
+							return;
+						}
+						else
+						{
+							// Notify logic layer package version is invalid.
+							LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
+							close();
+							return;
+						}
+					}
+				}
+
+				if (m_receive_len == PackageBuffer::HEADER_LEN)
+				{
+					m_receive_len = 0;
+					m_read_state = ReadState::READ_CONTENT;
+				}
+				break;
 			}
 
-			if (m_receive_len == read_content_len)
+			case ReadState::READ_CONTENT:
 			{
-				m_receive_len = 0;
-				m_read_state = ReadState::READ_HEADER;
+				int read_content_len = m_receive_buffer.header().base.content_length;
+				if (m_crypto_state == CryptoState::STARTED)
+				{
+					auto plain_len = static_cast<std::size_t>(read_content_len);
+					read_content_len = static_cast<int>(crypto::aes_cipher_length(plain_len));
+				}
 
-				on_read_complete_package(read_content_len);
+				if (read_content_len != 0)
+				{
+					int len = m_socket.receiveBytes(m_receive_buffer.data() + PackageBuffer::HEADER_LEN + m_receive_len,
+													read_content_len - m_receive_len);
+					if (len == -1) // Not available bytes in buffer.
+					{
+						return;
+					}
+
+					if (len == 0) // Closes by peer.
+					{
+						close_without_waiting();
+						return;
+					}
+
+					m_receive_len += len;
+				}
+
+				if (m_receive_len == read_content_len)
+				{
+					m_receive_len = 0;
+					m_read_state = ReadState::READ_HEADER;
+
+					on_read_complete_package(read_content_len);
+				}
+				break;
 			}
-			break;
 		}
 	}
-
-	read_for_state(++deep);
 }
 
 

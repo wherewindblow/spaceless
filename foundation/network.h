@@ -116,7 +116,7 @@ private:
 	/**
 	 * Read input according to read state.
 	 */
-	void read_for_state(int deep = 0);
+	void read_for_state();
 
 	void on_read_complete_package(int read_content_len);
 
