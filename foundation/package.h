@@ -153,19 +153,23 @@ class Package
 public:
 	static const std::size_t HEADER_LEN = sizeof(PackageHeader);
 
-	Package():
-		m_id(0),
-		m_data(nullptr),
-		m_length(0)
-	{}
+	struct Entry
+	{
+		Entry(int id, std::size_t length, char* data):
+			id(id), length(length), is_cipher(false), data(data)
+		{}
+
+		int id;
+		std::size_t length;
+		bool is_cipher;
+		char* data;
+	};
 
 	/**
 	 * Creates the PackageBuffer.
 	 */
-	Package(int package_id, lights::Sequence data) :
-		m_id(package_id),
-		m_data(static_cast<char*>(data.data())),
-		m_length(data.length())
+	Package(Entry* entry = nullptr) :
+		m_entry(entry)
 	{}
 
 	/**
@@ -173,7 +177,7 @@ public:
 	 */
 	bool is_valid() const
 	{
-		return m_data != nullptr;
+		return m_entry != nullptr;
 	}
 
 	/**
@@ -181,7 +185,7 @@ public:
 	 */
 	int package_id() const
 	{
-		return m_id;
+		return m_entry->id;
 	}
 
 	/**
@@ -189,7 +193,7 @@ public:
 	 */
 	void set_is_cipher(bool is_cipher)
 	{
-		m_is_cipher = is_cipher;
+		m_entry->is_cipher = is_cipher;
 	}
 
 	/**
@@ -197,7 +201,7 @@ public:
 	 */
 	bool is_cipher() const
 	{
-		return m_is_cipher;
+		return m_entry->is_cipher;
 	}
 
 	/**
@@ -205,7 +209,7 @@ public:
 	 */
 	PackageHeader& header()
 	{
-		return *reinterpret_cast<PackageHeader*>(m_data);
+		return *reinterpret_cast<PackageHeader*>(m_entry->data);
 	}
 
 	/**
@@ -213,7 +217,7 @@ public:
 	 */
 	const PackageHeader& header() const
 	{
-		return *reinterpret_cast<const PackageHeader*>(m_data);
+		return *reinterpret_cast<const PackageHeader*>(m_entry->data);
 	}
 
 	/**
@@ -222,7 +226,7 @@ public:
 	 */
 	lights::Sequence content()
 	{
-		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
+		return {m_entry->data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
 	}
 
 	/**
@@ -231,7 +235,7 @@ public:
 	 */
 	lights::SequenceView content() const
 	{
-		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
+		return {m_entry->data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
 	}
 
 	/**
@@ -239,7 +243,7 @@ public:
 	 */
 	lights::Sequence content_buffer()
 	{
-		return {m_data + HEADER_LEN, m_length - HEADER_LEN};
+		return {m_entry->data + HEADER_LEN, m_entry->length - HEADER_LEN};
 	}
 
 	/**
@@ -247,7 +251,7 @@ public:
 	 */
 	lights::SequenceView content_buffer() const
 	{
-		return {m_data + HEADER_LEN, m_length - HEADER_LEN};
+		return {m_entry->data + HEADER_LEN, m_entry->length - HEADER_LEN};
 	}
 
 	/**
@@ -255,7 +259,7 @@ public:
 	 */
 	char* data()
 	{
-		return m_data;
+		return m_entry->data;
 	}
 
 	/**
@@ -263,7 +267,7 @@ public:
 	 */
 	const char* data() const
 	{
-		return m_data;
+		return m_entry->data;
 	}
 
 	/**
@@ -271,7 +275,7 @@ public:
 	 */
 	std::size_t valid_length() const
 	{
-		if (m_is_cipher)
+		if (m_entry->is_cipher)
 		{
 			return HEADER_LEN + crypto::aes_cipher_length(static_cast<std::size_t>(header().base.content_length));
 		}
@@ -286,7 +290,7 @@ public:
 	 */
 	std::size_t buffer_length() const
 	{
-		return m_length;
+		return m_entry->length;
 	}
 
 	/**
@@ -303,10 +307,7 @@ public:
 	}
 
 private:
-	int m_id;
-	char* m_data;
-	std::size_t m_length;
-	bool m_is_cipher = false;
+	Entry* m_entry;
 };
 
 
@@ -349,7 +350,7 @@ public:
 
 private:
 	int m_next_id = 1;
-	std::map<int, lights::Sequence> m_package_list;
+	std::map<int, Package::Entry> m_package_list;
 	std::mutex m_mutex;
 };
 

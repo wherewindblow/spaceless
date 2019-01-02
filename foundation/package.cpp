@@ -34,8 +34,8 @@ Package PackageManager::register_package(int content_len)
 	
 	std::size_t len = Package::HEADER_LEN + cipher_content_len;
 	char* data = new char[len];
-	lights::Sequence sequence(data, len);
-	auto value = std::make_pair(m_next_id, sequence);
+	Package::Entry entry(m_next_id, len, data);
+	auto value = std::make_pair(m_next_id, entry);
 	++m_next_id;
 
 	auto result = m_package_list.insert(value);
@@ -44,7 +44,7 @@ Package PackageManager::register_package(int content_len)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
 	}
 
-	Package package(result.first->first, result.first->second);
+	Package package(&result.first->second);
 	package.header().reset();
 	return package;
 }
@@ -57,7 +57,7 @@ void PackageManager::remove_package(int package_id)
 	auto itr = m_package_list.find(package_id);
 	if (itr != m_package_list.end())
 	{
-		delete[] static_cast<char*>(itr->second.data());
+		delete[] itr->second.data;
 		m_package_list.erase(itr);
 	}
 }
@@ -73,7 +73,7 @@ Package PackageManager::find_package(int package_id)
 		return Package();
 	}
 
-	return Package(itr->first, itr->second);
+	return Package(&itr->second);
 }
 
 
