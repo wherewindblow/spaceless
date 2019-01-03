@@ -68,12 +68,15 @@ void Network::send_protocol(int conn_id,
 	bool ok = protocol::parse_to_sequence(msg, package.content_buffer());
 	if (!ok)
 	{
-		// TODO: Remove package.
 		LIGHTS_ERROR(logger, "{} {}: Parse to sequence failure cmd {}.", target_type, target_id, header.base.command);
+		PackageManager::instance()->remove_package(package.package_id());
 		return;
 	}
 
-	MultiplyPhaseTransactionManager::instance()->bind_transaction(bind_trans_id, package.package_id());
+	if (bind_trans_id != 0)
+	{
+		MultiplyPhaseTransactionManager::instance()->bind_transaction(bind_trans_id, package.package_id());
+	}
 
 	send_package(conn_id, package, service_id);
 }

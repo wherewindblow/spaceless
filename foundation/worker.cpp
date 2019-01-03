@@ -109,7 +109,12 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 
 	int command = package.header().base.command;
 	int trigger_package_id = package.header().extend.trigger_package_id;
-	auto waiting_trans = MultiplyPhaseTransactionManager::instance()->find_bound_transaction(trigger_package_id);
+
+	MultiplyPhaseTransaction* waiting_trans = nullptr;
+	if (trigger_package_id != 0)
+	{
+		waiting_trans = MultiplyPhaseTransactionManager::instance()->find_bound_transaction(trigger_package_id);
+	}
 
 	if (waiting_trans == nullptr) // Create new transaction.
 	{
