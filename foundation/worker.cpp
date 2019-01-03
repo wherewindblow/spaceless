@@ -46,7 +46,7 @@ private:
 
 	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
 
-	int safe_excute(int conn_id, Package package, ErrorHandler error_handler, std::function<void()> function);
+	int safe_excute(int conn_id, int trans_id, Package package, ErrorHandler error_handler, std::function<void()> function);
 
 	const std::string& get_name(int cmd);
 };
@@ -107,10 +107,11 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		return;
 	}
 
-	int trans_id = package.header().extend.trigger_trans_id;
 	int command = package.header().base.command;
+	int trigger_package_id = package.header().extend.trigger_package_id;
+	auto waiting_trans = MultiplyPhaseTransactionManager::instance()->find_bound_transaction(trigger_package_id);
 
-	if (trans_id == 0) // Create new transaction.
+	if (waiting_trans == nullptr) // Create new transaction.
 	{
 		auto trans = TransactionManager::instance()->find_transaction(command);
 		if (trans)
@@ -122,7 +123,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}.", conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTrancation>(trans->trans_handler);
 
-					safe_excute(conn_id, package, trans->error_handler, [&]()
+					safe_excute(conn_id, 0, package, trans->error_handler, [&]()
 					{
 						trans_handler(conn_id, package);
 					});
@@ -133,12 +134,13 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 				{
 					auto trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
 					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
+					int trans_id = trans_handler.transaction_id();
 
 					LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}, Start trans_id {}.",
-									conn_id,
-									command,
-									get_name(command),
-									trans_handler.transaction_id());
+								 conn_id,
+								 command,
+								 get_name(command),
+								 trans_id);
 					trans_handler.pre_on_init(conn_id, package);
 
 					auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
@@ -146,15 +148,15 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 						trans_handler.on_error(conn_id, ex);
 					};
 
-					safe_excute(conn_id, package, error_handler, [&]()
+					safe_excute(conn_id, trans_id, package, error_handler, [&]()
 					{
 						trans_handler.on_init(conn_id, package);
 					});
 
 					if (!trans_handler.is_waiting())
 					{
-						LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_handler.transaction_id());
-						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_handler.transaction_id());
+						LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_id);
+						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 					}
 					break;
 				}
@@ -170,67 +172,62 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 	}
 	else // Active waiting transaction.
 	{
-		auto trans_handler = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
-		if (trans_handler)
+		// Check the send response connection is same as send request connection.
+		// Don't give chance to other to interrupt not self transaction.
+
+		bool is_fit_network;
+		if (waiting_trans->waiting_connection_id() != 0)
 		{
-			// Check the send response connection is same as send request connection.
-			// Don't give chance to other to interrupt not self transaction.
+			is_fit_network = conn_id == waiting_trans->waiting_connection_id();
+		}
+		else
+		{
+			is_fit_network = msg.service_id == waiting_trans->waiting_service_id();
+		}
 
-			bool is_fit_network;
-			if (trans_handler->waiting_connection_id() != 0)
+		if (is_fit_network && command == waiting_trans->waiting_command())
+		{
+			int trans_id = waiting_trans->transaction_id();
+			LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}, Active trans_id {}, phase {}.",
+						 conn_id,
+						 command,
+						 get_name(command),
+						 trans_id,
+						 waiting_trans->current_phase());
+
+			// If connection close will not lead to leak.
+			// 1. If after on_active is not at waiting, transaction will be remove.
+			// 2. If after on_active is at waiting, transaction will be remove on timeout
+			//    that cannot receive message by connection close.
+
+			waiting_trans->clear_waiting_state();
+
+			auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
 			{
-				is_fit_network = conn_id == trans_handler->waiting_connection_id();
-			}
-			else
+				waiting_trans->on_error(conn_id, ex);
+			};
+
+			safe_excute(conn_id, trans_id, package, error_handler, [&]()
 			{
-				is_fit_network = msg.service_id == trans_handler->waiting_service_id();
-			}
+				waiting_trans->on_active(conn_id, package);
+			});
 
-			if (is_fit_network && command == trans_handler->waiting_command())
+			if (!waiting_trans->is_waiting())
 			{
-				LIGHTS_DEBUG(logger, "Connction {}: Recieve cmd {}, name {}, Active trans_id {}, phase {}.",
-								conn_id,
-								command,
-								get_name(command),
-								trans_id,
-								trans_handler->current_phase());
-
-				// If connection close will not lead to leak.
-				// 1. If after on_active is not at waiting, transaction will be remove.
-				// 2. If after on_active is at waiting, transaction will be remove on timeout
-				//    that cannot receive message by connection close.
-
-				trans_handler->clear_waiting_state();
-
-				auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
-				{
-					trans_handler->on_error(conn_id, ex);
-				};
-
-				safe_excute(conn_id, package, error_handler, [&]()
-				{
-					trans_handler->on_active(conn_id, package);
-				});
-
-				if (!trans_handler->is_waiting())
-				{
-					LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_id);
-					MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
-				}
-			}
-			else
-			{
-				LIGHTS_ERROR(logger, "Connction {}: cmd {} not fit with conn_id {}, cmd {}.",
-								conn_id,
-								command,
-								trans_handler->waiting_connection_id(),
-								trans_handler->waiting_command());
+				LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", conn_id, trans_id);
+				MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 			}
 		}
 		else
 		{
-			LIGHTS_ERROR(logger, "Connction {}: Unkown trans_id {}.", conn_id, trans_id);
+			LIGHTS_ERROR(logger, "Connction {}: cmd {} not fit with conn_id {}, cmd {}.",
+						 conn_id,
+						 command,
+						 waiting_trans->waiting_connection_id(),
+						 waiting_trans->waiting_command());
 		}
+
+		MultiplyPhaseTransactionManager::instance()->remove_bound_transaction(trigger_package_id);
 	}
 
 	PackageManager::instance()->remove_package(package_id);
@@ -238,6 +235,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 
 
 int Worker::safe_excute(int conn_id,
+						int trans_id,
 						Package package,
 						ErrorHandler error_handler,
 						std::function<void()> function)
@@ -250,7 +248,7 @@ int Worker::safe_excute(int conn_id,
 	catch (Exception& ex)
 	{
 		LIGHTS_ERROR(logger, "Connction {}: Exception trans_id {}, error {}/{}.",
-					 conn_id, package.header().extend.trigger_trans_id, ex.code(), ex);
+					 conn_id, trans_id, ex.code(), ex);
 		if (error_handler)
 		{
 			try

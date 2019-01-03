@@ -186,8 +186,8 @@ void NetworkConnection::send_package(Package package)
 {
 	if (m_is_closing)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Send package on closing connection: cmd {}, trans_id {}.",
-					 m_id, package.header().base.command, package.header().extend.trigger_trans_id);
+		LIGHTS_ERROR(logger, "Connction {}: Send package on closing connection: cmd {}, trigger_package_id {}.",
+					 m_id, package.header().base.command, package.header().extend.trigger_package_id);
 		return;
 	}
 
@@ -404,8 +404,8 @@ void NetworkConnection::read_for_state()
 void NetworkConnection::on_read_complete_package(int read_content_len)
 {
 	PackageHeader& header = m_receive_buffer.header();
-	LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trans_id {}.",
-				 m_id, header.base.command, header.extend.trigger_trans_id);
+	LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trigger_package_id {}.",
+				 m_id, header.base.command, header.extend.trigger_package_id);
 
 	switch (m_crypto_state)
 	{
@@ -449,8 +449,8 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			else
 			{
 				// Ignore package when not started crypto.
-				LIGHTS_DEBUG(logger, "Connction {}: Ignore package cmd {}, trans_id {}.",
-							 m_id, header.base.command, header.extend.trigger_trans_id);
+				LIGHTS_DEBUG(logger, "Connction {}: Ignore package cmd {}, trigger_package_id {}.",
+							 m_id, header.base.command, header.extend.trigger_package_id);
 			}
 			break;
 		}
@@ -483,8 +483,8 @@ void NetworkConnection::close_without_waiting()
 
 void NetworkConnection::send_raw_package(Package package)
 {
-	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trans_id {}.",
-				 m_id, package.header().base.command, package.header().extend.trigger_trans_id);
+	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trigger_package_id {}.",
+				 m_id, package.header().base.command, package.header().extend.trigger_package_id);
 
 	if (!m_send_list.empty())
 	{

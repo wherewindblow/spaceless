@@ -48,10 +48,10 @@ struct PackageHeader
 	 */
 	struct Extend
 	{
-		// Recieves side will transfer as trigger_trans_id when send back message.
-		int self_trans_id;
-		// self_trans_id of request.
-		int trigger_trans_id;
+		// Recieves side will transfer as trigger_package_id when send back message.
+		int self_package_id;
+		// self_package_id of request.
+		int trigger_package_id;
 	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
 
 
@@ -73,13 +73,13 @@ struct PackageTriggerSource
 {
 	PackageTriggerSource() = default;
 
-	PackageTriggerSource(int command, int self_trans_id):
+	PackageTriggerSource(int command, int package_id):
 		command(command),
-		self_trans_id(self_trans_id)
+		package_id(package_id)
 	{}
 
 	int command;
-	int self_trans_id;
+	int package_id;
 };
 
 
@@ -303,7 +303,7 @@ public:
 	 */
 	PackageTriggerSource get_trigger_source() const
 	{
-		return PackageTriggerSource(header().base.command, header().extend.self_trans_id);
+		return PackageTriggerSource(header().base.command, header().extend.self_package_id);
 	}
 
 private:

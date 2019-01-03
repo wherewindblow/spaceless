@@ -29,7 +29,7 @@ void Network::send_package(int conn_id, Package package, int service_id)
 void Network::send_protocol(int conn_id,
 							const protocol::Message& msg,
 							int bind_trans_id,
-							int trigger_trans_id,
+							int trigger_package_id,
 							int trigger_cmd,
 							int service_id)
 {
@@ -62,15 +62,18 @@ void Network::send_protocol(int conn_id,
 	}
 
 	header.base.content_length = size;
-	header.extend.self_trans_id = bind_trans_id;
-	header.extend.trigger_trans_id = trigger_trans_id;
+	header.extend.self_package_id = package.package_id();
+	header.extend.trigger_package_id = trigger_package_id;
 
 	bool ok = protocol::parse_to_sequence(msg, package.content_buffer());
 	if (!ok)
 	{
+		// TODO: Remove package.
 		LIGHTS_ERROR(logger, "{} {}: Parse to sequence failure cmd {}.", target_type, target_id, header.base.command);
 		return;
 	}
+
+	MultiplyPhaseTransactionManager::instance()->bind_transaction(bind_trans_id, package.package_id());
 
 	send_package(conn_id, package, service_id);
 }
@@ -84,7 +87,7 @@ void Network::send_back_protobuf(int conn_id,
 	send_protocol(conn_id,
 				  msg,
 				  bind_trans_id,
-				  trigger_package.header().extend.self_trans_id,
+				  trigger_package.header().extend.self_package_id,
 				  trigger_package.header().base.command);
 }
 
@@ -94,7 +97,7 @@ void Network::send_back_protobuf(int conn_id,
 								 const PackageTriggerSource& trigger_source,
 								 int bind_trans_id)
 {
-	send_protocol(conn_id, msg, bind_trans_id, trigger_source.self_trans_id, trigger_source.command);
+	send_protocol(conn_id, msg, bind_trans_id, trigger_source.package_id, trigger_source.command);
 }
 
 
@@ -108,10 +111,10 @@ void Network::service_send_package(int service_id, Package package)
 void Network::service_send_protobuf(int service_id,
 									const protocol::Message& msg,
 									int bind_trans_id,
-									int trigger_trans_id,
+									int trigger_package_id,
 									int trigger_cmd)
 {
-	send_protocol(0, msg, bind_trans_id, trigger_trans_id, trigger_cmd, service_id);
+	send_protocol(0, msg, bind_trans_id, trigger_package_id, trigger_cmd, service_id);
 }
 
 
@@ -314,6 +317,35 @@ MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_transaction(int 
 std::size_t MultiplyPhaseTransactionManager::size()
 {
 	return m_trans_list.size();
+}
+
+
+void MultiplyPhaseTransactionManager::bind_transaction(int trans_id, int package_id)
+{
+	auto value = std::make_pair(package_id, trans_id);
+	auto result = m_bind_list.insert(value);
+	if (!result.second)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_BOUND_TRANSACTION_ALREADY_EXIST);
+	}
+}
+
+
+void MultiplyPhaseTransactionManager::remove_bound_transaction(int package_id)
+{
+	m_bind_list.erase(package_id);
+}
+
+
+MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_bound_transaction(int package_id)
+{
+	auto itr = m_bind_list.find(package_id);
+	if (itr == m_bind_list.end())
+	{
+		return nullptr;
+	}
+
+	return find_transaction(itr->second);
 }
 
 

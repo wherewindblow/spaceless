@@ -34,14 +34,14 @@ public:
 	 * @param conn_id           Network connection id.
 	 * @param msg               Message of protobuff type.
 	 * @param bind_trans_id     Specific transaction that trigger by response.
-	 * @param trigger_trans_id  Transaction id that trigger proccess. It's only need for send back message.
+	 * @param trigger_package_id  Transaction id that trigger proccess. It's only need for send back message.
 	 * @param trigger_cmd       Command that trigger proccess. It's only need for send back message.
 	 * @param service_id        Network service id. Uses to replace conn_id.
 	 */
 	static void send_protocol(int conn_id,
 							  const protocol::Message& msg,
 							  int bind_trans_id = 0,
-							  int trigger_trans_id = 0,
+							  int trigger_package_id = 0,
 							  int trigger_cmd = 0,
 							  int service_id = 0);
 
@@ -84,7 +84,7 @@ public:
 	static void service_send_protobuf(int service_id,
 									  const protocol::Message& msg,
 									  int bind_trans_id = 0,
-									  int trigger_trans_id = 0,
+									  int trigger_package_id = 0,
 									  int trigger_cmd = 0);
 	
 	/**
@@ -288,9 +288,26 @@ public:
 	 */
 	std::size_t size();
 
+	/**
+	 * Binds transaction with package.
+	 */
+	void bind_transaction(int trans_id, int package_id);
+
+	/**
+	 * Removes bound relationship.
+	 */
+	void remove_bound_transaction(int package_id);
+
+	/**
+	 * Finds multiply phase transaction.
+	 * @note Returns nullptr if cannot find bound relationship or multiply phase transaction.
+	 */
+	MultiplyPhaseTransaction* find_bound_transaction(int package_id);
+
 private:
 	int m_next_id = 1;
 	std::map<int, MultiplyPhaseTransaction*> m_trans_list;
+	std::map<int, int> m_bind_list;
 };
 
 
