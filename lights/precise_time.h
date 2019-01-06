@@ -19,6 +19,8 @@ namespace lights {
  */
 struct PreciseTime
 {
+	static const int NANOSECONDS_OF_SECOND = 1000000000;
+
 	PreciseTime() :
 		PreciseTime(0, 0)
 	{}
@@ -46,8 +48,9 @@ inline bool is_over_flow(std::int64_t a, std::int64_t b)
 inline PreciseTime operator+(const PreciseTime& left, const PreciseTime& right)
 {
 	PreciseTime result(left.seconds + right.seconds, left.nanoseconds + right.nanoseconds);
-	if (is_over_flow(left.nanoseconds, right.nanoseconds))
+	if (result.nanoseconds >= PreciseTime::NANOSECONDS_OF_SECOND)
 	{
+		result.nanoseconds -= PreciseTime::NANOSECONDS_OF_SECOND;
 		++result.seconds;
 	}
 	return result;
@@ -62,6 +65,28 @@ inline PreciseTime operator-(const PreciseTime& left, const PreciseTime& right)
 		--result.seconds;
 		result.nanoseconds = std::abs(result.nanoseconds);
 	}
+	return result;
+}
+
+
+inline PreciseTime operator*(const PreciseTime& time, int n)
+{
+	PreciseTime result(time.seconds * n, time.nanoseconds * n);
+	if (result.nanoseconds >= PreciseTime::NANOSECONDS_OF_SECOND)
+	{
+		result.seconds += result.nanoseconds / PreciseTime::NANOSECONDS_OF_SECOND;
+		result.nanoseconds %= PreciseTime::NANOSECONDS_OF_SECOND;
+	}
+	return result;
+}
+
+
+inline PreciseTime operator/(const PreciseTime& time, int n)
+{
+	PreciseTime result(time.seconds / n, time.nanoseconds / n);
+	double sec = time.seconds / static_cast<double>(n);
+	double nansecond = (sec - result.seconds) * PreciseTime::NANOSECONDS_OF_SECOND;
+	result.nanoseconds += static_cast<std::int64_t>(nansecond);
 	return result;
 }
 
@@ -92,13 +117,43 @@ inline bool operator>(const PreciseTime& left, const PreciseTime& right)
 PreciseTime current_precise_time();
 
 
+inline std::int64_t nanasecond_to_microsecond(std::int64_t nanasecond)
+{
+	return nanasecond / 1000;
+}
+
+inline std::int64_t microsecond_to_nanasecond(std::int64_t microsecond)
+{
+	return microsecond * 1000;
+}
+
+inline std::int64_t nanasecond_to_millisecond(std::int64_t nanasecond)
+{
+	return nanasecond / 1000000;
+}
+
+inline std::int64_t millisecond_to_nanasecond(std::int64_t millisecond)
+{
+	return millisecond * 1000000;
+}
+
+inline std::int64_t microsecond_to_millisecond(std::int64_t microsecond)
+{
+	return microsecond / 1000;
+}
+
+inline std::int64_t millisecond_to_microsecond(std::int64_t millisecond)
+{
+	return millisecond * 1000;
+}
+
 /**
  * Puts precise time to format sink.
  */
 template <typename Backend>
 inline void to_string(FormatSink<Backend> sink, const PreciseTime& time)
 {
-	sink << time.seconds << '.' << time.nanoseconds << 's';
+	sink << time.seconds << '.' << pad(time.nanoseconds, '0', 9) << 's';
 }
 
 } // namespace lights
