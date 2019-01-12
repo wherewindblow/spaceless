@@ -39,7 +39,7 @@ namespace protobuf_protocol_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[41];
+  static const ::google::protobuf::internal::ParseTable schema[43];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -84,6 +84,9 @@ extern ReqNodeGetFileSessionDefaultTypeInternal _ReqNodeGetFileSession_default_i
 class ReqNodePutFileSession;
 class ReqNodePutFileSessionDefaultTypeInternal;
 extern ReqNodePutFileSessionDefaultTypeInternal _ReqNodePutFileSession_default_instance_;
+class ReqPing;
+class ReqPingDefaultTypeInternal;
+extern ReqPingDefaultTypeInternal _ReqPing_default_instance_;
 class ReqPutFile;
 class ReqPutFileDefaultTypeInternal;
 extern ReqPutFileDefaultTypeInternal _ReqPutFile_default_instance_;
@@ -144,6 +147,9 @@ extern RspNodeGetFileSessionDefaultTypeInternal _RspNodeGetFileSession_default_i
 class RspNodePutFileSession;
 class RspNodePutFileSessionDefaultTypeInternal;
 extern RspNodePutFileSessionDefaultTypeInternal _RspNodePutFileSession_default_instance_;
+class RspPing;
+class RspPingDefaultTypeInternal;
+extern RspPingDefaultTypeInternal _RspPing_default_instance_;
 class RspPutFile;
 class RspPutFileDefaultTypeInternal;
 extern RspPutFileDefaultTypeInternal _RspPutFile_default_instance_;
@@ -187,6 +193,7 @@ template<> ::spaceless::protocol::ReqKickOutUser* Arena::CreateMaybeMessage<::sp
 template<> ::spaceless::protocol::ReqLoginUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqLoginUser>(Arena*);
 template<> ::spaceless::protocol::ReqNodeGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqNodeGetFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqNodePutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqNodePutFileSession>(Arena*);
+template<> ::spaceless::protocol::ReqPing* Arena::CreateMaybeMessage<::spaceless::protocol::ReqPing>(Arena*);
 template<> ::spaceless::protocol::ReqPutFile* Arena::CreateMaybeMessage<::spaceless::protocol::ReqPutFile>(Arena*);
 template<> ::spaceless::protocol::ReqPutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqPutFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqRegisterGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqRegisterGroup>(Arena*);
@@ -207,6 +214,7 @@ template<> ::spaceless::protocol::RspKickOutUser* Arena::CreateMaybeMessage<::sp
 template<> ::spaceless::protocol::RspLoginUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspLoginUser>(Arena*);
 template<> ::spaceless::protocol::RspNodeGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspNodeGetFileSession>(Arena*);
 template<> ::spaceless::protocol::RspNodePutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspNodePutFileSession>(Arena*);
+template<> ::spaceless::protocol::RspPing* Arena::CreateMaybeMessage<::spaceless::protocol::RspPing>(Arena*);
 template<> ::spaceless::protocol::RspPutFile* Arena::CreateMaybeMessage<::spaceless::protocol::RspPutFile>(Arena*);
 template<> ::spaceless::protocol::RspPutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspPutFileSession>(Arena*);
 template<> ::spaceless::protocol::RspRegisterGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspRegisterGroup>(Arena*);
@@ -347,6 +355,233 @@ class RspError : public ::google::protobuf::Message /* @@protoc_insertion_point(
 };
 // -------------------------------------------------------------------
 
+class ReqPing : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqPing) */ {
+ public:
+  ReqPing();
+  virtual ~ReqPing();
+
+  ReqPing(const ReqPing& from);
+
+  inline ReqPing& operator=(const ReqPing& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ReqPing(ReqPing&& from) noexcept
+    : ReqPing() {
+    *this = ::std::move(from);
+  }
+
+  inline ReqPing& operator=(ReqPing&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqPing& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ReqPing* internal_default_instance() {
+    return reinterpret_cast<const ReqPing*>(
+               &_ReqPing_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  void Swap(ReqPing* other);
+  friend void swap(ReqPing& a, ReqPing& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ReqPing* New() const final {
+    return CreateMaybeMessage<ReqPing>(NULL);
+  }
+
+  ReqPing* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqPing>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ReqPing& from);
+  void MergeFrom(const ReqPing& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReqPing* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 second = 1;
+  void clear_second();
+  static const int kSecondFieldNumber = 1;
+  ::google::protobuf::int32 second() const;
+  void set_second(::google::protobuf::int32 value);
+
+  // int32 microsecond = 2;
+  void clear_microsecond();
+  static const int kMicrosecondFieldNumber = 2;
+  ::google::protobuf::int32 microsecond() const;
+  void set_microsecond(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqPing)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 second_;
+  ::google::protobuf::int32 microsecond_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspPing : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspPing) */ {
+ public:
+  RspPing();
+  virtual ~RspPing();
+
+  RspPing(const RspPing& from);
+
+  inline RspPing& operator=(const RspPing& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RspPing(RspPing&& from) noexcept
+    : RspPing() {
+    *this = ::std::move(from);
+  }
+
+  inline RspPing& operator=(RspPing&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspPing& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RspPing* internal_default_instance() {
+    return reinterpret_cast<const RspPing*>(
+               &_RspPing_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  void Swap(RspPing* other);
+  friend void swap(RspPing& a, RspPing& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RspPing* New() const final {
+    return CreateMaybeMessage<RspPing>(NULL);
+  }
+
+  RspPing* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspPing>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const RspPing& from);
+  void MergeFrom(const RspPing& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RspPing* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // int32 second = 2;
+  void clear_second();
+  static const int kSecondFieldNumber = 2;
+  ::google::protobuf::int32 second() const;
+  void set_second(::google::protobuf::int32 value);
+
+  // int32 microsecond = 3;
+  void clear_microsecond();
+  static const int kMicrosecondFieldNumber = 3;
+  ::google::protobuf::int32 microsecond() const;
+  void set_microsecond(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspPing)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 result_;
+  ::google::protobuf::int32 second_;
+  ::google::protobuf::int32 microsecond_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class User : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.User) */ {
  public:
   User();
@@ -382,7 +617,7 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
                &_User_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    3;
 
   void Swap(User* other);
   friend void swap(User& a, User& b) {
@@ -514,7 +749,7 @@ class ReqRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion
                &_ReqRegisterUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    4;
 
   void Swap(ReqRegisterUser* other);
   friend void swap(ReqRegisterUser& a, ReqRegisterUser& b) {
@@ -640,7 +875,7 @@ class RspRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion
                &_RspRegisterUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    5;
 
   void Swap(RspRegisterUser* other);
   friend void swap(RspRegisterUser& a, RspRegisterUser& b) {
@@ -756,7 +991,7 @@ class ReqLoginUser : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ReqLoginUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    6;
 
   void Swap(ReqLoginUser* other);
   friend void swap(ReqLoginUser& a, ReqLoginUser& b) {
@@ -874,7 +1109,7 @@ class RspLoginUser : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_RspLoginUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    7;
 
   void Swap(RspLoginUser* other);
   friend void swap(RspLoginUser& a, RspLoginUser& b) {
@@ -977,7 +1212,7 @@ class ReqRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqRemoveUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    8;
 
   void Swap(ReqRemoveUser* other);
   friend void swap(ReqRemoveUser& a, ReqRemoveUser& b) {
@@ -1080,7 +1315,7 @@ class RspRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspRemoveUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    9;
 
   void Swap(RspRemoveUser* other);
   friend void swap(RspRemoveUser& a, RspRemoveUser& b) {
@@ -1183,7 +1418,7 @@ class ReqFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_ReqFindUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    10;
 
   void Swap(ReqFindUser* other);
   friend void swap(ReqFindUser& a, ReqFindUser& b) {
@@ -1301,7 +1536,7 @@ class RspFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_RspFindUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    11;
 
   void Swap(RspFindUser* other);
   friend void swap(RspFindUser& a, RspFindUser& b) {
@@ -1417,7 +1652,7 @@ class SharingGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_SharingGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    12;
 
   void Swap(SharingGroup* other);
   friend void swap(SharingGroup& a, SharingGroup& b) {
@@ -1577,7 +1812,7 @@ class ReqRegisterGroup : public ::google::protobuf::Message /* @@protoc_insertio
                &_ReqRegisterGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    13;
 
   void Swap(ReqRegisterGroup* other);
   friend void swap(ReqRegisterGroup& a, ReqRegisterGroup& b) {
@@ -1688,7 +1923,7 @@ class RspRegisterGroup : public ::google::protobuf::Message /* @@protoc_insertio
                &_RspRegisterGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    14;
 
   void Swap(RspRegisterGroup* other);
   friend void swap(RspRegisterGroup& a, RspRegisterGroup& b) {
@@ -1798,7 +2033,7 @@ class ReqRemoveGroup : public ::google::protobuf::Message /* @@protoc_insertion_
                &_ReqRemoveGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    15;
 
   void Swap(ReqRemoveGroup* other);
   friend void swap(ReqRemoveGroup& a, ReqRemoveGroup& b) {
@@ -1901,7 +2136,7 @@ class RspRemoveGroup : public ::google::protobuf::Message /* @@protoc_insertion_
                &_RspRemoveGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    16;
 
   void Swap(RspRemoveGroup* other);
   friend void swap(RspRemoveGroup& a, RspRemoveGroup& b) {
@@ -2004,7 +2239,7 @@ class ReqFindGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ReqFindGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    17;
 
   void Swap(ReqFindGroup* other);
   friend void swap(ReqFindGroup& a, ReqFindGroup& b) {
@@ -2122,7 +2357,7 @@ class RspFindGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_RspFindGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    18;
 
   void Swap(RspFindGroup* other);
   friend void swap(RspFindGroup& a, RspFindGroup& b) {
@@ -2238,7 +2473,7 @@ class ReqJoinGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ReqJoinGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    19;
 
   void Swap(ReqJoinGroup* other);
   friend void swap(ReqJoinGroup& a, ReqJoinGroup& b) {
@@ -2341,7 +2576,7 @@ class RspJoinGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_RspJoinGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    20;
 
   void Swap(RspJoinGroup* other);
   friend void swap(RspJoinGroup& a, RspJoinGroup& b) {
@@ -2444,7 +2679,7 @@ class ReqAssignAsManager : public ::google::protobuf::Message /* @@protoc_insert
                &_ReqAssignAsManager_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    21;
 
   void Swap(ReqAssignAsManager* other);
   friend void swap(ReqAssignAsManager& a, ReqAssignAsManager& b) {
@@ -2554,7 +2789,7 @@ class RspAssignAsManager : public ::google::protobuf::Message /* @@protoc_insert
                &_RspAssignAsManager_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    22;
 
   void Swap(RspAssignAsManager* other);
   friend void swap(RspAssignAsManager& a, RspAssignAsManager& b) {
@@ -2657,7 +2892,7 @@ class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
                &_ReqAssignAsMemeber_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    21;
+    23;
 
   void Swap(ReqAssignAsMemeber* other);
   friend void swap(ReqAssignAsMemeber& a, ReqAssignAsMemeber& b) {
@@ -2767,7 +3002,7 @@ class RspAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
                &_RspAssignAsMemeber_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    22;
+    24;
 
   void Swap(RspAssignAsMemeber* other);
   friend void swap(RspAssignAsMemeber& a, RspAssignAsMemeber& b) {
@@ -2870,7 +3105,7 @@ class ReqKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
                &_ReqKickOutUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    23;
+    25;
 
   void Swap(ReqKickOutUser* other);
   friend void swap(ReqKickOutUser& a, ReqKickOutUser& b) {
@@ -2980,7 +3215,7 @@ class RspKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
                &_RspKickOutUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    24;
+    26;
 
   void Swap(RspKickOutUser* other);
   friend void swap(RspKickOutUser& a, RspKickOutUser& b) {
@@ -3083,7 +3318,7 @@ class ReqPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    25;
+    27;
 
   void Swap(ReqPutFileSession* other);
   friend void swap(ReqPutFileSession& a, ReqPutFileSession& b) {
@@ -3208,7 +3443,7 @@ class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    26;
+    28;
 
   void Swap(RspPutFileSession* other);
   friend void swap(RspPutFileSession& a, RspPutFileSession& b) {
@@ -3325,7 +3560,7 @@ class ReqNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_ReqNodePutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    27;
+    29;
 
   void Swap(ReqNodePutFileSession* other);
   friend void swap(ReqNodePutFileSession& a, ReqNodePutFileSession& b) {
@@ -3443,7 +3678,7 @@ class RspNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_RspNodePutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    28;
+    30;
 
   void Swap(RspNodePutFileSession* other);
   friend void swap(RspNodePutFileSession& a, RspNodePutFileSession& b) {
@@ -3553,7 +3788,7 @@ class ReqPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    29;
+    31;
 
   void Swap(ReqPutFile* other);
   friend void swap(ReqPutFile& a, ReqPutFile& b) {
@@ -3678,7 +3913,7 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    30;
+    32;
 
   void Swap(RspPutFile* other);
   friend void swap(RspPutFile& a, RspPutFile& b) {
@@ -3795,7 +4030,7 @@ class ReqGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    31;
+    33;
 
   void Swap(ReqGetFileSession* other);
   friend void swap(ReqGetFileSession& a, ReqGetFileSession& b) {
@@ -3913,7 +4148,7 @@ class RspGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    32;
+    34;
 
   void Swap(RspGetFileSession* other);
   friend void swap(RspGetFileSession& a, RspGetFileSession& b) {
@@ -4030,7 +4265,7 @@ class ReqNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_ReqNodeGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    33;
+    35;
 
   void Swap(ReqNodeGetFileSession* other);
   friend void swap(ReqNodeGetFileSession& a, ReqNodeGetFileSession& b) {
@@ -4141,7 +4376,7 @@ class RspNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_RspNodeGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    34;
+    36;
 
   void Swap(RspNodeGetFileSession* other);
   friend void swap(RspNodeGetFileSession& a, RspNodeGetFileSession& b) {
@@ -4258,7 +4493,7 @@ class ReqGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    35;
+    37;
 
   void Swap(ReqGetFile* other);
   friend void swap(ReqGetFile& a, ReqGetFile& b) {
@@ -4368,7 +4603,7 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    36;
+    38;
 
   void Swap(RspGetFile* other);
   friend void swap(RspGetFile& a, RspGetFile& b) {
@@ -4500,7 +4735,7 @@ class ReqCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    37;
+    39;
 
   void Swap(ReqCreatePath* other);
   friend void swap(ReqCreatePath& a, ReqCreatePath& b) {
@@ -4618,7 +4853,7 @@ class RspCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    38;
+    40;
 
   void Swap(RspCreatePath* other);
   friend void swap(RspCreatePath& a, RspCreatePath& b) {
@@ -4721,7 +4956,7 @@ class ReqRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    39;
+    41;
 
   void Swap(ReqRemovePath* other);
   friend void swap(ReqRemovePath& a, ReqRemovePath& b) {
@@ -4846,7 +5081,7 @@ class RspRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    40;
+    42;
 
   void Swap(RspRemovePath* other);
   friend void swap(RspRemovePath& a, RspRemovePath& b) {
@@ -4935,6 +5170,84 @@ inline void RspError::set_result(::google::protobuf::int32 value) {
   
   result_ = value;
   // @@protoc_insertion_point(field_set:spaceless.protocol.RspError.result)
+}
+
+// -------------------------------------------------------------------
+
+// ReqPing
+
+// int32 second = 1;
+inline void ReqPing::clear_second() {
+  second_ = 0;
+}
+inline ::google::protobuf::int32 ReqPing::second() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPing.second)
+  return second_;
+}
+inline void ReqPing::set_second(::google::protobuf::int32 value) {
+  
+  second_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPing.second)
+}
+
+// int32 microsecond = 2;
+inline void ReqPing::clear_microsecond() {
+  microsecond_ = 0;
+}
+inline ::google::protobuf::int32 ReqPing::microsecond() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqPing.microsecond)
+  return microsecond_;
+}
+inline void ReqPing::set_microsecond(::google::protobuf::int32 value) {
+  
+  microsecond_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqPing.microsecond)
+}
+
+// -------------------------------------------------------------------
+
+// RspPing
+
+// int32 result = 1;
+inline void RspPing::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspPing::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPing.result)
+  return result_;
+}
+inline void RspPing::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPing.result)
+}
+
+// int32 second = 2;
+inline void RspPing::clear_second() {
+  second_ = 0;
+}
+inline ::google::protobuf::int32 RspPing::second() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPing.second)
+  return second_;
+}
+inline void RspPing::set_second(::google::protobuf::int32 value) {
+  
+  second_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPing.second)
+}
+
+// int32 microsecond = 3;
+inline void RspPing::clear_microsecond() {
+  microsecond_ = 0;
+}
+inline ::google::protobuf::int32 RspPing::microsecond() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPing.microsecond)
+  return microsecond_;
+}
+inline void RspPing::set_microsecond(::google::protobuf::int32 value) {
+  
+  microsecond_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPing.microsecond)
 }
 
 // -------------------------------------------------------------------
@@ -7012,6 +7325,10 @@ inline void RspRemovePath::set_result(::google::protobuf::int32 value) {
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

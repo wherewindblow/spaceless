@@ -14,6 +14,8 @@ namespace spaceless {
 namespace resource_server {
 namespace transaction {
 
+void on_ping(int conn_id, Package package);
+
 void on_register_user(int conn_id, Package package);
 
 void on_login_user(int conn_id, Package package);

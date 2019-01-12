@@ -18,6 +18,8 @@ namespace client {
 
 int conn_id = 0;
 
+const int DELAY_TESTING_TIME = 60;
+
 
 void UserManager::register_user(const std::string& username, const std::string& password)
 {
@@ -242,6 +244,52 @@ FileSession& SharingGroupManager::put_file_session()
 FileSession& SharingGroupManager::get_file_session()
 {
 	return m_get_session;
+}
+
+
+void DelayTesting::start_testing()
+{
+	auto expiry_action = []()
+	{
+		protocol::ReqPing request;
+		lights::PreciseTime time = lights::current_precise_time();
+		request.set_second(static_cast<std::int32_t>(time.seconds));
+		std::int64_t microsecond = lights::nanasecond_to_microsecond(time.nanoseconds);
+		request.set_microsecond(static_cast<std::int32_t>(microsecond));
+		Network::send_protocol(conn_id, request);
+	};
+
+	lights::PreciseTime time(DELAY_TESTING_TIME);
+	TimerManager::instance()->start_timer(time, expiry_action, TimerCallPolicy::CALL_FREQUENTLY, time);
+}
+
+
+void DelayTesting::on_receive_response(int second, int microsecond)
+{
+	lights::PreciseTime send_time(second, lights::microsecond_to_nanasecond(microsecond));
+	lights::PreciseTime rtt = lights::current_precise_time() - send_time;
+	m_last_delay_time = rtt / 2;
+	m_total_delay_time = m_total_delay_time + m_last_delay_time;
+	++m_test_times;
+}
+
+
+lights::PreciseTime DelayTesting::last_delay_time()
+{
+	return m_last_delay_time;
+}
+
+
+lights::PreciseTime DelayTesting::average_delay_time()
+{
+	if (m_test_times == 0)
+	{
+		return lights::PreciseTime();
+	}
+	else
+	{
+		return m_total_delay_time / m_test_times;
+	}
 }
 
 } // namespace client

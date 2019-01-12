@@ -25,6 +25,17 @@ enum
 };
 
 
+void on_ping(int conn_id, Package package)
+{
+	protocol::ReqPing request;
+	package.parse_to_protocol(request);
+	protocol::RspPing response;
+	response.set_second(request.second());
+	response.set_microsecond(request.microsecond());
+	Network::send_back_protobuf(conn_id, response, package);
+}
+
+
 void convert_user(const User& server_user, protocol::User& proto_user)
 {
 	proto_user.set_user_id(server_user.user_id);

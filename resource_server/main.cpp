@@ -62,6 +62,7 @@ int main(int argc, const char* argv[])
 		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
 
 		using namespace transaction;
+		SPACELESS_REG_ONE_TRANS(protocol::ReqPing, on_ping);
 		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterUser, on_register_user)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqLoginUser, on_login_user)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqRemoveUser, on_remove_user)

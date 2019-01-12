@@ -122,6 +122,26 @@ private:
 };
 
 
+class DelayTesting
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(DelayTesting);
+
+	void start_testing();
+
+	void on_receive_response(int second, int microsecond);
+
+	lights::PreciseTime last_delay_time();
+
+	lights::PreciseTime average_delay_time();
+
+private:
+	lights::PreciseTime m_last_delay_time;
+	lights::PreciseTime m_total_delay_time;
+	int m_test_times;
+};
+
+
 } // namespace client
 } // namespace spaceless
 

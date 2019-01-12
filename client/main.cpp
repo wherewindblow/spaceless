@@ -43,6 +43,7 @@ int main(int argc, const char* argv[])
 			}
 		});
 
+		SPACELESS_REG_ONE_TRANS(protocol::RspPing, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspRegisterUser, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspLoginUser, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspRemoveUser, read_handler);
@@ -73,6 +74,8 @@ int main(int argc, const char* argv[])
 		thread.detach();
 
 		UserManager::instance()->login_user(1, "pwd");
+
+		DelayTesting::instance()->start_testing();
 
 		cmd_ui_interface(conn_list);
 	}
@@ -237,7 +240,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			try
 			{
 				int id = conn_list.at(index);
-				NetworkConnection* conn = NetworkManager::instance()->find_connection(id);
+				NetworkConnection* conn = NetworkManager::instance()->find_open_connection(id);
 				if (conn == nullptr)
 				{
 					std::cout << "Invalid network connection." << std::endl;
@@ -396,6 +399,15 @@ void read_handler(int conn_id, Package package)
 			lights::PreciseTime use_sec = lights::current_precise_time() - session.start_time;
 			std::cout << lights::format("Get file {} finish. use {}", session.remote_path, use_sec) << std::endl;
 		}
+	}
+	else if (command == cmd("RspPing"))
+	{
+		protocol::RspPing response;
+		package.parse_to_protocol(response);
+		DelayTesting::instance()->on_receive_response(response.second(), response.microsecond());
+		LIGHTS_INFO(logger, "Delay last {}, average {}",
+					DelayTesting::instance()->last_delay_time(),
+					DelayTesting::instance()->average_delay_time());
 	}
 }
 
