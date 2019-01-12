@@ -4,6 +4,7 @@
 #include <foundation/log.h>
 #include <foundation/configuration.h>
 #include <protocol/all.h>
+#include <lights/log_sinks/file_sink.h>
 
 #include "core.h"
 #include "transaction.h"
@@ -22,11 +23,28 @@ int main(int argc, const char* argv[])
 		Configuration::PathList path_list = {"../configuration/storage_node_conf.json", "../configuration/global_conf.json"};
 		Configuration configuration(path_list);
 
-		std::string str_log_level = configuration.getString("log_level");
-		lights::LogLevel log_level = to_log_level(str_log_level);
+		// Sets global log level of each logger.
+		lights::LogLevel log_level = to_log_level(configuration.getString("log_level"));
 		LoggerManager::instance()->for_each([&](const std::string& name, Logger& logger) {
 			logger.set_level(log_level);
 		});
+
+		// Sets special log level of some logger.
+		for (int i = 0;; ++i)
+		{
+			std::string key_prefix = "each_log_level[" + std::to_string(i) + "]";
+			try
+			{
+				std::string logger_name = configuration.getString(key_prefix + ".logger_name");
+				std::string level = configuration.getString(key_prefix + ".log_level");
+				Logger& cur_logger = get_logger(logger_name);
+				cur_logger.set_level(to_log_level(level));
+			}
+			catch (Poco::NotFoundException& e)
+			{
+				break;  // Into array end.
+			}
+		}
 
 		if (argc < 4)
 		{

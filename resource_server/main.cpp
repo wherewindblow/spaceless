@@ -23,12 +23,30 @@ int main(int argc, const char* argv[])
 		Configuration::PathList path_list = {"../configuration/resource_server_conf.json", "../configuration/global_conf.json"};
 		Configuration configuration(path_list);
 
-		std::string str_log_level = configuration.getString("log_level");
-		lights::LogLevel log_level = to_log_level(str_log_level);
+		// Sets global log level of each logger.
+		lights::LogLevel log_level = to_log_level(configuration.getString("log_level"));
 		LoggerManager::instance()->for_each([&](const std::string& name, Logger& logger) {
 			logger.set_level(log_level);
 		});
 
+		// Sets special log level of some logger.
+		for (int i = 0;; ++i)
+		{
+			std::string key_prefix = "each_log_level[" + std::to_string(i) + "]";
+			try
+			{
+				std::string logger_name = configuration.getString(key_prefix + ".logger_name");
+				std::string level = configuration.getString(key_prefix + ".log_level");
+				Logger& cur_logger = get_logger(logger_name);
+				cur_logger.set_level(to_log_level(level));
+			}
+			catch (Poco::NotFoundException& e)
+			{
+				break;  // Into array end.
+			}
+		}
+
+		// Registers storage nodes.
 		for (int i = 0;; ++i)
 		{
 			std::string key_prefix = "storage_nodes[" + std::to_string(i) + "]";
@@ -55,6 +73,7 @@ int main(int argc, const char* argv[])
 		unsigned int port = configuration.getUInt("resource_server.port");
 		NetworkManager::instance()->register_listener(ip, static_cast<unsigned short>(port));
 
+		// Sets root user setting.
 		std::string root_user_name = configuration.getString("root_user.name");
 		std::string root_user_pwd = configuration.getString("root_user.password");
 		User& root = UserManager::instance()->register_user(root_user_name, root_user_pwd);

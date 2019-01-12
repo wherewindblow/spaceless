@@ -13,5 +13,11 @@
       "port": 10242
     }
   ],
-  "log_level": "info"
+  "log_level": "debug",
+  "each_log_level": [
+    {
+      "logger_name": "monitor",
+      "log_level": "off"
+    }
+  ]
 }

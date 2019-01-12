@@ -9,7 +9,9 @@
 
 #include <cmath>
 #include <fstream>
+
 #include <foundation/transaction.h>
+#include <foundation/worker.h>
 #include <protocol/all.h>
 
 
