@@ -36,7 +36,7 @@ void Network::send_protocol(int conn_id,
 	const char* target_type = conn_id ? "Connection" : "Service";
 	int target_id = conn_id ? conn_id : service_id;
 
-	int size = msg.ByteSize();
+	int size = protocol::get_message_size(msg);
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
 		LIGHTS_ERROR(logger, "{} {}: Content length {} is too large.", target_type, target_id, size)

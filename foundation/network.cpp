@@ -12,7 +12,6 @@
 #include <Poco/AbstractObserver.h>
 #include <Poco/NObserver.h>
 #include <crypto/rsa.h>
-#include <protocol/all.h>
 
 #include "log.h"
 #include "worker.h"

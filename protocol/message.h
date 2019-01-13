@@ -1,5 +1,6 @@
 /**
  * message.h
+ * Uses to separate implementation.
  * @author wherewindblow
  * @date   Oct 10, 2018
  */
@@ -20,6 +21,14 @@ using Message = google::protobuf::Message;
 inline const std::string& get_message_name(const Message& msg)
 {
 	return msg.GetDescriptor()->name();
+}
+
+/**
+ * Get message memory size.
+ */
+inline int get_message_size(const Message& msg)
+{
+	return msg.ByteSize();
 }
 
 /**
