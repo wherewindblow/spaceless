@@ -158,7 +158,7 @@ struct NetworkMessage
 
 
 /**
- * Network message queue include input queue and output queue. It's use to seperate network thread and worker thread.
+ * Network message queue include input queue and output queue. It's use to separate network thread and worker thread.
  * So all operation of this class is thread safe.
  */
 class NetworkMessageQueue
@@ -303,7 +303,7 @@ private:
 
 
 /**
- * NetworkService use to indentify service and delay registration of network connection.
+ * NetworkService use to identify service and delay registration of network connection.
  */
 struct NetworkService
 {
@@ -346,7 +346,7 @@ public:
 	/**
 	 * Gets network connection id by service. When cannot find connection, will register network connection automaticly.
 	 * @throw Throws exception if cannot find service or cannot register network connection.
-	 * @note  Cannot own it as memeber, becase connection id may be change by some reason.
+	 * @note  Cannot own it as member, because connection id may be change by some reason.
 	 */
 	int get_connection_id(int service_id);
 

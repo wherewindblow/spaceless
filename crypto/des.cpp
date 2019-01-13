@@ -94,16 +94,16 @@ std::string des_decrypt(const std::string& cipher, const DesKey& key, bool shrin
 
 	if (shrink)
 	{
-		// shrink for unuse charater.
-		std::size_t unuse_len = 1;
-		for (; unuse_len <= DES_BLOCK_SIZE; ++unuse_len)
+		// shrink for useless character.
+		std::size_t useless_len = 1;
+		for (; useless_len <= DES_BLOCK_SIZE; ++useless_len)
 		{
-			if (plain[plain.length() - unuse_len] != '\0')
+			if (plain[plain.length() - useless_len] != '\0')
 			{
 				break;
 			}
 		}
-		plain.resize(plain.length() - unuse_len + 1);
+		plain.resize(plain.length() - useless_len + 1);
 	}
 	return plain;
 }
@@ -169,7 +169,7 @@ void des_decrypt(std::istream& in, std::ostream& out, const DesKey& key)
 		{
 			if (static_cast<std::size_t>(in.gcount()) < cipher.size())
 			{
-				LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_IMCOMPELTE_DATA);
+				LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_INCOMPLETE_DATA);
 			}
 			decryptor.decrypt(cipher.data(), plain.data());
 		}
@@ -219,7 +219,7 @@ void des_decrypt_file(const std::string& in_filename, const std::string& out_fil
 
 		if (size % DES_BLOCK_SIZE != 0)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_IMCOMPELTE_DATA);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_INCOMPLETE_DATA);
 		}
 
 		des_decrypt(in, out, key);

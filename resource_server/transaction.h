@@ -34,7 +34,7 @@ void on_join_group(int conn_id, Package package);
 
 void on_assign_as_manager(int conn_id, Package package);
 
-void on_assign_as_memeber(int conn_id, Package package);
+void on_assign_as_member(int conn_id, Package package);
 
 void on_kick_out_user(int conn_id, Package package);
 

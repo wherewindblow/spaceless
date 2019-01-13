@@ -166,11 +166,11 @@ NetworkConnection::~NetworkConnection()
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Destroy error: {}.", m_id, ex.what());
+		LIGHTS_ERROR(logger, "Connection {}: Destroy error: {}.", m_id, ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Destroy unkown error.", m_id);
+		LIGHTS_ERROR(logger, "Connection {}: Destroy unkown error.", m_id);
 	}
 }
 
@@ -185,7 +185,7 @@ void NetworkConnection::send_package(Package package)
 {
 	if (m_is_closing)
 	{
-		LIGHTS_ERROR(logger, "Connction {}: Send package on closing connection: cmd {}, trigger_package_id {}.",
+		LIGHTS_ERROR(logger, "Connection {}: Send package on closing connection: cmd {}, trigger_package_id {}.",
 					 m_id, package.header().base.command, package.header().extend.trigger_package_id);
 		return;
 	}
@@ -223,7 +223,7 @@ void NetworkConnection::close()
 		return;
 	}
 
-	// Delay to delete this after send all message. Ensure all message in m_send_list to be sended.
+	// Delay to delete this after send all message. Ensure all message in m_send_list to be send.
 	m_is_closing = true;
 }
 
@@ -293,7 +293,7 @@ void NetworkConnection::on_writable(const Poco::AutoPtr<WritableNotification>& n
 void NetworkConnection::on_error(const Poco::AutoPtr<ErrorNotification>& notification)
 {
 	// Closes by peer without general notification.
-	LIGHTS_ERROR(logger, "Connction {}: On error.", m_id);
+	LIGHTS_ERROR(logger, "Connection {}: On error.", m_id);
 	close_without_waiting();
 }
 
@@ -337,14 +337,14 @@ void NetworkConnection::read_for_state()
 							header_base.content_length = 0;
 							send_raw_package(package);
 
-							LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
+							LIGHTS_INFO(logger, "Connection {}: Package version invalid.", m_id);
 							close();
 							return;
 						}
 						else
 						{
 							// Notify logic layer package version is invalid.
-							LIGHTS_INFO(logger, "Connction {}: Package version invalid.", m_id);
+							LIGHTS_INFO(logger, "Connection {}: Package version invalid.", m_id);
 							close();
 							return;
 						}
@@ -403,7 +403,7 @@ void NetworkConnection::read_for_state()
 void NetworkConnection::on_read_complete_package(int read_content_len)
 {
 	PackageHeader& header = m_receive_buffer.header();
-	LIGHTS_DEBUG(logger, "Connction {}: Recieve package cmd {}, trigger_package_id {}.",
+	LIGHTS_DEBUG(logger, "Connection {}: Receive package cmd {}, trigger_package_id {}.",
 				 m_id, header.base.command, header.extend.trigger_package_id);
 
 	switch (m_crypto_state)
@@ -448,7 +448,7 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			else
 			{
 				// Ignore package when not started crypto.
-				LIGHTS_DEBUG(logger, "Connction {}: Ignore package cmd {}, trigger_package_id {}.",
+				LIGHTS_DEBUG(logger, "Connection {}: Ignore package cmd {}, trigger_package_id {}.",
 							 m_id, header.base.command, header.extend.trigger_package_id);
 			}
 			break;
@@ -482,7 +482,7 @@ void NetworkConnection::close_without_waiting()
 
 void NetworkConnection::send_raw_package(Package package)
 {
-	LIGHTS_DEBUG(logger, "Connction {}: Send package cmd {}, trigger_package_id {}.",
+	LIGHTS_DEBUG(logger, "Connection {}: Send package cmd {}, trigger_package_id {}.",
 				 m_id, package.header().base.command, package.header().extend.trigger_package_id);
 
 	if (!m_send_list.empty())
@@ -596,12 +596,12 @@ void NetworkReactor::process_send_package()
 		{
 			if (conn == nullptr)
 			{
-				LIGHTS_INFO(logger, "Connction {}: Already close.", conn_id);
+				LIGHTS_INFO(logger, "Connection {}: Already close.", conn_id);
 			}
 
 			if (!package.is_valid())
 			{
-				LIGHTS_ERROR(logger, "Connction {}: Package {} already remove.", conn_id, msg.package_id);
+				LIGHTS_ERROR(logger, "Connection {}: Package {} already remove.", conn_id, msg.package_id);
 			}
 
 			if (package.is_valid())
@@ -629,7 +629,7 @@ NetworkManager::~NetworkManager()
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Network connection manager destroy unkown error.");
+		LIGHTS_ERROR(logger, "Network connection manager destroy unknown error.");
 	}
 }
 
@@ -698,7 +698,7 @@ NetworkConnection* NetworkManager::find_open_connection(int conn_id)
 
 void NetworkManager::stop_all()
 {
-	// Cannot use iterator to for each to close, becase close will erase itself on m_conn_list.
+	// Cannot use iterator to for each to close, because close will erase itself on m_conn_list.
 	while (!m_conn_list.empty())
 	{
 		NetworkConnection* conn =  m_conn_list.begin()->second;
@@ -711,16 +711,16 @@ void NetworkManager::stop_all()
 
 void NetworkManager::start()
 {
-	LIGHTS_INFO(logger, "Starting netowk scheduler.");
+	LIGHTS_INFO(logger, "Starting network scheduler.");
 	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
 	m_reactor.run();
-	LIGHTS_INFO(logger, "Stopped netowk scheduler.");
+	LIGHTS_INFO(logger, "Stopped network scheduler.");
 }
 
 
 void NetworkManager::stop()
 {
-	LIGHTS_INFO(logger, "Stopping netowk scheduler.");
+	LIGHTS_INFO(logger, "Stopping network scheduler.");
 	m_reactor.stop();
 }
 

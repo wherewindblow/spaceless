@@ -20,7 +20,7 @@ std::string base64_encode(const std::string& origin);
 
 
 /**
- * Decode base64 string to orginal string.
+ * Decode base64 string to original string.
  */
 std::string base64_decode(const std::string& base64);
 

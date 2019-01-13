@@ -54,7 +54,7 @@ enum class TimerCallPolicy : bool
 
 
 /**
- * Manager of all timer. And provide bacis sheduling function.
+ * Manager of all timer. And provide basic scheduling function.
  * @note TimerManager are scheduling by worker.
  */
 class TimerManager
@@ -63,7 +63,7 @@ public:
 	SPACELESS_SINGLETON_INSTANCE(TimerManager);
 
 	/**
-	 * Starts timer and call @c expiry_action at time expriy.
+	 * Starts timer and call @c expiry_action at time expiry.
 	 * @param delay Default is using value of @c interval.
 	 * @return Returns time id.
 	 */

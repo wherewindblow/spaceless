@@ -225,7 +225,7 @@ void on_assign_as_manager(int conn_id, Package package)
 }
 
 
-void on_assign_as_memeber(int conn_id, Package package)
+void on_assign_as_member(int conn_id, Package package)
 {
 	protocol::ReqAssignAsMemeber request;
 	protocol::RspAssignAsMemeber response;

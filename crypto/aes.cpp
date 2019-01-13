@@ -87,7 +87,7 @@ void aes_encrypt(lights::SequenceView plain, lights::Sequence cipher, const AesK
 	std::size_t pad_length = (over == 0) ? 0 : AES_BLOCK_SIZE - over;
 	if (cipher.length() < plain.length() + pad_length)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_CIPHER_SPACE_NOT_ENOUGHT);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_CIPHER_SPACE_NOT_ENOUGH);
 	}
 
 	AesBlockEncryptor encryptor;
@@ -115,7 +115,7 @@ void aes_decrypt(lights::SequenceView cipher, lights::Sequence plain, const AesK
 {
 	if (plain.length() < cipher.length())
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_PLAIN_SPACE_NOT_ENOUGHT);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_PLAIN_SPACE_NOT_ENOUGH);
 	}
 
 	AesBlockDecryptor decryptor;
@@ -208,7 +208,7 @@ void aes_decrypt(std::istream& in, std::ostream& out, const AesKey& key, bool sh
 				std::size_t real_len = AES_BLOCK_SIZE;
 				if (shrink)
 				{
-					// Shrink for unuse charater.
+					// Shrink for useless character.
 					for (; real_len > 0; --real_len)
 					{
 						if (plain[real_len - 1] != '\0')
@@ -226,7 +226,7 @@ void aes_decrypt(std::istream& in, std::ostream& out, const AesKey& key, bool sh
 		{
 			if (static_cast<std::size_t>(in.gcount()) < cipher.size())
 			{
-				LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_IMCOMPELTE_DATA);
+				LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_INCOMPLETE_DATA);
 			}
 			decryptor.decrypt(cipher.data(), plain.data());
 		}
@@ -275,7 +275,7 @@ void aes_decrypt_file(const std::string& in_filename, const std::string& out_fil
 		auto size = file.size();
 		if (size % AES_BLOCK_SIZE != 0)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_IMCOMPELTE_DATA);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_CRYPTO_INCOMPLETE_DATA);
 		}
 		aes_decrypt(in, out, key);
 	}

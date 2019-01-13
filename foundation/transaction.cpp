@@ -168,7 +168,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 			return;
 		}
 
-		LIGHTS_DEBUG(logger, "Connction {}: Timeout trans_id {}, phase {}.",
+		LIGHTS_DEBUG(logger, "Connection {}: Timeout trans_id {}, phase {}.",
 						trans->waiting_connection_id(),
 						trans_id,
 						trans->current_phase());
@@ -178,7 +178,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 		if (!trans->is_waiting())
 		{
-			LIGHTS_DEBUG(logger, "Connction {}: End trans_id {}.", trans->waiting_connection_id(), trans_id);
+			LIGHTS_DEBUG(logger, "Connection {}: End trans_id {}.", trans->waiting_connection_id(), trans_id);
 			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 		}
 	});
@@ -216,7 +216,7 @@ void MultiplyPhaseTransaction::send_back_message(const protocol::Message& msg)
 
 void MultiplyPhaseTransaction::send_back_error(int code)
 {
-	LIGHTS_ERROR(logger, "Connction {}: Error {}.", first_connection_id(), code);
+	LIGHTS_ERROR(logger, "Connection {}: Error {}.", first_connection_id(), code);
 	protocol::RspError error;
 	error.set_result(code);
 	Network::send_back_protobuf(first_connection_id(), error, m_first_trigger_source);
@@ -375,20 +375,20 @@ void TransactionManager::register_transaction(int cmd,
 
 
 void TransactionManager::register_one_phase_transaction(int cmd,
-														OnePhaseTrancation trancation,
+														OnePhaseTransaction transaction,
 														TransactionErrorHandler error_handler)
 {
-	void* handler = reinterpret_cast<void*>(trancation);
+	void* handler = reinterpret_cast<void*>(transaction);
 	register_transaction(cmd, TransactionType::ONE_PHASE_TRANSACTION, handler, error_handler);
 }
 
 
 void TransactionManager::register_one_phase_transaction(const protocol::Message& msg,
-														OnePhaseTrancation trancation,
+														OnePhaseTransaction transaction,
 														TransactionErrorHandler error_handler)
 {
 	auto cmd = protocol::get_command(msg);
-	register_one_phase_transaction(cmd, trancation, error_handler);
+	register_one_phase_transaction(cmd, transaction, error_handler);
 }
 
 

@@ -34,8 +34,8 @@ public:
 	 * @param conn_id           Network connection id.
 	 * @param msg               Message of protobuff type.
 	 * @param bind_trans_id     Specific transaction that trigger by response.
-	 * @param trigger_package_id  Transaction id that trigger proccess. It's only need for send back message.
-	 * @param trigger_cmd       Command that trigger proccess. It's only need for send back message.
+	 * @param trigger_package_id  Transaction id that trigger process. It's only need for send back message.
+	 * @param trigger_cmd       Command that trigger process. It's only need for send back message.
 	 * @param service_id        Network service id. Uses to replace conn_id.
 	 */
 	static void send_protocol(int conn_id,
@@ -106,7 +106,7 @@ public:
 	static const int DEFAULT_TIME_OUT = 60;
 
 	/**
-	 * Factory of this type transaction. Just simply call contructor.
+	 * Factory of this type transaction. Just simply call constructor.
 	 * @note This function is only a example.
 	 */
 	static MultiplyPhaseTransaction* register_transaction(int trans_id);
@@ -122,7 +122,7 @@ public:
 	virtual ~MultiplyPhaseTransaction() = default;
 
 	/**
-	 * Initializes this base class interal variables.
+	 * Initializes this base class internal variables.
 	 */
 	void pre_on_init(int conn_id, Package package);
 
@@ -136,7 +136,7 @@ public:
 	/**
 	 * Processes the package of wait phase.
 	 * @param conn     Network connection of send package.
-	 * @param package  Pakcage of trigger this function.
+	 * @param package  Package of trigger this function.
 	 */
 	virtual void on_active(int conn_id, Package package) = 0;
 
@@ -195,7 +195,7 @@ public:
 	void send_back_error(int code);
 
 	/**
-	 * Returns tranascation id.
+	 * Returns transaction id.
 	 */
 	int transaction_id() const;
 
@@ -311,7 +311,7 @@ private:
 };
 
 
-using OnePhaseTrancation = void (*)(int conn_id, Package);
+using OnePhaseTransaction = void (*)(int conn_id, Package);
 
 
 /**
@@ -341,7 +341,7 @@ struct Transaction
 
 
 /**
- * Manager of transaction. When recieve a command will trigger associated transaction.
+ * Manager of transaction. When receive a command will trigger associated transaction.
  */
 class TransactionManager
 {
@@ -364,16 +364,16 @@ public:
 	 * @throw Throws exception if register failure.
 	 */
 	void register_one_phase_transaction(int cmd,
-										OnePhaseTrancation trancation,
+										OnePhaseTransaction transaction,
 										TransactionErrorHandler error_handler = on_transaction_error);
 
 	void register_one_phase_transaction(const protocol::Message& msg,
-										OnePhaseTrancation trancation,
+										OnePhaseTransaction transaction,
 										TransactionErrorHandler error_handler = on_transaction_error);
 
 	/**
 	 * Registers association of command with multiply phase transaction.
- 	 * @param trans_factory  Fatory of multiply phase transaction.
+ 	 * @param trans_factory  Factory of multiply phase transaction.
      * @note A command only can associate one transaction.
      * @throw Throws exception if register failure.
 	 */

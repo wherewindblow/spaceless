@@ -58,7 +58,7 @@ private:
 
 /**
  * Creates manager constructor and register manager to monitor.
- * @note Manager must have function that signature is `std::sizt size()`.
+ * @note Manager must have function that signature is `std::size_t size()`.
  */
 #define SPACELESS_AUTO_REG_MANAGER(class_name) \
 	class_name() {SPACELESS_REG_MANAGER(class_name);}

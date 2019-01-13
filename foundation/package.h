@@ -42,13 +42,13 @@ struct PackageHeader
 	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
 
 	/**
-	 * To extend package header, only can add new field in the end of extend structue.
+	 * To extend package header, only can add new field in the end of extend structure.
 	 * And must increase PACKAGE_VERSION after extend package header.
 	 * @note Only can add new field in this structure.
 	 */
 	struct Extend
 	{
-		// Recieves side will transfer as trigger_package_id when send back message.
+		// Receives side will transfer as trigger_package_id when send back message.
 		int self_package_id;
 		// self_package_id of request.
 		int trigger_package_id;
@@ -299,7 +299,7 @@ public:
 	void parse_to_protocol(protocol::Message& msg) const;
 
 	/**
-	 * Gets trigger source that is neccessary for send back package.
+	 * Gets trigger source that is necessary for send back package.
 	 */
 	PackageTriggerSource get_trigger_source() const
 	{
@@ -312,7 +312,7 @@ private:
 
 
 /**
- * Manager of package and guarantee package are valid when connetion underlying write is call.
+ * Manager of package and guarantee package are valid when connection underlying write is call.
  * All operation in this class is thread safe.
  */
 class PackageManager
