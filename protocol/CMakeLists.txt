@@ -6,5 +6,5 @@ set(SPACELESS_PROTOCOL_SRC
         protocol.pb.h protocol.pb.cc
         command.h command.cpp)
 
-add_library(spaceless_protocol STATIC ${SPACELESS_PROTOCOL_SRC})
+add_library(spaceless_protocol SHARED ${SPACELESS_PROTOCOL_SRC})
 set_target_properties(spaceless_protocol PROPERTIES OUTPUT_NAME "spaceless_protocol")

@@ -11,7 +11,7 @@ target_link_libraries(spaceless_resource_server
         spaceless_foundation
         spaceless_protocol
         spaceless_crypto
-        lights_static
+        lights_shared
         protobuf
         cryptopp
         PocoFoundation

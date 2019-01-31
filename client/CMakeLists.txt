@@ -10,7 +10,7 @@ target_link_libraries(spaceless_client
         spaceless_foundation
         spaceless_protocol
         spaceless_crypto
-        lights_static
+        lights_shared
         protobuf
         cryptopp
         PocoFoundation

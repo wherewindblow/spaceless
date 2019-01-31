@@ -6,5 +6,5 @@ set(SPACELESS_CRYPTO_SRC
         aes.h aes.cpp
         rsa.h rsa.cpp basic.h rng.h rng.cpp)
 
-add_library(spaceless_crypto STATIC ${SPACELESS_CRYPTO_SRC})
+add_library(spaceless_crypto SHARED ${SPACELESS_CRYPTO_SRC})
 set_target_properties(spaceless_crypto PROPERTIES OUTPUT_NAME "spaceless_crypto")

@@ -12,5 +12,5 @@ set(SPACELESS_FOUNDATION_SRC
         configuration.h configuration.cpp
         monitor.h monitor.cpp)
 
-add_library(spaceless_foundation STATIC ${SPACELESS_FOUNDATION_SRC})
+add_library(spaceless_foundation SHARED ${SPACELESS_FOUNDATION_SRC})
 set_target_properties(spaceless_foundation PROPERTIES OUTPUT_NAME "spaceless_foundation")
