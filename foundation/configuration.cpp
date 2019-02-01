@@ -39,7 +39,7 @@ Configuration::Configuration(const std::string& path)
 }
 
 
-Configuration::Configuration(const Configuration::PathList& path_list)
+Configuration::Configuration(const PathList& path_list)
 {
 	load(path_list);
 }
@@ -60,7 +60,7 @@ void Configuration::load(const std::string& path)
 }
 
 
-void Configuration::load(const Configuration::PathList& path_list)
+void Configuration::load(const PathList& path_list)
 {
 	for (auto& path : path_list)
 	{

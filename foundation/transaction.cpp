@@ -9,6 +9,7 @@
 #include <cassert>
 #include <protocol/all.h>
 
+#include "log.h"
 #include "network.h"
 #include "worker.h"
 
@@ -16,7 +17,6 @@
 namespace spaceless {
 
 static Logger& logger = get_logger("worker");
-Logger& Network::logger = get_logger("worker");
 
 
 void Network::send_package(int conn_id, Package package, int service_id)

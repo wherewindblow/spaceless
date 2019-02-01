@@ -13,7 +13,7 @@
 
 #include "basics.h"
 #include "package.h"
-#include "log.h"
+#include "monitor.h"
 
 
 namespace spaceless {
@@ -91,9 +91,6 @@ public:
 	 * Service only can use to send package, but cannot send back message.
 	 * Because send back message must use network connection id and receive package must from that connection id.
 	 */
-
-private:
-	static Logger& logger;
 };
 
 

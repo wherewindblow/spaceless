@@ -12,14 +12,17 @@
 #include <Poco/Runnable.h>
 #include <sys/prctl.h>
 
+#include "log.h"
 #include "package.h"
 #include "network.h"
 #include "transaction.h"
+#include "monitor.h"
 
 
 namespace spaceless {
 
 static Logger& logger = get_logger("worker");
+
 
 namespace details {
 

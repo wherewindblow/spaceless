@@ -10,6 +10,8 @@
 #include <cmath>
 #include <fstream>
 
+#include <lights/file.h>
+
 #include <foundation/transaction.h>
 #include <foundation/worker.h>
 #include <protocol/all.h>

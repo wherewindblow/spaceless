@@ -10,8 +10,6 @@
 #include <protocol/message.h>
 #include <crypto/aes.h>
 
-#include "monitor.h"
-
 
 namespace spaceless {
 

@@ -16,7 +16,7 @@
 namespace spaceless {
 
 /**
- * Monite manager state.
+ * Monitor manager state.
  */
 class ManagerMonitor
 {
