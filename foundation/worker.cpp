@@ -45,6 +45,8 @@ public:
 	std::atomic<bool> stop_flag = ATOMIC_VAR_INIT(false);
 
 private:
+	void process_message(const NetworkMessage& msg);
+
 	void trigger_transaction(const NetworkMessage& msg);
 
 	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
@@ -77,7 +79,7 @@ void Worker::run()
 		if (!NetworkMessageQueue::instance()->empty(NetworkMessageQueue::IN_QUEUE))
 		{
 			auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::IN_QUEUE);
-			trigger_transaction(msg);
+			process_message(msg);
 		}
 		else
 		{
@@ -93,12 +95,26 @@ void Worker::run()
 
 		if (need_sleep)
 		{
-			Poco::Thread::current()->sleep(TRANSACTION_IDLE_SLEEP_MS);
+			Poco::Thread::current()->sleep(WORKER_IDLE_SLEEP_MS);
 		}
 	}
 
 	LIGHTS_INFO(logger, "Stopped worker.");
 	run_state = STOPPED;
+}
+
+
+void Worker::process_message(const NetworkMessage& msg)
+{
+	if (msg.conn_id != 0 || msg.service_id != 0)
+	{
+		trigger_transaction(msg);
+	}
+
+	if (msg.delegate)
+	{
+		msg.delegate();
+	}
 }
 
 

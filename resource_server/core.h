@@ -10,6 +10,7 @@
 #include <set>
 #include <map>
 #include <memory>
+#include <functional>
 
 #include <lights/sequence.h>
 #include <foundation/basics.h>
@@ -288,6 +289,8 @@ private:
 struct StorageNode
 {
 	int node_id;
+	std::string ip;
+	unsigned short port;
 	int service_id;
 	int use_counting;
 };
@@ -298,7 +301,9 @@ class StorageNodeManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(StorageNodeManager);
 
-	StorageNode& register_node(const std::string& ip, unsigned short port);
+	using RegisterCallback = std::function<void(StorageNode&)>;
+
+	void register_node(const std::string& ip, unsigned short port, RegisterCallback callback = nullptr);
 
 	void remove_node(int node_id);
 

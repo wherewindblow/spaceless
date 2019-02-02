@@ -25,7 +25,8 @@
 
 
 /**
- * @note All function that use in framework cannot throw exception. Because don't know who can catch it.
+ * @note 1. All function that use in framework cannot throw exception. Because don't know who can catch it.
+ *       2. All NetworkXXX cannot be use in worker thread except NetworkMessageQueue.
  */
 namespace spaceless {
 
@@ -145,15 +146,17 @@ private:
 
 struct NetworkMessage
 {
-	NetworkMessage(int conn_id, int package_id, int service_id = 0):
-		conn_id(conn_id),
-		service_id(service_id),
-		package_id(package_id)
+	NetworkMessage():
+		conn_id(0),
+		service_id(0),
+		package_id(0),
+		delegate()
 	{}
 
 	int conn_id;
 	int service_id;
 	int package_id;
+	std::function<void()> delegate;
 };
 
 
@@ -174,7 +177,7 @@ public:
 	};
 
 	/**
-	 * Pushs message to indicate queue.
+	 * Pushes message to indicate queue.
 	 */
 	void push(QueueType queue_type, const NetworkMessage& msg);
 
@@ -184,7 +187,7 @@ public:
 	NetworkMessage pop(QueueType queue_type);
 
 	/**
-	 * Check indicate queue is empty.
+	 * Checks indicate queue is empty.
 	 */
 	bool empty(QueueType queue_type);
 
@@ -218,10 +221,9 @@ public:
 	void onTimeout() override;
 
 private:
-	/**
-	 * Processes to send package.
-	 */
-	void process_send_package();
+	void process_out_message();
+
+	void send_package(const NetworkMessage& msg);
 };
 
 
@@ -344,7 +346,7 @@ public:
 	NetworkService* find_service(const std::string& ip, unsigned short port);
 
 	/**
-	 * Gets network connection id by service. When cannot find connection, will register network connection automaticly.
+	 * Gets network connection id by service. When cannot find connection, will register network connection automatically.
 	 * @throw Throws exception if cannot find service or cannot register network connection.
 	 * @note  Cannot own it as member, because connection id may be change by some reason.
 	 */

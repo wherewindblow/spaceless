@@ -55,7 +55,7 @@ void Scheduler::start()
 	worker_scheduler->stop();
 	while (worker_scheduler->is_worker_running())
 	{
-		Poco::Thread::current()->sleep(SCHEDULER_WAITTING_STOP_PERIOD_MS);
+		Poco::Thread::current()->sleep(SCHEDULER_WAITING_STOP_PERIOD_MS);
 	}
 
 	LIGHTS_INFO(logger, "Stopped scheduler.");
@@ -70,7 +70,7 @@ void Scheduler::stop()
 	worker_scheduler->stop();
 	while (worker_scheduler->is_worker_running())
 	{
-		Poco::Thread::current()->sleep(SCHEDULER_WAITTING_STOP_PERIOD_MS);
+		Poco::Thread::current()->sleep(SCHEDULER_WAITING_STOP_PERIOD_MS);
 	}
 }
 

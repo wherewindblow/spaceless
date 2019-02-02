@@ -21,7 +21,10 @@ static Logger& logger = get_logger("worker");
 
 void Network::send_package(int conn_id, Package package, int service_id)
 {
-	NetworkMessage msg(conn_id, package.package_id(), service_id);
+	NetworkMessage msg;
+	msg.conn_id = conn_id;
+	msg.package_id = package.package_id();
+	msg.service_id = service_id;
 	NetworkMessageQueue::instance()->push(NetworkMessageQueue::OUT_QUEUE, msg);
 }
 

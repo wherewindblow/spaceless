@@ -10,7 +10,9 @@
 #include <utility>
 
 #include <lights/file.h>
+#include <foundation/log.h>
 #include <foundation/exception.h>
+#include <foundation/delegation.h>
 #include <foundation/network.h>
 #include <Poco/String.h>
 #include <Poco/StringTokenizer.h>
@@ -18,6 +20,8 @@
 
 namespace spaceless {
 namespace resource_server {
+
+static Logger logger = get_logger("core");
 
 User& UserManager::register_user(const std::string& username, const std::string& password)
 {
@@ -727,20 +731,36 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 }
 
 
-StorageNode& StorageNodeManager::register_node(const std::string& ip, unsigned short port)
+void StorageNodeManager::register_node(const std::string& ip, unsigned short port, RegisterCallback callback)
 {
-	NetworkService& service = NetworkServiceManager::instance()->register_service(ip, port);
-	StorageNode node = { m_next_id, service.service_id };
-	++m_next_id;
+	Delegation::delegate(Delegation::NETWORK, [ip, port, callback](){
+		NetworkService& service = NetworkServiceManager::instance()->register_service(ip, port);
+		int service_id = service.service_id;
 
-	auto value = std::make_pair(node.node_id, node);
-	auto result = m_node_list.insert(value);
-	if (result.second == false)
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_ALREADY_EXIST);
-	}
+		Delegation::delegate(Delegation::WORKER, [ip, port, service_id, callback](){
+			auto inst = StorageNodeManager::instance();
+			StorageNode node = {
+				inst->m_next_id,
+				ip,
+				port,
+				service_id,
+				0
+			};
+			++inst->m_next_id;
 
-	return result.first->second;
+			auto value = std::make_pair(node.node_id, node);
+			auto result = inst->m_node_list.insert(value);
+			if (result.second == false)
+			{
+				LIGHTS_ERROR(logger, "Cannot register node {}:{}", ip, port);
+			}
+
+			if (callback)
+			{
+				callback(result.first->second);
+			}
+		});
+	});
 }
 
 
@@ -749,7 +769,10 @@ void StorageNodeManager::remove_node(int node_id)
 	StorageNode* node = find_node(node_id);
 	if (node)
 	{
-		NetworkServiceManager::instance()->remove_service(node->service_id);
+		int service_id = node->service_id;
+		Delegation::delegate(Delegation::NETWORK, [service_id]() {
+			NetworkServiceManager::instance()->remove_service(service_id);
+		});
 		m_node_list.erase(node_id);
 	}
 }
@@ -769,15 +792,9 @@ StorageNode* StorageNodeManager::find_node(int node_id)
 
 StorageNode* StorageNodeManager::find_node(const std::string& ip, unsigned short port)
 {
-	NetworkService* service = NetworkServiceManager::instance()->find_service(ip, port);
-	if (service == nullptr)
-	{
-		return nullptr;
-	}
-
 	auto itr = std::find_if(m_node_list.begin(), m_node_list.end(), [&](const StorageNodeList::value_type& value_type)
 	{
-		return value_type.second.service_id == service->service_id;
+		return value_type.second.ip == ip && value_type.second.port == port;
 	});
 
 	if (itr == m_node_list.end())
@@ -834,9 +851,6 @@ StorageNode& StorageNodeManager::get_fit_node()
 
 	return *low_load_node;
 }
-
-StorageNode* default_storage_node = nullptr;
-NetworkConnection* default_storage_conn = nullptr;
 
 
 PutFileSession& FileSessionManager::register_put_session(int user_id,

@@ -461,7 +461,9 @@ void NetworkConnection::on_read_complete_package(int read_content_len)
 			lights::SequenceView cipher(m_receive_buffer.content_data(), static_cast<std::size_t>(read_content_len));
 			crypto::aes_decrypt(cipher, package.content_buffer(), m_key);
 
-			NetworkMessage msg(m_id, package.package_id());
+			NetworkMessage msg;
+			msg.conn_id = m_id;
+			msg.package_id = package.package_id();
 			NetworkService* service = NetworkServiceManager::instance()->find_service_by_connection(m_id);
 			if (service != nullptr)
 			{
@@ -554,28 +556,28 @@ std::size_t NetworkMessageQueue::size(NetworkMessageQueue::QueueType queue_type)
 
 void NetworkReactor::onIdle()
 {
-	process_send_package();
+	process_out_message();
 //	SocketReactor::onIdle(); // Avoid sending event to all network connection, because it's not efficient.
 }
 
 
 void NetworkReactor::onBusy()
 {
-	process_send_package();
+	process_out_message();
 //	SocketReactor::onBusy(); // There is nothing in this function.
 }
 
 
 void NetworkReactor::onTimeout()
 {
-	process_send_package();
+	process_out_message();
 //	SocketReactor::onTimeout(); // Avoid sending event to all network connection, because it's not efficient.
 }
 
 
-void NetworkReactor::process_send_package()
+void NetworkReactor::process_out_message()
 {
-	for (std::size_t i = 0; i < MAX_SEND_PACKAGE_PROCESS_PER_TIMES; ++i)
+	for (std::size_t i = 0; i < MAX_OUT_MSG_PROCESS_PER_TIMES; ++i)
 	{
 		if (NetworkMessageQueue::instance()->empty(NetworkMessageQueue::OUT_QUEUE))
 		{
@@ -583,37 +585,51 @@ void NetworkReactor::process_send_package()
 		}
 
 		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
-		int conn_id = msg.conn_id;
-		if (conn_id == 0)
+		if (msg.conn_id != 0 || msg.service_id != 0)
 		{
-			conn_id = NetworkServiceManager::instance()->get_connection_id(msg.service_id);
+			send_package(msg);
 		}
 
-		NetworkConnection* conn = NetworkManager::instance()->find_open_connection(conn_id);
-		Package package = PackageManager::instance()->find_package(msg.package_id);
-
-		if (conn == nullptr || !package.is_valid())
+		if (msg.delegate)
 		{
-			if (conn == nullptr)
-			{
-				LIGHTS_INFO(logger, "Connection {}: Already close.", conn_id);
-			}
-
-			if (!package.is_valid())
-			{
-				LIGHTS_ERROR(logger, "Connection {}: Package {} already remove.", conn_id, msg.package_id);
-			}
-
-			if (package.is_valid())
-			{
-				PackageManager::instance()->remove_package(msg.package_id);
-			}
-
-			continue;
+			msg.delegate();
 		}
-
-		conn->send_package(package);
 	}
+}
+
+
+void NetworkReactor::send_package(const NetworkMessage& msg)
+{
+	int conn_id = msg.conn_id;
+	if (conn_id == 0)
+	{
+		conn_id = NetworkServiceManager::instance()->get_connection_id(msg.service_id);
+	}
+
+	NetworkConnection* conn = NetworkManager::instance()->find_open_connection(conn_id);
+	Package package = PackageManager::instance()->find_package(msg.package_id);
+
+	if (conn == nullptr || !package.is_valid())
+	{
+		if (conn == nullptr)
+		{
+			LIGHTS_INFO(logger, "Connection {}: Already close.", conn_id);
+		}
+
+		if (!package.is_valid())
+		{
+			LIGHTS_ERROR(logger, "Connection {}: Package {} already remove.", conn_id, msg.package_id);
+		}
+
+		if (package.is_valid())
+		{
+			PackageManager::instance()->remove_package(msg.package_id);
+		}
+
+		return;
+	}
+
+	conn->send_package(package);
 }
 
 
