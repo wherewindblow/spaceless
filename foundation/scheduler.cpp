@@ -8,6 +8,7 @@
 #include "scheduler.h"
 
 #include <signal.h>
+#include <Poco/Thread.h>
 
 #include "worker.h"
 #include "network.h"

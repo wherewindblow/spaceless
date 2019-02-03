@@ -10,6 +10,7 @@
 #include <functional>
 
 #include <Poco/Runnable.h>
+#include <Poco/Thread.h>
 #include <sys/prctl.h>
 
 #include "log.h"

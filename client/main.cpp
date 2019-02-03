@@ -75,7 +75,7 @@ int main(int argc, const char* argv[])
 		SPACELESS_REG_ONE_TRANS(protocol::RspCreatePath, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspRemovePath, read_handler);
 
-		NetworkConnection& conn = NetworkManager::instance()->register_connection("127.0.0.1", 10240);
+		NetworkConnection conn = NetworkManager::instance()->register_connection("127.0.0.1", 10240);
 		conn_id = conn.connection_id();
 		ConnectionList conn_list;
 		conn_list.push_back(conn.connection_id());
@@ -241,7 +241,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::string host;
 			unsigned short port;
 			std::cin >> host >> port;
-			NetworkConnection& conn = NetworkManager::instance()->register_connection(host, port);
+			NetworkConnection conn = NetworkManager::instance()->register_connection(host, port);
 			conn_list.push_back(conn.connection_id());
 			std::cout << lights::format("New connection index is {}.", conn_list.size() - 1) << std::endl;
 		}
@@ -253,14 +253,14 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			try
 			{
 				int id = conn_list.at(index);
-				NetworkConnection* conn = NetworkManager::instance()->find_open_connection(id);
-				if (conn == nullptr)
+				NetworkConnection conn = NetworkManager::instance()->find_connection(id);
+				if (!conn.is_valid())
 				{
 					std::cout << "Invalid network connection." << std::endl;
 				}
 				else
 				{
-					conn_id = conn->connection_id();
+					conn_id = conn.connection_id();
 				}
 			}
 			catch (std::out_of_range& e)

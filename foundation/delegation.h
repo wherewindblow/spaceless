@@ -22,7 +22,7 @@ public:
 
 	/**
 	 * Let network thread to run delegate function.
-	 * @note 1. `func` cannot capture any structure or class by reference in worker thread.
+	 * @note 1. @c func cannot capture any structure or class by reference in worker thread.
 	 *       2. Cannot transfer any structure or class by reference to worker thread.
 	 */
 	static void delegate(ThreadTarget target, std::function<void()> func);
