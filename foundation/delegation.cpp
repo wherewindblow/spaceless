@@ -11,15 +11,18 @@
 
 namespace spaceless {
 
-void Delegation::delegate(ThreadTarget target, std::function<void()> func)
+void Delegation::delegate(lights::StringView caller, ThreadTarget thread_target, std::function<void()> function)
 {
 	NetworkMessage msg;
-	msg.delegate = func;
+	msg.delegate = function;
+	msg.caller = caller;
+
 	NetworkMessageQueue::QueueType queue_type = NetworkMessageQueue::OUT_QUEUE;
-	if (target == ThreadTarget::WORKER)
+	if (thread_target == ThreadTarget::WORKER)
 	{
 		queue_type = NetworkMessageQueue::IN_QUEUE;
 	}
+
 	NetworkMessageQueue::instance()->push(queue_type, msg);
 }
 

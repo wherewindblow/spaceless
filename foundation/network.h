@@ -72,13 +72,15 @@ struct NetworkMessage
 		conn_id(0),
 		service_id(0),
 		package_id(0),
-		delegate()
+		delegate(),
+		caller(lights::invalid_string_view())
 	{}
 
 	int conn_id;
 	int service_id;
 	int package_id;
 	std::function<void()> delegate;
+	lights::StringView caller;
 };
 
 

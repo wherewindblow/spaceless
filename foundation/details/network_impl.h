@@ -179,6 +179,11 @@ private:
 	 * Send package by network message.
 	 */
 	void send_package(const NetworkMessage& msg);
+
+	/**
+	 * Call function safety.
+	 */
+	bool safe_call_delegate(std::function<void()> function, lights::StringView caller);
 };
 
 

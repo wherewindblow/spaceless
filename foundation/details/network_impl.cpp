@@ -545,7 +545,7 @@ void NetworkReactor::process_out_message()
 
 		if (msg.delegate)
 		{
-			msg.delegate();
+			safe_call_delegate(msg.delegate, msg.caller);
 		}
 	}
 }
@@ -583,6 +583,33 @@ void NetworkReactor::send_package(const NetworkMessage& msg)
 	}
 
 	conn->send_package(package);
+}
+
+
+bool NetworkReactor::safe_call_delegate(std::function<void()> function, lights::StringView caller)
+{
+	try
+	{
+		function();
+		return true;
+	}
+	catch (Exception& ex)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: Exception error {}/{}.", caller, ex.code(), ex);
+	}
+	catch (Poco::Exception& ex)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: Poco error {}:{}.", caller, ex.name(), ex.message());
+	}
+	catch (std::exception& ex)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: std error {}:{}.", caller, typeid(ex).name(), ex.what());
+	}
+	catch (...)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: unknown error.", caller);
+	}
+	return false;
 }
 
 

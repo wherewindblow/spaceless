@@ -14,6 +14,7 @@
 #include <foundation/exception.h>
 #include <foundation/delegation.h>
 #include <foundation/network.h>
+
 #include <Poco/String.h>
 #include <Poco/StringTokenizer.h>
 
@@ -733,11 +734,11 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 
 void StorageNodeManager::register_node(const std::string& ip, unsigned short port, RegisterCallback callback)
 {
-	Delegation::delegate(Delegation::NETWORK, [ip, port, callback](){
+	Delegation::delegate("register_node", Delegation::NETWORK, [ip, port, callback](){
 		NetworkService& service = NetworkServiceManager::instance()->register_service(ip, port);
 		int service_id = service.service_id;
 
-		Delegation::delegate(Delegation::WORKER, [ip, port, service_id, callback](){
+		Delegation::delegate("register_node", Delegation::WORKER, [ip, port, service_id, callback](){
 			auto inst = StorageNodeManager::instance();
 			StorageNode node = {
 				inst->m_next_id,
@@ -753,6 +754,7 @@ void StorageNodeManager::register_node(const std::string& ip, unsigned short por
 			if (result.second == false)
 			{
 				LIGHTS_ERROR(logger, "Cannot register node {}:{}", ip, port);
+				return;
 			}
 
 			if (callback)
@@ -770,7 +772,7 @@ void StorageNodeManager::remove_node(int node_id)
 	if (node)
 	{
 		int service_id = node->service_id;
-		Delegation::delegate(Delegation::NETWORK, [service_id]() {
+		Delegation::delegate("remove_node", Delegation::NETWORK, [service_id]() {
 			NetworkServiceManager::instance()->remove_service(service_id);
 		});
 		m_node_list.erase(node_id);

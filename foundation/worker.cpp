@@ -52,13 +52,15 @@ private:
 
 	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
 
-	int safe_execute(int conn_id,
-					 int trans_id,
-					 Package package,
-					 ErrorHandler error_handler,
-					 std::function<void()> function);
+	bool safe_call_trans(int conn_id,
+						int trans_id,
+						Package package,
+						ErrorHandler error_handler,
+						std::function<void()> function);
 
 	const std::string& get_name(int cmd);
+
+	bool safe_call_delegate(std::function<void()> function, lights::StringView caller);
 };
 
 
@@ -114,7 +116,7 @@ void Worker::process_message(const NetworkMessage& msg)
 
 	if (msg.delegate)
 	{
-		msg.delegate();
+		safe_call_delegate(msg.delegate, msg.caller);
 	}
 }
 
@@ -152,7 +154,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 					LIGHTS_DEBUG(logger, "Connection {}: Receive cmd {}, name {}.", conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTransaction>(trans->trans_handler);
 
-					safe_execute(conn_id, 0, package, trans->error_handler, [&]()
+					safe_call_trans(conn_id, 0, package, trans->error_handler, [&]()
 					{
 						trans_handler(conn_id, package);
 					});
@@ -177,7 +179,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 						trans_handler.on_error(conn_id, ex);
 					};
 
-					safe_execute(conn_id, trans_id, package, error_handler, [&]()
+					safe_call_trans(conn_id, trans_id, package, error_handler, [&]()
 					{
 						trans_handler.on_init(conn_id, package);
 					});
@@ -236,7 +238,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 				waiting_trans->on_error(conn_id, ex);
 			};
 
-			safe_execute(conn_id, trans_id, package, error_handler, [&]()
+			safe_call_trans(conn_id, trans_id, package, error_handler, [&]()
 			{
 				waiting_trans->on_active(conn_id, package);
 			});
@@ -263,16 +265,16 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 }
 
 
-int Worker::safe_execute(int conn_id,
-						 int trans_id,
-						 Package package,
-						 ErrorHandler error_handler,
-						 std::function<void()> function)
+bool Worker::safe_call_trans(int conn_id,
+							int trans_id,
+							Package package,
+							ErrorHandler error_handler,
+							std::function<void()> function)
 {
 	try
 	{
 		function();
-		return 0;
+		return true;
 	}
 	catch (Exception& ex)
 	{
@@ -326,7 +328,7 @@ int Worker::safe_execute(int conn_id,
 	{
 		LIGHTS_ERROR(logger, "Connection {}: Transaction unknown error.", conn_id);
 	}
-	return -1;
+	return false;
 }
 
 
@@ -339,6 +341,33 @@ const std::string& Worker::get_name(int cmd)
 		return INVALID;
 	}
 	return *name;
+}
+
+
+bool Worker::safe_call_delegate(std::function<void()> function, lights::StringView caller)
+{
+	try
+	{
+		function();
+		return true;
+	}
+	catch (Exception& ex)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: Exception error {}/{}.", caller, ex.code(), ex);
+	}
+	catch (Poco::Exception& ex)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: Poco error {}:{}.", caller, ex.name(), ex.message());
+	}
+	catch (std::exception& ex)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: std error {}:{}.", caller, typeid(ex).name(), ex.what());
+	}
+	catch (...)
+	{
+		LIGHTS_ERROR(logger, "Delegation {}: unknown error.", caller);
+	}
+	return false;
 }
 
 } // namespace details
