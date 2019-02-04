@@ -35,6 +35,18 @@ using Poco::Net::ShutdownNotification;
 using Poco::Net::TimeoutNotification;
 using Poco::Net::ErrorNotification;
 
+class SecureConnection;
+
+
+/**
+ * Network connection open type.
+ */
+enum class ConnectionOpenType
+{
+	ACTIVE_OPEN,
+	PASSIVE_OPEN,
+};
+
 
 /**
  * NetworkConnection handler socket notification and cache receive message.
@@ -43,17 +55,13 @@ using Poco::Net::ErrorNotification;
 class NetworkConnectionImpl
 {
 public:
-	enum OpenType
-	{
-		ACTIVE_OPEN,
-		PASSIVE_OPEN,
-	};
-
 	/**
 	 * Creates the NetworkConnection and add event handler.
 	 * @note Do not create in stack.
 	 */
-	NetworkConnectionImpl(StreamSocket& socket, SocketReactor& reactor, OpenType open_type = PASSIVE_OPEN);
+	NetworkConnectionImpl(StreamSocket& socket,
+						  SocketReactor& reactor,
+						  ConnectionOpenType open_type = ConnectionOpenType::PASSIVE_OPEN);
 
 	/**
 	 * Destroys the NetworkConnection and remove event handler.
@@ -66,7 +74,12 @@ public:
 	int connection_id() const;
 
 	/**
-	 * Sends package to remote on asynchronization.
+	 * Sends raw package to remote asynchronously.
+	 */
+	void send_raw_package(Package package);
+
+	/**
+	 * Sends package that append additional process to remote asynchronously.
 	 */
 	void send_package(Package package);
 
@@ -86,12 +99,6 @@ private:
 	{
 		READ_HEADER,
 		READ_CONTENT,
-	};
-
-	enum class CryptoState
-	{
-		STARTING,
-		STARTED,
 	};
 
 	/**
@@ -124,16 +131,6 @@ private:
 	 */
 	void close_without_waiting();
 
-	/**
-	 * Sends raw package.
-	 */
-	void send_raw_package(Package package);
-
-	/**
-	 * Sends all not crypto package.
-	 */
-	void send_not_crypto_package();
-
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
@@ -142,12 +139,55 @@ private:
 	ReadState m_read_state;
 	std::queue<int> m_send_list;
 	int m_send_len;
-	OpenType m_open_type;
+	bool m_is_closing;
+	SecureConnection* m_secure_conn;
+};
+
+
+/**
+ * SecureConnection uses to ensure security to transfer data.
+ */
+class SecureConnection
+{
+public:
+	/**
+	 * Creates secure connection.
+	 */
+	SecureConnection(NetworkConnectionImpl* conn, ConnectionOpenType open_type);
+
+	/**
+	 * Sends package.
+	 */
+	void send_package(Package package);
+
+	/**
+	 * On read a complete package.
+	 */
+	void on_read_complete_package(PackageBuffer& receive_buffer, int read_content_len);
+
+	/**
+	 * Gets content length that process with security.
+	 */
+	int get_content_length(int raw_length);
+
+private:
+	enum class CryptoState
+	{
+		STARTING,
+		STARTED,
+	};
+
+	/**
+	 * Sends all not crypto package.
+	 */
+	void send_not_crypto_package();
+
+	NetworkConnectionImpl* m_conn;
+	ConnectionOpenType m_open_type;
 	CryptoState m_crypto_state;
 	crypto::RsaPrivateKey m_private_key;
 	crypto::AesKey m_key;
 	std::queue<int> m_not_crypto_list;
-	bool m_is_closing;
 };
 
 

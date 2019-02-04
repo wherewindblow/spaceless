@@ -274,7 +274,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 		}
 		else
 		{
-			std::cout << "Unkown command, please input again." << std::endl;
+			std::cout << "Unknown command, please input again." << std::endl;
 		}
 	}
 }

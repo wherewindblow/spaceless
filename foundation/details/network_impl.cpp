@@ -23,27 +23,28 @@ static Logger& logger = get_logger("network");
 
 
 // Check network connection is valid to avoid notifying a not exist network connection.
-template <class C, class N>
-class SafeObserver: public Poco::NObserver<C, N>
+template <class Notification>
+class ConnectionObserver: public Poco::NObserver<NetworkConnectionImpl, Notification>
 {
 public:
-	typedef Poco::NObserver<C, N> BaseObserver;
-	typedef Poco::AutoPtr<N> NotificationPtr;
-	typedef void (C::*Callback)(const NotificationPtr&);
+	typedef Poco::NObserver<NetworkConnectionImpl, Notification> BaseObserver;
+	typedef Poco::AutoPtr<Notification> NotificationPtr;
 
-	SafeObserver(C& object, Callback method, int conn_id):
+	typedef void (NetworkConnectionImpl::*Callback)(const NotificationPtr&);
+
+	ConnectionObserver(NetworkConnectionImpl& object, Callback method, int conn_id) :
 		BaseObserver(object, method),
 		m_conn_id(conn_id)
 	{
 	}
 
-	SafeObserver(const SafeObserver& observer):
+	ConnectionObserver(const ConnectionObserver& observer) :
 		BaseObserver(observer),
 		m_conn_id(observer.m_conn_id)
 	{
 	}
 
-	SafeObserver& operator=(const SafeObserver& observer)
+	ConnectionObserver& operator=(const ConnectionObserver& observer)
 	{
 		if (&observer != this)
 		{
@@ -68,22 +69,22 @@ private:
 };
 
 
-NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket, SocketReactor& reactor, OpenType open_type) :
+NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
+											 SocketReactor& reactor,
+											 ConnectionOpenType open_type) :
 	m_socket(socket),
 	m_reactor(reactor),
 	m_receive_len(0),
 	m_read_state(ReadState::READ_HEADER),
 	m_send_len(0),
-	m_open_type(open_type),
-	m_crypto_state(CryptoState::STARTING),
-	m_key("", crypto::AesKeyBits::BITS_256),
-	m_is_closing(false)
+	m_is_closing(false),
+	m_secure_conn(nullptr)
 {
 	m_socket.setBlocking(false);
 
-	SafeObserver<NetworkConnectionImpl, ReadableNotification> readable(*this, &NetworkConnectionImpl::on_readable, m_id);
+	ConnectionObserver<ReadableNotification> readable(*this, &NetworkConnectionImpl::on_readable, m_id);
 	m_reactor.addEventHandler(m_socket, readable);
-	SafeObserver<NetworkConnectionImpl, ErrorNotification> error(*this, &NetworkConnectionImpl::on_error, m_id);
+	ConnectionObserver<ErrorNotification> error(*this, &NetworkConnectionImpl::on_error, m_id);
 	m_reactor.addEventHandler(m_socket, error);
 
 	m_id = NetworkManagerImpl::instance()->on_create_connection(this);
@@ -99,21 +100,8 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket, SocketReactor
 		LIGHTS_INFO(logger, "Creates network connection {}: local unknown and peer unknown.", m_id);
 	}
 
-	if (open_type == PASSIVE_OPEN)
-	{
-		// Start crypto connection.
-		crypto::RsaKeyPair key_pair = crypto::generate_rsa_key_pair();
-		m_private_key = key_pair.private_key;
-		std::string public_key = key_pair.public_key.save_to_string();
-		int content_len = static_cast<int>(public_key.length());
-
-		Package package = PackageManager::instance()->register_package(content_len);
-		PackageHeader::Base& header_base = package.header().base;
-		header_base.command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
-		header_base.content_length = content_len;
-		lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()), public_key.c_str(), public_key.length());
-		send_raw_package(package);
-	}
+	// Start crypto connection.
+	m_secure_conn = new SecureConnection(this, open_type);
 }
 
 
@@ -124,11 +112,11 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 		LIGHTS_INFO(logger, "Destroys network connection {}.", m_id);
 		NetworkManagerImpl::instance()->on_destroy_connection(m_id);
 
-		SafeObserver<NetworkConnectionImpl, ReadableNotification> readable(*this, &NetworkConnectionImpl::on_readable, m_id);
+		ConnectionObserver<ReadableNotification> readable(*this, &NetworkConnectionImpl::on_readable, m_id);
 		m_reactor.removeEventHandler(m_socket, readable);
-		SafeObserver<NetworkConnectionImpl, WritableNotification> writable(*this, &NetworkConnectionImpl::on_writable, m_id);
+		ConnectionObserver<WritableNotification> writable(*this, &NetworkConnectionImpl::on_writable, m_id);
 		m_reactor.removeEventHandler(m_socket, writable);
-		SafeObserver<NetworkConnectionImpl, ErrorNotification> error(*this, &NetworkConnectionImpl::on_error, m_id);
+		ConnectionObserver<ErrorNotification> error(*this, &NetworkConnectionImpl::on_error, m_id);
 		m_reactor.removeEventHandler(m_socket, error);
 
 		while (!m_send_list.empty())
@@ -137,6 +125,8 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 			m_send_list.pop();
 			PackageManager::instance()->remove_package(package_id);
 		}
+
+		delete m_secure_conn;
 
 		try
 		{
@@ -153,7 +143,7 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Destroy unkown error.", m_id);
+		LIGHTS_ERROR(logger, "Connection {}: Destroy unknown error.", m_id);
 	}
 }
 
@@ -161,6 +151,33 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 int NetworkConnectionImpl::connection_id() const
 {
 	return m_id;
+}
+
+
+void NetworkConnectionImpl::send_raw_package(Package package)
+{
+	LIGHTS_DEBUG(logger, "Connection {}: Send package cmd {}, trigger_package_id {}.",
+				 m_id, package.header().base.command, package.header().extend.trigger_package_id);
+
+	if (!m_send_list.empty())
+	{
+		m_send_list.push(package.package_id());
+		return;
+	}
+
+	int len = static_cast<int>(package.valid_length());
+	m_send_len = m_socket.sendBytes(package.data(), len);
+	if (m_send_len == len)
+	{
+		m_send_len = 0;
+		PackageManager::instance()->remove_package(package.package_id());
+	}
+	else if (m_send_len < len)
+	{
+		m_send_list.push(package.package_id());
+		ConnectionObserver<WritableNotification> observer(*this, &NetworkConnectionImpl::on_writable, m_id);
+		m_reactor.addEventHandler(m_socket, observer);
+	}
 }
 
 
@@ -173,28 +190,7 @@ void NetworkConnectionImpl::send_package(Package package)
 		return;
 	}
 
-	if (m_crypto_state != CryptoState::STARTED)
-	{
-		m_not_crypto_list.push(package.package_id());
-		return;
-	}
-
-	// Encrypt package.
-	crypto::AesBlockEncryptor encryptor;
-	encryptor.set_key(m_key);
-
-	std::size_t content_len = static_cast<std::size_t>(package.header().base.content_length);
-	std::size_t cipher_len = crypto::aes_cipher_length(content_len);
-
-	lights::Sequence content = package.content();
-	for (std::size_t i = 0; i + crypto::AES_BLOCK_SIZE <= cipher_len; i += crypto::AES_BLOCK_SIZE)
-	{
-		encryptor.encrypt(&content.at<char>(i));
-	}
-
-	package.set_is_cipher(true);
-
-	send_raw_package(package);
+	m_secure_conn->send_package(package);
 }
 
 
@@ -261,7 +257,7 @@ void NetworkConnectionImpl::on_writable(const Poco::AutoPtr<WritableNotification
 
 	if (m_send_list.empty())
 	{
-		SafeObserver<NetworkConnectionImpl, WritableNotification> observer(*this, &NetworkConnectionImpl::on_writable, m_id);
+		ConnectionObserver<WritableNotification> observer(*this, &NetworkConnectionImpl::on_writable, m_id);
 		m_reactor.removeEventHandler(m_socket, observer);
 
 		if (m_is_closing)
@@ -344,12 +340,8 @@ void NetworkConnectionImpl::read_for_state()
 
 			case ReadState::READ_CONTENT:
 			{
-				int read_content_len = m_receive_buffer.header().base.content_length;
-				if (m_crypto_state == CryptoState::STARTED)
-				{
-					auto plain_len = static_cast<std::size_t>(read_content_len);
-					read_content_len = static_cast<int>(crypto::aes_cipher_length(plain_len));
-				}
+				int raw_len = m_receive_buffer.header().base.content_length;
+				int read_content_len = m_secure_conn->get_content_length(raw_len);
 
 				if (read_content_len != 0)
 				{
@@ -389,24 +381,91 @@ void NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 	LIGHTS_DEBUG(logger, "Connection {}: Receive package cmd {}, trigger_package_id {}.",
 				 m_id, header.base.command, header.extend.trigger_package_id);
 
+	m_secure_conn->on_read_complete_package(m_receive_buffer, read_content_len);
+}
+
+
+void NetworkConnectionImpl::close_without_waiting()
+{
+	delete this;
+}
+
+
+SecureConnection::SecureConnection(NetworkConnectionImpl* conn, ConnectionOpenType open_type) :
+	m_conn(conn),
+	m_open_type(open_type),
+	m_crypto_state(CryptoState::STARTING),
+	m_key("", crypto::AesKeyBits::BITS_256),
+	m_not_crypto_list()
+{
+	if (open_type == ConnectionOpenType::PASSIVE_OPEN)
+	{
+		crypto::RsaKeyPair key_pair = crypto::generate_rsa_key_pair();
+		m_private_key = key_pair.private_key;
+		std::string public_key = key_pair.public_key.save_to_string();
+		int content_len = static_cast<int>(public_key.length());
+
+		Package package = PackageManager::instance()->register_package(content_len);
+		PackageHeader::Base& header_base = package.header().base;
+		header_base.command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
+		header_base.content_length = content_len;
+		lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
+						   public_key.c_str(),
+						   public_key.length());
+		m_conn->send_raw_package(package);
+	}
+}
+
+
+void SecureConnection::send_package(Package package)
+{
+	if (m_crypto_state != CryptoState::STARTED)
+	{
+		m_not_crypto_list.push(package.package_id());
+		return;
+	}
+
+	// Encrypt package.
+	crypto::AesBlockEncryptor encryptor;
+	encryptor.set_key(m_key);
+
+	std::size_t content_len = static_cast<std::size_t>(package.header().base.content_length);
+	std::size_t cipher_len = crypto::aes_cipher_length(content_len);
+
+	lights::Sequence content = package.content();
+	for (std::size_t i = 0; i + crypto::AES_BLOCK_SIZE <= cipher_len; i += crypto::AES_BLOCK_SIZE)
+	{
+		encryptor.encrypt(&content.at<char>(i));
+	}
+
+	package.set_is_cipher(true);
+
+	m_conn->send_raw_package(package);
+}
+
+
+void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, int read_content_len)
+{
+	PackageHeader& header = receive_buffer.header();
 	switch (m_crypto_state)
 	{
 		case CryptoState::STARTING:
 		{
 			auto cmd = static_cast<BuildinCommand>(header.base.command);
-			if (m_open_type == PASSIVE_OPEN && cmd == BuildinCommand::RSP_START_CRYPTO)
+			if (m_open_type == ConnectionOpenType::PASSIVE_OPEN && cmd == BuildinCommand::RSP_START_CRYPTO)
 			{
-				std::string cipher(m_receive_buffer.content_data(), static_cast<std::size_t>(header.base.content_length));
+				std::string
+					cipher(receive_buffer.content_data(), static_cast<std::size_t>(header.base.content_length));
 				std::string plain = rsa_decrypt(cipher, m_private_key);
 				m_key.reset(plain, crypto::AesKeyBits::BITS_256);
 				m_crypto_state = CryptoState::STARTED;
 
 				send_not_crypto_package();
 			}
-			else if (m_open_type == ACTIVE_OPEN && cmd == BuildinCommand::REQ_START_CRYPTO)
+			else if (m_open_type == ConnectionOpenType::ACTIVE_OPEN && cmd == BuildinCommand::REQ_START_CRYPTO)
 			{
 				crypto::RsaPublicKey public_key;
-				std::string public_key_str(m_receive_buffer.content_data(),
+				std::string public_key_str(receive_buffer.content_data(),
 										   static_cast<std::size_t>(header.base.content_length));
 				public_key.load_from_string(public_key_str);
 
@@ -421,7 +480,7 @@ void NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 				header_base.content_length = content_len;
 				lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
 								   cipher.c_str(), cipher.length());
-				send_raw_package(package);
+				m_conn->send_raw_package(package);
 
 				// Must set state after send_package, because it depend on this state.
 				m_crypto_state = CryptoState::STARTED;
@@ -432,7 +491,7 @@ void NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 			{
 				// Ignore package when not started crypto.
 				LIGHTS_DEBUG(logger, "Connection {}: Ignore package cmd {}, trigger_package_id {}.",
-							 m_id, header.base.command, header.extend.trigger_package_id);
+							 m_conn->connection_id(), header.base.command, header.extend.trigger_package_id);
 			}
 			break;
 		}
@@ -441,13 +500,13 @@ void NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 		{
 			Package package = PackageManager::instance()->register_package(read_content_len);
 			package.header() = header;
-			lights::SequenceView cipher(m_receive_buffer.content_data(), static_cast<std::size_t>(read_content_len));
+			lights::SequenceView cipher(receive_buffer.content_data(), static_cast<std::size_t>(read_content_len));
 			crypto::aes_decrypt(cipher, package.content_buffer(), m_key);
 
 			NetworkMessage msg;
-			msg.conn_id = m_id;
+			msg.conn_id = m_conn->connection_id();
 			msg.package_id = package.package_id();
-			NetworkService* service = NetworkServiceManager::instance()->find_service_by_connection(m_id);
+			NetworkService* service = NetworkServiceManager::instance()->find_service_by_connection(m_conn->connection_id());
 			if (service != nullptr)
 			{
 				msg.service_id = service->service_id;
@@ -459,40 +518,14 @@ void NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 }
 
 
-void NetworkConnectionImpl::close_without_waiting()
+int SecureConnection::get_content_length(int raw_length)
 {
-	delete this;
+	auto plain_len = static_cast<std::size_t>(raw_length);
+	return static_cast<int>(crypto::aes_cipher_length(plain_len));
 }
 
 
-void NetworkConnectionImpl::send_raw_package(Package package)
-{
-	LIGHTS_DEBUG(logger, "Connection {}: Send package cmd {}, trigger_package_id {}.",
-				 m_id, package.header().base.command, package.header().extend.trigger_package_id);
-
-	if (!m_send_list.empty())
-	{
-		m_send_list.push(package.package_id());
-		return;
-	}
-
-	int len = static_cast<int>(package.valid_length());
-	m_send_len = m_socket.sendBytes(package.data(), len);
-	if (m_send_len == len)
-	{
-		m_send_len = 0;
-		PackageManager::instance()->remove_package(package.package_id());
-	}
-	else if (m_send_len < len)
-	{
-		m_send_list.push(package.package_id());
-		SafeObserver<NetworkConnectionImpl, WritableNotification> observer(*this, &NetworkConnectionImpl::on_writable, m_id);
-		m_reactor.addEventHandler(m_socket, observer);
-	}
-}
-
-
-void NetworkConnectionImpl::send_not_crypto_package()
+void SecureConnection::send_not_crypto_package()
 {
 	while (!m_not_crypto_list.empty())
 	{
@@ -633,7 +666,7 @@ NetworkManagerImpl::~NetworkManagerImpl()
 NetworkConnectionImpl& NetworkManagerImpl::register_connection(const std::string& host, unsigned short port)
 {
 	StreamSocket stream_socket(SocketAddress(host, port));
-	auto conn_impl = new NetworkConnectionImpl(stream_socket, m_reactor, NetworkConnectionImpl::ACTIVE_OPEN);
+	auto conn_impl = new NetworkConnectionImpl(stream_socket, m_reactor, ConnectionOpenType::ACTIVE_OPEN);
 	return *conn_impl;
 }
 
@@ -685,7 +718,7 @@ void NetworkManagerImpl::stop_all()
 	// Cannot use iterator to for each to close, because close will erase itself on m_conn_list.
 	while (!m_conn_list.empty())
 	{
-		NetworkConnectionImpl* conn =  m_conn_list.begin()->second;
+		NetworkConnectionImpl* conn = m_conn_list.begin()->second;
 		conn->close();
 	}
 	m_conn_list.clear();
