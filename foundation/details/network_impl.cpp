@@ -112,7 +112,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 	m_is_closing(false),
 	security_setting(SecuritySetting::OPEN_SECURITY),
 	m_secure_conn(nullptr),
-	m_pending_list()
+	m_pending_list(nullptr)
 {
 	// Set send and receive operation is non-blocking.
 	m_socket.setBlocking(false);
@@ -146,7 +146,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 							   sizeof(security_setting));
 			send_raw_package(package);
 
-			// Start crypto connection.
+			// Start secure connection.
 			if (security_setting == SecuritySetting::OPEN_SECURITY)
 			{
 				m_secure_conn = new SecureConnection(this);
@@ -202,6 +202,14 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 	catch (...)
 	{
 		LIGHTS_ERROR(logger, "Connection {}: Destroy unknown error.", m_id);
+	}
+
+
+	// Remove pending list.
+	if (m_pending_list != nullptr)
+	{
+		delete m_pending_list;
+		m_pending_list = nullptr;
 	}
 
 	// Close secure connection.
@@ -272,7 +280,11 @@ void NetworkConnectionImpl::send_package(Package package)
 	{
 		if (m_is_opening)
 		{
-			m_pending_list.push(package.package_id());
+			if (m_pending_list == nullptr)
+			{
+				m_pending_list = new std::queue<int>();
+			}
+			m_pending_list->push(package.package_id());
 		}
 		else
 		{
@@ -500,6 +512,7 @@ bool NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 		SecuritySetting setting = *reinterpret_cast<SecuritySetting*>(m_receive_buffer.content_data());
 		if (setting == SecuritySetting::OPEN_SECURITY)
 		{
+			LIGHTS_ASSERT(m_secure_conn == nullptr && "Cannot create secure connection multiple times");
 			m_secure_conn = new SecureConnection(this); // NOTE: because send_all_pending_package is dependent on this.
 		}
 
@@ -533,16 +546,24 @@ bool NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 
 void NetworkConnectionImpl::send_all_pending_package()
 {
-	while (!m_pending_list.empty())
+	if (m_pending_list == nullptr)
 	{
-		int package_id = m_pending_list.front();
-		m_pending_list.pop();
+		return;
+	}
+
+	while (!m_pending_list->empty())
+	{
+		int package_id = m_pending_list->front();
+		m_pending_list->pop();
 		Package package = PackageManager::instance()->find_package(package_id);
 		if (package.is_valid())
 		{
 			send_package(package);
 		}
 	}
+
+	delete m_pending_list;
+	m_pending_list = nullptr;
 }
 
 
@@ -554,15 +575,16 @@ void NetworkConnectionImpl::close_without_waiting()
 
 SecureConnection::SecureConnection(NetworkConnectionImpl* conn) :
 	m_conn(conn),
-	m_crypto_state(CryptoState::STARTING),
-	m_key("", crypto::AesKeyBits::BITS_256),
-	m_pending_list()
+	m_state(State::STARTING),
+	m_private_key(nullptr),
+	m_aes_key("", crypto::AesKeyBits::BITS_256),
+	m_pending_list(nullptr)
 {
 	if (m_conn->open_type() == ConnectionOpenType::PASSIVE_OPEN)
 	{
 		// Generate RSA key pair.
 		crypto::RsaKeyPair key_pair = crypto::generate_rsa_key_pair();
-		m_private_key = key_pair.private_key;
+		m_private_key = new crypto::RsaPrivateKey(key_pair.private_key);
 		std::string public_key = key_pair.public_key.save_to_string();
 		int content_len = static_cast<int>(public_key.length());
 
@@ -580,18 +602,38 @@ SecureConnection::SecureConnection(NetworkConnectionImpl* conn) :
 }
 
 
+SecureConnection::~SecureConnection()
+{
+	if (m_private_key != nullptr)
+	{
+		delete m_private_key;
+		m_private_key = nullptr;
+	}
+
+	if (m_pending_list != nullptr)
+	{
+		delete m_pending_list;
+		m_pending_list = nullptr;
+	}
+}
+
+
 void SecureConnection::send_package(Package package)
 {
 	// Delay to send.
-	if (m_crypto_state != CryptoState::STARTED)
+	if (m_state != State::STARTED)
 	{
-		m_pending_list.push(package.package_id());
+		if (m_pending_list == nullptr)
+		{
+			m_pending_list = new std::queue<int>();
+		}
+		m_pending_list->push(package.package_id());
 		return;
 	}
 
 	// Encrypt package.
 	crypto::AesBlockEncryptor encryptor;
-	encryptor.set_key(m_key);
+	encryptor.set_key(m_aes_key);
 
 	std::size_t content_len = static_cast<std::size_t>(package.header().base.content_length);
 	std::size_t cipher_len = crypto::aes_cipher_length(content_len);
@@ -611,19 +653,26 @@ void SecureConnection::send_package(Package package)
 void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, int read_content_len)
 {
 	PackageHeader& header = receive_buffer.header();
-	switch (m_crypto_state)
+	switch (m_state)
 	{
-		case CryptoState::STARTING:
+		case State::STARTING:
 		{
 			ConnectionOpenType open_type = m_conn->open_type();
 			auto cmd = static_cast<BuildinCommand>(header.base.command);
 			if (open_type== ConnectionOpenType::PASSIVE_OPEN && cmd == BuildinCommand::RSP_START_CRYPTO)
 			{
+				LIGHTS_ASSERT(m_private_key != nullptr && "Have not store private key");
+
 				// Get AES key.
 				std::string cipher(receive_buffer.content_data(), static_cast<std::size_t>(header.base.content_length));
-				std::string plain = rsa_decrypt(cipher, m_private_key);
-				m_key.reset(plain, crypto::AesKeyBits::BITS_256);
-				m_crypto_state = CryptoState::STARTED; // NOTE: send_all_pending_package is dependent on this.
+				std::string plain = rsa_decrypt(cipher, *m_private_key);
+				m_aes_key.reset(plain, crypto::AesKeyBits::BITS_256);
+
+				// Remove key, because it's not necessary.
+				delete m_private_key;
+				m_private_key = nullptr;
+
+				m_state = State::STARTED; // NOTE: send_all_pending_package is dependent on this.
 
 				// Re-send all pending package again.
 				send_all_pending_package();
@@ -637,10 +686,10 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 				public_key.load_from_string(public_key_str);
 
 				// Generate random AES key.
-				m_key.reset(crypto::AesKeyBits::BITS_256);
+				m_aes_key.reset(crypto::AesKeyBits::BITS_256);
 
 				// Encrypt AES key.
-				std::string cipher = rsa_encrypt(m_key.get_value(), public_key);
+				std::string cipher = rsa_encrypt(m_aes_key.get_value(), public_key);
 				int content_len = static_cast<int>(cipher.length());
 
 				// Send cipher AES key to peer.
@@ -652,7 +701,7 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 								   cipher.c_str(), cipher.length());
 				m_conn->send_raw_package(package);
 
-				m_crypto_state = CryptoState::STARTED; // NOTE: send_all_pending_package is dependent on this.
+				m_state = State::STARTED; // NOTE: send_all_pending_package is dependent on this.
 
 				// Re-send all pending package again.
 				send_all_pending_package();
@@ -666,13 +715,13 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 			break;
 		}
 
-		case CryptoState::STARTED:
+		case State::STARTED:
 		{
 			// Decrypt package.
 			Package package = PackageManager::instance()->register_package(read_content_len);
 			package.header() = header;
 			lights::SequenceView cipher(receive_buffer.content_data(), static_cast<std::size_t>(read_content_len));
-			crypto::aes_decrypt(cipher, package.content_buffer(), m_key);
+			crypto::aes_decrypt(cipher, package.content_buffer(), m_aes_key);
 
 			// Push to in queue.
 			NetworkMessage msg;
@@ -693,16 +742,24 @@ int SecureConnection::get_content_length(int raw_length)
 
 void SecureConnection::send_all_pending_package()
 {
-	while (!m_pending_list.empty())
+	if (m_pending_list == nullptr)
 	{
-		int package_id = m_pending_list.front();
-		m_pending_list.pop();
+		return;
+	}
+
+	while (!m_pending_list->empty())
+	{
+		int package_id = m_pending_list->front();
+		m_pending_list->pop();
 		Package package = PackageManager::instance()->find_package(package_id);
 		if (package.is_valid())
 		{
 			send_package(package);
 		}
 	}
+
+	delete m_pending_list;
+	m_pending_list = nullptr;
 }
 
 

@@ -154,7 +154,7 @@ private:
 	bool m_is_closing;
 	SecuritySetting security_setting;
 	SecureConnection* m_secure_conn;
-	std::queue<int> m_pending_list;
+	std::queue<int>* m_pending_list;
 };
 
 
@@ -168,6 +168,11 @@ public:
 	 * Creates secure connection.
 	 */
 	explicit SecureConnection(NetworkConnectionImpl* conn);
+
+	/**
+	 * Destroys secure connection.
+	 */
+	~SecureConnection();
 
 	/**
 	 * Sends package.
@@ -185,7 +190,7 @@ public:
 	int get_content_length(int raw_length);
 
 private:
-	enum class CryptoState
+	enum class State
 	{
 		STARTING,
 		STARTED,
@@ -197,10 +202,10 @@ private:
 	void send_all_pending_package();
 
 	NetworkConnectionImpl* m_conn;
-	CryptoState m_crypto_state;
-	crypto::RsaPrivateKey m_private_key;
-	crypto::AesKey m_key;
-	std::queue<int> m_pending_list;
+	State m_state;
+	crypto::RsaPrivateKey* m_private_key;
+	crypto::AesKey m_aes_key;
+	std::queue<int>* m_pending_list;
 };
 
 
@@ -229,12 +234,12 @@ private:
 	void process_out_message();
 
 	/**
-	 * Send package by network message.
+	 * Sends package by network message.
 	 */
 	void send_package(const NetworkMessage& msg);
 
 	/**
-	 * Call function safety.
+	 * Calls function safety.
 	 */
 	bool safe_call_delegate(std::function<void()> function, lights::StringView caller);
 };
