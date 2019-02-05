@@ -1,12 +1,12 @@
 # Spaceless
-Spaceless is file sharing program that can protect transferring data.
+Spaceless is file sharing program that is extendable and secure.
 
 ## Features
 - Support user and group to sharing file.
 - Support transferring from the point of interruption.
 - Support secure transfer.
 
-## Architeture
+## Architecture
 - client: provide basic feature using.
 - resource server: manage user, group and storage node.
 - storage node: provide storage to resource server.

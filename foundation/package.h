@@ -36,7 +36,7 @@ struct PackageHeader
 		short version;
 		// Indicates how of use content.
 		int command;
-		// The length of content.
+		// The length of content. If content have padding will not include it.
 		int content_length;
 	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
 

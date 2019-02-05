@@ -147,7 +147,9 @@ public:
 	/**
 	 * Registers network listener.
 	 */
-	void register_listener(const std::string& host, unsigned short port);
+	void register_listener(const std::string& host,
+						   unsigned short port,
+						   SecuritySetting security_setting = SecuritySetting::OPEN_SECURITY);
 
 	/**
 	 * Removes network connection.

@@ -251,10 +251,12 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		}
 		else
 		{
-			LIGHTS_ERROR(logger, "Connection {}: cmd {} not fit with conn_id {}, cmd {}.",
+			LIGHTS_ERROR(logger, "Connection {}: service_id {}, cmd {} not fit with conn_id {}, service_id {}, cmd {}.",
 						 conn_id,
+						 msg.service_id,
 						 command,
 						 waiting_trans->waiting_connection_id(),
+						 waiting_trans->waiting_service_id(),
 						 waiting_trans->waiting_command());
 		}
 

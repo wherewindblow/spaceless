@@ -57,7 +57,7 @@ int main(int argc, const char* argv[])
 		unsigned short port = static_cast<unsigned short>(std::stoi(argv[3]));
 
 		SharingFileManager::instance()->set_sharing_path(sharing_path);
-		NetworkManager::instance()->register_listener(ip, port);
+		NetworkManager::instance()->register_listener(ip, port, SecuritySetting::CLOSE_SECURITY);
 
 		SPACELESS_REG_ONE_TRANS(protocol::ReqNodePutFileSession, transaction::on_put_file_session)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqPutFile, transaction::on_put_file)

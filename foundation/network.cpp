@@ -87,9 +87,9 @@ NetworkConnection NetworkManager::register_connection(const std::string& host, u
 }
 
 
-void NetworkManager::register_listener(const std::string& host, unsigned short port)
+void NetworkManager::register_listener(const std::string& host, unsigned short port, SecuritySetting security_setting)
 {
-	p_impl->register_listener(host, port);
+	p_impl->register_listener(host, port, security_setting);
 }
 
 

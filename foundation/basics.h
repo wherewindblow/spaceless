@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <cstdint>
+
+
 /**
  * Generate instance method of class.
  */
@@ -53,9 +56,16 @@ enum
 enum class BuildinCommand
 {
 	NTF_INVALID_VERSION = 1,
-	REQ_START_CRYPTO = 2,
-	RSP_START_CRYPTO = 3,
+	NTF_SECURITY_SETTING = 2,
+	REQ_START_CRYPTO = 3,
+	RSP_START_CRYPTO = 4,
 	MAX = 1000,
+};
+
+enum class SecuritySetting: std::uint8_t
+{
+	CLOSE_SECURITY = 1,
+	OPEN_SECURITY = 2,
 };
 
 } // namespace spaceless

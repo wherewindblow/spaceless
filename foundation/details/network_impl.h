@@ -7,6 +7,7 @@
 #pragma once
 
 #include <queue>
+#include <set>
 
 #include <crypto/rsa.h>
 #include <Poco/Net/SocketAcceptor.h>
@@ -74,6 +75,11 @@ public:
 	int connection_id() const;
 
 	/**
+	 * Returns open type.
+	 */
+	ConnectionOpenType open_type() const;
+
+	/**
 	 * Sends raw package to remote asynchronously.
 	 */
 	void send_raw_package(Package package);
@@ -124,7 +130,12 @@ private:
 	/**
 	 * On read a complete package event.
 	 */
-	void on_read_complete_package(int read_content_len);
+	bool on_read_complete_package(int read_content_len);
+
+	/**
+	 * Sends all pending package.
+	 */
+	void send_all_pending_package();
 
 	/**
 	 * Closes connection without waiting.
@@ -134,13 +145,17 @@ private:
 	int m_id;
 	StreamSocket m_socket;
 	SocketReactor& m_reactor;
+	ConnectionOpenType m_open_type;
 	PackageBuffer m_receive_buffer;
 	int m_receive_len;
 	ReadState m_read_state;
 	std::queue<int> m_send_list;
 	int m_send_len;
+	bool m_is_opening;
 	bool m_is_closing;
+	SecuritySetting security_setting;
 	SecureConnection* m_secure_conn;
+	std::queue<int> m_pending_list;
 };
 
 
@@ -153,7 +168,7 @@ public:
 	/**
 	 * Creates secure connection.
 	 */
-	SecureConnection(NetworkConnectionImpl* conn, ConnectionOpenType open_type);
+	explicit SecureConnection(NetworkConnectionImpl* conn);
 
 	/**
 	 * Sends package.
@@ -178,16 +193,15 @@ private:
 	};
 
 	/**
-	 * Sends all not crypto package.
+	 * Sends all pending package.
 	 */
-	void send_not_crypto_package();
+	void send_all_pending_package();
 
 	NetworkConnectionImpl* m_conn;
-	ConnectionOpenType m_open_type;
 	CryptoState m_crypto_state;
 	crypto::RsaPrivateKey m_private_key;
 	crypto::AesKey m_key;
-	std::queue<int> m_not_crypto_list;
+	std::queue<int> m_pending_list;
 };
 
 
@@ -248,7 +262,7 @@ public:
 	/**
 	 * Registers network listener.
 	 */
-	void register_listener(const std::string& host, unsigned short port);
+	void register_listener(const std::string& host, unsigned short port, SecuritySetting security_setting);
 
 	/**
 	 * Removes network connection.
@@ -297,12 +311,14 @@ private:
 	 */
 	void on_destroy_connection(int conn_id);
 
+	SecuritySetting get_security_setting(const std::string& address);
+
 	int m_next_id = 1;
 	std::map<int, NetworkConnectionImpl*> m_conn_list;
 	std::list<SocketAcceptor<NetworkConnectionImpl>> m_acceptor_list;
+	std::set<std::string> m_secure_listener_list;
 	NetworkReactor m_reactor;
 };
-
 
 } // namespace details
 } // namespace spaceless
