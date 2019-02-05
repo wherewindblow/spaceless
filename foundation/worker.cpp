@@ -15,7 +15,7 @@
 
 #include "log.h"
 #include "package.h"
-#include "network.h"
+#include "network_message.h"
 #include "transaction.h"
 #include "monitor.h"
 

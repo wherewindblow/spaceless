@@ -1,14 +1,13 @@
 #include <iostream>
 #include <thread>
 
+#include <lights/ostream.h>
 #include <foundation/network.h>
 #include <foundation/transaction.h>
 #include <foundation/scheduler.h>
 #include <foundation/log.h>
 #include <foundation/configuration.h>
 #include <protocol/all.h>
-
-#include <lights/ostream.h>
 
 #include "core.h"
 

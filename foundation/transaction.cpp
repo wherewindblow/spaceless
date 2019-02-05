@@ -10,7 +10,7 @@
 #include <protocol/all.h>
 
 #include "log.h"
-#include "network.h"
+#include "network_message.h"
 #include "worker.h"
 
 

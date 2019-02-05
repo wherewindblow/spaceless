@@ -5,8 +5,7 @@
  */
 
 #include "delegation.h"
-
-#include "network.h"
+#include "network_message.h"
 
 
 namespace spaceless {
