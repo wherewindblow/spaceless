@@ -99,7 +99,7 @@ public:
 	}
 
 	/**
-	 * Returns package header of buffer.
+	 * Returns package header.
 	 */
 	PackageHeader& header()
 	{
@@ -107,11 +107,27 @@ public:
 	}
 
 	/**
-	 * Returns content buffer.
+	 * Returns package header.
 	 */
-	lights::Sequence content_buffer()
+	const PackageHeader& header() const
 	{
-		return {m_buffer + HEADER_LEN, MAX_CONTENT_LEN};
+		return *reinterpret_cast<const PackageHeader*>(m_buffer);
+	}
+
+	/**
+	 * Returns package content.
+	 */
+	lights::Sequence content()
+	{
+		return {m_buffer + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
+	}
+
+	/**
+	 * Returns package content.
+	 */
+	lights::SequenceView content() const
+	{
+		return {m_buffer + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
 	}
 
 	/**
@@ -122,18 +138,20 @@ public:
 		return m_buffer;
 	}
 
-	char* content_data()
+	/**
+	 * Returns underlying storage buffer data.
+	 */
+	const char* data() const
 	{
-		return m_buffer + HEADER_LEN;
+		return m_buffer;
 	}
 
 	/**
 	 * Returns header and content length.
 	 */
-	std::size_t total_length() const
+	std::size_t valid_length() const
 	{
-		auto header = reinterpret_cast<const PackageHeader*>(m_buffer);
-		return HEADER_LEN + header->base.content_length;
+		return HEADER_LEN + header().base.content_length;
 	}
 
 private:
@@ -150,16 +168,21 @@ class Package
 public:
 	static const std::size_t HEADER_LEN = sizeof(PackageHeader);
 
+	using LengthCalculator = std::size_t (*)(std::size_t);
+
 	struct Entry
 	{
 		Entry(int id, std::size_t length, char* data):
-			id(id), length(length), is_cipher(false), data(data)
+			id(id),
+			length(length),
+			data(data),
+			length_calculator()
 		{}
 
 		int id;
 		std::size_t length;
-		bool is_cipher;
 		char* data;
+		LengthCalculator length_calculator;
 	};
 
 	/**
@@ -186,23 +209,15 @@ public:
 	}
 
 	/**
-	 * Sets content is cipher.
+	 * Sets length calculator to calculate content length.
 	 */
-	void set_is_cipher(bool is_cipher)
+	void set_calculate_length(LengthCalculator length_calculator)
 	{
-		m_entry->is_cipher = is_cipher;
+		m_entry->length_calculator = length_calculator;
 	}
 
 	/**
-	 * Returns is cipher.
-	 */
-	bool is_cipher() const
-	{
-		return m_entry->is_cipher;
-	}
-
-	/**
-	 * Returns package header of buffer.
+	 * Returns package header.
 	 */
 	PackageHeader& header()
 	{
@@ -210,7 +225,7 @@ public:
 	}
 
 	/**
-	 * Returns package header of buffer.
+	 * Returns package header.
 	 */
 	const PackageHeader& header() const
 	{
@@ -272,13 +287,14 @@ public:
 	 */
 	std::size_t valid_length() const
 	{
-		if (m_entry->is_cipher)
+		int content_len = header().base.content_length;
+		if (m_entry->length_calculator)
 		{
-			return HEADER_LEN + crypto::aes_cipher_length(static_cast<std::size_t>(header().base.content_length));
+			return HEADER_LEN + m_entry->length_calculator(static_cast<size_t>(content_len));
 		}
 		else
 		{
-			return HEADER_LEN + header().base.content_length;
+			return HEADER_LEN + content_len;
 		}
 	}
 

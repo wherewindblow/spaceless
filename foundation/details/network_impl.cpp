@@ -141,7 +141,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 			PackageHeader::Base& header_base = package.header().base;
 			header_base.command = static_cast<int>(BuildinCommand::NTF_SECURITY_SETTING);
 			header_base.content_length = content_len;
-			lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
+			lights::copy_array(static_cast<char*>(package.content_buffer().data()),
 							   reinterpret_cast<const char*>(&security_setting),
 							   sizeof(security_setting));
 			send_raw_package(package);
@@ -472,7 +472,7 @@ void NetworkConnectionImpl::read_for_state()
 					m_receive_len = 0;
 					m_read_state = ReadState::READ_HEADER;
 
-					if (!on_read_complete_package(read_content_len))
+					if (!on_read_complete_package(m_receive_buffer))
 					{
 						return;
 					}
@@ -484,9 +484,9 @@ void NetworkConnectionImpl::read_for_state()
 }
 
 
-bool NetworkConnectionImpl::on_read_complete_package(int read_content_len)
+bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& package_buffer)
 {
-	PackageHeader& header = m_receive_buffer.header();
+	const PackageHeader& header = package_buffer.header();
 	int cmd = header.base.command;
 	LIGHTS_DEBUG(logger, "Connection {}: Receive package cmd {}, trigger_package_id {}.",
 				 m_id, cmd, header.extend.trigger_package_id);
@@ -508,9 +508,17 @@ bool NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 			return false;
 		}
 
+		lights::SequenceView content = package_buffer.content();
+		if (content.length() < sizeof(SecuritySetting))
+		{
+			LIGHTS_ERROR(logger, "Connection {}: Security setting content not enough.", m_id);
+			close();
+			return false;
+		}
+
 		m_is_opening = false; // NOTE: send_all_pending_package is dependent on this.
-		SecuritySetting setting = *reinterpret_cast<SecuritySetting*>(m_receive_buffer.content_data());
-		if (setting == SecuritySetting::OPEN_SECURITY)
+		auto setting = static_cast<const SecuritySetting*>(content.data());
+		if (*setting == SecuritySetting::OPEN_SECURITY)
 		{
 			LIGHTS_ASSERT(m_secure_conn == nullptr && "Cannot create secure connection multiple times");
 			m_secure_conn = new SecureConnection(this); // NOTE: because send_all_pending_package is dependent on this.
@@ -529,12 +537,13 @@ bool NetworkConnectionImpl::on_read_complete_package(int read_content_len)
 	// Receive general package.
 	if (m_secure_conn != nullptr)
 	{
-		m_secure_conn->on_read_complete_package(m_receive_buffer, read_content_len);
+		m_secure_conn->on_read_complete_package(package_buffer);
 	}
 	else
 	{
-		Package package = PackageManager::instance()->register_package(read_content_len);
-		lights::copy_array(package.data(), m_receive_buffer.data(), m_receive_buffer.total_length());
+		int content_len = package_buffer.header().base.content_length;
+		Package package = PackageManager::instance()->register_package(content_len);
+		lights::copy_array(package.data(), package_buffer.data(), package_buffer.valid_length());
 
 		NetworkMessage msg;
 		pad_message(msg, m_id, package.package_id());
@@ -593,7 +602,7 @@ SecureConnection::SecureConnection(NetworkConnectionImpl* conn) :
 		PackageHeader::Base& header_base = package.header().base;
 		header_base.command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
 		header_base.content_length = content_len;
-		lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
+		lights::copy_array(static_cast<char*>(package.content_buffer().data()),
 						   public_key.c_str(),
 						   public_key.length());
 
@@ -635,24 +644,25 @@ void SecureConnection::send_package(Package package)
 	crypto::AesBlockEncryptor encryptor;
 	encryptor.set_key(m_aes_key);
 
-	std::size_t content_len = static_cast<std::size_t>(package.header().base.content_length);
-	std::size_t cipher_len = crypto::aes_cipher_length(content_len);
+	int content_len = package.header().base.content_length;
+	std::size_t cipher_len = static_cast<std::size_t>(get_content_length(content_len));
 
+	// In-place encryption that must ensure content have enough memory to do this.
 	lights::Sequence content = package.content();
 	for (std::size_t i = 0; i + crypto::AES_BLOCK_SIZE <= cipher_len; i += crypto::AES_BLOCK_SIZE)
 	{
 		encryptor.encrypt(&content.at<char>(i));
 	}
 
-	package.set_is_cipher(true);
+	package.set_calculate_length(crypto::aes_cipher_length);
 
 	m_conn->send_raw_package(package);
 }
 
 
-void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, int read_content_len)
+void SecureConnection::on_read_complete_package(const PackageBuffer& package_buffer)
 {
-	PackageHeader& header = receive_buffer.header();
+	const PackageHeader& header = package_buffer.header();
 	switch (m_state)
 	{
 		case State::STARTING:
@@ -664,7 +674,8 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 				LIGHTS_ASSERT(m_private_key != nullptr && "Have not store private key");
 
 				// Get AES key.
-				std::string cipher(receive_buffer.content_data(), static_cast<std::size_t>(header.base.content_length));
+				lights::SequenceView content = package_buffer.content();
+				std::string cipher(static_cast<const char*>(content.data()), content.length());
 				std::string plain = rsa_decrypt(cipher, *m_private_key);
 				m_aes_key.reset(plain, crypto::AesKeyBits::BITS_256);
 
@@ -681,8 +692,8 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 			{
 				// Get public key.
 				crypto::RsaPublicKey public_key;
-				std::string public_key_str(receive_buffer.content_data(),
-										   static_cast<std::size_t>(header.base.content_length));
+				lights::SequenceView content = package_buffer.content();
+				std::string public_key_str(static_cast<const char*>(content.data()), content.length());
 				public_key.load_from_string(public_key_str);
 
 				// Generate random AES key.
@@ -697,7 +708,7 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 				PackageHeader::Base& header_base = package.header().base;
 				header_base.command = static_cast<int>(BuildinCommand::RSP_START_CRYPTO);
 				header_base.content_length = content_len;
-				lights::copy_array(reinterpret_cast<char*>(package.content_buffer().data()),
+				lights::copy_array(static_cast<char*>(package.content_buffer().data()),
 								   cipher.c_str(), cipher.length());
 				m_conn->send_raw_package(package);
 
@@ -718,9 +729,11 @@ void SecureConnection::on_read_complete_package(PackageBuffer& receive_buffer, i
 		case State::STARTED:
 		{
 			// Decrypt package.
-			Package package = PackageManager::instance()->register_package(read_content_len);
+			lights::SequenceView content = package_buffer.content();
+			int content_len = get_content_length(static_cast<int>(content.length()));
+			Package package = PackageManager::instance()->register_package(content_len);
 			package.header() = header;
-			lights::SequenceView cipher(receive_buffer.content_data(), static_cast<std::size_t>(read_content_len));
+			lights::SequenceView cipher(content.data(), static_cast<std::size_t>(content_len));
 			crypto::aes_decrypt(cipher, package.content_buffer(), m_aes_key);
 
 			// Push to in queue.

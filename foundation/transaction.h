@@ -331,6 +331,12 @@ void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_sourc
  */
 struct Transaction
 {
+	Transaction(TransactionType trans_type, void* trans_handler, TransactionErrorHandler error_handler) :
+		trans_type(trans_type),
+		trans_handler(trans_handler),
+		error_handler(error_handler)
+	{}
+
 	TransactionType trans_type;
 	void* trans_handler;
 	TransactionErrorHandler error_handler;

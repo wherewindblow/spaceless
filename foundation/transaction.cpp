@@ -375,7 +375,8 @@ void TransactionManager::register_transaction(int cmd,
 											  void* handler,
 											  TransactionErrorHandler error_handler)
 {
-	auto value = std::make_pair(cmd, Transaction {trans_type, handler, error_handler});
+	Transaction trans(trans_type, handler, error_handler);
+	auto value = std::make_pair(cmd, trans);
 	auto result = m_trans_list.insert(value);
 	if (!result.second)
 	{

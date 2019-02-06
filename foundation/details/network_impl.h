@@ -129,7 +129,7 @@ private:
 	/**
 	 * On read a complete package event.
 	 */
-	bool on_read_complete_package(int read_content_len);
+	bool on_read_complete_package(const PackageBuffer& package_buffer);
 
 	/**
 	 * Sends all pending package.
@@ -182,7 +182,7 @@ public:
 	/**
 	 * On read a complete package.
 	 */
-	void on_read_complete_package(PackageBuffer& receive_buffer, int read_content_len);
+	void on_read_complete_package(const PackageBuffer& package_buffer);
 
 	/**
 	 * Gets content length that process with security.
