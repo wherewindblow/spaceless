@@ -35,6 +35,12 @@ enum
 
 struct FileSession
 {
+	FileSession(int session_id, const std::string& filename) :
+		session_id(session_id),
+		filename(filename),
+		max_fragment(0)
+	{}
+
 	int session_id;
 	std::string filename;
 	int max_fragment;

@@ -32,7 +32,7 @@ User& UserManager::register_user(const std::string& username, const std::string&
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
 	}
 
-	User new_user = { m_next_id, username, password };
+	User new_user(m_next_id, username, password);
 	++m_next_id;
 
 	auto value = std::make_pair(new_user.user_id, new_user);
@@ -206,7 +206,9 @@ SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower
 	m_group_name(group_name),
 	m_owner_id(ower_id),
 	m_root_dir_id(root_dir_id),
-	m_storage_node_id(storage_node_id)
+	m_storage_node_id(storage_node_id),
+	m_manager_list(),
+	m_member_list()
 {
 	m_manager_list.push_back(ower_id);
 	m_member_list.push_back(ower_id);
@@ -740,13 +742,7 @@ void StorageNodeManager::register_node(const std::string& ip, unsigned short por
 
 		Delegation::delegate("register_node", Delegation::WORKER, [ip, port, service_id, callback](){
 			auto inst = StorageNodeManager::instance();
-			StorageNode node = {
-				inst->m_next_id,
-				ip,
-				port,
-				service_id,
-				0
-			};
+			StorageNode node(inst->m_next_id, ip, port, service_id);
 			++inst->m_next_id;
 
 			auto value = std::make_pair(node.node_id, node);
@@ -860,18 +856,14 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 														 const std::string& file_path,
 														 int max_fragment)
 {
-	PutFileSession* session_entry = new PutFileSession{
-		m_next_id,
-		user_id,
-		group_id,
-		file_path,
-		max_fragment,
-		0,
-		0,
-	};
+	PutFileSession* session_entry = new PutFileSession(m_next_id,
+													   user_id,
+													   group_id,
+													   file_path,
+													   max_fragment);
 	++m_next_id;
 
-	Session session { SessionType::PUT_SESSION, session_entry };
+	Session session(SessionType::PUT_SESSION, session_entry);
 
 	auto value = std::make_pair(session_entry->session_id, session);
 	auto result = m_session_list.insert(value);
@@ -888,16 +880,10 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 
 GetFileSession& FileSessionManager::register_get_session(int user_id, int group_id, const std::string& file_path)
 {
-	GetFileSession* session_entry = new GetFileSession {
-		m_next_id,
-		user_id,
-		group_id,
-		file_path,
-		0,
-	};
+	GetFileSession* session_entry = new GetFileSession(m_next_id, user_id, group_id, file_path);
 	++m_next_id;
 
-	Session session { SessionType::GET_SESSION, session_entry };
+	Session session(SessionType::GET_SESSION, session_entry);
 
 	auto value = std::make_pair(session_entry->session_id, session);
 	auto result = m_session_list.insert(value);

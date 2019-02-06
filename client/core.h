@@ -22,6 +22,12 @@ extern int conn_id;
 
 struct User
 {
+	User(int user_id, const std::string& username) :
+		user_id(user_id),
+		username(username),
+		group_list()
+	{}
+
 	int user_id;
 	std::string username;
 	std::vector<int> group_list;
@@ -50,8 +56,10 @@ private:
 };
 
 
-class SharingGroup
+struct SharingGroup
 {
+	SharingGroup() = delete; // TODO: How to uses it?
+
 	int m_group_id;
 	std::string m_group_name;
 	int m_owner_id;
@@ -60,8 +68,20 @@ class SharingGroup
 	std::vector<int> m_member_list;
 };
 
+
 struct FileSession
 {
+	FileSession() :
+		session_id(0),
+		local_path(),
+		group_id(0),
+		remote_path(),
+		max_fragment(0),
+		fragment_index(0),
+		start_time(),
+		fragment_state()
+	{}
+
 	int session_id;
 	std::string local_path;
 	int group_id;
@@ -71,6 +91,7 @@ struct FileSession
 	lights::PreciseTime start_time;
 	std::map<int, bool> fragment_state;
 };
+
 
 class SharingGroupManager
 {

@@ -113,7 +113,7 @@ NetworkService& NetworkServiceManager::register_service(const std::string& ip, u
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
 	}
 
-	NetworkService new_service{ m_next_id, ip, port };
+	NetworkService new_service(m_next_id, ip, port);
 	auto value = std::make_pair(m_next_id, new_service);
 	++m_next_id;
 

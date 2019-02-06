@@ -59,11 +59,19 @@ enum
 
 struct User
 {
+	User(int user_id, const std::string& user_name, const std::string& password) :
+		user_id(user_id),
+		user_name(user_name),
+		password(password),
+		group_list(),
+		conn_id(0)
+	{}
+
 	int user_id;
 	std::string user_name;
 	std::string password;
 	std::vector<int> group_list;
-	int conn_id = 0;
+	int conn_id;
 };
 
 
@@ -309,6 +317,14 @@ private:
 
 struct StorageNode
 {
+	StorageNode(int node_id, const std::string& ip, unsigned short port, int service_id) :
+		node_id(node_id),
+		ip(ip),
+		port(port),
+		service_id(service_id),
+		use_counting(0)
+	{}
+
 	int node_id;
 	std::string ip;
 	unsigned short port;
@@ -347,6 +363,16 @@ private:
 
 struct PutFileSession
 {
+	PutFileSession(int session_id, int user_id, int group_id, const std::string file_path, int max_fragment) :
+		session_id(session_id),
+		user_id(user_id),
+		group_id(group_id),
+		file_path(file_path),
+		max_fragment(max_fragment),
+		next_fragment(0),
+		node_session_id(0)
+	{}
+
 	int session_id;
 	int user_id;
 	int group_id;
@@ -356,8 +382,17 @@ struct PutFileSession
 	int node_session_id;
 };
 
+
 struct GetFileSession
 {
+	GetFileSession(int session_id, int user_id, int group_id, const std::string file_path) :
+		session_id(session_id),
+		user_id(user_id),
+		group_id(group_id),
+		file_path(file_path),
+		node_session_id(0)
+	{}
+
 	int session_id;
 	int user_id;
 	int group_id;
@@ -377,6 +412,11 @@ public:
 
 	struct Session
 	{
+		Session(SessionType type, void* entry) :
+			type(type),
+			entry(entry)
+		{}
+
 		SessionType type;
 		void* entry;
 	};

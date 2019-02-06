@@ -129,10 +129,7 @@ FileSession& FileSessionManager::register_session(const std::string& filename)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
-	FileSession new_session;
-	new_session.session_id = m_next_id;
-	new_session.filename = filename;
-	new_session.max_fragment = 0;
+	FileSession new_session(m_next_id, filename);
 	++m_next_id;
 
 	auto value = std::make_pair(new_session.session_id, new_session);

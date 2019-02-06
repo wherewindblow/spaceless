@@ -135,6 +135,12 @@ private:
  */
 struct NetworkService
 {
+	NetworkService(int service_id, const std::string& ip, unsigned short port) :
+		service_id(service_id),
+		ip(ip),
+		port(port)
+	{}
+
 	int service_id;
 	std::string ip;
 	unsigned short port;
