@@ -266,9 +266,9 @@ void NetworkConnectionImpl::send_package(Package package)
 {
 	if (m_is_closing)
 	{
-		// TODO: Remove package.
 		LIGHTS_ERROR(logger, "Connection {}: Send package on closing connection: cmd {}, trigger_package_id {}.",
 					 m_id, package.header().base.command, package.header().extend.trigger_package_id);
+		PackageManager::instance()->remove_package(package.package_id());
 		return;
 	}
 
