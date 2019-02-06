@@ -85,7 +85,7 @@ void Network::send_protocol(int conn_id,
 }
 
 
-void Network::send_back_protobuf(int conn_id,
+void Network::send_back_protocol(int conn_id,
 								 const protocol::Message& msg,
 								 Package trigger_package,
 								 int bind_trans_id)
@@ -98,7 +98,7 @@ void Network::send_back_protobuf(int conn_id,
 }
 
 
-void Network::send_back_protobuf(int conn_id,
+void Network::send_back_protocol(int conn_id,
 								 const protocol::Message& msg,
 								 const PackageTriggerSource& trigger_source,
 								 int bind_trans_id)
@@ -114,13 +114,9 @@ void Network::service_send_package(int service_id, Package package)
 }
 
 
-void Network::service_send_protobuf(int service_id,
-									const protocol::Message& msg,
-									int bind_trans_id,
-									int trigger_package_id,
-									int trigger_cmd)
+void Network::service_send_protocol(int service_id, const protocol::Message& msg, int bind_trans_id)
 {
-	send_protocol(0, msg, bind_trans_id, trigger_package_id, trigger_cmd, service_id);
+	send_protocol(0, msg, bind_trans_id, 0, 0, service_id);
 }
 
 
@@ -220,7 +216,7 @@ void MultiplyPhaseTransaction::service_wait_next_phase(int service_id,
 
 void MultiplyPhaseTransaction::send_back_message(const protocol::Message& msg)
 {
-	Network::send_back_protobuf(m_first_conn_id, msg, m_first_trigger_source);
+	Network::send_back_protocol(m_first_conn_id, msg, m_first_trigger_source);
 }
 
 
@@ -229,7 +225,7 @@ void MultiplyPhaseTransaction::send_back_error(int code)
 	LIGHTS_ERROR(logger, "Connection {}: Error {}.", first_connection_id(), code);
 	protocol::RspError error;
 	error.set_result(code);
-	Network::send_back_protobuf(first_connection_id(), error, m_first_trigger_source);
+	Network::send_back_protocol(first_connection_id(), error, m_first_trigger_source);
 }
 
 
@@ -306,7 +302,7 @@ MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(
 void MultiplyPhaseTransactionManager::remove_transaction(int trans_id)
 {
 	MultiplyPhaseTransaction* trans = find_transaction(trans_id);
-	if (trans)
+	if (trans != nullptr)
 	{
 		delete trans;
 	}
@@ -366,7 +362,7 @@ void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_sourc
 {
 	protocol::RspError error;
 	error.set_result(ex.code());
-	Network::send_back_protobuf(conn_id, error, trigger_source);
+	Network::send_back_protocol(conn_id, error, trigger_source);
 }
 
 

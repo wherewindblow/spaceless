@@ -37,7 +37,7 @@ void on_put_file_session(int conn_id, Package package)
 
 	protocol::RspNodePutFileSession response;
 	response.set_session_id(session->session_id);
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -66,7 +66,7 @@ void on_put_file(int conn_id, Package package)
 	protocol::RspPutFile response;
 	response.set_session_id(request.session_id());
 	response.set_fragment_index(request.fragment_index());
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -85,7 +85,7 @@ void on_get_file_session(int conn_id, Package package)
 	protocol::RspNodeGetFileSession response;
 	response.set_session_id(session->session_id);
 	response.set_max_fragment(session->max_fragment);
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -115,7 +115,7 @@ void on_get_file(int conn_id, Package package)
 		FileSessionManager::instance()->remove_session(session.session_id);
 	}
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 } // namespace transaction

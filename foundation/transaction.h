@@ -25,18 +25,18 @@ class Network
 {
 public:
 	/**
-	 * Sends package to remote on asynchronization.
+	 * Sends package to remote asynchronously.
 	 */
 	static void send_package(int conn_id, Package package, int service_id = 0);
 
 	/**
-	 * Parses protobuf as package buffer and send to remote on asynchronization.
-	 * @param conn_id           Network connection id.
-	 * @param msg               Message of protobuff type.
-	 * @param bind_trans_id     Specific transaction that trigger by response.
-	 * @param trigger_package_id  Transaction id that trigger process. It's only need for send back message.
-	 * @param trigger_cmd       Command that trigger process. It's only need for send back message.
-	 * @param service_id        Network service id. Uses to replace conn_id.
+	 * Parses message as package buffer and send to remote asynchronously.
+	 * @param conn_id            Network connection id.
+	 * @param msg                Protocol message.
+	 * @param bind_trans_id      Specific transaction that trigger by response.
+	 * @param trigger_package_id Transaction id that trigger process. It's only need for send back message.
+	 * @param trigger_cmd        Command that trigger process. It's only need for send back message.
+	 * @param service_id         Network service id. Uses to replace conn_id.
 	 */
 	static void send_protocol(int conn_id,
 							  const protocol::Message& msg,
@@ -46,46 +46,41 @@ public:
 							  int service_id = 0);
 
 	/**
-	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
+	 * Parses message as package buffer and send to remote asynchronously and send back request transaction id.
 	 * @param conn_id         Network connection id.
-	 * @param msg             Message of protobuff type.
+	 * @param msg             Protocol message.
 	 * @param trigger_package The package that trigger current transaction.
 	 * @param bind_trans_id   Specific transaction that trigger by response.
 	 */
-	static void send_back_protobuf(int conn_id,
+	static void send_back_protocol(int conn_id,
 								   const protocol::Message& msg,
 								   Package trigger_package,
 								   int bind_trans_id = 0);
 
 	/**
-	 * Parses protobuf as package buffer and send to remote on asynchronization and send back request transaction id.
+	 * Parses message as package buffer and send to remote asynchronously and send back request transaction id.
 	 * @param conn_id         Network connection id.
-	 * @param msg             Message of protobuff type.
+	 * @param msg             Protocol message.
 	 * @param trigger_source  Package trigger source of trigger current transaction package.
 	 * @param bind_trans_id   Specific transaction that trigger by response.
 	 */
-	static void send_back_protobuf(int conn_id,
+	static void send_back_protocol(int conn_id,
 								   const protocol::Message& msg,
 								   const PackageTriggerSource& trigger_source,
 								   int bind_trans_id = 0);
 
 	/**
-	 * Sends package to remote on asynchronization.
+	 * Sends package to remote asynchronously.
 	 */
 	static void service_send_package(int service_id, Package package);
 
 	/**
-	 * Parses protobuf as package buffer and send to remote on asynchronization.
-	 * @param service_id      Network service id.
-	 * @param msg             Message of protobuff type.
-	 * @param bind_trans_id   Specific transaction that trigger by response.
-	 * @param is_send_back    Is need to return last request associate transaction.
+	 * Parses message as package buffer and send to remote asynchronously.
+	 * @param service_id         Network service id.
+	 * @param msg                Protocol message.
+	 * @param bind_trans_id      Specific transaction that trigger by response.
 	 */
-	static void service_send_protobuf(int service_id,
-									  const protocol::Message& msg,
-									  int bind_trans_id = 0,
-									  int trigger_package_id = 0,
-									  int trigger_cmd = 0);
+	static void service_send_protocol(int service_id, const protocol::Message& msg, int bind_trans_id = 0);
 	
 	/**
 	 * Service only can use to send package, but cannot send back message.

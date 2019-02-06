@@ -32,7 +32,7 @@ void on_ping(int conn_id, Package package)
 	protocol::RspPing response;
 	response.set_second(request.second());
 	response.set_microsecond(request.microsecond());
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -55,7 +55,7 @@ void on_register_user(int conn_id, Package package)
 
 	User& user = UserManager::instance()->register_user(request.username(), request.password());
 	convert_user(user, *response.mutable_user());
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -71,7 +71,7 @@ void on_login_user(int conn_id, Package package)
 		response.set_result(ERR_USER_LOGIN_FALIURE);
 	}
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -83,7 +83,7 @@ void on_remove_user(int conn_id, Package package)
 
 	UserManager::instance()->remove_user(request.user_id());
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -112,7 +112,7 @@ void on_find_user(int conn_id, Package package)
 		response.set_result(ERR_USER_NOT_EXIST);
 	}
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -142,7 +142,7 @@ void on_register_group(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->register_group(user.user_id, request.group_name());
 	response.set_group_id(group.group_id());
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -155,7 +155,7 @@ void on_remove_group(int conn_id, Package package)
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroupManager::instance()->remove_group(user.user_id, request.group_id());
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -186,7 +186,7 @@ void on_find_group(int conn_id, Package package)
 		response.set_result(ERR_GROUP_NOT_EXIST);
 	}
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -200,7 +200,7 @@ void on_join_group(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	group.join_group(user.user_id);
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -221,7 +221,7 @@ void on_assign_as_manager(int conn_id, Package package)
 		group.assign_as_manager(request.user_id());
 	}
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -242,7 +242,7 @@ void on_assign_as_member(int conn_id, Package package)
 		group.assign_as_memeber(request.user_id());
 	}
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -263,7 +263,7 @@ void on_kick_out_user(int conn_id, Package package)
 	}
 	group.kick_out_user(request.user_id());
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -282,7 +282,7 @@ void on_create_path(int conn_id, Package package)
 
 	group.create_path(request.path());
 
-	Network::send_back_protobuf(conn_id, response, package);
+	Network::send_back_protocol(conn_id, response, package);
 }
 
 
@@ -354,7 +354,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 	storage_request.set_max_fragment(session->max_fragment);
 
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
-	Network::service_send_protobuf(storage_node.service_id, storage_request, transaction_id());
+	Network::service_send_protocol(storage_node.service_id, storage_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspNodePutFileSession(), WAIT_STORAGE_NODE);
 }
 
@@ -431,7 +431,7 @@ void PutFileTrans::on_init(int conn_id, Package package)
 	node_request.set_session_id(session.node_session_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
-	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
+	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE);
 }
 
@@ -507,7 +507,7 @@ void GetFileSessionTrans::on_init(int conn_id, Package package)
 	protocol::ReqNodeGetFileSession node_request;
 	node_request.set_file_path(path.filename());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
-	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
+	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspNodeGetFileSession(), WAIT_STORAGE_NODE);
 }
 
@@ -598,7 +598,7 @@ void GetFileTrans::on_init(int conn_id, Package package)
 	node_request.set_session_id(session.node_session_id);
 	node_request.set_fragment_index(request.fragment_index());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
-	Network::service_send_protobuf(storage_node.service_id, node_request, transaction_id());
+	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), WAIT_STORAGE_NODE);
 }
 
