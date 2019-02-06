@@ -103,7 +103,7 @@ void on_find_user(int conn_id, Package package)
 		user = UserManager::instance()->find_user(request.username());
 	}
 
-	if (user)
+	if (user != nullptr)
 	{
 		convert_user(*user, *response.mutable_user());
 	}
@@ -177,7 +177,7 @@ void on_find_group(int conn_id, Package package)
 		group = SharingGroupManager::instance()->find_group(request.group_name());
 	}
 
-	if (group)
+	if (group != nullptr)
 	{
 		convert_group(*group, *response.mutable_group());
 	}

@@ -108,7 +108,7 @@ void NetworkManager::stop()
 NetworkService& NetworkServiceManager::register_service(const std::string& ip, unsigned short port)
 {
 	NetworkService* old_service = find_service(ip, port);
-	if (old_service)
+	if (old_service != nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
 	}
@@ -118,7 +118,7 @@ NetworkService& NetworkServiceManager::register_service(const std::string& ip, u
 	++m_next_id;
 
 	auto result = m_service_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
 	}

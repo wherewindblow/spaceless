@@ -32,7 +32,7 @@ void ManagerMonitor::register_manager(const std::string& name, GetSizeFunction g
 {
 	auto value = std::make_pair(name, get_size_func);
 	auto result = m_manager_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_MONITOR_MANAGER_ALREADY_EXIST);
 	}

@@ -44,7 +44,7 @@ lights::LogLevel to_log_level(lights::StringView str)
 
 LoggerManager::LoggerManager():
 	m_log_sink_ptr(lights::log_sinks::StdoutSink::instance())
-//	m_log_sink_ptr(std::make_shared<lights::log_sinks::SimpleFileSink>(("log"))
+//	m_log_sink_ptr(std::make_shared<lights::log_sinks::SimpleFileSink>("log"))
 {
 }
 
@@ -87,7 +87,7 @@ void LoggerManager::for_each(std::function<void(const std::string&, Logger&)> ca
 Logger& get_logger(const std::string& name)
 {
 	Logger* logger = LoggerManager::instance()->find_logger(name);
-	if (logger)
+	if (logger != nullptr)
 	{
 		return *logger;
 	}

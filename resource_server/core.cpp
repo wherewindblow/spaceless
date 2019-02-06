@@ -27,7 +27,7 @@ static Logger logger = get_logger("core");
 User& UserManager::register_user(const std::string& username, const std::string& password)
 {
 	User* user = find_user(username);
-	if (user)
+	if (user != nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
 	}
@@ -37,7 +37,7 @@ User& UserManager::register_user(const std::string& username, const std::string&
 
 	auto value = std::make_pair(new_user.user_id, new_user);
 	auto result = m_user_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
 	}
@@ -105,7 +105,7 @@ User& UserManager::get_user(const std::string& username)
 bool UserManager::login_user(int user_id, const std::string& password, int conn_id)
 {
 	User* user = find_user(user_id);
-	if (!user)
+	if (user == nullptr)
 	{
 		return false;
 	}
@@ -135,7 +135,7 @@ User* UserManager::find_login_user(int conn_id)
 User& UserManager::get_login_user(int conn_id)
 {
 	User* user = find_login_user(conn_id);
-	if (!user)
+	if (user == nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_LGOIN);
 	}
@@ -346,6 +346,7 @@ int SharingGroup::get_file_id(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
+		// TODO: Check is valid pointer.
 		SharingFile* parent = SharingFileManager::instance()->find_file(parent_dir_id);
 		if (parent->file_type != SharingFile::DIRECTORY)
 		{
@@ -356,7 +357,7 @@ int SharingGroup::get_file_id(const FilePath& path)
 		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file && file->file_name == dir_name)
+			if (file != nullptr && file->file_name == dir_name)
 			{
 				return true;
 			}
@@ -436,6 +437,7 @@ void SharingGroup::create_path(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
+		// TODO: Check is valid pointer.
 		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
 		if (parent->file_type != SharingFile::DIRECTORY)
 		{
@@ -446,7 +448,7 @@ void SharingGroup::create_path(const FilePath& path)
 		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file && file->file_name == dir_name)
+			if (file != nullptr && file->file_name == dir_name)
 			{
 				return true;
 			}
@@ -477,6 +479,7 @@ void SharingGroup::remove_path(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
+		// TODO: Check is valid pointer.
 		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
 		if (parent->file_type != SharingFile::DIRECTORY)
 		{
@@ -487,7 +490,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file && file->file_name == dir_name)
+			if (file != nullptr && file->file_name == dir_name)
 			{
 				return true;
 			}
@@ -529,7 +532,7 @@ const char* group_file_path = "/tmp/";
 SharingGroup& SharingGroupManager::register_group(int user_id, const std::string& group_name)
 {
 	SharingGroup* old_group = find_group(group_name);
-	if (old_group)
+	if (old_group != nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
@@ -542,7 +545,7 @@ SharingGroup& SharingGroupManager::register_group(int user_id, const std::string
 
 	auto value = std::make_pair(new_group.group_id(), new_group);
 	auto result = m_group_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
@@ -651,7 +654,7 @@ SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type, 
 
 	auto value = std::make_pair(sharing_file->file_id, sharing_file);
 	auto result = m_file_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_ALREADY_EXIST);
 	}
@@ -665,7 +668,7 @@ void SharingFileManager::remove_file(int file_id)
 	SharingFile* sharing_file = find_file(file_id);
 	m_file_list.erase(file_id);
 
-	if (sharing_file)
+	if (sharing_file != nullptr)
 	{
 		if (sharing_file->file_type == SharingFile::GENERAL_FILE)
 		{
@@ -747,13 +750,13 @@ void StorageNodeManager::register_node(const std::string& ip, unsigned short por
 
 			auto value = std::make_pair(node.node_id, node);
 			auto result = inst->m_node_list.insert(value);
-			if (result.second == false)
+			if (!result.second)
 			{
 				LIGHTS_ERROR(logger, "Cannot register node {}:{}", ip, port);
 				return;
 			}
 
-			if (callback)
+			if (callback != nullptr)
 			{
 				callback(result.first->second);
 			}
@@ -765,7 +768,7 @@ void StorageNodeManager::register_node(const std::string& ip, unsigned short por
 void StorageNodeManager::remove_node(int node_id)
 {
 	StorageNode* node = find_node(node_id);
-	if (node)
+	if (node != nullptr)
 	{
 		int service_id = node->service_id;
 		Delegation::delegate("remove_node", Delegation::NETWORK, [service_id]() {
@@ -867,7 +870,7 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 
 	auto value = std::make_pair(session_entry->session_id, session);
 	auto result = m_session_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		delete session_entry;
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
@@ -887,7 +890,7 @@ GetFileSession& FileSessionManager::register_get_session(int user_id, int group_
 
 	auto value = std::make_pair(session_entry->session_id, session);
 	auto result = m_session_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		delete session_entry;
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);

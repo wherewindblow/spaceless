@@ -37,7 +37,7 @@ Package PackageManager::register_package(int content_len)
 	++m_next_id;
 
 	auto result = m_package_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
 	}

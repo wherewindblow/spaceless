@@ -124,7 +124,7 @@ lights::FileStream& SharingFileManager::get_file_stream(const std::string& path)
 FileSession& FileSessionManager::register_session(const std::string& filename)
 {
 	FileSession* session = find_session(filename);
-	if (session)
+	if (session != nullptr)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
@@ -134,7 +134,7 @@ FileSession& FileSessionManager::register_session(const std::string& filename)
 
 	auto value = std::make_pair(new_session.session_id, new_session);
 	auto result = m_session_list.insert(value);
-	if (result.second == false)
+	if (!result.second)
 	{
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}

@@ -812,7 +812,7 @@ void NetworkReactor::process_out_message()
 			send_package(msg);
 		}
 
-		if (msg.delegate)
+		if (msg.delegate != nullptr)
 		{
 			safe_call_delegate(msg.delegate, msg.caller);
 		}
@@ -927,7 +927,7 @@ void NetworkManagerImpl::register_listener(const std::string& host,
 void NetworkManagerImpl::remove_connection(int conn_id)
 {
 	NetworkConnectionImpl* conn = find_connection(conn_id);
-	if (conn)
+	if (conn != nullptr)
 	{
 		conn->close();
 	}

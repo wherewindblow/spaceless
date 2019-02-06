@@ -114,7 +114,7 @@ void Worker::process_message(const NetworkMessage& msg)
 		trigger_transaction(msg);
 	}
 
-	if (msg.delegate)
+	if (msg.delegate != nullptr)
 	{
 		safe_call_delegate(msg.delegate, msg.caller);
 	}
@@ -145,7 +145,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 	if (waiting_trans == nullptr) // Create new transaction.
 	{
 		auto trans = TransactionManager::instance()->find_transaction(command);
-		if (trans)
+		if (trans != nullptr)
 		{
 			switch (trans->trans_type)
 			{
@@ -282,7 +282,7 @@ bool Worker::safe_call_trans(int conn_id,
 	{
 		LIGHTS_ERROR(logger, "Connection {}: Exception trans_id {}, error {}/{}.",
 					 conn_id, trans_id, ex.code(), ex);
-		if (error_handler)
+		if (error_handler != nullptr)
 		{
 			try
 			{
@@ -337,7 +337,7 @@ bool Worker::safe_call_trans(int conn_id,
 const std::string& Worker::get_name(int cmd)
 {
 	auto name = protocol::find_message_name(cmd);
-	if (!name)
+	if (name == nullptr)
 	{
 		static const std::string INVALID;
 		return INVALID;

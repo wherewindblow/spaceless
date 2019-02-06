@@ -51,7 +51,7 @@ void Network::send_protocol(int conn_id,
 
 	if (protocol::get_message_name(msg) == "RspError" && trigger_cmd != 0)
 	{
-		// Convert RspError to RspXXX that associate trigger cmd. So dependent on protobuf message name.
+		// Convert RspError to RspXXX that associate trigger cmd. So dependent on protocol message name.
 		auto msg_name = protocol::get_message_name(trigger_cmd);
 		msg_name.replace(0, 3, "Rsp");
 		header.base.command = protocol::get_command(msg_name);
