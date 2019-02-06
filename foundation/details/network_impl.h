@@ -315,6 +315,9 @@ private:
 	 */
 	void on_destroy_connection(int conn_id);
 
+	/**
+	 * Gets security setting from socket address.
+	 */
 	SecuritySetting get_security_setting(const std::string& address);
 
 	int m_next_id = 1;

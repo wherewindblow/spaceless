@@ -293,7 +293,9 @@ MultiplyPhaseTransaction* PutFileSessionTrans::factory(int trans_id)
 
 
 PutFileSessionTrans::PutFileSessionTrans(int trans_id) :
-	MultiplyPhaseTransaction(trans_id) {}
+	MultiplyPhaseTransaction(trans_id),
+	m_session_id(0)
+{}
 
 
 void PutFileSessionTrans::on_init(int conn_id, Package package)
@@ -399,7 +401,9 @@ MultiplyPhaseTransaction* PutFileTrans::factory(int trans_id)
 
 
 PutFileTrans::PutFileTrans(int trans_id) :
-	MultiplyPhaseTransaction(trans_id) {}
+	MultiplyPhaseTransaction(trans_id),
+	m_session_id(0)
+{}
 
 
 void PutFileTrans::on_init(int conn_id, Package package)
@@ -450,7 +454,9 @@ MultiplyPhaseTransaction* GetFileSessionTrans::factory(int trans_id)
 
 
 GetFileSessionTrans::GetFileSessionTrans(int trans_id) :
-	MultiplyPhaseTransaction(trans_id) {}
+	MultiplyPhaseTransaction(trans_id),
+	m_session_id(0)
+{}
 
 
 void GetFileSessionTrans::on_init(int conn_id, Package package)
@@ -549,7 +555,9 @@ MultiplyPhaseTransaction* GetFileTrans::factory(int trans_id)
 
 
 GetFileTrans::GetFileTrans(int trans_id) :
-	MultiplyPhaseTransaction(trans_id) {}
+	MultiplyPhaseTransaction(trans_id),
+	m_session_id(0)
+{}
 
 
 void GetFileTrans::on_init(int conn_id, Package package)

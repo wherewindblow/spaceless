@@ -234,30 +234,51 @@ public:
 		STORAGE_FILE,
 	};
 
-	SharingFile() = default;
+	SharingFile() :
+		file_id(0),
+		file_type(GENERAL_FILE),
+		file_name()
+	{}
+
 	virtual ~SharingFile() = default;
 
-	int file_id = 0;
+	int file_id;
 	FileType file_type;
 	std::string file_name;
 };
 
+
 class SharingGeneralFile: public SharingFile
 {
 public:
-	int storage_file_id = 0; // The underlying storage file id.
+	SharingGeneralFile() :
+		storage_file_id(0)
+	{}
+
+	int storage_file_id; // The underlying storage file id.
 };
+
 
 class SharingStorageFile: public SharingFile
 {
 public:
-	int node_id = 0;
-	int use_counting = 0;
+	SharingStorageFile() :
+		node_id(0),
+		use_counting(0)
+	{}
+
+	int node_id;
+	int use_counting;
 };
+
 
 class SharingDirectory: public SharingFile
 {
 public:
+	SharingDirectory() :
+		file_list()
+	{}
+
 	std::vector<int> file_list;
 };
 

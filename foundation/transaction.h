@@ -238,13 +238,13 @@ public:
 
 private:
 	int m_id;
-	int m_current_phase = 0;
-	int m_first_conn_id = 0;
+	int m_current_phase;
+	int m_first_conn_id;
 	PackageTriggerSource m_first_trigger_source;
-	int m_wait_conn_id = 0;
-	int m_wait_service_id = 0;
-	int m_wait_cmd = 0;
-	bool m_is_waiting = false;
+	int m_wait_conn_id;
+	int m_wait_service_id;
+	int m_wait_cmd;
+	bool m_is_waiting;
 };
 
 

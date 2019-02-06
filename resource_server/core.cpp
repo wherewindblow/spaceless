@@ -620,7 +620,7 @@ SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type, 
 	{
 		case SharingFile::DIRECTORY:
 		{
-			sharing_file = new SharingDirectory;
+			sharing_file = new SharingDirectory();
 			break;
 		}
 		case SharingFile::GENERAL_FILE:

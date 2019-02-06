@@ -70,9 +70,7 @@ struct PackageHeader
 
 struct PackageTriggerSource
 {
-	PackageTriggerSource() = default;
-
-	PackageTriggerSource(int command, int package_id):
+	PackageTriggerSource(int command = 0, int package_id = 0):
 		command(command),
 		package_id(package_id)
 	{}
