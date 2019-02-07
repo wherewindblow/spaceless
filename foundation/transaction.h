@@ -184,6 +184,9 @@ public:
 	 */
 	void send_back_message(const protocol::Message& msg);
 
+	/**
+	 * Sends back error message to first connection.
+	 */
 	void send_back_error(int code);
 
 	/**
@@ -395,10 +398,118 @@ private:
 };
 
 
-#define SPACELESS_REG_ONE_TRANS(protobuf_type, ...) \
-		TransactionManager::instance()->register_one_phase_transaction(protobuf_type(), __VA_ARGS__);
+#define SPACELESS_REG_ONE_TRANS(ProtocolType, ...) \
+		TransactionManager::instance()->register_one_phase_transaction(ProtocolType(), __VA_ARGS__);
 
-#define SPACELESS_REG_MULTIPLE_TRANS(protobuf_type, ...) \
-		TransactionManager::instance()->register_multiply_phase_transaction(protobuf_type(), __VA_ARGS__);
+#define SPACELESS_REG_MULTIPLE_TRANS(ProtocolType, ...) \
+		TransactionManager::instance()->register_multiply_phase_transaction(ProtocolType(), __VA_ARGS__);
+
+
+// ================================= Inline implement. =================================
+
+inline void Network::send_back_protocol(int conn_id,
+										const protocol::Message& msg,
+										Package trigger_package,
+										int bind_trans_id)
+{
+	send_protocol(conn_id,
+				  msg,
+				  bind_trans_id,
+				  trigger_package.header().extend.self_package_id,
+				  trigger_package.header().base.command);
+}
+
+inline void Network::send_back_protocol(int conn_id,
+										const protocol::Message& msg,
+										const PackageTriggerSource& trigger_source,
+										int bind_trans_id)
+{
+	send_protocol(conn_id, msg, bind_trans_id, trigger_source.package_id, trigger_source.command);
+}
+
+inline void Network::service_send_package(int service_id, Package package)
+{
+	send_package(0, package, service_id);
+}
+
+inline void Network::service_send_protocol(int service_id, const protocol::Message& msg, int bind_trans_id)
+{
+	send_protocol(0, msg, bind_trans_id, 0, 0, service_id);
+}
+
+
+inline void MultiplyPhaseTransaction::wait_next_phase(int conn_id,
+													  const protocol::Message& msg,
+													  int current_phase,
+													  int timeout)
+{
+	auto cmd = protocol::get_command(msg);
+	wait_next_phase(conn_id, cmd, current_phase, timeout);
+}
+
+inline void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout)
+{
+	wait_next_phase(0, cmd, current_phase, timeout, service_id);
+}
+
+inline void MultiplyPhaseTransaction::service_wait_next_phase(int service_id,
+															  const protocol::Message& msg,
+															  int current_phase,
+															  int timeout)
+{
+	auto cmd = protocol::get_command(msg);
+	service_wait_next_phase(service_id, cmd, current_phase, timeout);
+}
+
+inline void MultiplyPhaseTransaction::send_back_message(const protocol::Message& msg)
+{
+	Network::send_back_protocol(m_first_conn_id, msg, m_first_trigger_source);
+}
+
+inline int MultiplyPhaseTransaction::transaction_id() const
+{
+	return m_id;
+}
+
+inline int MultiplyPhaseTransaction::current_phase() const
+{
+	return m_current_phase;
+}
+
+inline int MultiplyPhaseTransaction::first_connection_id() const
+{
+	return m_first_conn_id;
+}
+
+inline const PackageTriggerSource& MultiplyPhaseTransaction::first_trigger_source() const
+{
+	return m_first_trigger_source;
+}
+
+inline int MultiplyPhaseTransaction::waiting_connection_id() const
+{
+	return m_wait_conn_id;
+}
+
+inline int MultiplyPhaseTransaction::waiting_service_id() const
+{
+	return m_wait_service_id;
+}
+
+inline int MultiplyPhaseTransaction::waiting_command() const
+{
+	return m_wait_cmd;
+}
+
+inline bool MultiplyPhaseTransaction::is_waiting() const
+{
+	return m_is_waiting;
+}
+
+inline void MultiplyPhaseTransaction::clear_waiting_state()
+{
+	m_is_waiting = false;
+}
+
 
 } // namespace spaceless

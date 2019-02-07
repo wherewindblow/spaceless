@@ -221,18 +221,6 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 }
 
 
-int NetworkConnectionImpl::connection_id() const
-{
-	return m_id;
-}
-
-
-ConnectionOpenType NetworkConnectionImpl::open_type() const
-{
-	return m_open_type;
-}
-
-
 void NetworkConnectionImpl::send_raw_package(Package package)
 {
 	LIGHTS_DEBUG(logger, "Connection {}: Send package cmd {}, trigger_package_id {}.",
@@ -304,12 +292,6 @@ void NetworkConnectionImpl::close()
 
 	// Delay to delete this after send all message. Ensure all message in m_send_list to be send.
 	m_is_closing = true;
-}
-
-
-bool NetworkConnectionImpl::is_open() const
-{
-	return !m_is_closing;
 }
 
 
@@ -573,12 +555,6 @@ void NetworkConnectionImpl::send_all_pending_package()
 
 	delete m_pending_list;
 	m_pending_list = nullptr;
-}
-
-
-void NetworkConnectionImpl::close_without_waiting()
-{
-	delete this;
 }
 
 

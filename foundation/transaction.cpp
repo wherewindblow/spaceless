@@ -85,41 +85,6 @@ void Network::send_protocol(int conn_id,
 }
 
 
-void Network::send_back_protocol(int conn_id,
-								 const protocol::Message& msg,
-								 Package trigger_package,
-								 int bind_trans_id)
-{
-	send_protocol(conn_id,
-				  msg,
-				  bind_trans_id,
-				  trigger_package.header().extend.self_package_id,
-				  trigger_package.header().base.command);
-}
-
-
-void Network::send_back_protocol(int conn_id,
-								 const protocol::Message& msg,
-								 const PackageTriggerSource& trigger_source,
-								 int bind_trans_id)
-{
-	send_protocol(conn_id, msg, bind_trans_id, trigger_source.package_id, trigger_source.command);
-}
-
-
-
-void Network::service_send_package(int service_id, Package package)
-{
-	send_package(0, package, service_id);
-}
-
-
-void Network::service_send_protocol(int service_id, const protocol::Message& msg, int bind_trans_id)
-{
-	send_protocol(0, msg, bind_trans_id, 0, 0, service_id);
-}
-
-
 MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id) :
 	m_id(trans_id),
 	m_current_phase(0),
@@ -191,95 +156,12 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 }
 
 
-void MultiplyPhaseTransaction::wait_next_phase(int conn_id, const protocol::Message& msg, int current_phase, int timeout)
-{
-	auto cmd = protocol::get_command(msg);
-	wait_next_phase(conn_id, cmd, current_phase, timeout);
-}
-
-
-void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout)
-{
-	wait_next_phase(0, cmd, current_phase, timeout, service_id);
-}
-
-
-void MultiplyPhaseTransaction::service_wait_next_phase(int service_id,
-													   const protocol::Message& msg,
-													   int current_phase,
-													   int timeout)
-{
-	auto cmd = protocol::get_command(msg);
-	service_wait_next_phase(service_id, cmd, current_phase, timeout);
-}
-
-
-void MultiplyPhaseTransaction::send_back_message(const protocol::Message& msg)
-{
-	Network::send_back_protocol(m_first_conn_id, msg, m_first_trigger_source);
-}
-
-
 void MultiplyPhaseTransaction::send_back_error(int code)
 {
 	LIGHTS_ERROR(logger, "Connection {}: Error {}.", first_connection_id(), code);
 	protocol::RspError error;
 	error.set_result(code);
 	Network::send_back_protocol(first_connection_id(), error, m_first_trigger_source);
-}
-
-
-int MultiplyPhaseTransaction::transaction_id() const
-{
-	return m_id;
-}
-
-
-int MultiplyPhaseTransaction::current_phase() const
-{
-	return m_current_phase;
-}
-
-
-int MultiplyPhaseTransaction::first_connection_id() const
-{
-	return m_first_conn_id;
-}
-
-
-const PackageTriggerSource& MultiplyPhaseTransaction::first_trigger_source() const
-{
-	return m_first_trigger_source;
-}
-
-
-int MultiplyPhaseTransaction::waiting_connection_id() const
-{
-	return m_wait_conn_id;
-}
-
-
-int MultiplyPhaseTransaction::waiting_service_id() const
-{
-	return m_wait_service_id;
-}
-
-
-int MultiplyPhaseTransaction::waiting_command() const
-{
-	return m_wait_cmd;
-}
-
-
-bool MultiplyPhaseTransaction::is_waiting() const
-{
-	return m_is_waiting;
-}
-
-
-void MultiplyPhaseTransaction::clear_waiting_state()
-{
-	m_is_waiting = false;
 }
 
 

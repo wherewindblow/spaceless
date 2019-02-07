@@ -327,5 +327,28 @@ private:
 	NetworkReactor m_reactor;
 };
 
+
+// ================================= Inline implement. =================================
+
+inline int NetworkConnectionImpl::connection_id() const
+{
+	return m_id;
+}
+
+inline ConnectionOpenType NetworkConnectionImpl::open_type() const
+{
+	return m_open_type;
+}
+
+inline bool NetworkConnectionImpl::is_open() const
+{
+	return !m_is_closing;
+}
+
+inline void NetworkConnectionImpl::close_without_waiting()
+{
+	delete this;
+}
+
 } // namespace details
 } // namespace spaceless
