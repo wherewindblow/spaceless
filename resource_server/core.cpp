@@ -346,15 +346,14 @@ int SharingGroup::get_file_id(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
-		// TODO: Check is valid pointer.
-		SharingFile* parent = SharingFileManager::instance()->find_file(parent_dir_id);
-		if (parent->file_type != SharingFile::DIRECTORY)
+		SharingFile& parent = SharingFileManager::instance()->get_file(parent_dir_id);
+		if (parent.file_type != SharingFile::DIRECTORY)
 		{
 			return INVALID_ID;
 		}
 
-		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
-		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
+		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
+		auto itr = std::find_if(parent_dir.file_list.begin(), parent_dir.file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file != nullptr && file->file_name == dir_name)
@@ -367,7 +366,7 @@ int SharingGroup::get_file_id(const FilePath& path)
 			}
 		});
 
-		if (itr == parent_dir->file_list.end())
+		if (itr == parent_dir.file_list.end())
 		{
 			return INVALID_ID;
 		}
@@ -437,15 +436,14 @@ void SharingGroup::create_path(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
-		// TODO: Check is valid pointer.
-		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
-		if (parent->file_type != SharingFile::DIRECTORY)
+		SharingFile& parent = SharingFileManager::instance()->get_file(parent_id);
+		if (parent.file_type != SharingFile::DIRECTORY)
 		{
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
 		}
 
-		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
-		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
+		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
+		auto itr = std::find_if(parent_dir.file_list.begin(), parent_dir.file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file != nullptr && file->file_name == dir_name)
@@ -458,10 +456,10 @@ void SharingGroup::create_path(const FilePath& path)
 			}
 		});
 
-		if (itr == parent_dir->file_list.end())
+		if (itr == parent_dir.file_list.end())
 		{
 			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, dir_name);
-			parent_dir->file_list.push_back(new_file.file_id);
+			parent_dir.file_list.push_back(new_file.file_id);
 			parent_id = new_file.file_id;
 		}
 		else
@@ -479,15 +477,14 @@ void SharingGroup::remove_path(const FilePath& path)
 	auto result = path.split();
 	for (auto& dir_name: *result)
 	{
-		// TODO: Check is valid pointer.
-		SharingFile* parent = SharingFileManager::instance()->find_file(parent_id);
-		if (parent->file_type != SharingFile::DIRECTORY)
+		SharingFile& parent = SharingFileManager::instance()->get_file(parent_id);
+		if (parent.file_type != SharingFile::DIRECTORY)
 		{
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_INVALID_PATH);
 		}
 
-		auto parent_dir = dynamic_cast<SharingDirectory*>(parent);
-		auto itr = std::find_if(parent_dir->file_list.begin(), parent_dir->file_list.end(), [&dir_name](int file_id)
+		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
+		auto itr = std::find_if(parent_dir.file_list.begin(), parent_dir.file_list.end(), [&dir_name](int file_id)
 		{
 			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
 			if (file != nullptr && file->file_name == dir_name)
@@ -501,7 +498,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		});
 
 		previous_parent_id = parent_id;
-		if (itr == parent_dir->file_list.end())
+		if (itr == parent_dir.file_list.end())
 		{
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
 		}
