@@ -369,7 +369,7 @@ void NetworkConnectionImpl::read_for_state()
 		{
 			case ReadState::READ_HEADER:
 			{
-				int len = m_socket.receiveBytes(m_receive_buffer.data() + m_receive_len,
+				int len = m_socket.receiveBytes(reinterpret_cast<char*>(&m_receive_buffer.header()) + m_receive_len,
 												static_cast<int>(PackageBuffer::HEADER_LEN) - m_receive_len);
 
 				if (len == -1) // Not available bytes in buffer.
@@ -388,10 +388,10 @@ void NetworkConnectionImpl::read_for_state()
 				// Check package version.
 				if (m_receive_len >= static_cast<int>(sizeof(PackageHeader::Base)))
 				{
-					auto read_header_base = reinterpret_cast<PackageHeader::Base*>(m_receive_buffer.data());
-					if (read_header_base->version != PACKAGE_VERSION)
+					PackageHeader::Base& read_header_base = reinterpret_cast<PackageHeader::Base&>(m_receive_buffer.header());
+					if (read_header_base.version != PACKAGE_VERSION)
 					{
-						if (read_header_base->command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
+						if (read_header_base.command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
 						{
 							// Notify peer and logic layer package version is invalid.
 							Package package = PackageManager::instance()->register_package(0);
@@ -433,7 +433,18 @@ void NetworkConnectionImpl::read_for_state()
 
 				if (read_content_len != 0)
 				{
-					int len = m_socket.receiveBytes(m_receive_buffer.data() + PackageBuffer::HEADER_LEN + m_receive_len,
+					auto expect_len = static_cast<std::size_t>(read_content_len);
+					lights::Sequence content = m_receive_buffer.content_buffer(expect_len);
+					if (content.length() < expect_len)
+					{
+						PackageHeader& header = m_receive_buffer.header();
+						LIGHTS_INFO(logger, "Connection {}: Have not enough space to receive package content: cmd {}, len {}, package_id {}.",
+									m_id, header.base.command, header.base.content_length, header.extend.self_package_id);
+						close();
+						return;
+					}
+
+					int len = m_socket.receiveBytes(static_cast<char*>(content.data()) + m_receive_len,
 													read_content_len - m_receive_len);
 					if (len == -1) // Not available bytes in buffer.
 					{

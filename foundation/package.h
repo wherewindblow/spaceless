@@ -86,14 +86,21 @@ struct PackageTriggerSource
 class PackageBuffer
 {
 public:
-	static const std::size_t BUFFER_LEN = 65536;
 	static const std::size_t HEADER_LEN = sizeof(PackageHeader);
-	static const std::size_t MAX_CONTENT_LEN = BUFFER_LEN - HEADER_LEN;
+	// The length can hold any build-in message that before open connection to avoid expand buffer at first time.
+	static const std::size_t STACK_CONTENT_LEN = 320;
+	static const std::size_t STACK_BUFFER_LEN = HEADER_LEN + STACK_CONTENT_LEN;
+	static const std::size_t FIRST_HEAP_BUFFER_LEN = 512;
+	static const std::size_t MAX_BUFFER_LEN = 65536;
+	static const std::size_t MAX_CONTENT_LEN = MAX_BUFFER_LEN - HEADER_LEN;
 
 	/**
 	 * Creates the PackageBuffer.
 	 */
-	PackageBuffer()
+	PackageBuffer() :
+		m_buffer(),
+		m_data(m_buffer),
+		m_length(sizeof(m_buffer))
 	{
 		header().base.version = PACKAGE_VERSION;
 	}
@@ -103,7 +110,7 @@ public:
 	 */
 	PackageHeader& header()
 	{
-		return *reinterpret_cast<PackageHeader*>(m_buffer);
+		return *reinterpret_cast<PackageHeader*>(m_data);
 	}
 
 	/**
@@ -111,7 +118,7 @@ public:
 	 */
 	const PackageHeader& header() const
 	{
-		return *reinterpret_cast<const PackageHeader*>(m_buffer);
+		return *reinterpret_cast<const PackageHeader*>(m_data);
 	}
 
 	/**
@@ -119,7 +126,7 @@ public:
 	 */
 	lights::Sequence content()
 	{
-		return {m_buffer + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
+		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
 	}
 
 	/**
@@ -127,7 +134,17 @@ public:
 	 */
 	lights::SequenceView content() const
 	{
-		return {m_buffer + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
+		return {m_data + HEADER_LEN, static_cast<std::size_t>(header().base.content_length)};
+	}
+
+	/**
+	 * Return package content buffer.
+	 * @note After this operation, any pointer to internal buffer will be invalidate.
+	 */
+	lights::Sequence content_buffer(std::size_t expect_length = 0)
+	{
+		expect_content_length(expect_length);
+		return {m_data + HEADER_LEN, m_length - HEADER_LEN};
 	}
 
 	/**
@@ -135,7 +152,7 @@ public:
 	 */
 	char* data()
 	{
-		return m_buffer;
+		return m_data;
 	}
 
 	/**
@@ -143,7 +160,7 @@ public:
 	 */
 	const char* data() const
 	{
-		return m_buffer;
+		return m_data;
 	}
 
 	/**
@@ -154,8 +171,16 @@ public:
 		return HEADER_LEN + header().base.content_length;
 	}
 
+	/**
+	 * Expects content length.
+	 * @note After this operation, any pointer to internal buffer will be invalidate.
+	 */
+	bool expect_content_length(std::size_t content_length);
+
 private:
-	char m_buffer[BUFFER_LEN];
+	char m_buffer[STACK_BUFFER_LEN];
+	char* m_data;
+	std::size_t m_length;
 };
 
 

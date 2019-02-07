@@ -13,6 +13,41 @@
 
 namespace spaceless {
 
+bool PackageBuffer::expect_content_length(std::size_t content_length)
+{
+	if (m_length - HEADER_LEN >= content_length)
+	{
+		return true;
+	}
+
+	std::size_t old_length = (m_length == STACK_BUFFER_LEN) ? FIRST_HEAP_BUFFER_LEN : m_length;
+	std::size_t new_length = old_length;
+
+	// Align buffer with FIRST_HEAP_BUFFER_LEN.
+	while (new_length - HEADER_LEN < content_length)
+	{
+		new_length = old_length * 2;
+		old_length = new_length;
+	}
+
+	if (new_length > MAX_BUFFER_LEN)
+	{
+		return false;
+	}
+
+	char* old_data = m_data;
+	m_data = new char[new_length];
+	lights::copy_array(m_data, old_data, sizeof(PackageHeader));
+	m_length = new_length;
+
+	if (old_data != m_buffer)
+	{
+		delete[] old_data;
+	}
+	return true;
+}
+
+
 void Package::parse_to_protocol(protocol::Message& msg) const
 {
 	bool ok = protocol::parse_to_message(content(), msg);
@@ -92,6 +127,5 @@ std::size_t PackageManager::size()
 	std::lock_guard<std::mutex> lock(m_mutex);
 	return m_package_list.size();
 }
-
 
 } // namespace spaceless
