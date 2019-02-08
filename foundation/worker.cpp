@@ -129,7 +129,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 	Package package = PackageManager::instance()->find_package(package_id);
 	if (!package.is_valid())
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Package {} already removed.", conn_id, package_id);
+		LIGHTS_ERROR(logger, "Connection {}: Package already removed. package_id={}.", conn_id, package_id);
 		return;
 	}
 
@@ -151,7 +151,8 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 			{
 				case TransactionType::ONE_PHASE_TRANSACTION:
 				{
-					LIGHTS_DEBUG(logger, "Connection {}: Receive cmd {}, name {}.", conn_id, command, get_name(command));
+					LIGHTS_DEBUG(logger, "Connection {}: Receive package. cmd={}, name={}.",
+								 conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTransaction>(trans->trans_handler);
 
 					safe_call_trans(conn_id, 0, package, trans->error_handler, [&]()
@@ -167,7 +168,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 					int trans_id = trans_handler.transaction_id();
 
-					LIGHTS_DEBUG(logger, "Connection {}: Receive cmd {}, name {}, Start trans_id {}.",
+					LIGHTS_DEBUG(logger, "Connection {}: Receive package. cmd={}, name={}. Transaction start. trans_id={}.",
 								 conn_id,
 								 command,
 								 get_name(command),
@@ -186,7 +187,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 
 					if (!trans_handler.is_waiting())
 					{
-						LIGHTS_DEBUG(logger, "Connection {}: End trans_id {}.", conn_id, trans_id);
+						LIGHTS_DEBUG(logger, "Connection {}: Transaction end. trans_id={}.", conn_id, trans_id);
 						MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 					}
 					break;
@@ -198,7 +199,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		}
 		else
 		{
-			LIGHTS_ERROR(logger, "Connection {}: Unknown command {}.", conn_id, command);
+			LIGHTS_ERROR(logger, "Connection {}: Unknown command. cmd={}.", conn_id, command);
 		}
 	}
 	else // Active waiting transaction.
@@ -219,7 +220,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 		if (is_fit_network && command == waiting_trans->waiting_command())
 		{
 			int trans_id = waiting_trans->transaction_id();
-			LIGHTS_DEBUG(logger, "Connection {}: Receive cmd {}, name {}, Active trans_id {}, phase {}.",
+			LIGHTS_DEBUG(logger, "Connection {}: Receive package. cmd={}, name={}. Transaction active. trans_id={}, phase={}.",
 						 conn_id,
 						 command,
 						 get_name(command),
@@ -245,13 +246,14 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 
 			if (!waiting_trans->is_waiting())
 			{
-				LIGHTS_DEBUG(logger, "Connection {}: End trans_id {}.", conn_id, trans_id);
+				LIGHTS_DEBUG(logger, "Connection {}: Transaction end. trans_id={}.", conn_id, trans_id);
 				MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 			}
 		}
 		else
 		{
-			LIGHTS_ERROR(logger, "Connection {}: service_id {}, cmd {} not fit with conn_id {}, service_id {}, cmd {}.",
+			LIGHTS_ERROR(logger, "Connection {}: Not fit with waiting info. "
+				"service_id={}, cmd={}, waiting_conn_id={}, waiting_service_id={}, waiting_cmd={}.",
 						 conn_id,
 						 msg.service_id,
 						 command,
@@ -280,7 +282,7 @@ bool Worker::safe_call_trans(int conn_id,
 	}
 	catch (Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Exception trans_id {}, error {}/{}.",
+		LIGHTS_ERROR(logger, "Connection {}: Exception. trans_id={}, code={}, msg={}.",
 					 conn_id, trans_id, ex.code(), ex);
 		if (error_handler != nullptr)
 		{
@@ -290,45 +292,45 @@ bool Worker::safe_call_trans(int conn_id,
 			}
 			catch (Exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error error {}:{}.", conn_id, ex.code(), ex);
+				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error Exception. code={}, msg={}.", conn_id, ex.code(), ex);
 			}
 			catch (Poco::Exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error Poco error {}:{}.",
+				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error Poco::Exception. name={}, msg={}.",
 								conn_id,
 								ex.name(),
 								ex.message());
 			}
 			catch (std::exception& ex)
 			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error std error {}:{}.",
+				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error std::exception. name={}, msg={}.",
 								conn_id,
 								typeid(ex).name(),
 								ex.what());
 			}
 			catch (...)
 			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error unknown error.", conn_id);
+				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error unknown exception.", conn_id);
 			}
 		}
 	}
 	catch (Poco::Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Transaction Poco error {}:{}.",
+		LIGHTS_ERROR(logger, "Connection {}: Transaction Poco::Exception. name={}, msg={}.",
 						conn_id,
 						ex.name(),
 						ex.message());
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Transaction std error {}:{}.",
+		LIGHTS_ERROR(logger, "Connection {}: Transaction std::exception. name={}, msg={}.",
 						conn_id,
 						typeid(ex).name(),
 						ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Transaction unknown error.", conn_id);
+		LIGHTS_ERROR(logger, "Connection {}: Transaction unknown exception.", conn_id);
 	}
 	return false;
 }
@@ -355,19 +357,19 @@ bool Worker::safe_call_delegate(std::function<void()> function, lights::StringVi
 	}
 	catch (Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: Exception error {}/{}.", caller, ex.code(), ex);
+		LIGHTS_ERROR(logger, "Delegation {}: Exception. code={}, msg={}.", caller, ex.code(), ex);
 	}
 	catch (Poco::Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: Poco error {}:{}.", caller, ex.name(), ex.message());
+		LIGHTS_ERROR(logger, "Delegation {}: Poco::Exception. name={}, msg={}.", caller, ex.name(), ex.message());
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: std error {}:{}.", caller, typeid(ex).name(), ex.what());
+		LIGHTS_ERROR(logger, "Delegation {}: std::exception. name={}, msg={}.", caller, typeid(ex).name(), ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: unknown error.", caller);
+		LIGHTS_ERROR(logger, "Delegation {}: unknown exception.", caller);
 	}
 	return false;
 }

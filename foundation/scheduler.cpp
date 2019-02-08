@@ -32,9 +32,9 @@ int catch_signal(int signal_num, void (* signal_handler)(int))
 
 void safe_exit(int signal_num)
 {
-	LIGHTS_INFO(logger, "Start exiting by signal {}.", signal_num);
+	LIGHTS_INFO(logger, "Start exiting by signal. signal_num={}.", signal_num);
 	Scheduler::instance()->stop();
-	LIGHTS_INFO(logger, "Finish exiting by signal {}.", signal_num);
+	LIGHTS_INFO(logger, "Finish exiting by signal. signal_num={}.", signal_num);
 }
 
 } // namespace details

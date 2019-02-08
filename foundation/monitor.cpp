@@ -22,7 +22,7 @@ ManagerMonitor::ManagerMonitor()
 	{
 		for (auto& pair : m_manager_list)
 		{
-			LIGHTS_INFO(logger, "Manager {}, size {}.", pair.first, pair.second());
+			LIGHTS_INFO(logger, "Manager={}, size={}.", pair.first, pair.second());
 		}
 	}, TimerCallPolicy::CALL_FREQUENTLY);
 }

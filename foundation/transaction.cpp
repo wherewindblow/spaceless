@@ -42,7 +42,7 @@ void Network::send_protocol(int conn_id,
 	int size = protocol::get_message_size(msg);
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		LIGHTS_ERROR(logger, "{} {}: Content length {} is too large.", target_type, target_id, size)
+		LIGHTS_ERROR(logger, "{} {}: Content length is too large. length={}.", target_type, target_id, size)
 		return;
 	}
 
@@ -55,13 +55,13 @@ void Network::send_protocol(int conn_id,
 		auto msg_name = protocol::get_message_name(trigger_cmd);
 		msg_name.replace(0, 3, "Rsp");
 		header.base.command = protocol::get_command(msg_name);
-		LIGHTS_DEBUG(logger, "{} {}: Send cmd {}, name {}.", target_type, target_id, header.base.command, msg_name);
+		LIGHTS_DEBUG(logger, "{} {}: Send package. cmd={}, name={}.", target_type, target_id, header.base.command, msg_name);
 	}
 	else
 	{
 		auto& msg_name = protocol::get_message_name(msg);
 		header.base.command = protocol::get_command(msg_name);
-		LIGHTS_DEBUG(logger, "{} {}: Send cmd {}, name {}.", target_type, target_id, header.base.command, msg_name);
+		LIGHTS_DEBUG(logger, "{} {}: Send package. cmd={}, name={}.", target_type, target_id, header.base.command, msg_name);
 	}
 
 	header.base.content_length = size;
@@ -71,7 +71,7 @@ void Network::send_protocol(int conn_id,
 	bool ok = protocol::parse_to_sequence(msg, package.content_buffer());
 	if (!ok)
 	{
-		LIGHTS_ERROR(logger, "{} {}: Parse to sequence failure cmd {}.", target_type, target_id, header.base.command);
+		LIGHTS_ERROR(logger, "{} {}: Parse to sequence failure. cmd={}.", target_type, target_id, header.base.command);
 		PackageManager::instance()->remove_package(package.package_id());
 		return;
 	}
@@ -139,7 +139,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 			return;
 		}
 
-		LIGHTS_DEBUG(logger, "Connection {}: Timeout trans_id {}, phase {}.",
+		LIGHTS_DEBUG(logger, "Connection {}: Transaction timeout. trans_id={}, phase={}.",
 						trans->waiting_connection_id(),
 						trans_id,
 						trans->current_phase());
@@ -149,7 +149,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 		if (!trans->is_waiting())
 		{
-			LIGHTS_DEBUG(logger, "Connection {}: End trans_id {}.", trans->waiting_connection_id(), trans_id);
+			LIGHTS_DEBUG(logger, "Connection {}: Transaction end. trans_id={}.", trans->waiting_connection_id(), trans_id);
 			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 		}
 	});
@@ -158,7 +158,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 void MultiplyPhaseTransaction::send_back_error(int code)
 {
-	LIGHTS_ERROR(logger, "Connection {}: Error {}.", first_connection_id(), code);
+	LIGHTS_ERROR(logger, "Connection {}: Transaction error. code={}.", first_connection_id(), code);
 	protocol::RspError error;
 	error.set_result(code);
 	Network::send_back_protocol(first_connection_id(), error, m_first_trigger_source);

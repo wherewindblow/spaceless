@@ -22,7 +22,7 @@
 namespace spaceless {
 namespace resource_server {
 
-static Logger logger = get_logger("core");
+static Logger& logger = get_logger("core");
 
 User& UserManager::register_user(const std::string& username, const std::string& password)
 {
@@ -749,7 +749,7 @@ void StorageNodeManager::register_node(const std::string& ip, unsigned short por
 			auto result = inst->m_node_list.insert(value);
 			if (!result.second)
 			{
-				LIGHTS_ERROR(logger, "Cannot register node {}:{}", ip, port);
+				LIGHTS_ERROR(logger, "Cannot register node. address={}:{}", ip, port);
 				return;
 			}
 

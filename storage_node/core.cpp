@@ -23,8 +23,6 @@
 namespace spaceless {
 namespace storage_node {
 
-static Logger& logger = get_logger("storage_node");
-
 SharingFileManager::SharingFileManager()
 {
 }

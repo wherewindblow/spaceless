@@ -129,7 +129,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 	{
 		std::string address = m_socket.address().toString();
 		std::string peer_address = m_socket.peerAddress().toString();
-		LIGHTS_INFO(logger, "Creates network connection {}: local {} and peer {}.", m_id, address, peer_address);
+		LIGHTS_INFO(logger, "Creates connection {}: local={}, peer={}.", m_id, address, peer_address);
 
 		// Send security setting.
 		if (open_type == ConnectionOpenType::PASSIVE_OPEN)
@@ -157,7 +157,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 	}
 	catch (Poco::Exception& ex) // TODO: How to close connection with exception correctly?
 	{
-		LIGHTS_INFO(logger, "Creates network connection {}: local unknown and peer unknown.", m_id);
+		LIGHTS_INFO(logger, "Creates connection {}: local=unknown, peer=unknown.", m_id);
 	}
 }
 
@@ -166,7 +166,7 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 {
 	try
 	{
-		LIGHTS_INFO(logger, "Destroys network connection {}.", m_id);
+		LIGHTS_INFO(logger, "Destroys connection {}.", m_id);
 		NetworkManagerImpl::instance()->on_destroy_connection(m_id);
 
 		// Remove event handler.
@@ -197,7 +197,7 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Destroy error: {}.", m_id, ex.what());
+		LIGHTS_ERROR(logger, "Connection {}: Destroy error. msg={}.", m_id, ex.what());
 	}
 	catch (...)
 	{
@@ -223,7 +223,7 @@ NetworkConnectionImpl::~NetworkConnectionImpl()
 
 void NetworkConnectionImpl::send_raw_package(Package package)
 {
-	LIGHTS_DEBUG(logger, "Connection {}: Send package cmd {}, trigger_package_id {}.",
+	LIGHTS_DEBUG(logger, "Connection {}: Send package. cmd={}, trigger_package_id={}.",
 				 m_id, package.header().base.command, package.header().extend.trigger_package_id);
 
 	// Push to send list and delay to send.
@@ -254,7 +254,7 @@ void NetworkConnectionImpl::send_package(Package package)
 {
 	if (m_is_closing)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Send package on closing connection: cmd {}, trigger_package_id {}.",
+		LIGHTS_ERROR(logger, "Connection {}: Send package while closing. cmd={}, trigger_package_id={}.",
 					 m_id, package.header().base.command, package.header().extend.trigger_package_id);
 		PackageManager::instance()->remove_package(package.package_id());
 		return;
@@ -400,7 +400,8 @@ void NetworkConnectionImpl::read_for_state()
 							header_base.content_length = 0;
 							send_raw_package(package);
 
-							LIGHTS_INFO(logger, "Connection {}: Package version invalid.", m_id);
+							LIGHTS_INFO(logger, "Connection {}: Package version invalid. cmd={}.",
+										m_id, read_header_base.command);
 							close();
 							return;
 						}
@@ -438,8 +439,12 @@ void NetworkConnectionImpl::read_for_state()
 					if (content.length() < expect_len)
 					{
 						PackageHeader& header = m_receive_buffer.header();
-						LIGHTS_INFO(logger, "Connection {}: Have not enough space to receive package content: cmd {}, len {}, package_id {}.",
-									m_id, header.base.command, header.base.content_length, header.extend.self_package_id);
+						LIGHTS_INFO(logger, "Connection {}: Have not enough space to receive package content. "
+							"cmd={}, content_length={}, self_package_id={}.",
+									m_id,
+									header.base.command,
+									header.base.content_length,
+									header.extend.self_package_id);
 						close();
 						return;
 					}
@@ -481,7 +486,7 @@ bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& packag
 {
 	const PackageHeader& header = package_buffer.header();
 	int cmd = header.base.command;
-	LIGHTS_DEBUG(logger, "Connection {}: Receive package cmd {}, trigger_package_id {}.",
+	LIGHTS_DEBUG(logger, "Connection {}: Receive package. cmd={}, trigger_package_id={}.",
 				 m_id, cmd, header.extend.trigger_package_id);
 
 	// Receive security setting.
@@ -496,7 +501,7 @@ bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& packag
 
 		if (!m_is_opening)
 		{
-			LIGHTS_ERROR(logger, "Connection {}: Already open and cannot change security setting.", m_id);
+			LIGHTS_ERROR(logger, "Connection {}: Already open connection cannot change security setting.", m_id);
 			close();
 			return false;
 		}
@@ -504,7 +509,7 @@ bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& packag
 		lights::SequenceView content = package_buffer.content();
 		if (content.length() < sizeof(SecuritySetting))
 		{
-			LIGHTS_ERROR(logger, "Connection {}: Security setting content not enough.", m_id);
+			LIGHTS_ERROR(logger, "Connection {}: Security setting content not enough. content_length={}.", m_id, content.length());
 			close();
 			return false;
 		}
@@ -523,7 +528,7 @@ bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& packag
 
 	if (m_is_opening)
 	{
-		LIGHTS_ERROR(logger, "Connection {}: Is opening.", m_id);
+		LIGHTS_INFO(logger, "Connection {}: Ignore package when connection is opening. cmd={}.", m_id);
 		return false;
 	}
 
@@ -706,8 +711,8 @@ void SecureConnection::on_read_complete_package(const PackageBuffer& package_buf
 			}
 			else
 			{
-				// Ignore package when not started crypto.
-				LIGHTS_DEBUG(logger, "Connection {}: Ignore package cmd {}, trigger_package_id {}.",
+				// Ignore package when not started secure connection.
+				LIGHTS_INFO(logger, "Connection {}: Ignore package. cmd={}, trigger_package_id={}.",
 							 m_conn->connection_id(), header.base.command, header.extend.trigger_package_id);
 			}
 			break;
@@ -827,7 +832,7 @@ void NetworkReactor::send_package(const NetworkMessage& msg)
 
 		if (!package.is_valid())
 		{
-			LIGHTS_ERROR(logger, "Connection {}: Package {} already remove.", conn_id, msg.package_id);
+			LIGHTS_ERROR(logger, "Connection {}: Package already remove. package_id={}.", conn_id, msg.package_id);
 		}
 
 		if (package.is_valid())
@@ -851,19 +856,19 @@ bool NetworkReactor::safe_call_delegate(std::function<void()> function, lights::
 	}
 	catch (Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: Exception error {}/{}.", caller, ex.code(), ex);
+		LIGHTS_ERROR(logger, "Delegation {}: Exception. code={}, msg={}.", caller, ex.code(), ex);
 	}
 	catch (Poco::Exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: Poco error {}:{}.", caller, ex.name(), ex.message());
+		LIGHTS_ERROR(logger, "Delegation {}: Poco::Exception. name={}, msg={}.", caller, ex.name(), ex.message());
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: std error {}:{}.", caller, typeid(ex).name(), ex.what());
+		LIGHTS_ERROR(logger, "Delegation {}: std::exception. name={}, msg={}.", caller, typeid(ex).name(), ex.what());
 	}
 	catch (...)
 	{
-		LIGHTS_ERROR(logger, "Delegation {}: unknown error.", caller);
+		LIGHTS_ERROR(logger, "Delegation {}: unknown exception.", caller);
 	}
 	return false;
 }
@@ -877,7 +882,7 @@ NetworkManagerImpl::~NetworkManagerImpl()
 	}
 	catch (std::exception& ex)
 	{
-		LIGHTS_ERROR(logger, "Network connection manager destroy error: {}.", ex.what());
+		LIGHTS_ERROR(logger, "Network connection manager destroy error. msg={}.", ex.what());
 	}
 	catch (...)
 	{
@@ -907,7 +912,7 @@ void NetworkManagerImpl::register_listener(const std::string& host,
 		m_secure_listener_list.insert(address.toString());
 	}
 
-	LIGHTS_INFO(logger, "Creates network listener {}.", server_socket.address().toString());
+	LIGHTS_INFO(logger, "Creates network listener. address={}.", server_socket.address().toString());
 }
 
 

@@ -417,7 +417,7 @@ void read_handler(int conn_id, Package package)
 		protocol::RspPing response;
 		package.parse_to_protocol(response);
 		DelayTesting::instance()->on_receive_response(response.second(), response.microsecond());
-		LIGHTS_INFO(logger, "Delay last {}, average {}",
+		LIGHTS_INFO(logger, "Delay testing. last_time={}, average_time={}",
 					DelayTesting::instance()->last_delay_time(),
 					DelayTesting::instance()->average_delay_time());
 	}
