@@ -109,6 +109,11 @@ public:
 	MultiplyPhaseTransaction(int trans_id);
 
 	/**
+ 	* Disable copy constructor.
+ 	*/
+	MultiplyPhaseTransaction(const MultiplyPhaseTransaction&) = delete;
+
+	/**
 	 * Destroys transaction.
 	 */
 	virtual ~MultiplyPhaseTransaction() = default;
@@ -121,7 +126,7 @@ public:
 	/**
 	 * Processes the package that trigger by associate command.
 	 * @param conn     Network connection of send package.
-	 * @param package  Pakcage of trigger this function.
+	 * @param package  Package of trigger this function.
 	 */
 	virtual void on_init(int conn_id, Package package) = 0;
 
@@ -155,7 +160,7 @@ public:
 	/**
 	 * Sets wait package info.
 	 * @param conn_id       Network connection that send indicate package.
-	 * @param msg           Waits protobuf type.
+	 * @param msg           Waits protocol message.
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
@@ -173,7 +178,7 @@ public:
 	/**
 	 * Sets wait package info.
 	 * @param service_id    Network service that send indicate package.
-	 * @param cmd           Waits protobuf type.
+	 * @param cmd           Waits protocol message.
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
@@ -510,6 +515,5 @@ inline void MultiplyPhaseTransaction::clear_waiting_state()
 {
 	m_is_waiting = false;
 }
-
 
 } // namespace spaceless

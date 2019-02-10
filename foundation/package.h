@@ -106,6 +106,11 @@ public:
 	}
 
 	/**
+	 * Disable copy constructor.
+	 */
+	PackageBuffer(const PackageBuffer&) = delete;
+
+	/**
 	 * Returns package header.
 	 */
 	PackageHeader& header()

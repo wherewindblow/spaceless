@@ -64,6 +64,11 @@ public:
 						  ConnectionOpenType open_type = ConnectionOpenType::PASSIVE_OPEN);
 
 	/**
+	 * Disable copy constructor.
+	 */
+	NetworkConnectionImpl(const NetworkConnectionImpl&) = delete;
+
+	/**
 	 * Destroys the NetworkConnection and remove event handler.
 	 */
 	~NetworkConnectionImpl();
@@ -168,6 +173,11 @@ public:
 	 * Creates secure connection.
 	 */
 	explicit SecureConnection(NetworkConnectionImpl* conn);
+
+	/**
+	 * Disable copy constructor.
+	 */
+	SecureConnection(const NetworkConnectionImpl&) = delete;
 
 	/**
 	 * Destroys secure connection.
