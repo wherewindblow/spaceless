@@ -201,17 +201,17 @@ std::string FilePath::filename() const
 }
 
 
-SharingGroup::SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id, int storage_node_id):
+SharingGroup::SharingGroup(int group_id, const std::string& group_name, int owner_id, int root_dir_id, int node_id):
 	m_group_id(group_id),
 	m_group_name(group_name),
-	m_owner_id(ower_id),
+	m_owner_id(owner_id),
 	m_root_dir_id(root_dir_id),
-	m_storage_node_id(storage_node_id),
+	m_node_id(node_id),
 	m_manager_list(),
 	m_member_list()
 {
-	m_manager_list.push_back(ower_id);
-	m_member_list.push_back(ower_id);
+	m_manager_list.push_back(owner_id);
+	m_member_list.push_back(owner_id);
 }
 
 
@@ -239,9 +239,9 @@ int SharingGroup::root_dir_id() const
 }
 
 
-int SharingGroup::storage_node_id() const
+int SharingGroup::node_id() const
 {
-	return m_storage_node_id;
+	return m_node_id;
 }
 
 
@@ -353,27 +353,13 @@ int SharingGroup::get_file_id(const FilePath& path)
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
-		auto itr = std::find_if(parent_dir.file_list.begin(), parent_dir.file_list.end(), [&dir_name](int file_id)
+		int file_id = parent_dir.find_file(dir_name);
+		if (file_id == INVALID_ID)
 		{
-			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file != nullptr && file->file_name == dir_name)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		});
+			return file_id;
+		}
 
-		if (itr == parent_dir.file_list.end())
-		{
-			return INVALID_ID;
-		}
-		else
-		{
-			parent_dir_id = *itr;
-		}
+		parent_dir_id = file_id;
 	}
 
 	return parent_dir_id;
@@ -400,36 +386,6 @@ void SharingGroup::add_file(const FilePath& dir_path, int file_id)
 }
 
 
-void SharingGroup::put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append)
-{
-	if (!is_manager(user_id))
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
-	}
-
-	std::string local_filename = group_file_path + filename;
-	const char* mode = is_append ? "a" : "w";
-	lights::FileStream file(local_filename, mode);
-	file.write(file_content);
-	// TODO Need to optimize.
-}
-
-
-std::size_t SharingGroup::get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos)
-{
-	if (!is_member(user_id))
-	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
-	}
-
-	std::string local_filename = group_file_path + filename;
-	lights::FileStream file(local_filename, "r");
-	file.seek(start_pos, lights::FileSeekWhence::BEGIN);
-	return file.read(file_content);
-	// TODO Need to optimize.
-}
-
-
 void SharingGroup::create_path(const FilePath& path)
 {
 	int parent_id = m_root_dir_id;
@@ -443,20 +399,8 @@ void SharingGroup::create_path(const FilePath& path)
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
-		auto itr = std::find_if(parent_dir.file_list.begin(), parent_dir.file_list.end(), [&dir_name](int file_id)
-		{
-			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file != nullptr && file->file_name == dir_name)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		});
-
-		if (itr == parent_dir.file_list.end())
+		int file_id = parent_dir.find_file(dir_name);
+		if (file_id == INVALID_ID)
 		{
 			SharingFile& new_file = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, dir_name);
 			parent_dir.file_list.push_back(new_file.file_id);
@@ -464,7 +408,7 @@ void SharingGroup::create_path(const FilePath& path)
 		}
 		else
 		{
-			parent_id = *itr;
+			parent_id = file_id;
 		}
 	}
 }
@@ -484,27 +428,16 @@ void SharingGroup::remove_path(const FilePath& path)
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
-		auto itr = std::find_if(parent_dir.file_list.begin(), parent_dir.file_list.end(), [&dir_name](int file_id)
-		{
-			SharingFile* file = SharingFileManager::instance()->find_file(file_id);
-			if (file != nullptr && file->file_name == dir_name)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		});
+		int file_id = parent_dir.find_file(dir_name);
 
 		previous_parent_id = parent_id;
-		if (itr == parent_dir.file_list.end())
+		if (file_id == INVALID_ID)
 		{
 			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
 		}
 		else
 		{
-			parent_id = *itr;
+			parent_id = file_id;
 		}
 	}
 
@@ -514,17 +447,12 @@ void SharingGroup::remove_path(const FilePath& path)
 	}
 
 	SharingFileManager::instance()->remove_file(parent_id);
-	SharingFile* previous_parent = SharingFileManager::instance()->find_file(previous_parent_id);
-	LIGHTS_ASSERT(previous_parent->file_type == SharingFile::DIRECTORY);
-	auto previous_parent_dir = dynamic_cast<SharingDirectory*>(previous_parent);
-	auto itr = std::remove(previous_parent_dir->file_list.begin(),
-						   previous_parent_dir->file_list.end(),
-						   previous_parent_id);
-	previous_parent_dir->file_list.erase(itr, previous_parent_dir->file_list.end());
+	SharingFile& previous_parent = SharingFileManager::instance()->get_file(previous_parent_id);
+	LIGHTS_ASSERT(previous_parent.file_type == SharingFile::DIRECTORY);
+	SharingDirectory& previous_parent_dir = dynamic_cast<SharingDirectory&>(previous_parent);
+	previous_parent_dir.remove_file(parent_id);
 }
 
-
-const char* group_file_path = "/tmp/";
 
 SharingGroup& SharingGroupManager::register_group(int user_id, const std::string& group_name)
 {
@@ -559,7 +487,7 @@ void SharingGroupManager::remove_group(int user_id, int group_id)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_OWNER);
 	}
 
-	StorageNode& node = StorageNodeManager::instance()->get_node(group.storage_node_id());
+	StorageNode& node = StorageNodeManager::instance()->get_node(group.node_id());
 	--node.use_counting;
 	m_group_list.erase(group_id);
 }
@@ -612,6 +540,39 @@ SharingGroup& SharingGroupManager::get_group(const std::string& group_name)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_EXIST);
 	}
 	return *group;
+}
+
+
+int SharingDirectory::find_file(const std::string& filename)
+{
+	auto itr = std::find_if(file_list.begin(), file_list.end(), [&filename](int file_id)
+	{
+		SharingFile* file = SharingFileManager::instance()->find_file(file_id);
+		if (file != nullptr && file->file_name == filename)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	});
+
+	if (itr == file_list.end())
+	{
+		return INVALID_ID;
+	}
+
+	return *itr;
+}
+
+
+void SharingDirectory::remove_file(int file_id)
+{
+	auto itr = std::remove(file_list.begin(),
+						   file_list.end(),
+						   file_id);
+	file_list.erase(itr, file_list.end());
 }
 
 

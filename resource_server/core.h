@@ -139,7 +139,7 @@ class SharingGroup
 public:
 	using UserList = std::vector<int>;
 
-	SharingGroup(int group_id, const std::string& group_name, int ower_id, int root_dir_id, int storage_node_id);
+	SharingGroup(int group_id, const std::string& group_name, int owner_id, int root_dir_id, int node_id);
 
 	int group_id() const;
 
@@ -149,7 +149,7 @@ public:
 
 	int root_dir_id() const;
 
-	int storage_node_id() const;
+	int node_id() const;
 
 	const UserList& manager_list() const;
 
@@ -176,10 +176,6 @@ public:
 
 	void add_file(const FilePath& dir_path, int file_id);
 
-	void put_file(int user_id, const std::string& filename, lights::SequenceView file_content, bool is_append = false);
-
-	std::size_t get_file(int user_id, const std::string& filename, lights::Sequence file_content, int start_pos = 0);
-
 	/**
 	 * Creates all directory by path. If a parent directory is not create will automatically create.
 	 */
@@ -195,7 +191,7 @@ private:
 	std::string m_group_name;
 	int m_owner_id;
 	int m_root_dir_id;
-	int m_storage_node_id;
+	int m_node_id;
 	UserList m_manager_list; // Manager list include owner and general managers.
 	UserList m_member_list; // Member list include all members in group.
 };
@@ -286,6 +282,10 @@ public:
 	SharingDirectory() :
 		file_list()
 	{}
+
+	int find_file(const std::string& filename);
+
+	void remove_file(int file_id);
 
 	std::vector<int> file_list;
 };

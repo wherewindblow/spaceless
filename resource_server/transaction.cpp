@@ -335,7 +335,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 
 		SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
 																				  path.filename(),
-																				  group.storage_node_id());
+																				  group.node_id());
 		SharingFile& general_file = SharingFileManager::instance()->register_file(SharingFile::GENERAL_FILE,
 																				  path.filename(),
 																				  storage_file.file_id);
@@ -353,7 +353,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 	storage_request.set_file_path(path.filename());
 	storage_request.set_max_fragment(session->max_fragment);
 
-	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
+	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.node_id());
 	Network::service_send_protocol(storage_node.service_id, storage_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspNodePutFileSession(), WAIT_STORAGE_NODE);
 }
@@ -366,8 +366,7 @@ void PutFileSessionTrans::on_active(int conn_id, Package package)
 	if (node_response.result())
 	{
 		FileSessionManager::instance()->remove_session(m_session_id);
-		send_back_error(node_response.result());
-		return;
+		return send_back_error(node_response.result());
 	}
 
 	PutFileSession* session = FileSessionManager::instance()->find_put_session(m_session_id);
@@ -430,7 +429,7 @@ void PutFileTrans::on_init(int conn_id, Package package)
 	protocol::ReqPutFile node_request = request;
 	node_request.set_session_id(session.node_session_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
-	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.storage_node_id());
+	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.node_id());
 	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
 	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE);
 }
