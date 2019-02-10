@@ -65,7 +65,7 @@ int main(int argc, const char* argv[])
 		SPACELESS_REG_ONE_TRANS(protocol::RspFindGroup, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspJoinGroup, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspAssignAsManager, read_handler);
-		SPACELESS_REG_ONE_TRANS(protocol::RspAssignAsMemeber, read_handler);
+		SPACELESS_REG_ONE_TRANS(protocol::RspAssignAsMember, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspKickOutUser, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspPutFileSession, read_handler);
 		SPACELESS_REG_ONE_TRANS(protocol::RspPutFile, read_handler);
@@ -103,10 +103,10 @@ void cmd_ui_interface(ConnectionList& conn_list)
 {
 	while (true)
 	{
-		std::string func;
+		std::string func_name;
 		std::cin.clear();
-		std::cin >> func;
-		if (func == "register_user")
+		std::cin >> func_name;
+		if (func_name == "register_user")
 		{
 			std::string username;
 			std::string password;
@@ -114,7 +114,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cin >> username >> password;
 			UserManager::instance()->register_user(username, password);
 		}
-		else if (func == "login_user")
+		else if (func_name == "login_user")
 		{
 			int user_id;
 			std::string password;
@@ -122,14 +122,14 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cin >> user_id >> password;
 			UserManager::instance()->login_user(user_id, password);
 		}
-		else if (func == "remove_user")
+		else if (func_name == "remove_user")
 		{
 			int user_id;
 			std::cout << "Please input user_id." << std::endl;
 			std::cin >> user_id;
 			UserManager::instance()->remove_user(user_id);
 		}
-		else if (func == "find_user")
+		else if (func_name == "find_user")
 		{
 			std::string input;
 			std::cout << "Please input user id or username." << std::endl;
@@ -144,21 +144,21 @@ void cmd_ui_interface(ConnectionList& conn_list)
 				UserManager::instance()->find_user(input); // Make input as username.
 			}
 		}
-		else if (func == "register_group")
+		else if (func_name == "register_group")
 		{
 			std::string group_name;
 			std::cout << "Please input group name." << std::endl;
 			std::cin >> group_name;
 			SharingGroupManager::instance()->register_group(group_name);
 		}
-		else if (func == "remove_group")
+		else if (func_name == "remove_group")
 		{
 			int group_id;
 			std::cout << "Please input group id." << std::endl;
 			std::cin >> group_id;
 			SharingGroupManager::instance()->remove_group(group_id);
 		}
-		else if (func == "find_group")
+		else if (func_name == "find_group")
 		{
 			std::string input;
 			std::cout << "Please input group id or group name." << std::endl;
@@ -173,35 +173,35 @@ void cmd_ui_interface(ConnectionList& conn_list)
 				SharingGroupManager::instance()->find_group(input); // Make input as name.
 			}
 		}
-		else if (func == "join_group")
+		else if (func_name == "join_group")
 		{
 			int group_id;
 			std::cout << "Please input group id." << std::endl;
 			std::cin >> group_id;
 			SharingGroupManager::instance()->join_group(group_id);
 		}
-		else if (func == "assign_as_manager")
+		else if (func_name == "assign_as_manager")
 		{
 			int group_id, user_id;
 			std::cout << "Please input group id and user id." << std::endl;
 			std::cin >> group_id >> user_id;
 			SharingGroupManager::instance()->assign_as_manager(group_id, user_id);
 		}
-		else if (func == "assign_as_memeber")
+		else if (func_name == "assign_as_member")
 		{
 			int group_id, user_id;
 			std::cout << "Please input group id and user id." << std::endl;
 			std::cin >> group_id >> user_id;
-			SharingGroupManager::instance()->assign_as_memeber(group_id, user_id);
+			SharingGroupManager::instance()->assign_as_member(group_id, user_id);
 		}
-		else if (func == "kick_out_user")
+		else if (func_name == "kick_out_user")
 		{
 			int group_id, user_id;
 			std::cout << "Please input group id and user id." << std::endl;
 			std::cin >> group_id >> user_id;
 			SharingGroupManager::instance()->kick_out_user(group_id, user_id);
 		}
-		else if (func == "put_file")
+		else if (func_name == "put_file")
 		{
 			std::cout << "Please input group id, local file path and remote file path." << std::endl;
 			int group_id;
@@ -209,7 +209,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cin >> group_id >> local_file_path >> remote_file_path;
 			SharingGroupManager::instance()->put_file(group_id, local_file_path, remote_file_path);
 		}
-		else if (func == "get_file")
+		else if (func_name == "get_file")
 		{
 			std::cout << "Please input group id, remote file path and local file path." << std::endl;
 			int group_id;
@@ -217,7 +217,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cin >> group_id >> remote_file_path >> local_file_path;
 			SharingGroupManager::instance()->get_file(group_id, remote_file_path, local_file_path);
 		}
-		else if (func == "create_path")
+		else if (func_name == "create_path")
 		{
 			std::cout << "Please input group id and path." << std::endl;
 			int group_id;
@@ -225,7 +225,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cin >> group_id >> path;
 			SharingGroupManager::instance()->create_path(group_id, path);
 		}
-		else if (func == "remove_path")
+		else if (func_name == "remove_path")
 		{
 			std::cout << "Please input group id and path." << std::endl;
 			int group_id;
@@ -234,7 +234,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			std::cin >> group_id >> path >> force_remove_all;
 			SharingGroupManager::instance()->remove_path(group_id, path, force_remove_all);
 		}
-		else if (func == "register_connection")
+		else if (func_name == "register_connection")
 		{
 			std::cout << "Please input host and port." << std::endl;
 			std::string host;
@@ -244,7 +244,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 			conn_list.push_back(conn.connection_id());
 			std::cout << lights::format("New connection index is {}.", conn_list.size() - 1) << std::endl;
 		}
-		else if (func == "switch_connection")
+		else if (func_name == "switch_connection")
 		{
 			std::cout << "Please input connection index." << std::endl;
 			std::size_t index;
@@ -267,7 +267,7 @@ void cmd_ui_interface(ConnectionList& conn_list)
 				std::cout << e.what() << std::endl;
 			}
 		}
-		else if (func == "quit")
+		else if (func_name == "quit")
 		{
 			break;
 		}

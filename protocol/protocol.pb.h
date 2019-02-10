@@ -51,9 +51,9 @@ namespace protocol {
 class ReqAssignAsManager;
 class ReqAssignAsManagerDefaultTypeInternal;
 extern ReqAssignAsManagerDefaultTypeInternal _ReqAssignAsManager_default_instance_;
-class ReqAssignAsMemeber;
-class ReqAssignAsMemeberDefaultTypeInternal;
-extern ReqAssignAsMemeberDefaultTypeInternal _ReqAssignAsMemeber_default_instance_;
+class ReqAssignAsMember;
+class ReqAssignAsMemberDefaultTypeInternal;
+extern ReqAssignAsMemberDefaultTypeInternal _ReqAssignAsMember_default_instance_;
 class ReqCreatePath;
 class ReqCreatePathDefaultTypeInternal;
 extern ReqCreatePathDefaultTypeInternal _ReqCreatePath_default_instance_;
@@ -111,9 +111,9 @@ extern ReqRemoveUserDefaultTypeInternal _ReqRemoveUser_default_instance_;
 class RspAssignAsManager;
 class RspAssignAsManagerDefaultTypeInternal;
 extern RspAssignAsManagerDefaultTypeInternal _RspAssignAsManager_default_instance_;
-class RspAssignAsMemeber;
-class RspAssignAsMemeberDefaultTypeInternal;
-extern RspAssignAsMemeberDefaultTypeInternal _RspAssignAsMemeber_default_instance_;
+class RspAssignAsMember;
+class RspAssignAsMemberDefaultTypeInternal;
+extern RspAssignAsMemberDefaultTypeInternal _RspAssignAsMember_default_instance_;
 class RspCreatePath;
 class RspCreatePathDefaultTypeInternal;
 extern RspCreatePathDefaultTypeInternal _RspCreatePath_default_instance_;
@@ -182,7 +182,7 @@ extern UserDefaultTypeInternal _User_default_instance_;
 namespace google {
 namespace protobuf {
 template<> ::spaceless::protocol::ReqAssignAsManager* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsManager>(Arena*);
-template<> ::spaceless::protocol::ReqAssignAsMemeber* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsMemeber>(Arena*);
+template<> ::spaceless::protocol::ReqAssignAsMember* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsMember>(Arena*);
 template<> ::spaceless::protocol::ReqCreatePath* Arena::CreateMaybeMessage<::spaceless::protocol::ReqCreatePath>(Arena*);
 template<> ::spaceless::protocol::ReqFindGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqFindGroup>(Arena*);
 template<> ::spaceless::protocol::ReqFindUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqFindUser>(Arena*);
@@ -202,7 +202,7 @@ template<> ::spaceless::protocol::ReqRemoveGroup* Arena::CreateMaybeMessage<::sp
 template<> ::spaceless::protocol::ReqRemovePath* Arena::CreateMaybeMessage<::spaceless::protocol::ReqRemovePath>(Arena*);
 template<> ::spaceless::protocol::ReqRemoveUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqRemoveUser>(Arena*);
 template<> ::spaceless::protocol::RspAssignAsManager* Arena::CreateMaybeMessage<::spaceless::protocol::RspAssignAsManager>(Arena*);
-template<> ::spaceless::protocol::RspAssignAsMemeber* Arena::CreateMaybeMessage<::spaceless::protocol::RspAssignAsMemeber>(Arena*);
+template<> ::spaceless::protocol::RspAssignAsMember* Arena::CreateMaybeMessage<::spaceless::protocol::RspAssignAsMember>(Arena*);
 template<> ::spaceless::protocol::RspCreatePath* Arena::CreateMaybeMessage<::spaceless::protocol::RspCreatePath>(Arena*);
 template<> ::spaceless::protocol::RspError* Arena::CreateMaybeMessage<::spaceless::protocol::RspError>(Arena*);
 template<> ::spaceless::protocol::RspFindGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspFindGroup>(Arena*);
@@ -2857,24 +2857,24 @@ class RspAssignAsManager : public ::google::protobuf::Message /* @@protoc_insert
 };
 // -------------------------------------------------------------------
 
-class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqAssignAsMemeber) */ {
+class ReqAssignAsMember : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqAssignAsMember) */ {
  public:
-  ReqAssignAsMemeber();
-  virtual ~ReqAssignAsMemeber();
+  ReqAssignAsMember();
+  virtual ~ReqAssignAsMember();
 
-  ReqAssignAsMemeber(const ReqAssignAsMemeber& from);
+  ReqAssignAsMember(const ReqAssignAsMember& from);
 
-  inline ReqAssignAsMemeber& operator=(const ReqAssignAsMemeber& from) {
+  inline ReqAssignAsMember& operator=(const ReqAssignAsMember& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  ReqAssignAsMemeber(ReqAssignAsMemeber&& from) noexcept
-    : ReqAssignAsMemeber() {
+  ReqAssignAsMember(ReqAssignAsMember&& from) noexcept
+    : ReqAssignAsMember() {
     *this = ::std::move(from);
   }
 
-  inline ReqAssignAsMemeber& operator=(ReqAssignAsMemeber&& from) noexcept {
+  inline ReqAssignAsMember& operator=(ReqAssignAsMember&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -2884,34 +2884,34 @@ class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const ReqAssignAsMemeber& default_instance();
+  static const ReqAssignAsMember& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const ReqAssignAsMemeber* internal_default_instance() {
-    return reinterpret_cast<const ReqAssignAsMemeber*>(
-               &_ReqAssignAsMemeber_default_instance_);
+  static inline const ReqAssignAsMember* internal_default_instance() {
+    return reinterpret_cast<const ReqAssignAsMember*>(
+               &_ReqAssignAsMember_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     23;
 
-  void Swap(ReqAssignAsMemeber* other);
-  friend void swap(ReqAssignAsMemeber& a, ReqAssignAsMemeber& b) {
+  void Swap(ReqAssignAsMember* other);
+  friend void swap(ReqAssignAsMember& a, ReqAssignAsMember& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline ReqAssignAsMemeber* New() const final {
-    return CreateMaybeMessage<ReqAssignAsMemeber>(NULL);
+  inline ReqAssignAsMember* New() const final {
+    return CreateMaybeMessage<ReqAssignAsMember>(NULL);
   }
 
-  ReqAssignAsMemeber* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<ReqAssignAsMemeber>(arena);
+  ReqAssignAsMember* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqAssignAsMember>(arena);
   }
   void CopyFrom(const ::google::protobuf::Message& from) final;
   void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const ReqAssignAsMemeber& from);
-  void MergeFrom(const ReqAssignAsMemeber& from);
+  void CopyFrom(const ReqAssignAsMember& from);
+  void MergeFrom(const ReqAssignAsMember& from);
   void Clear() final;
   bool IsInitialized() const final;
 
@@ -2928,7 +2928,7 @@ class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(ReqAssignAsMemeber* other);
+  void InternalSwap(ReqAssignAsMember* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -2956,7 +2956,7 @@ class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::int32 user_id() const;
   void set_user_id(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqAssignAsMemeber)
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqAssignAsMember)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -2967,24 +2967,24 @@ class ReqAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
 };
 // -------------------------------------------------------------------
 
-class RspAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspAssignAsMemeber) */ {
+class RspAssignAsMember : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspAssignAsMember) */ {
  public:
-  RspAssignAsMemeber();
-  virtual ~RspAssignAsMemeber();
+  RspAssignAsMember();
+  virtual ~RspAssignAsMember();
 
-  RspAssignAsMemeber(const RspAssignAsMemeber& from);
+  RspAssignAsMember(const RspAssignAsMember& from);
 
-  inline RspAssignAsMemeber& operator=(const RspAssignAsMemeber& from) {
+  inline RspAssignAsMember& operator=(const RspAssignAsMember& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  RspAssignAsMemeber(RspAssignAsMemeber&& from) noexcept
-    : RspAssignAsMemeber() {
+  RspAssignAsMember(RspAssignAsMember&& from) noexcept
+    : RspAssignAsMember() {
     *this = ::std::move(from);
   }
 
-  inline RspAssignAsMemeber& operator=(RspAssignAsMemeber&& from) noexcept {
+  inline RspAssignAsMember& operator=(RspAssignAsMember&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -2994,34 +2994,34 @@ class RspAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const RspAssignAsMemeber& default_instance();
+  static const RspAssignAsMember& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const RspAssignAsMemeber* internal_default_instance() {
-    return reinterpret_cast<const RspAssignAsMemeber*>(
-               &_RspAssignAsMemeber_default_instance_);
+  static inline const RspAssignAsMember* internal_default_instance() {
+    return reinterpret_cast<const RspAssignAsMember*>(
+               &_RspAssignAsMember_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     24;
 
-  void Swap(RspAssignAsMemeber* other);
-  friend void swap(RspAssignAsMemeber& a, RspAssignAsMemeber& b) {
+  void Swap(RspAssignAsMember* other);
+  friend void swap(RspAssignAsMember& a, RspAssignAsMember& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline RspAssignAsMemeber* New() const final {
-    return CreateMaybeMessage<RspAssignAsMemeber>(NULL);
+  inline RspAssignAsMember* New() const final {
+    return CreateMaybeMessage<RspAssignAsMember>(NULL);
   }
 
-  RspAssignAsMemeber* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<RspAssignAsMemeber>(arena);
+  RspAssignAsMember* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspAssignAsMember>(arena);
   }
   void CopyFrom(const ::google::protobuf::Message& from) final;
   void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const RspAssignAsMemeber& from);
-  void MergeFrom(const RspAssignAsMemeber& from);
+  void CopyFrom(const RspAssignAsMember& from);
+  void MergeFrom(const RspAssignAsMember& from);
   void Clear() final;
   bool IsInitialized() const final;
 
@@ -3038,7 +3038,7 @@ class RspAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(RspAssignAsMemeber* other);
+  void InternalSwap(RspAssignAsMember* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -3060,7 +3060,7 @@ class RspAssignAsMemeber : public ::google::protobuf::Message /* @@protoc_insert
   ::google::protobuf::int32 result() const;
   void set_result(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspAssignAsMemeber)
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspAssignAsMember)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -6316,52 +6316,52 @@ inline void RspAssignAsManager::set_result(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
-// ReqAssignAsMemeber
+// ReqAssignAsMember
 
 // int32 group_id = 1;
-inline void ReqAssignAsMemeber::clear_group_id() {
+inline void ReqAssignAsMember::clear_group_id() {
   group_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqAssignAsMemeber::group_id() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMemeber.group_id)
+inline ::google::protobuf::int32 ReqAssignAsMember::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMember.group_id)
   return group_id_;
 }
-inline void ReqAssignAsMemeber::set_group_id(::google::protobuf::int32 value) {
+inline void ReqAssignAsMember::set_group_id(::google::protobuf::int32 value) {
   
   group_id_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMemeber.group_id)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMember.group_id)
 }
 
 // int32 user_id = 2;
-inline void ReqAssignAsMemeber::clear_user_id() {
+inline void ReqAssignAsMember::clear_user_id() {
   user_id_ = 0;
 }
-inline ::google::protobuf::int32 ReqAssignAsMemeber::user_id() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMemeber.user_id)
+inline ::google::protobuf::int32 ReqAssignAsMember::user_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqAssignAsMember.user_id)
   return user_id_;
 }
-inline void ReqAssignAsMemeber::set_user_id(::google::protobuf::int32 value) {
+inline void ReqAssignAsMember::set_user_id(::google::protobuf::int32 value) {
   
   user_id_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMemeber.user_id)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqAssignAsMember.user_id)
 }
 
 // -------------------------------------------------------------------
 
-// RspAssignAsMemeber
+// RspAssignAsMember
 
 // int32 result = 1;
-inline void RspAssignAsMemeber::clear_result() {
+inline void RspAssignAsMember::clear_result() {
   result_ = 0;
 }
-inline ::google::protobuf::int32 RspAssignAsMemeber::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsMemeber.result)
+inline ::google::protobuf::int32 RspAssignAsMember::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsMember.result)
   return result_;
 }
-inline void RspAssignAsMemeber::set_result(::google::protobuf::int32 value) {
+inline void RspAssignAsMember::set_result(::google::protobuf::int32 value) {
   
   result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsMemeber.result)
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsMember.result)
 }
 
 // -------------------------------------------------------------------

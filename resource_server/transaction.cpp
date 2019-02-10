@@ -18,7 +18,7 @@ namespace transaction {
 
 enum
 {
-	ERR_USER_LOGIN_FALIURE = 2001,
+	ERR_USER_LOGIN_FAILURE = 2001,
 	ERR_PATH_NOT_EXIST = 2100,
 	ERR_PATH_ALREADY_EXIST = 2101,
 	ERR_PATH_NOT_GENERAL_FILE = 2102,
@@ -68,7 +68,7 @@ void on_login_user(int conn_id, Package package)
 	bool pass = UserManager::instance()->login_user(request.user_id(), request.password(), conn_id);
 	if (!pass)
 	{
-		response.set_result(ERR_USER_LOGIN_FALIURE);
+		response.set_result(ERR_USER_LOGIN_FAILURE);
 	}
 
 	Network::send_back_protocol(conn_id, response, package);
@@ -227,8 +227,8 @@ void on_assign_as_manager(int conn_id, Package package)
 
 void on_assign_as_member(int conn_id, Package package)
 {
-	protocol::ReqAssignAsMemeber request;
-	protocol::RspAssignAsMemeber response;
+	protocol::ReqAssignAsMember request;
+	protocol::RspAssignAsMember response;
 	package.parse_to_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
@@ -239,7 +239,7 @@ void on_assign_as_member(int conn_id, Package package)
 	}
 	else
 	{
-		group.assign_as_memeber(request.user_id());
+		group.assign_as_member(request.user_id());
 	}
 
 	Network::send_back_protocol(conn_id, response, package);

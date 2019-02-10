@@ -84,9 +84,9 @@ public:
 
 	FileList list_file(const std::string& path) const;
 
-	void create_diretory(const std::string& path);
+	void create_directory(const std::string& path);
 
-	void remove_diretory(const std::string& path);
+	void remove_directory(const std::string& path);
 
 	void put_file(const std::string& filename, lights::SequenceView file_content, int start_pos, bool is_flush = false);
 

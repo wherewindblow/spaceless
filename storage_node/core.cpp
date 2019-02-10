@@ -41,13 +41,13 @@ SharingFileManager::FileList SharingFileManager::list_file(const std::string& pa
 }
 
 
-void SharingFileManager::create_diretory(const std::string& path)
+void SharingFileManager::create_directory(const std::string& path)
 {
 
 }
 
 
-void SharingFileManager::remove_diretory(const std::string& path)
+void SharingFileManager::remove_directory(const std::string& path)
 {
 
 }

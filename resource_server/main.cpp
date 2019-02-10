@@ -89,7 +89,7 @@ int main(int argc, const char* argv[])
 		SPACELESS_REG_ONE_TRANS(protocol::ReqFindGroup, on_find_group)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqJoinGroup, on_join_group)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsManager, on_assign_as_manager)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsMemeber, on_assign_as_member)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsMember, on_assign_as_member)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqKickOutUser, on_kick_out_user)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqCreatePath, on_create_path)
 

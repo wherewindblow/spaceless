@@ -19,8 +19,8 @@
  1018 RspJoinGroup
  1019 ReqAssignAsManager
  1020 RspAssignAsManager
- 1021 ReqAssignAsMemeber
- 1022 RspAssignAsMemeber
+ 1021 ReqAssignAsMember
+ 1022 RspAssignAsMember
  1023 ReqKickOutUser
  1024 RspKickOutUser
  1025 ReqPutFileSession

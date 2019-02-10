@@ -137,7 +137,7 @@ User& UserManager::get_login_user(int conn_id)
 	User* user = find_login_user(conn_id);
 	if (user == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_LGOIN);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_LOGIN);
 	}
 	return *user;
 }
@@ -301,7 +301,7 @@ void SharingGroup::assign_as_manager(int user_id)
 }
 
 
-void SharingGroup::assign_as_memeber(int user_id)
+void SharingGroup::assign_as_member(int user_id)
 {
 	if (is_manager(user_id))
 	{
@@ -310,7 +310,7 @@ void SharingGroup::assign_as_memeber(int user_id)
 	}
 	else if (is_member(user_id))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_IS_MEMEBER);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_IS_MEMBER);
 	}
 	else
 	{
@@ -870,7 +870,7 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 	if (!result.second)
 	{
 		delete session_entry;
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	on_register_session(group_id, file_path, session_entry->session_id);
@@ -890,7 +890,7 @@ GetFileSession& FileSessionManager::register_get_session(int user_id, int group_
 	if (!result.second)
 	{
 		delete session_entry;
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALDEAY_EXIST);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	on_register_session(group_id, file_path, session_entry->session_id);

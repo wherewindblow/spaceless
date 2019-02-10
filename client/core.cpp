@@ -116,9 +116,9 @@ void SharingGroupManager::assign_as_manager(int group_id, int user_id)
 }
 
 
-void SharingGroupManager::assign_as_memeber(int group_id, int user_id)
+void SharingGroupManager::assign_as_member(int group_id, int user_id)
 {
-	protocol::ReqAssignAsMemeber request;
+	protocol::ReqAssignAsMember request;
 	request.set_group_id(group_id);
 	request.set_user_id(user_id);
 	Network::send_protocol(conn_id, request);
