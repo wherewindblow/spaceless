@@ -92,6 +92,7 @@ int main(int argc, const char* argv[])
 		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsMember, on_assign_as_member)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqKickOutUser, on_kick_out_user)
 		SPACELESS_REG_ONE_TRANS(protocol::ReqCreatePath, on_create_path)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqListFile, on_list_file)
 
 		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqPutFileSession, PutFileSessionTrans::factory);
 		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqPutFile, PutFileTrans::factory);

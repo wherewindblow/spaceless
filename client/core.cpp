@@ -24,6 +24,8 @@ int conn_id = 0;
 
 const int DELAY_TESTING_TIME = 60;
 
+const std::string META_FILE_PREFIX = ".meta";
+
 
 void UserManager::register_user(const std::string& username, const std::string& password)
 {
@@ -134,7 +136,16 @@ void SharingGroupManager::kick_out_user(int group_id, int user_id)
 }
 
 
-void SharingGroupManager::put_file(int group_id, const std::string& local_path, const std::string& remote_path)
+void SharingFileManager::list_file(int group_id, const std::string& file_path)
+{
+	protocol::ReqListFile request;
+	request.set_group_id(group_id);
+	request.set_file_path(file_path);
+	Network::send_protocol(conn_id, request);
+}
+
+
+void SharingFileManager::put_file(int group_id, const std::string& local_path, const std::string& remote_path)
 {
 	m_put_session.local_path = local_path;
 	m_put_session.group_id = group_id;
@@ -154,7 +165,7 @@ void SharingGroupManager::put_file(int group_id, const std::string& local_path, 
 }
 
 
-void SharingGroupManager::start_put_file(int next_fragment)
+void SharingFileManager::start_put_file(int next_fragment)
 {
 	lights::FileStream file(m_put_session.local_path, "r");
 	for (int fragment_index = next_fragment; fragment_index < m_put_session.max_fragment; ++fragment_index)
@@ -173,7 +184,7 @@ void SharingGroupManager::start_put_file(int next_fragment)
 }
 
 
-void SharingGroupManager::get_file(int group_id, const std::string& remote_path, const std::string& local_path)
+void SharingFileManager::get_file(int group_id, const std::string& remote_path, const std::string& local_path)
 {
 	m_get_session.local_path = local_path;
 	m_get_session.group_id = group_id;
@@ -187,7 +198,7 @@ void SharingGroupManager::get_file(int group_id, const std::string& remote_path,
 }
 
 
-void SharingGroupManager::start_get_file()
+void SharingFileManager::start_get_file()
 {
 	int next_fragment = get_next_fragment(m_get_session.local_path);
 	for (int fragment_index = next_fragment; fragment_index < m_get_session.max_fragment; ++fragment_index)
@@ -200,9 +211,9 @@ void SharingGroupManager::start_get_file()
 }
 
 
-int SharingGroupManager::get_next_fragment(const std::string& local_path)
+int SharingFileManager::get_next_fragment(const std::string& local_path)
 {
-	std::string meta_filename = m_get_session.local_path + ".meta";
+	std::string meta_filename = m_get_session.local_path + META_FILE_PREFIX;
 	int next_fragment = 0;
 	std::ifstream meta_file(meta_filename);
 	while (meta_file)
@@ -213,15 +224,15 @@ int SharingGroupManager::get_next_fragment(const std::string& local_path)
 }
 
 
-void SharingGroupManager::set_next_fragment(const std::string& local_path, int next_fragment)
+void SharingFileManager::set_next_fragment(const std::string& local_path, int next_fragment)
 {
-	std::string meta_filename = m_get_session.local_path + ".meta";
+	std::string meta_filename = m_get_session.local_path + META_FILE_PREFIX;
 	lights::FileStream meta_file(meta_filename, "a");
 	meta_file << lights::format("{}\n", next_fragment);
 }
 
 
-void SharingGroupManager::create_path(int group_id, const std::string& path)
+void SharingFileManager::create_path(int group_id, const std::string& path)
 {
 	protocol::ReqCreatePath request;
 	request.set_group_id(group_id);
@@ -230,7 +241,7 @@ void SharingGroupManager::create_path(int group_id, const std::string& path)
 }
 
 
-void SharingGroupManager::remove_path(int group_id, const std::string& path, bool force_remove_all)
+void SharingFileManager::remove_path(int group_id, const std::string& path, bool force_remove_all)
 {
 	protocol::ReqRemovePath request;
 	request.set_group_id(group_id);
@@ -240,12 +251,13 @@ void SharingGroupManager::remove_path(int group_id, const std::string& path, boo
 }
 
 
-FileSession& SharingGroupManager::put_file_session()
+FileSession& SharingFileManager::put_file_session()
 {
 	return m_put_session;
 }
 
-FileSession& SharingGroupManager::get_file_session()
+
+FileSession& SharingFileManager::get_file_session()
 {
 	return m_get_session;
 }

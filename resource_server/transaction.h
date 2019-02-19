@@ -40,6 +40,8 @@ void on_kick_out_user(int conn_id, Package package);
 
 void on_create_path(int conn_id, Package package);
 
+void on_list_file(int conn_id, Package package);
+
 
 class PutFileSessionTrans: public MultiplyPhaseTransaction
 {

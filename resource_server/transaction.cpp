@@ -47,6 +47,18 @@ void convert_user(const User& server_user, protocol::User& proto_user)
 }
 
 
+void convert_file(const SharingFile& server_file, protocol::File& proto_file)
+{
+	proto_file.set_filename(server_file.file_name);
+	protocol::FileType type = protocol::FileType::GENERAL_FILE;
+	if (server_file.file_type == SharingFile::DIRECTORY)
+	{
+		type = protocol::FileType::DIRECTORY;
+	}
+	proto_file.set_type(type);
+}
+
+
 void on_register_user(int conn_id, Package package)
 {
 	protocol::ReqRegisterUser request;
@@ -282,6 +294,33 @@ void on_create_path(int conn_id, Package package)
 
 	group.create_path(request.path());
 
+	Network::send_back_protocol(conn_id, response, package);
+}
+
+
+void on_list_file(int conn_id, Package package)
+{
+	protocol::ReqListFile request;
+	protocol::RspListFile response;
+	package.parse_to_protocol(request);
+
+	User& user = UserManager::instance()->get_login_user(conn_id);
+	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+	int file_id = group.get_file_id(request.file_path());
+	SharingFile& file = SharingFileManager::instance()->get_file(file_id);
+	if (file.file_type != SharingFile::DIRECTORY)
+	{
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
+	}
+
+	SharingDirectory& directory = dynamic_cast<SharingDirectory&>(file);
+	for (int cur_file_id : directory.file_list)
+	{
+		SharingFile& sharing_file = SharingFileManager::instance()->get_file(cur_file_id);
+		protocol::File* proto_file = response.mutable_file_list()->Add();
+		convert_file(sharing_file, *proto_file);
+	}
+	
 	Network::send_back_protocol(conn_id, response, package);
 }
 

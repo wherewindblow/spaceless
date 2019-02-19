@@ -378,7 +378,7 @@ void SharingGroup::add_file(const FilePath& dir_path, int file_id)
 	SharingFile& dir_file = SharingFileManager::instance()->get_file(dir_id);
 	if (dir_file.file_type != SharingFile::DIRECTORY)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIR);
+		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
 	}
 
 	auto& dir = dynamic_cast<SharingDirectory&>(dir_file);
@@ -395,7 +395,7 @@ void SharingGroup::create_path(const FilePath& path)
 		SharingFile& parent = SharingFileManager::instance()->get_file(parent_id);
 		if (parent.file_type != SharingFile::DIRECTORY)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CREATE_DIR_MUST_UNDER_DIR);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
@@ -424,7 +424,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		SharingFile& parent = SharingFileManager::instance()->get_file(parent_id);
 		if (parent.file_type != SharingFile::DIRECTORY)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_INVALID_PATH);
+			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);

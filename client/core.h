@@ -114,16 +114,32 @@ public:
 
 	void kick_out_user(int group_id, int user_id);
 
+private:
+	using GroupList = std::map<int, SharingGroup>;
+	GroupList m_group_list;
+	int m_next_id = 1;
+	FileSession m_put_session;
+	FileSession m_get_session;
+};
+
+
+class SharingFileManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(SharingFileManager);
+
+	void list_file(int group_id, const std::string& file_path);
+
 	void put_file(int group_id, const std::string& local_path, const std::string& remote_path);
-	
+
 	void start_put_file(int next_fragment);
 
 	void get_file(int group_id, const std::string& remote_path, const std::string& local_path);
 
 	void start_get_file();
-	
+
 	int get_next_fragment(const std::string& local_path);
-	
+
 	void set_next_fragment(const std::string& local_path, int next_fragment);
 
 	void create_path(int group_id, const std::string& directory_path);
@@ -135,9 +151,6 @@ public:
 	FileSession& get_file_session();
 
 private:
-	using GroupList = std::map<int, SharingGroup>;
-	GroupList m_group_list;
-	int m_next_id = 1;
 	FileSession m_put_session;
 	FileSession m_get_session;
 };

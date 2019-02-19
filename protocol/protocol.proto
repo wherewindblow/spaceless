@@ -167,6 +167,30 @@ message RspKickOutUser
     int32 result = 1;
 }
 
+enum FileType
+{
+    GENERAL_FILE = 0;
+    DIRECTORY = 1;
+}
+
+message File
+{
+    string filename = 1;
+    FileType type = 2;
+}
+
+message ReqListFile
+{
+    int32 group_id = 1;
+    string file_path = 2;
+}
+
+message RspListFile
+{
+    int32 result = 1;
+    repeated File file_list = 2;
+}
+
 message ReqPutFileSession
 {
     int32 group_id = 1;

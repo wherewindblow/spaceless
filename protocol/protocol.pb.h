@@ -39,7 +39,7 @@ namespace protobuf_protocol_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[43];
+  static const ::google::protobuf::internal::ParseTable schema[46];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -48,6 +48,9 @@ void AddDescriptors();
 }  // namespace protobuf_protocol_2eproto
 namespace spaceless {
 namespace protocol {
+class File;
+class FileDefaultTypeInternal;
+extern FileDefaultTypeInternal _File_default_instance_;
 class ReqAssignAsManager;
 class ReqAssignAsManagerDefaultTypeInternal;
 extern ReqAssignAsManagerDefaultTypeInternal _ReqAssignAsManager_default_instance_;
@@ -75,6 +78,9 @@ extern ReqJoinGroupDefaultTypeInternal _ReqJoinGroup_default_instance_;
 class ReqKickOutUser;
 class ReqKickOutUserDefaultTypeInternal;
 extern ReqKickOutUserDefaultTypeInternal _ReqKickOutUser_default_instance_;
+class ReqListFile;
+class ReqListFileDefaultTypeInternal;
+extern ReqListFileDefaultTypeInternal _ReqListFile_default_instance_;
 class ReqLoginUser;
 class ReqLoginUserDefaultTypeInternal;
 extern ReqLoginUserDefaultTypeInternal _ReqLoginUser_default_instance_;
@@ -138,6 +144,9 @@ extern RspJoinGroupDefaultTypeInternal _RspJoinGroup_default_instance_;
 class RspKickOutUser;
 class RspKickOutUserDefaultTypeInternal;
 extern RspKickOutUserDefaultTypeInternal _RspKickOutUser_default_instance_;
+class RspListFile;
+class RspListFileDefaultTypeInternal;
+extern RspListFileDefaultTypeInternal _RspListFile_default_instance_;
 class RspLoginUser;
 class RspLoginUserDefaultTypeInternal;
 extern RspLoginUserDefaultTypeInternal _RspLoginUser_default_instance_;
@@ -181,6 +190,7 @@ extern UserDefaultTypeInternal _User_default_instance_;
 }  // namespace spaceless
 namespace google {
 namespace protobuf {
+template<> ::spaceless::protocol::File* Arena::CreateMaybeMessage<::spaceless::protocol::File>(Arena*);
 template<> ::spaceless::protocol::ReqAssignAsManager* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsManager>(Arena*);
 template<> ::spaceless::protocol::ReqAssignAsMember* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsMember>(Arena*);
 template<> ::spaceless::protocol::ReqCreatePath* Arena::CreateMaybeMessage<::spaceless::protocol::ReqCreatePath>(Arena*);
@@ -190,6 +200,7 @@ template<> ::spaceless::protocol::ReqGetFile* Arena::CreateMaybeMessage<::spacel
 template<> ::spaceless::protocol::ReqGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqGetFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqJoinGroup* Arena::CreateMaybeMessage<::spaceless::protocol::ReqJoinGroup>(Arena*);
 template<> ::spaceless::protocol::ReqKickOutUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqKickOutUser>(Arena*);
+template<> ::spaceless::protocol::ReqListFile* Arena::CreateMaybeMessage<::spaceless::protocol::ReqListFile>(Arena*);
 template<> ::spaceless::protocol::ReqLoginUser* Arena::CreateMaybeMessage<::spaceless::protocol::ReqLoginUser>(Arena*);
 template<> ::spaceless::protocol::ReqNodeGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqNodeGetFileSession>(Arena*);
 template<> ::spaceless::protocol::ReqNodePutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::ReqNodePutFileSession>(Arena*);
@@ -211,6 +222,7 @@ template<> ::spaceless::protocol::RspGetFile* Arena::CreateMaybeMessage<::spacel
 template<> ::spaceless::protocol::RspGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspGetFileSession>(Arena*);
 template<> ::spaceless::protocol::RspJoinGroup* Arena::CreateMaybeMessage<::spaceless::protocol::RspJoinGroup>(Arena*);
 template<> ::spaceless::protocol::RspKickOutUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspKickOutUser>(Arena*);
+template<> ::spaceless::protocol::RspListFile* Arena::CreateMaybeMessage<::spaceless::protocol::RspListFile>(Arena*);
 template<> ::spaceless::protocol::RspLoginUser* Arena::CreateMaybeMessage<::spaceless::protocol::RspLoginUser>(Arena*);
 template<> ::spaceless::protocol::RspNodeGetFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspNodeGetFileSession>(Arena*);
 template<> ::spaceless::protocol::RspNodePutFileSession* Arena::CreateMaybeMessage<::spaceless::protocol::RspNodePutFileSession>(Arena*);
@@ -249,6 +261,27 @@ inline bool MiscellaneousType_Parse(
     const ::std::string& name, MiscellaneousType* value) {
   return ::google::protobuf::internal::ParseNamedEnum<MiscellaneousType>(
     MiscellaneousType_descriptor(), name, value);
+}
+enum FileType {
+  GENERAL_FILE = 0,
+  DIRECTORY = 1,
+  FileType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  FileType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool FileType_IsValid(int value);
+const FileType FileType_MIN = GENERAL_FILE;
+const FileType FileType_MAX = DIRECTORY;
+const int FileType_ARRAYSIZE = FileType_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* FileType_descriptor();
+inline const ::std::string& FileType_Name(FileType value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    FileType_descriptor(), value);
+}
+inline bool FileType_Parse(
+    const ::std::string& name, FileType* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<FileType>(
+    FileType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -3283,6 +3316,358 @@ class RspKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
 };
 // -------------------------------------------------------------------
 
+class File : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.File) */ {
+ public:
+  File();
+  virtual ~File();
+
+  File(const File& from);
+
+  inline File& operator=(const File& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  File(File&& from) noexcept
+    : File() {
+    *this = ::std::move(from);
+  }
+
+  inline File& operator=(File&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const File& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const File* internal_default_instance() {
+    return reinterpret_cast<const File*>(
+               &_File_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    27;
+
+  void Swap(File* other);
+  friend void swap(File& a, File& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline File* New() const final {
+    return CreateMaybeMessage<File>(NULL);
+  }
+
+  File* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<File>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const File& from);
+  void MergeFrom(const File& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(File* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string filename = 1;
+  void clear_filename();
+  static const int kFilenameFieldNumber = 1;
+  const ::std::string& filename() const;
+  void set_filename(const ::std::string& value);
+  #if LANG_CXX11
+  void set_filename(::std::string&& value);
+  #endif
+  void set_filename(const char* value);
+  void set_filename(const char* value, size_t size);
+  ::std::string* mutable_filename();
+  ::std::string* release_filename();
+  void set_allocated_filename(::std::string* filename);
+
+  // .spaceless.protocol.FileType type = 2;
+  void clear_type();
+  static const int kTypeFieldNumber = 2;
+  ::spaceless::protocol::FileType type() const;
+  void set_type(::spaceless::protocol::FileType value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.File)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr filename_;
+  int type_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class ReqListFile : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqListFile) */ {
+ public:
+  ReqListFile();
+  virtual ~ReqListFile();
+
+  ReqListFile(const ReqListFile& from);
+
+  inline ReqListFile& operator=(const ReqListFile& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ReqListFile(ReqListFile&& from) noexcept
+    : ReqListFile() {
+    *this = ::std::move(from);
+  }
+
+  inline ReqListFile& operator=(ReqListFile&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ReqListFile& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ReqListFile* internal_default_instance() {
+    return reinterpret_cast<const ReqListFile*>(
+               &_ReqListFile_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    28;
+
+  void Swap(ReqListFile* other);
+  friend void swap(ReqListFile& a, ReqListFile& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ReqListFile* New() const final {
+    return CreateMaybeMessage<ReqListFile>(NULL);
+  }
+
+  ReqListFile* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ReqListFile>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ReqListFile& from);
+  void MergeFrom(const ReqListFile& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ReqListFile* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string file_path = 2;
+  void clear_file_path();
+  static const int kFilePathFieldNumber = 2;
+  const ::std::string& file_path() const;
+  void set_file_path(const ::std::string& value);
+  #if LANG_CXX11
+  void set_file_path(::std::string&& value);
+  #endif
+  void set_file_path(const char* value);
+  void set_file_path(const char* value, size_t size);
+  ::std::string* mutable_file_path();
+  ::std::string* release_file_path();
+  void set_allocated_file_path(::std::string* file_path);
+
+  // int32 group_id = 1;
+  void clear_group_id();
+  static const int kGroupIdFieldNumber = 1;
+  ::google::protobuf::int32 group_id() const;
+  void set_group_id(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ReqListFile)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr file_path_;
+  ::google::protobuf::int32 group_id_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class RspListFile : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspListFile) */ {
+ public:
+  RspListFile();
+  virtual ~RspListFile();
+
+  RspListFile(const RspListFile& from);
+
+  inline RspListFile& operator=(const RspListFile& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  RspListFile(RspListFile&& from) noexcept
+    : RspListFile() {
+    *this = ::std::move(from);
+  }
+
+  inline RspListFile& operator=(RspListFile&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const RspListFile& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const RspListFile* internal_default_instance() {
+    return reinterpret_cast<const RspListFile*>(
+               &_RspListFile_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    29;
+
+  void Swap(RspListFile* other);
+  friend void swap(RspListFile& a, RspListFile& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline RspListFile* New() const final {
+    return CreateMaybeMessage<RspListFile>(NULL);
+  }
+
+  RspListFile* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<RspListFile>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const RspListFile& from);
+  void MergeFrom(const RspListFile& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(RspListFile* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .spaceless.protocol.File file_list = 2;
+  int file_list_size() const;
+  void clear_file_list();
+  static const int kFileListFieldNumber = 2;
+  ::spaceless::protocol::File* mutable_file_list(int index);
+  ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File >*
+      mutable_file_list();
+  const ::spaceless::protocol::File& file_list(int index) const;
+  ::spaceless::protocol::File* add_file_list();
+  const ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File >&
+      file_list() const;
+
+  // int32 result = 1;
+  void clear_result();
+  static const int kResultFieldNumber = 1;
+  ::google::protobuf::int32 result() const;
+  void set_result(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.RspListFile)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File > file_list_;
+  ::google::protobuf::int32 result_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class ReqPutFileSession : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ReqPutFileSession) */ {
  public:
   ReqPutFileSession();
@@ -3318,7 +3703,7 @@ class ReqPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    27;
+    30;
 
   void Swap(ReqPutFileSession* other);
   friend void swap(ReqPutFileSession& a, ReqPutFileSession& b) {
@@ -3443,7 +3828,7 @@ class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    28;
+    31;
 
   void Swap(RspPutFileSession* other);
   friend void swap(RspPutFileSession& a, RspPutFileSession& b) {
@@ -3560,7 +3945,7 @@ class ReqNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_ReqNodePutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    29;
+    32;
 
   void Swap(ReqNodePutFileSession* other);
   friend void swap(ReqNodePutFileSession& a, ReqNodePutFileSession& b) {
@@ -3678,7 +4063,7 @@ class RspNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_RspNodePutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    30;
+    33;
 
   void Swap(RspNodePutFileSession* other);
   friend void swap(RspNodePutFileSession& a, RspNodePutFileSession& b) {
@@ -3788,7 +4173,7 @@ class ReqPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    31;
+    34;
 
   void Swap(ReqPutFile* other);
   friend void swap(ReqPutFile& a, ReqPutFile& b) {
@@ -3913,7 +4298,7 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    32;
+    35;
 
   void Swap(RspPutFile* other);
   friend void swap(RspPutFile& a, RspPutFile& b) {
@@ -4030,7 +4415,7 @@ class ReqGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    33;
+    36;
 
   void Swap(ReqGetFileSession* other);
   friend void swap(ReqGetFileSession& a, ReqGetFileSession& b) {
@@ -4148,7 +4533,7 @@ class RspGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    34;
+    37;
 
   void Swap(RspGetFileSession* other);
   friend void swap(RspGetFileSession& a, RspGetFileSession& b) {
@@ -4265,7 +4650,7 @@ class ReqNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_ReqNodeGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    35;
+    38;
 
   void Swap(ReqNodeGetFileSession* other);
   friend void swap(ReqNodeGetFileSession& a, ReqNodeGetFileSession& b) {
@@ -4376,7 +4761,7 @@ class RspNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_RspNodeGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    36;
+    39;
 
   void Swap(RspNodeGetFileSession* other);
   friend void swap(RspNodeGetFileSession& a, RspNodeGetFileSession& b) {
@@ -4493,7 +4878,7 @@ class ReqGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    37;
+    40;
 
   void Swap(ReqGetFile* other);
   friend void swap(ReqGetFile& a, ReqGetFile& b) {
@@ -4603,7 +4988,7 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    38;
+    41;
 
   void Swap(RspGetFile* other);
   friend void swap(RspGetFile& a, RspGetFile& b) {
@@ -4735,7 +5120,7 @@ class ReqCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    39;
+    42;
 
   void Swap(ReqCreatePath* other);
   friend void swap(ReqCreatePath& a, ReqCreatePath& b) {
@@ -4853,7 +5238,7 @@ class RspCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    40;
+    43;
 
   void Swap(RspCreatePath* other);
   friend void swap(RspCreatePath& a, RspCreatePath& b) {
@@ -4956,7 +5341,7 @@ class ReqRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    41;
+    44;
 
   void Swap(ReqRemovePath* other);
   friend void swap(ReqRemovePath& a, ReqRemovePath& b) {
@@ -5081,7 +5466,7 @@ class RspRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    42;
+    45;
 
   void Swap(RspRemovePath* other);
   friend void swap(RspRemovePath& a, RspRemovePath& b) {
@@ -6416,6 +6801,196 @@ inline void RspKickOutUser::set_result(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
+// File
+
+// string filename = 1;
+inline void File::clear_filename() {
+  filename_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& File::filename() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.File.filename)
+  return filename_.GetNoArena();
+}
+inline void File::set_filename(const ::std::string& value) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.File.filename)
+}
+#if LANG_CXX11
+inline void File::set_filename(::std::string&& value) {
+  
+  filename_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.File.filename)
+}
+#endif
+inline void File::set_filename(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.File.filename)
+}
+inline void File::set_filename(const char* value, size_t size) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.File.filename)
+}
+inline ::std::string* File::mutable_filename() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.File.filename)
+  return filename_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* File::release_filename() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.File.filename)
+  
+  return filename_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void File::set_allocated_filename(::std::string* filename) {
+  if (filename != NULL) {
+    
+  } else {
+    
+  }
+  filename_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), filename);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.File.filename)
+}
+
+// .spaceless.protocol.FileType type = 2;
+inline void File::clear_type() {
+  type_ = 0;
+}
+inline ::spaceless::protocol::FileType File::type() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.File.type)
+  return static_cast< ::spaceless::protocol::FileType >(type_);
+}
+inline void File::set_type(::spaceless::protocol::FileType value) {
+  
+  type_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.File.type)
+}
+
+// -------------------------------------------------------------------
+
+// ReqListFile
+
+// int32 group_id = 1;
+inline void ReqListFile::clear_group_id() {
+  group_id_ = 0;
+}
+inline ::google::protobuf::int32 ReqListFile::group_id() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqListFile.group_id)
+  return group_id_;
+}
+inline void ReqListFile::set_group_id(::google::protobuf::int32 value) {
+  
+  group_id_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqListFile.group_id)
+}
+
+// string file_path = 2;
+inline void ReqListFile::clear_file_path() {
+  file_path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& ReqListFile::file_path() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ReqListFile.file_path)
+  return file_path_.GetNoArena();
+}
+inline void ReqListFile::set_file_path(const ::std::string& value) {
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ReqListFile.file_path)
+}
+#if LANG_CXX11
+inline void ReqListFile::set_file_path(::std::string&& value) {
+  
+  file_path_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:spaceless.protocol.ReqListFile.file_path)
+}
+#endif
+inline void ReqListFile::set_file_path(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:spaceless.protocol.ReqListFile.file_path)
+}
+inline void ReqListFile::set_file_path(const char* value, size_t size) {
+  
+  file_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:spaceless.protocol.ReqListFile.file_path)
+}
+inline ::std::string* ReqListFile::mutable_file_path() {
+  
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.ReqListFile.file_path)
+  return file_path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* ReqListFile::release_file_path() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.ReqListFile.file_path)
+  
+  return file_path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void ReqListFile::set_allocated_file_path(::std::string* file_path) {
+  if (file_path != NULL) {
+    
+  } else {
+    
+  }
+  file_path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), file_path);
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.ReqListFile.file_path)
+}
+
+// -------------------------------------------------------------------
+
+// RspListFile
+
+// int32 result = 1;
+inline void RspListFile::clear_result() {
+  result_ = 0;
+}
+inline ::google::protobuf::int32 RspListFile::result() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspListFile.result)
+  return result_;
+}
+inline void RspListFile::set_result(::google::protobuf::int32 value) {
+  
+  result_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.RspListFile.result)
+}
+
+// repeated .spaceless.protocol.File file_list = 2;
+inline int RspListFile::file_list_size() const {
+  return file_list_.size();
+}
+inline void RspListFile::clear_file_list() {
+  file_list_.Clear();
+}
+inline ::spaceless::protocol::File* RspListFile::mutable_file_list(int index) {
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspListFile.file_list)
+  return file_list_.Mutable(index);
+}
+inline ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File >*
+RspListFile::mutable_file_list() {
+  // @@protoc_insertion_point(field_mutable_list:spaceless.protocol.RspListFile.file_list)
+  return &file_list_;
+}
+inline const ::spaceless::protocol::File& RspListFile::file_list(int index) const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspListFile.file_list)
+  return file_list_.Get(index);
+}
+inline ::spaceless::protocol::File* RspListFile::add_file_list() {
+  // @@protoc_insertion_point(field_add:spaceless.protocol.RspListFile.file_list)
+  return file_list_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File >&
+RspListFile::file_list() const {
+  // @@protoc_insertion_point(field_list:spaceless.protocol.RspListFile.file_list)
+  return file_list_;
+}
+
+// -------------------------------------------------------------------
+
 // ReqPutFileSession
 
 // int32 group_id = 1;
@@ -7409,6 +7984,12 @@ inline void RspRemovePath::set_result(::google::protobuf::int32 value) {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -7422,6 +8003,11 @@ template <> struct is_proto_enum< ::spaceless::protocol::MiscellaneousType> : ::
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::spaceless::protocol::MiscellaneousType>() {
   return ::spaceless::protocol::MiscellaneousType_descriptor();
+}
+template <> struct is_proto_enum< ::spaceless::protocol::FileType> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::spaceless::protocol::FileType>() {
+  return ::spaceless::protocol::FileType_descriptor();
 }
 
 }  // namespace protobuf
