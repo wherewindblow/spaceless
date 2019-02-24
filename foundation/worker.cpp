@@ -79,25 +79,18 @@ void Worker::run()
 
 	while (!stop_flag)
 	{
-		bool need_sleep = false;
+		bool have_message = false;
 		if (!NetworkMessageQueue::instance()->empty(NetworkMessageQueue::IN_QUEUE))
 		{
+			have_message = true;
 			auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::IN_QUEUE);
 			process_message(msg);
 		}
-		else
-		{
-			need_sleep = true;
-		}
 
-		int expiry_count = 0;
-		do
-		{
-			expiry_count = TimerManager::instance()->process_expiry_timer();
-		}
-		while (expiry_count != 0); // TODO: When have `CALL_FREQUENTLY` timer or timer expiry action will insert a new timer and the expiry time is too precise to break loop. Because `process_expiry_timer` and include expiry action will spend some time.
+		int expiry_count = TimerManager::instance()->process_expiry_timer();
+		bool have_expiry_time = expiry_count != 0;
 
-		if (need_sleep)
+		if (!have_message && !have_expiry_time)
 		{
 			Poco::Thread::current()->sleep(WORKER_IDLE_SLEEP_MS);
 		}
