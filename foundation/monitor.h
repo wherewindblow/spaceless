@@ -51,10 +51,10 @@ private:
  * @note Manager must have function that signature is `std::sizt size()`.
  */
 #define SPACELESS_REG_MANAGER(class_name)                                     \
-{                                                                             \
+do {                                                                             \
 	auto get_size_func = []() { return class_name::instance()->size(); };     \
 	ManagerMonitor::instance()->register_manager(#class_name, get_size_func); \
-}
+} while (false)
 
 /**
  * Creates manager constructor and register manager to monitor.

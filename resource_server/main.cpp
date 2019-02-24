@@ -73,26 +73,29 @@ int main(int argc, const char* argv[])
 		NetworkManager::instance()->register_listener(ip, static_cast<unsigned short>(port));
 
 		// Sets root user setting.
-		std::string root_user_name = configuration.getString("root_user.name");
-		std::string root_user_pwd = configuration.getString("root_user.password");
-		User& root = UserManager::instance()->register_user(root_user_name, root_user_pwd);
-		std::string root_group_name = configuration.getString("root_user.group");
-		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
+//		std::string root_user_name = configuration.getString("root_user.name");
+//		std::string root_user_pwd = configuration.getString("root_user.password");
+//		User& root = UserManager::instance()->register_user(root_user_name, root_user_pwd);
+//		std::string root_group_name = configuration.getString("root_user.group");
+//		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
+
+		SPACELESS_REG_STORAGE(UserManager);
+		DataStorageManager::instance()->restore();
 
 		using namespace transaction;
 		SPACELESS_REG_ONE_TRANS(protocol::ReqPing, on_ping);
-		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterUser, on_register_user)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqLoginUser, on_login_user)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqRemoveUser, on_remove_user)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqFindUser, on_find_user)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterGroup, on_register_group)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqFindGroup, on_find_group)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqJoinGroup, on_join_group)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsManager, on_assign_as_manager)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsMember, on_assign_as_member)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqKickOutUser, on_kick_out_user)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqCreatePath, on_create_path)
-		SPACELESS_REG_ONE_TRANS(protocol::ReqListFile, on_list_file)
+		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterUser, on_register_user);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqLoginUser, on_login_user);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqRemoveUser, on_remove_user);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqFindUser, on_find_user);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterGroup, on_register_group);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqFindGroup, on_find_group);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqJoinGroup, on_join_group);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsManager, on_assign_as_manager);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqAssignAsMember, on_assign_as_member);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqKickOutUser, on_kick_out_user);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqCreatePath, on_create_path);
+		SPACELESS_REG_ONE_TRANS(protocol::ReqListFile, on_list_file);
 
 		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqPutFileSession, PutFileSessionTrans::factory);
 		SPACELESS_REG_MULTIPLE_TRANS(protocol::ReqPutFile, PutFileTrans::factory);

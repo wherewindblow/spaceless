@@ -8,21 +8,50 @@
 
 #include <algorithm>
 #include <utility>
+#include <fstream>
 
 #include <lights/file.h>
 #include <foundation/log.h>
 #include <foundation/exception.h>
 #include <foundation/delegation.h>
 #include <foundation/network.h>
+#include <foundation/worker.h>
 
 #include <Poco/String.h>
 #include <Poco/StringTokenizer.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Parser.h>
 
 
 namespace spaceless {
 namespace resource_server {
 
+namespace JSON = Poco::JSON;
+
+const std::string DATA_FILENAME = "../data/data.json";
+const int STORE_DATA_PER_SEC = 10;
+const int DATA_INDENT = 4;
+
 static Logger& logger = get_logger("core");
+
+User::User(Poco::DynamicAny data)
+{
+	JSON::Object::Ptr object = data.extract<JSON::Object::Ptr>();
+	user_id = object->getValue<int>("user_id");
+	user_name = object->getValue<std::string>("user_name");
+	password = object->getValue<std::string>("password");
+}
+
+
+Poco::DynamicAny User::store()
+{
+	JSON::Object::Ptr object = new JSON::Object;
+	object->set("user_id", user_id);
+	object->set("user_name", user_name);
+	object->set("password", password);
+	return object;
+}
+
 
 User& UserManager::register_user(const std::string& username, const std::string& password)
 {
@@ -140,6 +169,33 @@ User& UserManager::get_login_user(int conn_id)
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_LOGIN);
 	}
 	return *user;
+}
+
+
+Poco::DynamicAny UserManager::store()
+{
+	JSON::Array::Ptr array = new JSON::Array();
+	for (auto& pair : m_user_list )
+	{
+		array->add(pair.second.store());
+	}
+	return array;
+}
+
+
+void UserManager::restore(Poco::DynamicAny data)
+{
+	if (data.isEmpty())
+	{
+		return;
+	}
+
+	JSON::Array::Ptr array = data.extract<JSON::Array::Ptr>();
+	for (unsigned int i = 0; i < array->size(); ++i)
+	{
+		User user(array->get(i));
+		m_user_list.insert(std::make_pair(user.user_id, user));
+	}
 }
 
 
@@ -1014,6 +1070,72 @@ FileSessionManager::Session* FileSessionManager::find_session(int group_id, cons
 	}
 
 	return &session_itr->second;
+}
+
+
+DataStorageManager::DataStorageManager()
+{
+	auto action = []() {
+		DataStorageManager::instance()->store();
+	};
+
+	TimerManager::instance()->start_timer(lights::PreciseTime(STORE_DATA_PER_SEC), action, TimerCallPolicy::CALL_FREQUENTLY);
+}
+
+
+void DataStorageManager::register_storage(const std::string& name,
+										  StoreData store_data,
+										  RestoreData restore_data)
+{
+	DataOperations operations{ store_data, restore_data };
+	auto pair = std::make_pair(name, operations);
+	m_operation_list.insert(pair);
+}
+
+
+void DataStorageManager::remove_storage(const std::string& name)
+{
+	m_operation_list.erase(name);
+}
+
+
+void DataStorageManager::store()
+{
+	JSON::Object object;
+	for (auto& itr : m_operation_list)
+	{
+		Poco::DynamicAny data = itr.second.store_data();
+		object.set(itr.first, data);
+	}
+
+	std::ofstream file(DATA_FILENAME);
+	if (!file.good())
+	{
+		LIGHTS_ERROR(logger, "Cannot open file {}", DATA_FILENAME);
+		return;
+	}
+
+	object.stringify(file, DATA_INDENT);
+}
+
+
+void DataStorageManager::restore()
+{
+	std::ifstream file(DATA_FILENAME);
+	JSON::Parser parser;
+	parser.parse(file);
+	Poco::DynamicAny result = parser.result();
+	if (result.isEmpty())
+	{
+		return;
+	}
+
+	auto object = result.extract<JSON::Object::Ptr>();
+	for (auto& itr : m_operation_list)
+	{
+		Poco::DynamicAny data = object->get(itr.first);
+		itr.second.restore_data(data);
+	}
 }
 
 } // namespace resource_server

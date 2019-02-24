@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.8)
 project(spaceless)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0")
-
+# NOTE: Must define same macro that same with building. Because it maybe use to switch that place more variable
+#       and not do that will leak to segment failure.
+# POCO_ENABLE_CPP11 also can define in Poco/Config.h.
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O0 -DPOCO_ENABLE_CPP11")
 
 add_subdirectory(lights)
 add_subdirectory(foundation)

@@ -15,6 +15,7 @@
 #include <lights/sequence.h>
 #include <foundation/basics.h>
 #include <Poco/StringTokenizer.h>
+#include <Poco/Dynamic/Var.h>
 
 
 namespace spaceless {
@@ -66,6 +67,10 @@ struct User
 		conn_id(0)
 	{}
 
+	User(Poco::DynamicAny data);
+
+	Poco::DynamicAny store();
+
 	int user_id;
 	std::string user_name;
 	std::string password;
@@ -102,6 +107,10 @@ public:
 	User* find_login_user(int conn_id);
 
 	User& get_login_user(int conn_id);
+
+	Poco::DynamicAny store();
+
+	void restore(Poco::DynamicAny data);
 
 private:
 	using UserList = std::map<int, User>;
@@ -448,6 +457,43 @@ private:
 	std::map<int, std::map<std::string, int>> m_group_session_list;
 	int m_next_id = 1;
 };
+
+
+class DataStorageManager
+{
+public:
+	SPACELESS_SINGLETON_INSTANCE(DataStorageManager);
+
+	using StoreData = std::function<Poco::DynamicAny()>;
+	using RestoreData = std::function<void(Poco::DynamicAny)>;
+
+	DataStorageManager();
+
+	void register_storage(const std::string& name, StoreData store_data, RestoreData restore_data);
+
+	void remove_storage(const std::string& name);
+
+	void store();
+
+	void restore();
+
+private:
+	struct DataOperations
+	{
+		StoreData store_data;
+		RestoreData restore_data;
+	};
+
+	std::map<std::string, DataOperations> m_operation_list;
+};
+
+
+#define SPACELESS_REG_STORAGE(class_name) \
+do { \
+    auto store = []() { return class_name::instance()->store(); };     \
+    auto restore = [](Poco::DynamicAny data) { class_name::instance()->restore(data); };     \
+    DataStorageManager::instance()->register_storage(#class_name, store, restore); \
+} while (false)
 
 } // namespace resource_server
 } // namespace spaceless

@@ -404,10 +404,10 @@ private:
 
 
 #define SPACELESS_REG_ONE_TRANS(ProtocolType, ...) \
-		TransactionManager::instance()->register_one_phase_transaction(ProtocolType(), __VA_ARGS__);
+		TransactionManager::instance()->register_one_phase_transaction(ProtocolType(), __VA_ARGS__)
 
 #define SPACELESS_REG_MULTIPLE_TRANS(ProtocolType, ...) \
-		TransactionManager::instance()->register_multiply_phase_transaction(ProtocolType(), __VA_ARGS__);
+		TransactionManager::instance()->register_multiply_phase_transaction(ProtocolType(), __VA_ARGS__)
 
 
 // ================================= Inline implement. =================================

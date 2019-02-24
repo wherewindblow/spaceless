@@ -16,4 +16,5 @@ target_link_libraries(spaceless_resource_server
         cryptopp
         PocoFoundation
         PocoNet
-        PocoUtil)
+        PocoUtil
+        PocoJSON)

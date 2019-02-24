@@ -94,7 +94,7 @@ void Worker::run()
 		{
 			expiry_count = TimerManager::instance()->process_expiry_timer();
 		}
-		while (expiry_count != 0);
+		while (expiry_count != 0); // TODO: When have `CALL_FREQUENTLY` timer or timer expiry action will insert a new timer and the expiry time is too precise to break loop. Because `process_expiry_timer` and include expiry action will spend some time.
 
 		if (need_sleep)
 		{
