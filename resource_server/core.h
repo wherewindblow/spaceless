@@ -488,11 +488,12 @@ private:
 };
 
 
-#define SPACELESS_REG_STORAGE(class_name) \
-do { \
-    auto store = []() { return class_name::instance()->store(); };     \
-    auto restore = [](Poco::DynamicAny data) { class_name::instance()->restore(data); };     \
-    DataStorageManager::instance()->register_storage(#class_name, store, restore); \
+#define SPACELESS_REG_STORAGE(class_name)                                                \
+do                                                                                       \
+{                                                                                        \
+    auto store = []() { return class_name::instance()->store(); };                       \
+    auto restore = [](Poco::DynamicAny data) { class_name::instance()->restore(data); }; \
+    DataStorageManager::instance()->register_storage(#class_name, store, restore);       \
 } while (false)
 
 } // namespace resource_server

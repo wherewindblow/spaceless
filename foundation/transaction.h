@@ -265,8 +265,6 @@ class MultiplyPhaseTransactionManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(MultiplyPhaseTransactionManager);
 
-	SPACELESS_AUTO_REG_MANAGER(MultiplyPhaseTransactionManager);
-
 	/**
 	 * Registers multiply phase transaction.
 	 */

@@ -72,9 +72,10 @@ void Worker::run()
 	LIGHTS_INFO(logger, "Running worker.");
 
 	// Package manager instance may be create in network thread. But monitor only can be use in worker thread.
-	SPACELESS_REG_MANAGER(PackageManager);
+	SPACELESS_REG_MONITOR(PackageManager);
 	// Monitor constructor need timer manager. If register in timer constructor will lead to dead lock.
-	SPACELESS_REG_MANAGER(TimerManager);
+	SPACELESS_REG_MONITOR(TimerManager);
+	SPACELESS_REG_MONITOR(MultiplyPhaseTransactionManager);
 
 	while (!stop_flag)
 	{

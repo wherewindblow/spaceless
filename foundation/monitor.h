@@ -16,51 +16,45 @@
 namespace spaceless {
 
 /**
- * Monitor manager state.
+ * Monitor state.
  */
-class ManagerMonitor
+class MonitorManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(ManagerMonitor);
+	SPACELESS_SINGLETON_INSTANCE(MonitorManager);
 
 	using GetSizeFunction = std::function<std::size_t()>;
 
 	/**
-	 * Creates manager monitor.
+	 * Creates monitor manager.
 	 */
-	ManagerMonitor();
+	MonitorManager();
 
 	/**
-	 * Register manager and monitor manager state.
+	 * Register monitor to monitor state.
 	 * @throw Throws exception if register failure.
 	 */
-	void register_manager(const std::string& name, GetSizeFunction get_size_func);
+	void register_monitor(const std::string& name, GetSizeFunction get_size_func);
 
 	/**
-	 * Remove manager and not monitor manager state no longer.
+	 * Remove monitor.
 	 */
-	void remove_manager(const std::string& name);
+	void remove_monitor(const std::string& name);
 
 private:
-	std::map<std::string, GetSizeFunction> m_manager_list;
+	std::map<std::string, GetSizeFunction> m_monitor_list;
 };
 
 
 /**
- * Register manager to monitor.
- * @note Manager must have function that signature is `std::sizt size()`.
- */
-#define SPACELESS_REG_MANAGER(class_name)                                     \
-do {                                                                             \
-	auto get_size_func = []() { return class_name::instance()->size(); };     \
-	ManagerMonitor::instance()->register_manager(#class_name, get_size_func); \
-} while (false)
-
-/**
- * Creates manager constructor and register manager to monitor.
+ * Register monitor to monitor state.
  * @note Manager must have function that signature is `std::size_t size()`.
  */
-#define SPACELESS_AUTO_REG_MANAGER(class_name) \
-	class_name() {SPACELESS_REG_MANAGER(class_name);}
+#define SPACELESS_REG_MONITOR(class_name)                                     \
+do                                                                            \
+{                                                                             \
+	auto get_size_func = []() { return class_name::instance()->size(); };     \
+	MonitorManager::instance()->register_monitor(#class_name, get_size_func); \
+} while (false)
 
 } // namespace spaceless
