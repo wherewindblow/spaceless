@@ -62,19 +62,19 @@ public:
 	SPACELESS_SINGLETON_INSTANCE(TimerManager);
 
 	/**
-	 * Starts timer and call @c expiry_action at time expiry.
+	 * Registers timer and call @c expiry_action at time expiry.
 	 * @param delay Default is using value of @c interval.
 	 * @return Returns time id.
 	 */
-	int start_timer(lights::PreciseTime interval,
-					std::function<void()> expiry_action,
-					TimerCallPolicy call_policy = TimerCallPolicy::CALL_ONCE,
-					lights::PreciseTime delay = lights::PreciseTime(0, 0));
+	int register_timer(lights::PreciseTime interval,
+					   std::function<void()> expiry_action,
+					   TimerCallPolicy call_policy = TimerCallPolicy::CALL_ONCE,
+					   lights::PreciseTime delay = lights::PreciseTime(0, 0));
 
 	/**
-	 * Stops timer.
+	 * Removes timer.
 	 */
-	void stop_timer(int time_id);
+	void remove_timer(int time_id);
 
 	/**
 	 * Process expiry timer if have.

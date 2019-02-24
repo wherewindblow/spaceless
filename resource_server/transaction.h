@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <foundation/package.h>
 #include <foundation/transaction.h>
 #include <protocol/all.h>
 

@@ -419,10 +419,10 @@ bool WorkerScheduler::is_worker_running()
 }
 
 
-int TimerManager::start_timer(lights::PreciseTime interval,
-							  std::function<void()> expiry_action,
-							  TimerCallPolicy call_policy,
-							  lights::PreciseTime delay)
+int TimerManager::register_timer(lights::PreciseTime interval,
+								 std::function<void()> expiry_action,
+								 TimerCallPolicy call_policy,
+								 lights::PreciseTime delay)
 {
 	if (delay.seconds == 0)
 	{
@@ -444,7 +444,7 @@ int TimerManager::start_timer(lights::PreciseTime interval,
 }
 
 
-void TimerManager::stop_timer(int time_id)
+void TimerManager::remove_timer(int time_id)
 {
 	auto itr = std::remove_if(m_timer_queue.begin(), m_timer_queue.end(), [&](const Timer& timer)
 	{

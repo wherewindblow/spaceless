@@ -276,7 +276,7 @@ void DelayTesting::start_testing()
 	};
 
 	lights::PreciseTime time(DELAY_TESTING_TIME);
-	TimerManager::instance()->start_timer(time, expiry_action, TimerCallPolicy::CALL_FREQUENTLY, time);
+	TimerManager::instance()->register_timer(time, expiry_action, TimerCallPolicy::CALL_FREQUENTLY, time);
 }
 
 

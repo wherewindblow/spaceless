@@ -1075,11 +1075,10 @@ FileSessionManager::Session* FileSessionManager::find_session(int group_id, cons
 
 DataStorageManager::DataStorageManager()
 {
-	auto action = []() {
+	TimerManager::instance()->register_timer(lights::PreciseTime(STORE_DATA_PER_SEC), []()
+	{
 		DataStorageManager::instance()->store();
-	};
-
-	TimerManager::instance()->start_timer(lights::PreciseTime(STORE_DATA_PER_SEC), action, TimerCallPolicy::CALL_FREQUENTLY);
+	}, TimerCallPolicy::CALL_FREQUENTLY);
 }
 
 

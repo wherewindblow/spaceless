@@ -2,6 +2,7 @@
 #include <thread>
 
 #include <lights/ostream.h>
+#include <foundation/package.h>
 #include <foundation/network.h>
 #include <foundation/transaction.h>
 #include <foundation/scheduler.h>

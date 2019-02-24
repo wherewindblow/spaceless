@@ -131,7 +131,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 	m_is_waiting = true;
 
 	int trans_id = m_id; // Cannot capture this. It maybe remove on timeout.
-	TimerManager::instance()->start_timer(lights::PreciseTime(timeout), [trans_id]()
+	TimerManager::instance()->register_timer(lights::PreciseTime(timeout), [trans_id]()
 	{
 		auto trans = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
 		if (!trans)
@@ -140,9 +140,9 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 		}
 
 		LIGHTS_DEBUG(logger, "Connection {}: Transaction timeout. trans_id={}, phase={}.",
-						trans->waiting_connection_id(),
-						trans_id,
-						trans->current_phase());
+					 trans->waiting_connection_id(),
+					 trans_id,
+					 trans->current_phase());
 
 		trans->clear_waiting_state();
 		trans->on_timeout();
