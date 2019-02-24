@@ -77,6 +77,7 @@ void Worker::run()
 	SPACELESS_REG_MONITOR(TimerManager);
 	SPACELESS_REG_MONITOR(MultiplyPhaseTransactionManager);
 
+	int idle_times = 0;
 	while (!stop_flag)
 	{
 		bool have_message = false;
@@ -92,7 +93,19 @@ void Worker::run()
 
 		if (!have_message && !have_expiry_time)
 		{
-			Poco::Thread::current()->sleep(WORKER_IDLE_SLEEP_MS);
+			long time = WORKER_IDLE_SLEEP_MS;
+			++idle_times;
+			if (idle_times > WORKER_LONG_IDLE_TIMES)
+			{
+				time = WORKER_LONG_IDLE_SLEEP_MS;
+				idle_times = 0;
+			}
+
+			Poco::Thread::current()->sleep(time);
+		}
+		else
+		{
+			idle_times = 0;
 		}
 	}
 

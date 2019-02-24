@@ -22,7 +22,7 @@ namespace client {
 
 int conn_id = 0;
 
-const int DELAY_TESTING_TIME = 60;
+const int DELAY_TESTING_PER_SEC = 60;
 
 const std::string META_FILE_PREFIX = ".meta";
 
@@ -275,7 +275,7 @@ void DelayTesting::start_testing()
 		Network::send_protocol(conn_id, request);
 	};
 
-	lights::PreciseTime time(DELAY_TESTING_TIME);
+	lights::PreciseTime time(DELAY_TESTING_PER_SEC);
 	TimerManager::instance()->register_timer(time, expiry_action, TimerCallPolicy::CALL_FREQUENTLY, time);
 }
 

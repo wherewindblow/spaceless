@@ -18,7 +18,7 @@ static Logger& logger = get_logger("monitor");
 
 MonitorManager::MonitorManager()
 {
-	TimerManager::instance()->register_timer(lights::PreciseTime(MONITOR_MANAGER_STATE_PERIOD_SEC), [&]
+	TimerManager::instance()->register_timer(lights::PreciseTime(MONITOR_STATE_PER_SEC), [&]
 	{
 		for (auto& pair : m_monitor_list)
 		{
