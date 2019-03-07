@@ -62,7 +62,7 @@ public:
 
 	void on_timeout() override;
 
-	void on_error(int conn_id, const Exception& ex) override;
+	void on_error(int conn_id, int error_code) override;
 
 private:
 	int m_session_id;
@@ -108,7 +108,7 @@ public:
 
 	void on_timeout() override;
 
-	void on_error(int conn_id, const Exception& ex) override;
+	void on_error(int conn_id, int error_code) override;
 
 private:
 	int m_session_id;

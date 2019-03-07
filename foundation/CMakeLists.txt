@@ -2,7 +2,7 @@ include_directories(..)
 
 set(SPACELESS_FOUNDATION_SRC
         basics.h basics.cpp
-        exception.h
+        exception.h exception.cpp
         log.h log.cpp
         package.h package.cpp
         network.h network.cpp

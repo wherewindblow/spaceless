@@ -116,9 +116,9 @@ void MultiplyPhaseTransaction::on_timeout()
 }
 
 
-void MultiplyPhaseTransaction::on_error(int conn_id, const Exception& ex)
+void MultiplyPhaseTransaction::on_error(int conn_id, int error_code)
 {
-	on_transaction_error(m_first_conn_id, m_first_trigger_source, ex);
+	on_transaction_error(m_first_conn_id, m_first_trigger_source, error_code);
 }
 
 
@@ -240,10 +240,10 @@ MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_bound_transactio
 }
 
 
-void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
+void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, int error_code)
 {
 	protocol::RspError error;
-	error.set_result(ex.code());
+	error.set_result(error_code);
 	Network::send_back_protocol(conn_id, error, trigger_source);
 }
 

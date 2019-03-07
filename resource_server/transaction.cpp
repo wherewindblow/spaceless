@@ -425,10 +425,10 @@ void PutFileSessionTrans::on_timeout()
 }
 
 
-void PutFileSessionTrans::on_error(int conn_id, const Exception& ex)
+void PutFileSessionTrans::on_error(int conn_id, int error_code)
 {
 	FileSessionManager::instance()->remove_session(m_session_id);
-	MultiplyPhaseTransaction::on_error(conn_id, ex);
+	MultiplyPhaseTransaction::on_error(conn_id, error_code);
 }
 
 
@@ -579,10 +579,10 @@ void GetFileSessionTrans::on_timeout()
 }
 
 
-void GetFileSessionTrans::on_error(int conn_id, const Exception& ex)
+void GetFileSessionTrans::on_error(int conn_id, int error_code)
 {
 	FileSessionManager::instance()->remove_session(m_session_id);
-	MultiplyPhaseTransaction::on_error(conn_id, ex);
+	MultiplyPhaseTransaction::on_error(conn_id, error_code);
 }
 
 

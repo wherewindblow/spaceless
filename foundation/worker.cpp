@@ -50,17 +50,17 @@ private:
 
 	void trigger_transaction(const NetworkMessage& msg);
 
-	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, const Exception&)>;
+	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, int)>;
 
-	bool safe_call_trans(int conn_id,
-						int trans_id,
-						Package package,
-						ErrorHandler error_handler,
-						std::function<void()> function);
+	bool call_transaction(int conn_id,
+						  int trans_id,
+						  Package package,
+						  ErrorHandler error_handler,
+						  std::function<void()> function);
 
 	const std::string& get_name(int cmd);
 
-	bool safe_call_delegate(std::function<void()> function, lights::StringView caller);
+	bool call_delegate(std::function<void()> function, lights::StringView caller);
 };
 
 
@@ -123,7 +123,7 @@ void Worker::process_message(const NetworkMessage& msg)
 
 	if (msg.delegate != nullptr)
 	{
-		safe_call_delegate(msg.delegate, msg.caller);
+		call_delegate(msg.delegate, msg.caller);
 	}
 }
 
@@ -162,7 +162,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 								 conn_id, command, get_name(command));
 					auto trans_handler = reinterpret_cast<OnePhaseTransaction>(trans->trans_handler);
 
-					safe_call_trans(conn_id, 0, package, trans->error_handler, [&]()
+					call_transaction(conn_id, 0, package, trans->error_handler, [&]()
 					{
 						trans_handler(conn_id, package);
 					});
@@ -182,12 +182,12 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 								 trans_id);
 					trans_handler.pre_on_init(conn_id, package);
 
-					auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
+					auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, int error_code)
 					{
-						trans_handler.on_error(conn_id, ex);
+						trans_handler.on_error(conn_id, error_code);
 					};
 
-					safe_call_trans(conn_id, trans_id, package, error_handler, [&]()
+					call_transaction(conn_id, trans_id, package, error_handler, [&]()
 					{
 						trans_handler.on_init(conn_id, package);
 					});
@@ -241,12 +241,12 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 
 			waiting_trans->clear_waiting_state();
 
-			auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex)
+			auto error_handler = [&](int conn_id, const PackageTriggerSource& trigger_source, int error_code)
 			{
-				waiting_trans->on_error(conn_id, ex);
+				waiting_trans->on_error(conn_id, error_code);
 			};
 
-			safe_call_trans(conn_id, trans_id, package, error_handler, [&]()
+			call_transaction(conn_id, trans_id, package, error_handler, [&]()
 			{
 				waiting_trans->on_active(conn_id, package);
 			});
@@ -276,70 +276,30 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 }
 
 
-bool Worker::safe_call_trans(int conn_id,
-							int trans_id,
-							Package package,
-							ErrorHandler error_handler,
-							std::function<void()> function)
+bool Worker::call_transaction(int conn_id,
+							  int trans_id,
+							  Package package,
+							  ErrorHandler error_handler,
+							  std::function<void()> function)
 {
-	try
+	int error_code = 0;
+	LIGHTS_DEFAULT_TEXT_WRITER(error_msg);
+	if (!safe_call(function, error_msg, &error_code))
 	{
-		function();
-		return true;
-	}
-	catch (Exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Connection {}: Exception. trans_id={}, code={}, msg={}.",
-					 conn_id, trans_id, ex.code(), ex);
+		LIGHTS_ERROR(logger, "Connection {}: Transaction error. trans_id={}. {}.", conn_id, trans_id, error_msg.c_str());
+
 		if (error_handler != nullptr)
 		{
-			try
-			{
-				error_handler(conn_id, package.get_trigger_source(), ex);
-			}
-			catch (Exception& ex)
-			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error Exception. code={}, msg={}.", conn_id, ex.code(), ex);
-			}
-			catch (Poco::Exception& ex)
-			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error Poco::Exception. name={}, msg={}.",
-								conn_id,
-								ex.name(),
-								ex.message());
-			}
-			catch (std::exception& ex)
-			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error std::exception. name={}, msg={}.",
-								conn_id,
-								typeid(ex).name(),
-								ex.what());
-			}
-			catch (...)
-			{
-				LIGHTS_ERROR(logger, "Connection {}: Transaction on_error unknown exception.", conn_id);
-			}
+			safe_call([&]() {
+				error_handler(conn_id, package.get_trigger_source(), error_code);
+			}, error_msg);
+
+			LIGHTS_ERROR(logger, "Connection {}: Transaction error handler error. trans_id={}. {}.",
+						 conn_id, trans_id, error_msg.c_str());
 		}
+		return false;
 	}
-	catch (Poco::Exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Connection {}: Transaction Poco::Exception. name={}, msg={}.",
-						conn_id,
-						ex.name(),
-						ex.message());
-	}
-	catch (std::exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Connection {}: Transaction std::exception. name={}, msg={}.",
-						conn_id,
-						typeid(ex).name(),
-						ex.what());
-	}
-	catch (...)
-	{
-		LIGHTS_ERROR(logger, "Connection {}: Transaction unknown exception.", conn_id);
-	}
-	return false;
+	return true;
 }
 
 
@@ -355,30 +315,16 @@ const std::string& Worker::get_name(int cmd)
 }
 
 
-bool Worker::safe_call_delegate(std::function<void()> function, lights::StringView caller)
+bool Worker::call_delegate(std::function<void()> function, lights::StringView caller)
 {
-	try
+	LIGHTS_DEFAULT_TEXT_WRITER(error_msg);
+	if (!safe_call(function, error_msg))
 	{
-		function();
-		return true;
+		LIGHTS_ERROR(logger, "Delegation {}: {}.", caller, error_msg.c_str());
+		return false;
 	}
-	catch (Exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: Exception. code={}, msg={}.", caller, ex.code(), ex);
-	}
-	catch (Poco::Exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: Poco::Exception. name={}, msg={}.", caller, ex.name(), ex.message());
-	}
-	catch (std::exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: std::exception. name={}, msg={}.", caller, typeid(ex).name(), ex.what());
-	}
-	catch (...)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: unknown exception.", caller);
-	}
-	return false;
+
+	return true;
 }
 
 } // namespace details
@@ -401,7 +347,7 @@ void WorkerScheduler::start()
 	}
 	else if (worker->run_state == Worker::STARTED)
 	{
-		LIGHTS_ASSERT(false && "worker already started");
+		LIGHTS_ASSERT(false && "Worker already started");
 	}
 }
 

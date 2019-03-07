@@ -251,7 +251,7 @@ private:
 	/**
 	 * Calls function safety.
 	 */
-	bool safe_call_delegate(std::function<void()> function, lights::StringView caller);
+	bool call_delegate(std::function<void()> function, lights::StringView caller);
 };
 
 

@@ -143,9 +143,9 @@ public:
 	virtual void on_timeout();
 
 	/**
-	 * Processes exception.
+	 * Processes error.
 	 */
-	virtual void on_error(int conn_id, const Exception& ex);
+	virtual void on_error(int conn_id, int error_code);
 
 	/**
 	 * Sets wait package info.
@@ -322,9 +322,9 @@ enum class TransactionType
 };
 
 
-using TransactionErrorHandler = void (*)(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex);
+using TransactionErrorHandler = void (*)(int conn_id, const PackageTriggerSource& trigger_source, int error_code);
 
-void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, const Exception& ex);
+void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, int error_code);
 
 
 /**

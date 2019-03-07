@@ -806,7 +806,7 @@ void NetworkReactor::process_out_message()
 
 		if (msg.delegate != nullptr)
 		{
-			safe_call_delegate(msg.delegate, msg.caller);
+			call_delegate(msg.delegate, msg.caller);
 		}
 	}
 }
@@ -847,30 +847,16 @@ void NetworkReactor::send_package(const NetworkMessage& msg)
 }
 
 
-bool NetworkReactor::safe_call_delegate(std::function<void()> function, lights::StringView caller)
+bool NetworkReactor::call_delegate(std::function<void()> function, lights::StringView caller)
 {
-	try
+	LIGHTS_DEFAULT_TEXT_WRITER(error_msg);
+	if (!safe_call(function, error_msg))
 	{
-		function();
-		return true;
+		LIGHTS_ERROR(logger, "Delegation {}: {}.", caller, error_msg.c_str());
+		return false;
 	}
-	catch (Exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: Exception. code={}, msg={}.", caller, ex.code(), ex);
-	}
-	catch (Poco::Exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: Poco::Exception. name={}, msg={}.", caller, ex.name(), ex.message());
-	}
-	catch (std::exception& ex)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: std::exception. name={}, msg={}.", caller, typeid(ex).name(), ex.what());
-	}
-	catch (...)
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: unknown exception.", caller);
-	}
-	return false;
+
+	return true;
 }
 
 
