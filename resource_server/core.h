@@ -15,7 +15,7 @@
 #include <lights/sequence.h>
 #include <foundation/basics.h>
 #include <Poco/StringTokenizer.h>
-#include <Poco/Dynamic/Var.h>
+#include <Poco/JSON/Object.h>
 
 
 namespace spaceless {
@@ -57,8 +57,13 @@ enum
 };
 
 
+using Poco::JSON::Object;
+
+
 struct User
 {
+	User() = default;
+
 	User(int user_id, const std::string& user_name, const std::string& password) :
 		user_id(user_id),
 		user_name(user_name),
@@ -67,9 +72,9 @@ struct User
 		conn_id(0)
 	{}
 
-	User(Poco::DynamicAny data);
+	Object::Ptr serialize();
 
-	Poco::DynamicAny store();
+	void deserialize(Object::Ptr object);
 
 	int user_id;
 	std::string user_name;
@@ -108,9 +113,9 @@ public:
 
 	User& get_login_user(int conn_id);
 
-	Poco::DynamicAny store();
+	Object::Ptr serialize();
 
-	void restore(Poco::DynamicAny data);
+	void deserialize(Object::Ptr object);
 
 private:
 	using UserList = std::map<int, User>;
@@ -146,6 +151,8 @@ class SharingGroup
 {
 public:
 	using UserList = std::vector<int>;
+
+	SharingGroup() = default;
 
 	SharingGroup(int group_id, const std::string& group_name, int owner_id, int root_dir_id, int node_id);
 
@@ -194,6 +201,10 @@ public:
 	 */
 	void remove_path(const FilePath& path);
 
+	Object::Ptr serialize();
+
+	void deserialize(Object::Ptr object);
+
 private:
 	int m_group_id;
 	std::string m_group_name;
@@ -228,6 +239,10 @@ public:
 
 	SharingGroup& get_group(const std::string& group_name);
 
+	Object::Ptr serialize();
+
+	void deserialize(Object::Ptr object);
+
 private:
 	using GroupList = std::map<int, SharingGroup>;
 	GroupList m_group_list;
@@ -253,6 +268,10 @@ public:
 
 	virtual ~SharingFile() = default;
 
+	virtual Object::Ptr serialize();
+
+	virtual void deserialize(Object::Ptr object);
+
 	int file_id;
 	FileType file_type;
 	std::string file_name;
@@ -266,6 +285,10 @@ public:
 		storage_file_id(0)
 	{}
 
+	Object::Ptr serialize() override;
+
+	void deserialize(Object::Ptr object) override;
+
 	int storage_file_id; // The underlying storage file id.
 };
 
@@ -278,6 +301,10 @@ public:
 		use_counting(0)
 	{}
 
+	Object::Ptr serialize() override;
+
+	void deserialize(Object::Ptr object) override;
+
 	int node_id;
 	int use_counting;
 };
@@ -289,6 +316,10 @@ public:
 	SharingDirectory() :
 		file_list()
 	{}
+
+	Object::Ptr serialize() override;
+
+	void deserialize(Object::Ptr object) override;
 
 	int find_file(const std::string& filename);
 
@@ -315,6 +346,10 @@ public:
 
 	SharingFile& get_file(int node_id, const std::string& node_file_name);
 
+	Object::Ptr serialize();
+
+	void deserialize(Object::Ptr object);
+
 private:
 	using SharingFileList = std::map<int, SharingFile*>;
 	SharingFileList m_file_list;
@@ -324,6 +359,8 @@ private:
 
 struct StorageNode
 {
+	StorageNode() = default;
+
 	StorageNode(int node_id, const std::string& ip, unsigned short port, int service_id) :
 		node_id(node_id),
 		ip(ip),
@@ -331,6 +368,10 @@ struct StorageNode
 		service_id(service_id),
 		use_counting(0)
 	{}
+
+	Object::Ptr serialize();
+
+	void deserialize(Object::Ptr object);
 
 	int node_id;
 	std::string ip;
@@ -360,6 +401,10 @@ public:
 	StorageNode& get_node(const std::string& ip, unsigned short port);
 
 	StorageNode& get_fit_node();
+
+	Object::Ptr serialize();
+
+	void deserialize(Object::Ptr object);
 
 private:
 	using StorageNodeList = std::map<int, StorageNode>;
@@ -459,41 +504,41 @@ private:
 };
 
 
-class DataStorageManager
+class SerializationManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(DataStorageManager);
+	SPACELESS_SINGLETON_INSTANCE(SerializationManager);
 
-	using StoreData = std::function<Poco::DynamicAny()>;
-	using RestoreData = std::function<void(Poco::DynamicAny)>;
+	using Serialize = std::function<Object::Ptr()>;
+	using Deserialize = std::function<void(Object::Ptr)>;
 
-	DataStorageManager();
+	SerializationManager();
 
-	void register_storage(const std::string& name, StoreData store_data, RestoreData restore_data);
+	void register_serialization(const std::string& name, Serialize serialize, Deserialize deserialize);
 
-	void remove_storage(const std::string& name);
+	void remove_serialization(const std::string& name);
 
-	void store();
+	void serialize();
 
-	void restore();
+	void deserialize();
 
 private:
-	struct DataOperations
+	struct Operations
 	{
-		StoreData store_data;
-		RestoreData restore_data;
+		Serialize serialize;
+		Deserialize deserialize;
 	};
 
-	std::map<std::string, DataOperations> m_operation_list;
+	std::map<std::string, Operations> m_operation_list;
 };
 
 
-#define SPACELESS_REG_STORAGE(class_name)                                                \
-do                                                                                       \
-{                                                                                        \
-    auto store = []() { return class_name::instance()->store(); };                       \
-    auto restore = [](Poco::DynamicAny data) { class_name::instance()->restore(data); }; \
-    DataStorageManager::instance()->register_storage(#class_name, store, restore);       \
+#define SPACELESS_REG_SERIALIZATION(class_name) \
+do \
+{ \
+    auto serialize = []() { return class_name::instance()->serialize(); }; \
+    auto deserialize = [](Object::Ptr object) { class_name::instance()->deserialize(object); }; \
+    SerializationManager::instance()->register_serialization(#class_name, serialize, deserialize);  \
 } while (false)
 
 } // namespace resource_server

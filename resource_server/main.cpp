@@ -45,6 +45,13 @@ int main(int argc, const char* argv[])
 			}
 		}
 
+		// Registers serialization.
+		SPACELESS_REG_SERIALIZATION(UserManager);
+		SPACELESS_REG_SERIALIZATION(SharingGroupManager);
+		SPACELESS_REG_SERIALIZATION(SharingFileManager);
+		SPACELESS_REG_SERIALIZATION(StorageNodeManager);
+		SerializationManager::instance()->deserialize();
+
 		// Registers storage nodes.
 		for (int i = 0;; ++i)
 		{
@@ -52,8 +59,13 @@ int main(int argc, const char* argv[])
 			try
 			{
 				std::string ip = configuration.getString(key_prefix + ".ip");
-				unsigned int port = configuration.getUInt(key_prefix + ".port");
-				StorageNodeManager::instance()->register_node(ip, static_cast<unsigned short>(port));
+				unsigned int int_port = configuration.getUInt(key_prefix + ".port");
+				auto port = static_cast<unsigned short>(int_port);
+				StorageNode* node = StorageNodeManager::instance()->find_node(ip, port);
+				if (node == nullptr)
+				{
+					StorageNodeManager::instance()->register_node(ip, port);
+				}
 			}
 			catch (Poco::NotFoundException& e)
 			{
@@ -73,15 +85,22 @@ int main(int argc, const char* argv[])
 		NetworkManager::instance()->register_listener(ip, static_cast<unsigned short>(port));
 
 		// Sets root user setting.
-//		std::string root_user_name = configuration.getString("root_user.name");
-//		std::string root_user_pwd = configuration.getString("root_user.password");
-//		User& root = UserManager::instance()->register_user(root_user_name, root_user_pwd);
-//		std::string root_group_name = configuration.getString("root_user.group");
-//		SharingGroupManager::instance()->register_group(root.user_id, root_group_name);
+		std::string root_user_name = configuration.getString("root_user.name");
+		std::string root_user_pwd = configuration.getString("root_user.password");
+		User* root = UserManager::instance()->find_user(root_user_name);
+		if (root == nullptr)
+		{
+			root = &UserManager::instance()->register_user(root_user_name, root_user_pwd);
+		}
 
-		SPACELESS_REG_STORAGE(UserManager);
-		DataStorageManager::instance()->restore();
+		std::string root_group_name = configuration.getString("root_user.group");
+		SharingGroup* group = SharingGroupManager::instance()->find_group(root_group_name);
+		if (group == nullptr)
+		{
+			SharingGroupManager::instance()->register_group(root->user_id, root_group_name);
+		}
 
+		// Registers transaction.
 		using namespace transaction;
 		SPACELESS_REG_ONE_TRANS(protocol::ReqPing, on_ping);
 		SPACELESS_REG_ONE_TRANS(protocol::ReqRegisterUser, on_register_user);

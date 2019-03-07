@@ -1,0 +1,64 @@
+{
+    "SharingFileManager" : {
+        "m_file_list" : [
+            {
+                "SharingFile" : {
+                    "file_id" : 1,
+                    "file_name" : "official",
+                    "file_type" : 0
+                },
+                "file_list" : [
+
+                ]
+            }
+        ],
+        "m_next_id" : 2
+    },
+    "SharingGroupManager" : {
+        "m_group_list" : [
+            {
+                "m_group_id" : 1,
+                "m_group_name" : "official",
+                "m_manager_list" : [
+                    1
+                ],
+                "m_member_list" : [
+                    1
+                ],
+                "m_node_id" : 1,
+                "m_owner_id" : 1,
+                "m_root_dir_id" : 1
+            }
+        ],
+        "m_next_id" : 2
+    },
+    "StorageNodeManager" : {
+        "m_next_id" : 3,
+        "m_node_list" : [
+            {
+                "ip" : "127.0.0.1",
+                "node_id" : 1,
+                "port" : 10241,
+                "service_id" : 1,
+                "use_counting" : 0
+            },
+            {
+                "ip" : "127.0.0.1",
+                "node_id" : 2,
+                "port" : 10242,
+                "service_id" : 2,
+                "use_counting" : 0
+            }
+        ]
+    },
+    "UserManager" : {
+        "m_next_id" : 2,
+        "m_user_list" : [
+            {
+                "password" : "pwd",
+                "user_id" : 1,
+                "user_name" : "root"
+            }
+        ]
+    }
+}

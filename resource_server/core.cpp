@@ -26,30 +26,127 @@
 namespace spaceless {
 namespace resource_server {
 
-namespace JSON = Poco::JSON;
-
 const std::string DATA_FILENAME = "../data/data.json";
-const int STORE_DATA_PER_SEC = 10;
+const int STORE_DATA_PER_SEC = 5;
 const int DATA_INDENT = 4;
+
+
+#define SERIALIZE(object, member) object->set(#member, member)
+
+#define SERIALIZE_ENUM(object, member) object->set(#member, static_cast<int>(member))
+
+#define SERIALIZE_BASE(object, BaseType) object->set(#BaseType, BaseType::serialize())
+
+#define SERIALIZE_ARRAY(object, member) \
+	do \
+	{ \
+		Poco::JSON::Array::Ptr array = new Poco::JSON::Array; \
+		for (std::size_t i = 0; i < member.size(); ++i) \
+		{ \
+			array->add(member[i]); \
+		} \
+		object->set(#member, array); \
+	} while (false)
+
+#define SERIALIZE_MAP_CUSTOMER(object, member) \
+	do \
+	{ \
+		Poco::JSON::Array::Ptr array = new Poco::JSON::Array(); \
+		for (auto& pair : member) \
+		{ \
+			array->add(pair.second.serialize()); \
+		} \
+		object->set(#member, array); \
+	} while (false)
+
+#define SERIALIZE_MAP_CUSTOMER_EX(object, member) \
+	do \
+	{ \
+		Poco::JSON::Array::Ptr array = new Poco::JSON::Array(); \
+		for (auto& pair : member) \
+		{ \
+			array->add(pair.second->serialize()); \
+		} \
+		object->set(#member, array); \
+	} while (false)
+
+
+#define DESERIALIZE(object, member) member = object->getValue<decltype(member)>(#member)
+
+#define DESERIALIZE_ENUM(object, member) \
+	do \
+    { \
+    	int value = object->getValue<int>(#member); \
+    	member = static_cast<decltype(member)>(value); \
+	} while (false)
+
+#define DESERIALIZE_BASE(object, BaseType) \
+	do \
+    { \
+    	Object::Ptr base = object->get(#BaseType).extract<Object::Ptr>(); \
+    	BaseType::deserialize(base); \
+	} while (false)
+
+#define DESERIALIZE_ARRAY(object, member, InType) \
+	do \
+	{ \
+		Poco::JSON::Array::Ptr array = object->getArray(#member); \
+		for (unsigned int i = 0; i < array->size(); ++i) \
+		{ \
+			Poco::DynamicAny item = array->get(i); \
+        	InType in_type = item.convert<InType>(); \
+        	member.push_back(in_type); \
+		} \
+	} while (false)
+
+#define DESERIALIZE_MAP_CUSTOMER(object, member, InType, key) \
+	do \
+	{ \
+		Poco::JSON::Array::Ptr array = object->getArray(#member); \
+		for (unsigned int i = 0; i < array->size(); ++i) \
+		{ \
+			Poco::DynamicAny item = array->get(i); \
+			Object::Ptr item_object = item.extract<Object::Ptr>(); \
+			InType in_type; \
+			in_type.deserialize(item_object); \
+			member.insert(std::make_pair(in_type.key, in_type)); \
+		} \
+	} while (false)
+
+#define DESERIALIZE_MAP_CUSTOMER_EX(object, member, InBaseType, in_type_member, get_derived_type, key) \
+	do \
+	{ \
+		Poco::JSON::Array::Ptr array = object->getArray(#member); \
+		for (unsigned int i = 0; i < array->size(); ++i) \
+		{ \
+			Poco::DynamicAny item = array->get(i); \
+			Object::Ptr item_object = item.extract<Object::Ptr>(); \
+			int in_type = item_object->getValue<int>(in_type_member); \
+			InBaseType* base = get_derived_type(in_type); \
+			base->deserialize(item_object); \
+			member.insert(std::make_pair(base->key, base)); \
+		} \
+	} while (false)
+
 
 static Logger& logger = get_logger("core");
 
-User::User(Poco::DynamicAny data)
+
+Object::Ptr User::serialize()
 {
-	JSON::Object::Ptr object = data.extract<JSON::Object::Ptr>();
-	user_id = object->getValue<int>("user_id");
-	user_name = object->getValue<std::string>("user_name");
-	password = object->getValue<std::string>("password");
+	Object::Ptr object = new Object;
+	SERIALIZE(object, user_id);
+	SERIALIZE(object, user_name);
+	SERIALIZE(object, password);
+	return object;
 }
 
 
-Poco::DynamicAny User::store()
+void User::deserialize(Object::Ptr object)
 {
-	JSON::Object::Ptr object = new JSON::Object;
-	object->set("user_id", user_id);
-	object->set("user_name", user_name);
-	object->set("password", password);
-	return object;
+	DESERIALIZE(object, user_id);
+	DESERIALIZE(object, user_name);
+	DESERIALIZE(object, password);
 }
 
 
@@ -172,30 +269,19 @@ User& UserManager::get_login_user(int conn_id)
 }
 
 
-Poco::DynamicAny UserManager::store()
+Object::Ptr UserManager::serialize()
 {
-	JSON::Array::Ptr array = new JSON::Array();
-	for (auto& pair : m_user_list )
-	{
-		array->add(pair.second.store());
-	}
-	return array;
+	Object::Ptr object = new Object;
+	SERIALIZE(object, m_next_id);
+	SERIALIZE_MAP_CUSTOMER(object, m_user_list);
+	return object;
 }
 
 
-void UserManager::restore(Poco::DynamicAny data)
+void UserManager::deserialize(Object::Ptr object)
 {
-	if (data.isEmpty())
-	{
-		return;
-	}
-
-	JSON::Array::Ptr array = data.extract<JSON::Array::Ptr>();
-	for (unsigned int i = 0; i < array->size(); ++i)
-	{
-		User user(array->get(i));
-		m_user_list.insert(std::make_pair(user.user_id, user));
-	}
+	DESERIALIZE(object, m_next_id);
+	DESERIALIZE_MAP_CUSTOMER(object, m_user_list, User, user_id);
 }
 
 
@@ -510,6 +596,36 @@ void SharingGroup::remove_path(const FilePath& path)
 }
 
 
+Object::Ptr SharingGroup::serialize()
+{
+	Object::Ptr object = new Object;
+
+	SERIALIZE(object, m_group_id);
+	SERIALIZE(object, m_group_name);
+	SERIALIZE(object, m_owner_id);
+	SERIALIZE(object, m_root_dir_id);
+	SERIALIZE(object, m_node_id);
+
+	SERIALIZE_ARRAY(object, m_manager_list);
+	SERIALIZE_ARRAY(object, m_member_list);
+
+	return object;
+}
+
+
+void SharingGroup::deserialize(Object::Ptr object)
+{
+	DESERIALIZE(object, m_group_id);
+	DESERIALIZE(object, m_group_name);
+	DESERIALIZE(object, m_owner_id);
+	DESERIALIZE(object, m_root_dir_id);
+	DESERIALIZE(object, m_node_id);
+
+	DESERIALIZE_ARRAY(object, m_manager_list, int);
+	DESERIALIZE_ARRAY(object, m_member_list, int);
+}
+
+
 SharingGroup& SharingGroupManager::register_group(int user_id, const std::string& group_name)
 {
 	SharingGroup* old_group = find_group(group_name);
@@ -599,6 +715,90 @@ SharingGroup& SharingGroupManager::get_group(const std::string& group_name)
 }
 
 
+Object::Ptr SharingGroupManager::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE(object, m_next_id);
+	SERIALIZE_MAP_CUSTOMER(object, m_group_list);
+	return object;
+}
+
+
+void SharingGroupManager::deserialize(Object::Ptr object)
+{
+	DESERIALIZE(object, m_next_id);
+	DESERIALIZE_MAP_CUSTOMER(object, m_group_list, SharingGroup, group_id());
+}
+
+
+Object::Ptr SharingFile::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE(object, file_id);
+	SERIALIZE_ENUM(object, file_type);
+	SERIALIZE(object, file_name);
+	return object;
+}
+
+
+void SharingFile::deserialize(Object::Ptr object)
+{
+	DESERIALIZE(object, file_id);
+	DESERIALIZE_ENUM(object, file_type);
+	DESERIALIZE(object, file_name);
+}
+
+
+Object::Ptr SharingGeneralFile::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE_BASE(object, SharingFile);
+	SERIALIZE(object, storage_file_id);
+	return object;
+}
+
+
+void SharingGeneralFile::deserialize(Object::Ptr object)
+{
+	DESERIALIZE_BASE(object, SharingFile);
+	DESERIALIZE(object, storage_file_id);
+}
+
+
+Object::Ptr SharingStorageFile::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE_BASE(object, SharingFile);
+	SERIALIZE(object, node_id);
+	SERIALIZE(object, use_counting);
+	return object;
+}
+
+
+void SharingStorageFile::deserialize(Object::Ptr object)
+{
+	DESERIALIZE_BASE(object, SharingFile);
+	DESERIALIZE(object, node_id);
+	DESERIALIZE(object, use_counting);
+}
+
+
+Object::Ptr SharingDirectory::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE_BASE(object, SharingFile);
+	SERIALIZE_ARRAY(object, file_list);
+	return object;
+}
+
+
+void SharingDirectory::deserialize(Object::Ptr object)
+{
+	DESERIALIZE_BASE(object, SharingFile);
+	DESERIALIZE_ARRAY(object, file_list, int);
+}
+
+
 int SharingDirectory::find_file(const std::string& filename)
 {
 	auto itr = std::find_if(file_list.begin(), file_list.end(), [&filename](int file_id)
@@ -639,7 +839,7 @@ SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type, 
 	{
 		case SharingFile::DIRECTORY:
 		{
-			sharing_file = new SharingDirectory();
+			sharing_file = new SharingDirectory;
 			break;
 		}
 		case SharingFile::GENERAL_FILE:
@@ -748,6 +948,65 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
 	}
 	return *file;
+}
+
+
+Object::Ptr SharingFileManager::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE(object, m_next_id);
+	SERIALIZE_MAP_CUSTOMER_EX(object, m_file_list);
+	return object;
+}
+
+
+SharingFile* get(int file_type)
+{
+	SharingFile* file = nullptr;
+	switch (static_cast<SharingFile::FileType>(file_type))
+	{
+		case SharingFile::DIRECTORY:
+			file = new SharingDirectory;
+			break;
+		case SharingFile::GENERAL_FILE:
+			file = new SharingGeneralFile;
+			break;
+		case SharingFile::STORAGE_FILE:
+			file = new SharingStorageFile;
+			break;
+	}
+	return file;
+}
+
+
+void SharingFileManager::deserialize(Object::Ptr object)
+{
+	DESERIALIZE(object, m_next_id);
+	DESERIALIZE_MAP_CUSTOMER_EX(object, m_file_list, SharingFile, "file_type", get, file_id);
+}
+
+
+Object::Ptr StorageNode::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE(object, node_id);
+	SERIALIZE(object, ip);
+	SERIALIZE(object, port);
+	SERIALIZE(object, node_id);
+	SERIALIZE(object, service_id);
+	SERIALIZE(object, use_counting);
+	return object;
+}
+
+
+void StorageNode::deserialize(Object::Ptr object)
+{
+	DESERIALIZE(object, node_id);
+	DESERIALIZE(object, ip);
+	DESERIALIZE(object, port);
+	DESERIALIZE(object, node_id);
+	DESERIALIZE(object, service_id);
+	DESERIALIZE(object, use_counting);
 }
 
 
@@ -865,6 +1124,22 @@ StorageNode& StorageNodeManager::get_fit_node()
 	}
 
 	return *low_load_node;
+}
+
+
+Object::Ptr StorageNodeManager::serialize()
+{
+	Object::Ptr object = new Object;
+	SERIALIZE(object, m_next_id);
+	SERIALIZE_MAP_CUSTOMER(object, m_node_list);
+	return object;
+}
+
+
+void StorageNodeManager::deserialize(Object::Ptr object)
+{
+	DESERIALIZE(object, m_next_id);
+	DESERIALIZE_MAP_CUSTOMER(object, m_node_list, StorageNode, node_id);
 }
 
 
@@ -1073,44 +1348,44 @@ FileSessionManager::Session* FileSessionManager::find_session(int group_id, cons
 }
 
 
-DataStorageManager::DataStorageManager()
+SerializationManager::SerializationManager()
 {
 	TimerManager::instance()->register_timer(lights::PreciseTime(STORE_DATA_PER_SEC), []()
 	{
-		DataStorageManager::instance()->store();
+		SerializationManager::instance()->serialize();
 	}, TimerCallPolicy::CALL_FREQUENTLY);
 }
 
 
-void DataStorageManager::register_storage(const std::string& name,
-										  StoreData store_data,
-										  RestoreData restore_data)
+void SerializationManager::register_serialization(const std::string& name,
+												  Serialize serialize,
+												  Deserialize deserialize)
 {
-	DataOperations operations{ store_data, restore_data };
+	Operations operations{ serialize, deserialize };
 	auto pair = std::make_pair(name, operations);
 	m_operation_list.insert(pair);
 }
 
 
-void DataStorageManager::remove_storage(const std::string& name)
+void SerializationManager::remove_serialization(const std::string& name)
 {
 	m_operation_list.erase(name);
 }
 
 
-void DataStorageManager::store()
+void SerializationManager::serialize()
 {
-	JSON::Object object;
+	Poco::JSON::Object object;
 	for (auto& itr : m_operation_list)
 	{
-		Poco::DynamicAny data = itr.second.store_data();
+		Poco::DynamicAny data = itr.second.serialize();
 		object.set(itr.first, data);
 	}
 
 	std::ofstream file(DATA_FILENAME);
 	if (!file.good())
 	{
-		LIGHTS_ERROR(logger, "Cannot open file {}", DATA_FILENAME);
+		LIGHTS_ERROR(logger, "Cannot open file {}.", DATA_FILENAME);
 		return;
 	}
 
@@ -1118,10 +1393,10 @@ void DataStorageManager::store()
 }
 
 
-void DataStorageManager::restore()
+void SerializationManager::deserialize()
 {
 	std::ifstream file(DATA_FILENAME);
-	JSON::Parser parser;
+	Poco::JSON::Parser parser;
 	parser.parse(file);
 	Poco::DynamicAny result = parser.result();
 	if (result.isEmpty())
@@ -1129,13 +1404,18 @@ void DataStorageManager::restore()
 		return;
 	}
 
-	auto object = result.extract<JSON::Object::Ptr>();
+	auto object = result.extract<Poco::JSON::Object::Ptr>();
 	for (auto& itr : m_operation_list)
 	{
 		Poco::DynamicAny data = object->get(itr.first);
-		itr.second.restore_data(data);
+		if (!data.isEmpty())
+		{
+			Object::Ptr in_object = data.extract<Object::Ptr>();
+			itr.second.deserialize(in_object);
+		}
 	}
 }
+
 
 } // namespace resource_server
 } // namespace spaceless
