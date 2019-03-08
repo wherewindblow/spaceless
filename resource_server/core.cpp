@@ -105,10 +105,10 @@ const int DATA_INDENT = 4;
 		Poco::JSON::Array::Ptr array = object->getArray(#member); \
 		for (unsigned int i = 0; i < array->size(); ++i) \
 		{ \
-			Poco::DynamicAny item = array->get(i); \
-			Object::Ptr item_object = item.extract<Object::Ptr>(); \
+			Poco::DynamicAny item_any = array->get(i); \
+			Object::Ptr item_obj = item_any.extract<Object::Ptr>(); \
 			InType in_type; \
-			in_type.deserialize(item_object); \
+			in_type.deserialize(item_obj); \
 			member.insert(std::make_pair(in_type.key, in_type)); \
 		} \
 	} while (false)
@@ -119,11 +119,13 @@ const int DATA_INDENT = 4;
 		Poco::JSON::Array::Ptr array = object->getArray(#member); \
 		for (unsigned int i = 0; i < array->size(); ++i) \
 		{ \
-			Poco::DynamicAny item = array->get(i); \
-			Object::Ptr item_object = item.extract<Object::Ptr>(); \
-			int in_type = item_object->getValue<int>(in_type_member); \
+			Poco::DynamicAny item_any = array->get(i); \
+			Object::Ptr item_obj = item_any.extract<Object::Ptr>(); \
+			Poco::DynamicAny base_any = item_obj->get(#InBaseType); \
+			Object::Ptr base_obj = base_any.extract<Object::Ptr>(); \
+			int in_type = base_obj->getValue<int>(in_type_member); \
 			InBaseType* base = get_derived_type(in_type); \
-			base->deserialize(item_object); \
+			base->deserialize(item_obj); \
 			member.insert(std::make_pair(base->key, base)); \
 		} \
 	} while (false)
