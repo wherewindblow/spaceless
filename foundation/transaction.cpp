@@ -250,7 +250,7 @@ void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_sourc
 
 void TransactionManager::register_transaction(int cmd,
 											  TransactionType trans_type,
-											  void* handler,
+											  std::any handler,
 											  TransactionErrorHandler error_handler)
 {
 	Transaction trans(trans_type, handler, error_handler);
@@ -267,8 +267,7 @@ void TransactionManager::register_one_phase_transaction(int cmd,
 														OnePhaseTransaction transaction,
 														TransactionErrorHandler error_handler)
 {
-	void* handler = reinterpret_cast<void*>(transaction);
-	register_transaction(cmd, TransactionType::ONE_PHASE_TRANSACTION, handler, error_handler);
+	register_transaction(cmd, TransactionType::ONE_PHASE_TRANSACTION, transaction, error_handler);
 }
 
 
@@ -283,8 +282,7 @@ void TransactionManager::register_one_phase_transaction(const protocol::Message&
 
 void TransactionManager::register_multiply_phase_transaction(int cmd, TransactionFatory trans_factory)
 {
-	void* handler = reinterpret_cast<void*>(trans_factory);
-	register_transaction(cmd, TransactionType::MULTIPLY_PHASE_TRANSACTION, handler);
+	register_transaction(cmd, TransactionType::MULTIPLY_PHASE_TRANSACTION, trans_factory);
 }
 
 

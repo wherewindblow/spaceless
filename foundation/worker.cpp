@@ -160,7 +160,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 				{
 					LIGHTS_DEBUG(logger, "Connection {}: Receive package. cmd={}, name={}.",
 								 conn_id, command, get_name(command));
-					auto trans_handler = reinterpret_cast<OnePhaseTransaction>(trans->trans_handler);
+					auto trans_handler = std::any_cast<OnePhaseTransaction>(trans->trans_handler);
 
 					call_transaction(conn_id, 0, package, trans->error_handler, [&]()
 					{
@@ -171,7 +171,7 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 				}
 				case TransactionType::MULTIPLY_PHASE_TRANSACTION:
 				{
-					auto trans_factory = reinterpret_cast<TransactionFatory>(trans->trans_handler);
+					auto trans_factory = std::any_cast<TransactionFatory>(trans->trans_handler);
 					auto& trans_handler = MultiplyPhaseTransactionManager::instance()->register_transaction(trans_factory);
 					int trans_id = trans_handler.transaction_id();
 

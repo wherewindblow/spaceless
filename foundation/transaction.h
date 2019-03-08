@@ -7,6 +7,8 @@
 #pragma once
 
 #include <map>
+#include <functional>
+#include <any>
 
 #include <protocol/message_declare.h>
 #include <protocol/command.h>
@@ -254,7 +256,7 @@ private:
 /**
  * Transaction factory function of multiply phase transaction.
  */
-using TransactionFatory = MultiplyPhaseTransaction* (*)(int trans_id);
+using TransactionFatory = std::function<MultiplyPhaseTransaction*(int trans_id)>;
 
 
 /**
@@ -309,7 +311,7 @@ private:
 };
 
 
-using OnePhaseTransaction = void (*)(int conn_id, Package);
+using OnePhaseTransaction = std::function<void(int conn_id, Package package)>;
 
 
 /**
@@ -322,7 +324,7 @@ enum class TransactionType
 };
 
 
-using TransactionErrorHandler = void (*)(int conn_id, const PackageTriggerSource& trigger_source, int error_code);
+using TransactionErrorHandler = std::function<void(int conn_id, const PackageTriggerSource& trigger_source, int error_code)>;
 
 void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, int error_code);
 
@@ -332,14 +334,14 @@ void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_sourc
  */
 struct Transaction
 {
-	Transaction(TransactionType trans_type, void* trans_handler, TransactionErrorHandler error_handler) :
+	Transaction(TransactionType trans_type, std::any trans_handler, TransactionErrorHandler error_handler) :
 		trans_type(trans_type),
 		trans_handler(trans_handler),
 		error_handler(error_handler)
 	{}
 
 	TransactionType trans_type;
-	void* trans_handler;
+	std::any trans_handler;
 	TransactionErrorHandler error_handler;
 };
 
@@ -359,7 +361,7 @@ public:
 	 */
 	void register_transaction(int cmd,
 							  TransactionType trans_type,
-							  void* handler,
+							  std::any handler,
 							  TransactionErrorHandler error_handler = nullptr);
 
 	/**
