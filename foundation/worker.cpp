@@ -23,7 +23,7 @@
 namespace spaceless {
 
 static Logger& logger = get_logger("worker");
-
+static lights::TextWriter error_msg;
 
 namespace details {
 
@@ -50,17 +50,13 @@ private:
 
 	void trigger_transaction(const NetworkMessage& msg);
 
-	using ErrorHandler = std::function<void(int, const PackageTriggerSource&, int)>;
-
 	bool call_transaction(int conn_id,
 						  int trans_id,
 						  Package package,
-						  ErrorHandler error_handler,
+						  TransactionErrorHandler error_handler,
 						  std::function<void()> function);
 
 	const std::string& get_name(int cmd);
-
-	bool call_delegate(std::function<void()> function, lights::StringView caller);
 };
 
 
@@ -123,7 +119,10 @@ void Worker::process_message(const NetworkMessage& msg)
 
 	if (msg.delegate != nullptr)
 	{
-		call_delegate(msg.delegate, msg.caller);
+		if (!safe_call(msg.delegate, error_msg))
+		{
+			LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
+		}
 	}
 }
 
@@ -279,11 +278,10 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 bool Worker::call_transaction(int conn_id,
 							  int trans_id,
 							  Package package,
-							  ErrorHandler error_handler,
+							  TransactionErrorHandler error_handler,
 							  std::function<void()> function)
 {
 	int error_code = 0;
-	LIGHTS_DEFAULT_TEXT_WRITER(error_msg);
 	if (!safe_call(function, error_msg, &error_code))
 	{
 		LIGHTS_ERROR(logger, "Connection {}: Transaction error. trans_id={}. {}.", conn_id, trans_id, error_msg.c_str());
@@ -312,19 +310,6 @@ const std::string& Worker::get_name(int cmd)
 		return INVALID;
 	}
 	return *name;
-}
-
-
-bool Worker::call_delegate(std::function<void()> function, lights::StringView caller)
-{
-	LIGHTS_DEFAULT_TEXT_WRITER(error_msg);
-	if (!safe_call(function, error_msg))
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: {}.", caller, error_msg.c_str());
-		return false;
-	}
-
-	return true;
 }
 
 } // namespace details
@@ -372,7 +357,8 @@ bool WorkerScheduler::is_worker_running()
 }
 
 
-int TimerManager::register_timer(lights::PreciseTime interval,
+int TimerManager::register_timer(lights::StringView caller,
+								 lights::PreciseTime interval,
 								 std::function<void()> expiry_action,
 								 TimerCallPolicy call_policy,
 								 lights::PreciseTime delay)
@@ -383,17 +369,29 @@ int TimerManager::register_timer(lights::PreciseTime interval,
 	}
 
 	lights::PreciseTime expiry_time = lights::current_precise_time() + delay;
+
 	Timer timer = {
 		m_next_id,
 		interval,
 		expiry_time,
 		expiry_action,
 		call_policy,
+		caller,
 	};
+
 	++m_next_id;
 	m_timer_queue.push_back(timer);
 	std::push_heap(m_timer_queue.begin(), m_timer_queue.end(), TimerCompare());
 	return timer.timer_id;
+}
+
+
+int TimerManager::register_frequent_timer(lights::StringView caller,
+										  lights::PreciseTime interval,
+										  std::function<void()> expiry_action,
+										  lights::PreciseTime delay)
+{
+	return register_timer(caller, interval, expiry_action, TimerCallPolicy::CALL_FREQUENTLY, delay);
 }
 
 
@@ -428,7 +426,11 @@ int TimerManager::process_expiry_timer()
 		return 0;
 	}
 
-	top.expiry_action();
+	if (!safe_call(top.expiry_action, error_msg))
+	{
+		LIGHTS_ERROR(logger, "Timer {}: {}", top.caller, error_msg.c_str());
+	}
+
 	std::pop_heap(m_timer_queue.begin(), m_timer_queue.end(), TimerCompare());
 	m_timer_queue.pop_back();
 

@@ -66,10 +66,21 @@ public:
 	 * @param delay Default is using value of @c interval.
 	 * @return Returns time id.
 	 */
-	int register_timer(lights::PreciseTime interval,
+	int register_timer(lights::StringView caller,
+					   lights::PreciseTime interval,
 					   std::function<void()> expiry_action,
 					   TimerCallPolicy call_policy = TimerCallPolicy::CALL_ONCE,
-					   lights::PreciseTime delay = lights::PreciseTime(0, 0));
+					   lights::PreciseTime delay = lights::PreciseTime(0));
+
+	/**
+	 * Registers timer and call @c expiry_action at time expiry.
+	 * @param delay Default is using value of @c interval.
+	 * @return Returns time id.
+	 */
+	int register_frequent_timer(lights::StringView caller,
+								lights::PreciseTime interval,
+								std::function<void()> expiry_action,
+								lights::PreciseTime delay = lights::PreciseTime(0));
 
 	/**
 	 * Removes timer.
@@ -96,6 +107,7 @@ private:
 		lights::PreciseTime expiry_time;
 		std::function<void()> expiry_action;
 		TimerCallPolicy call_policy;
+		lights::StringView caller;
 	};
 
 	struct TimerCompare

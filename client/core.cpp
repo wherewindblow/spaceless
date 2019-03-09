@@ -265,7 +265,7 @@ FileSession& SharingFileManager::get_file_session()
 
 void DelayTesting::start_testing()
 {
-	auto expiry_action = []()
+	TimerManager::instance()->register_frequent_timer("start_testing", lights::PreciseTime(DELAY_TESTING_PER_SEC), []()
 	{
 		protocol::ReqPing request;
 		lights::PreciseTime time = lights::current_precise_time();
@@ -273,10 +273,7 @@ void DelayTesting::start_testing()
 		std::int64_t microsecond = lights::nanasecond_to_microsecond(time.nanoseconds);
 		request.set_microsecond(static_cast<std::int32_t>(microsecond));
 		Network::send_protocol(conn_id, request);
-	};
-
-	lights::PreciseTime time(DELAY_TESTING_PER_SEC);
-	TimerManager::instance()->register_timer(time, expiry_action, TimerCallPolicy::CALL_FREQUENTLY, time);
+	});
 }
 
 

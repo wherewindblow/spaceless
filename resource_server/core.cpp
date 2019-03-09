@@ -1352,10 +1352,10 @@ FileSessionManager::Session* FileSessionManager::find_session(int group_id, cons
 
 SerializationManager::SerializationManager()
 {
-	TimerManager::instance()->register_timer(lights::PreciseTime(STORE_DATA_PER_SEC), []()
+	TimerManager::instance()->register_frequent_timer("SerializationManager", lights::PreciseTime(STORE_DATA_PER_SEC), []()
 	{
 		SerializationManager::instance()->serialize();
-	}, TimerCallPolicy::CALL_FREQUENTLY);
+	});
 }
 
 
@@ -1417,7 +1417,6 @@ void SerializationManager::deserialize()
 		}
 	}
 }
-
 
 } // namespace resource_server
 } // namespace spaceless

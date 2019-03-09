@@ -18,13 +18,13 @@ static Logger& logger = get_logger("monitor");
 
 MonitorManager::MonitorManager()
 {
-	TimerManager::instance()->register_timer(lights::PreciseTime(MONITOR_STATE_PER_SEC), [&]
+	TimerManager::instance()->register_frequent_timer("MonitorManager", lights::PreciseTime(MONITOR_STATE_PER_SEC), [&]
 	{
 		for (auto& pair : m_monitor_list)
 		{
 			LIGHTS_INFO(logger, "Manager={}, size={}.", pair.first, pair.second());
 		}
-	}, TimerCallPolicy::CALL_FREQUENTLY);
+	});
 }
 
 

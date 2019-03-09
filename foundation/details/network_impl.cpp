@@ -22,6 +22,8 @@ using Poco::Net::SocketAddress;
 
 static Logger& logger = get_logger("network");
 
+static lights::TextWriter error_msg;
+
 
 void dump_sequence(lights::Sequence sequence)
 {
@@ -806,7 +808,10 @@ void NetworkReactor::process_out_message()
 
 		if (msg.delegate != nullptr)
 		{
-			call_delegate(msg.delegate, msg.caller);
+			if (!safe_call(msg.delegate, error_msg))
+			{
+				LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
+			}
 		}
 	}
 }
@@ -844,19 +849,6 @@ void NetworkReactor::send_package(const NetworkMessage& msg)
 	}
 
 	conn->send_package(package);
-}
-
-
-bool NetworkReactor::call_delegate(std::function<void()> function, lights::StringView caller)
-{
-	LIGHTS_DEFAULT_TEXT_WRITER(error_msg);
-	if (!safe_call(function, error_msg))
-	{
-		LIGHTS_ERROR(logger, "Delegation {}: {}.", caller, error_msg.c_str());
-		return false;
-	}
-
-	return true;
 }
 
 
