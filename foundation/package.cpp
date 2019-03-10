@@ -53,7 +53,7 @@ void Package::parse_to_protocol(protocol::Message& msg) const
 	bool ok = protocol::parse_to_message(content(), msg);
 	if (!ok)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_TO_PROTOCOL);
+		LIGHTS_THROW(Exception, ERR_NETWORK_PACKAGE_CANNOT_PARSE_TO_PROTOCOL);
 	}
 }
 
@@ -74,7 +74,7 @@ Package PackageManager::register_package(int content_len)
 	auto result = m_package_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_NETWORK_PACKAGE_ALREADY_EXIST);
 	}
 
 	Package package(&result.first->second);
@@ -115,7 +115,7 @@ Package PackageManager::get_package(int package_id)
 	Package package = find_package(package_id);
 	if (!package.is_valid())
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_PACKAGE_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_NETWORK_PACKAGE_NOT_EXIST);
 	}
 
 	return package;

@@ -27,7 +27,7 @@ void on_put_file_session(int conn_id, Package package)
 	{
 		if (request.max_fragment() != session->max_fragment)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
+			LIGHTS_THROW(Exception, ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
 		}
 	}
 	else
@@ -50,7 +50,7 @@ void on_put_file(int conn_id, Package package)
 
 	if (request.fragment_index() >= session.max_fragment)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_INVALID_FRAGMENT);
+		LIGHTS_THROW(Exception, ERR_FILE_SESSION_INVALID_FRAGMENT);
 	}
 
 	lights::SequenceView file_content(request.fragment_content());
@@ -97,7 +97,7 @@ void on_get_file(int conn_id, Package package)
 	FileSession& session = FileSessionManager::instance()->get_session(request.session_id());
 	if (request.fragment_index() >= session.max_fragment)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_INVALID_FRAGMENT);
+		LIGHTS_THROW(Exception, ERR_FILE_SESSION_INVALID_FRAGMENT);
 	}
 
 	protocol::RspGetFile response;

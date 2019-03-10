@@ -270,7 +270,7 @@ void on_kick_out_user(int conn_id, Package package)
 	{
 		if (!group.is_manager(user.user_id))
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+			LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 		}
 	}
 	group.kick_out_user(request.user_id());
@@ -289,7 +289,7 @@ void on_create_path(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	group.create_path(request.path());
@@ -310,7 +310,7 @@ void on_list_file(int conn_id, Package package)
 	SharingFile& file = SharingFileManager::instance()->get_file(file_id);
 	if (file.file_type != SharingFile::DIRECTORY)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_DIRECTORY);
 	}
 
 	SharingDirectory& directory = dynamic_cast<SharingDirectory&>(file);
@@ -356,7 +356,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 	{
 		if (request.max_fragment() != session->max_fragment)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
+			LIGHTS_THROW(Exception, ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
 		}
 	}
 	else

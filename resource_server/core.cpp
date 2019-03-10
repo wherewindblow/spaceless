@@ -157,7 +157,7 @@ User& UserManager::register_user(const std::string& username, const std::string&
 	User* user = find_user(username);
 	if (user != nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_USER_ALREADY_EXIST);
 	}
 
 	User new_user(m_next_id, username, password);
@@ -167,7 +167,7 @@ User& UserManager::register_user(const std::string& username, const std::string&
 	auto result = m_user_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_USER_ALREADY_EXIST);
 	}
 
 	return result.first->second;
@@ -213,7 +213,7 @@ User& UserManager::get_user(int user_id)
 	User* user = find_user(user_id);
 	if (user == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_USER_NOT_EXIST);
 	}
 	return *user;
 }
@@ -224,7 +224,7 @@ User& UserManager::get_user(const std::string& username)
 	User* user = find_user(username);
 	if (user == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_USER_NOT_EXIST);
 	}
 	return *user;
 }
@@ -265,7 +265,7 @@ User& UserManager::get_login_user(int conn_id)
 	User* user = find_login_user(conn_id);
 	if (user == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_USER_NOT_LOGIN);
+		LIGHTS_THROW(Exception, ERR_USER_NOT_LOGIN);
 	}
 	return *user;
 }
@@ -436,11 +436,11 @@ void SharingGroup::assign_as_manager(int user_id)
 	}
 	else if (is_manager(user_id))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_IS_MANAGER);
+		LIGHTS_THROW(Exception, ERR_GROUP_ALREADY_IS_MANAGER);
 	}
 	else
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_USER_NOT_JOIN);
+		LIGHTS_THROW(Exception, ERR_GROUP_USER_NOT_JOIN);
 	}
 }
 
@@ -454,11 +454,11 @@ void SharingGroup::assign_as_member(int user_id)
 	}
 	else if (is_member(user_id))
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_IS_MEMBER);
+		LIGHTS_THROW(Exception, ERR_GROUP_ALREADY_IS_MEMBER);
 	}
 	else
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_USER_NOT_JOIN);
+		LIGHTS_THROW(Exception, ERR_GROUP_USER_NOT_JOIN);
 	}
 }
 
@@ -467,7 +467,7 @@ void SharingGroup::kick_out_user(int user_id)
 {
 	if (user_id == owner_id())
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CANNOT_KICK_OUT_OWNER);
+		LIGHTS_THROW(Exception, ERR_GROUP_CANNOT_KICK_OUT_OWNER);
 	}
 
 	auto itr = std::find(m_member_list.begin(), m_member_list.end(), user_id);
@@ -522,7 +522,7 @@ void SharingGroup::add_file(const FilePath& dir_path, int file_id)
 	SharingFile& dir_file = SharingFileManager::instance()->get_file(dir_id);
 	if (dir_file.file_type != SharingFile::DIRECTORY)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_DIRECTORY);
 	}
 
 	auto& dir = dynamic_cast<SharingDirectory&>(dir_file);
@@ -539,7 +539,7 @@ void SharingGroup::create_path(const FilePath& path)
 		SharingFile& parent = SharingFileManager::instance()->get_file(parent_id);
 		if (parent.file_type != SharingFile::DIRECTORY)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
+			LIGHTS_THROW(Exception, ERR_GROUP_NOT_DIRECTORY);
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
@@ -568,7 +568,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		SharingFile& parent = SharingFileManager::instance()->get_file(parent_id);
 		if (parent.file_type != SharingFile::DIRECTORY)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_DIRECTORY);
+			LIGHTS_THROW(Exception, ERR_GROUP_NOT_DIRECTORY);
 		}
 
 		SharingDirectory& parent_dir = dynamic_cast<SharingDirectory&>(parent);
@@ -577,7 +577,7 @@ void SharingGroup::remove_path(const FilePath& path)
 		previous_parent_id = parent_id;
 		if (file_id == INVALID_ID)
 		{
-			LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
+			LIGHTS_THROW(Exception, ERR_FILE_NOT_EXIST);
 		}
 		else
 		{
@@ -587,7 +587,7 @@ void SharingGroup::remove_path(const FilePath& path)
 
 	if (parent_id == m_root_dir_id)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_CANNOT_REMOVE_ROOT_DIR);
+		LIGHTS_THROW(Exception, ERR_GROUP_CANNOT_REMOVE_ROOT_DIR);
 	}
 
 	SharingFileManager::instance()->remove_file(parent_id);
@@ -633,7 +633,7 @@ SharingGroup& SharingGroupManager::register_group(int user_id, const std::string
 	SharingGroup* old_group = find_group(group_name);
 	if (old_group != nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
 
 	SharingFile& root_dir = SharingFileManager::instance()->register_file(SharingFile::DIRECTORY, group_name);
@@ -646,7 +646,7 @@ SharingGroup& SharingGroupManager::register_group(int user_id, const std::string
 	auto result = m_group_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_GROUP_ALREADY_EXIST);
 	}
 
 	return result.first->second;
@@ -658,7 +658,7 @@ void SharingGroupManager::remove_group(int user_id, int group_id)
 	SharingGroup& group = get_group(group_id);
 	if (group.owner_id() != user_id)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_PERMIT_NEED_OWNER);
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_OWNER);
 	}
 
 	StorageNode& node = StorageNodeManager::instance()->get_node(group.node_id());
@@ -700,7 +700,7 @@ SharingGroup& SharingGroupManager::get_group(int group_id)
 	SharingGroup* group = find_group(group_id);
 	if (group == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_EXIST);
 	}
 	return *group;
 }
@@ -711,7 +711,7 @@ SharingGroup& SharingGroupManager::get_group(const std::string& group_name)
 	SharingGroup* group = find_group(group_name);
 	if (group == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_GROUP_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_EXIST);
 	}
 	return *group;
 }
@@ -872,7 +872,7 @@ SharingFile& SharingFileManager::register_file(SharingFile::FileType file_type, 
 	auto result = m_file_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_ALREADY_EXIST);
 	}
 
 	return *result.first->second;
@@ -936,7 +936,7 @@ SharingFile& SharingFileManager::get_file(int file_id)
 	SharingFile* file = find_file(file_id);
 	if (file == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_NOT_EXIST);
 	}
 	return *file;
 }
@@ -947,7 +947,7 @@ SharingFile& SharingFileManager::get_file(int node_id, const std::string& node_f
 	SharingFile* file = find_file(node_id, node_file_name);
 	if (file == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_NOT_EXIST);
 	}
 	return *file;
 }
@@ -1087,7 +1087,7 @@ StorageNode& StorageNodeManager::get_node(int node_id)
 	StorageNode* node = find_node(node_id);
 	if (node == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_NODE_NOT_EXIST);
 	}
 	return *node;
 }
@@ -1098,7 +1098,7 @@ StorageNode& StorageNodeManager::get_node(const std::string& ip, unsigned short 
 	StorageNode* node = find_node(ip, port);
 	if (node == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NODE_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_NODE_NOT_EXIST);
 	}
 	return *node;
 }
@@ -1164,7 +1164,7 @@ PutFileSession& FileSessionManager::register_put_session(int user_id,
 	if (!result.second)
 	{
 		delete session_entry;
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	on_register_session(group_id, file_path, session_entry->session_id);
@@ -1184,7 +1184,7 @@ GetFileSession& FileSessionManager::register_get_session(int user_id, int group_
 	if (!result.second)
 	{
 		delete session_entry;
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	on_register_session(group_id, file_path, session_entry->session_id);
@@ -1298,7 +1298,7 @@ PutFileSession& FileSessionManager::get_put_session(int session_id)
 	PutFileSession* session = find_put_session(session_id);
 	if (session == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_SESSION_NOT_EXIST);
 	}
 
 	return *session;
@@ -1310,7 +1310,7 @@ GetFileSession& FileSessionManager::get_get_session(int session_id)
 	GetFileSession* session = find_get_session(session_id);
 	if (session == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_FILE_SESSION_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_FILE_SESSION_NOT_EXIST);
 	}
 
 	return *session;

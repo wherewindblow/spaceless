@@ -18,10 +18,20 @@
 namespace lights {
 namespace env {
 
+#define LIGHTS_OS_LINUX            1
+#define LIGHTS_OS_WINDOWS          2
+
+#if defined(linux) || defined(__linux) || defined(__linux__)
+	#define LIGHTS_OS LIGHTS_OS_LINUX
+#elif defined(_WIN32) || defined(_WIN64)
+	#define LIGHTS_OS LIGHTS_OS_WINDOWS
+#endif
+
+
 /**
  * Sets pod type do not memory alignment.
  */
-#define LIGHTS_NOT_MEMEORY_ALIGNMENT __attribute__((packed))
+#define LIGHTS_NOT_MEMORY_ALIGNMENT __attribute__((packed))
 
 
 /**
@@ -33,14 +43,14 @@ inline const char* end_line()
 }
 
 // In XSI-compliant (posix) version, 100 character is enough to put all error
-// string on g++ (GCC) 6.2.1 20160916 (Red Hat 6.2.1-2) (Englist Version).
-// In another languague version may have to change to largger to
+// string on g++ (GCC) 6.2.1 20160916 (Red Hat 6.2.1-2) (English Version).
+// In another language version may have to change to larger to
 // hold all message.
-// In GNU-specific version 100 character can hold all unkown error.
+// In GNU-specific version 100 character can hold all unknown error.
 constexpr int MAX_ERROR_STR_LEN = 100;
 
 /**
- * Return string version of error number.
+ * Returns string version of error number.
  * @param error_no  Enum of error.
  * @param buf       Use to hold error string sometime.
  * @note Must use return value as result, not @c buf. Because @c buf
@@ -60,7 +70,7 @@ inline const char* strerror(int error_no, char* buf, std::size_t len)
 	{
 		return "Unkown error";
 	}
-#else // GNU-specific version, buf only use when it is unkown.
+#else // GNU-specific version, buf only use when it is unknown.
 	return strerror_r(error_no, buf, sizeof(len));
 #endif
 }
@@ -73,7 +83,7 @@ using offset_t = std::ptrdiff_t;
  */
 inline offset_t ftell(std::FILE* file)
 {
-	// Return type off_t will fit into suitable type for 32 and 64 architechures.
+	// Return type off_t will fit into suitable type for 32 and 64 architecture.
 	return ftello(file);
 }
 
@@ -82,7 +92,7 @@ inline offset_t ftell(std::FILE* file)
  */
 inline void fseek(std::FILE* file, offset_t off, int whence)
 {
-	// Return type off_t will fit into suitable type for 32 and 64 architechures.
+	// Return type off_t will fit into suitable type for 32 and 64 architecture.
 	fseeko(file, off, whence);
 }
 

@@ -42,7 +42,7 @@ void Network::send_protocol(int conn_id,
 	int size = protocol::get_message_size(msg);
 	if (static_cast<std::size_t>(size) > PackageBuffer::MAX_CONTENT_LEN)
 	{
-		LIGHTS_ERROR(logger, "{} {}: Content length is too large. length={}.", target_type, target_id, size)
+		LIGHTS_ERROR(logger, "{} {}: Content length is too large. length={}.", target_type, target_id, size);
 		return;
 	}
 
@@ -174,7 +174,7 @@ MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(
 	auto result = m_trans_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST);
 	}
 
 	return *trans;
@@ -217,7 +217,7 @@ void MultiplyPhaseTransactionManager::bind_transaction(int trans_id, int package
 	auto result = m_bind_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_BOUND_TRANSACTION_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_BOUND_TRANSACTION_ALREADY_EXIST);
 	}
 }
 
@@ -258,7 +258,7 @@ void TransactionManager::register_transaction(int cmd,
 	auto result = m_trans_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_TRANSACTION_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_TRANSACTION_ALREADY_EXIST);
 	}
 }
 

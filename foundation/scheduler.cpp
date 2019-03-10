@@ -65,7 +65,7 @@ void Scheduler::start()
 
 void Scheduler::stop()
 {
-	LIGHTS_INFO(logger, "Stopping scheduler.")
+	LIGHTS_INFO(logger, "Stopping scheduler.");
 	NetworkManager::instance()->stop();
 	WorkerScheduler* worker_scheduler = WorkerScheduler::instance();
 	worker_scheduler->stop();

@@ -8,13 +8,13 @@
 
 #include <cstddef>
 #include <cstdio>
-#include <memory>
 
 #include "../sequence.h"
 #include "../file.h"
 
+
 namespace lights {
-namespace log_sinks {
+namespace sinks {
 
 /**
  * StdoutSink is wrapper sink of stdout_stream.
@@ -33,10 +33,10 @@ public:
 	/**
 	 * Returns instance.
 	 */
-	static std::shared_ptr<StdoutSink> instance()
+	static StdoutSink& instance()
 	{
-		static auto instance = std::make_shared<StdoutSink>();
-		return instance;
+		static StdoutSink inst;
+		return inst;
 	};
 };
 
@@ -58,12 +58,12 @@ public:
 	/**
 	 * Returns instance.
 	 */
-	static std::shared_ptr<StderrSink> instance()
+	static StderrSink& instance()
 	{
-		static auto instance = std::make_shared<StderrSink>();
-		return instance;
+		static StderrSink inst;
+		return inst;
 	};
 };
 
-} // namespace log_sinks
+} // namespace sinks
 } // namespace lights

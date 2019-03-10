@@ -9,16 +9,14 @@
 #include <cstddef>
 #include <cstring>
 #include <string>
-#include <memory>
 #include <mutex>
 
 #include "../sequence.h"
 #include "../file.h"
-#include "../exception.h"
 
 
 namespace lights {
-namespace log_sinks {
+namespace sinks {
 
 /**
  * LogMessageWriter ensure every log message is write to backend completely.
@@ -31,7 +29,10 @@ public:
 	 * Creates writer.
 	 */
 	LogMessageWriter(FileStream* file = nullptr) :
-		m_file(file) {}
+		m_file(file),
+		m_buffer_length(0),
+		m_last_flush_time(0)
+	{}
 
 	/**
 	 * Sets log message write target.
@@ -47,8 +48,8 @@ public:
 	 */
 	std::size_t write(SequenceView log_msg)
 	{
-		std::size_t writed = m_file->write(log_msg);
-		m_buffer_length += writed;
+		std::size_t len = m_file->write(log_msg);
+		m_buffer_length += len;
 
 		if (m_buffer_length > FILE_DEFAULT_BUFFER_SIZE)
 		{
@@ -56,7 +57,7 @@ public:
 			m_last_flush_time = std::time(nullptr);
 		}
 
-		return writed;
+		return len;
 	}
 
 	/**
@@ -66,7 +67,7 @@ public:
 	void flush_by_timeout(std::time_t timeout)
 	{
 		std::time_t cur_time = std::time(nullptr);
-		if (m_last_flush_time - cur_time >= timeout)
+		if (cur_time - m_last_flush_time >= timeout)
 		{
 			m_file->flush();
 			m_last_flush_time = cur_time;
@@ -75,9 +76,9 @@ public:
 	}
 
 private:
-	std::size_t m_buffer_length = 0;
-	FileStream* m_file = nullptr;
-	std::time_t m_last_flush_time = 0;
+	FileStream* m_file;
+	std::size_t m_buffer_length;
+	std::time_t m_last_flush_time;
 };
 
 
@@ -120,11 +121,11 @@ private:
 class SizeRotatingFileSink: public Sink
 {
 public:
-	SizeRotatingFileSink() = default;
+	SizeRotatingFileSink();
 
 	/**
 	 * Init file name format.
-	 * @param name_format  Format string that use "{}" as a placehalder.
+	 * @param name_format  Format string that use "{}" as a placeholder.
 	 * @note This init is necessary.
 	 */
 	void init_name_format(const std::string& name_format);
@@ -164,13 +165,13 @@ private:
 
 	void rotate(std::size_t expect_size);
 
-	bool can_init = true;
+	bool can_init;
 	std::string m_name_format;
-	std::size_t m_max_size = static_cast<std::size_t>(-1);
-	std::size_t m_max_files = static_cast<std::size_t>(-1);
+	std::size_t m_max_size;
+	std::size_t m_max_files;
 	FileStream m_file;
 	LogMessageWriter m_msg_writer;
-	std::size_t m_index = static_cast<std::size_t>(-1);
+	std::size_t m_index;
 	std::size_t m_current_size;
 	std::mutex m_mutex;
 };
@@ -220,5 +221,5 @@ private:
 	std::mutex m_mutex;
 };
 
-} // namespace log_sinks
+} // namespace sinks
 } // namespace lights

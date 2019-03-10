@@ -24,7 +24,6 @@ namespace lights {
 class SourceLocation
 {
 public:
-	SourceLocation() = default;
 	SourceLocation(const char* file, std::uint32_t line, const char* function):
 		m_file(file), m_function(function), m_line(line) {}
 
@@ -85,7 +84,7 @@ enum Type
 
 /**
  * ErrorCodeDescriptions have without arguments description and with arguments description.
- * To get full descrition must use @c with_args and format with arguments.
+ * To get full description must use @c with_args and format with arguments.
  */
 class ErrorCodeDescriptions
 {
@@ -148,7 +147,7 @@ public:
 };
 
 /**
- * LightsErrorCodeCategory is a implementation of error category that use in this lights libraray.
+ * LightsErrorCodeCategory is a implementation of error category that use in this lights library.
  */
 class LightsErrorCodeCategory: public ErrorCodeCategory
 {
@@ -180,8 +179,12 @@ public:
 	/**
 	 * Creates exception.
 	 */
-	Exception(const SourceLocation& occur_location, int code, const ErrorCodeCategory& code_category = LightsErrorCodeCategory::instance()):
-		m_occur_location(occur_location), m_code(code), m_code_category(code_category)
+	Exception(const SourceLocation& occur_location,
+			  int code,
+			  const ErrorCodeCategory& code_category = LightsErrorCodeCategory::instance()):
+		m_occur_location(occur_location),
+		m_code(code),
+		m_code_category(code_category)
 	{
 	}
 
@@ -245,7 +248,8 @@ class AssertionError: public Exception
 {
 public:
 	AssertionError(const SourceLocation& occur_location, StringView description):
-		Exception(occur_location, error_code::ASSERTION_ERROR), m_description(description)
+		Exception(occur_location, error_code::ASSERTION_ERROR),
+		m_description(description)
 	{
 	}
 
@@ -263,7 +267,8 @@ class InvalidArgument: public Exception
 {
 public:
 	InvalidArgument(const SourceLocation& occur_location, StringView description):
-		Exception(occur_location, error_code::INVALID_ARGUMENT), m_description(description.to_std_string())
+		Exception(occur_location, error_code::INVALID_ARGUMENT),
+		m_description(description.to_std_string())
 	{
 	}
 
@@ -281,7 +286,9 @@ class OpenFileError: public Exception
 {
 public:
 	OpenFileError(const SourceLocation& occur_location, StringView filename):
-		Exception(occur_location, error_code::OPEN_FILE_FAILURE), m_filename(filename.to_std_string())
+		Exception(occur_location, error_code::OPEN_FILE_FAILURE),
+		m_filename(filename.to_std_string()),
+		m_error_no(errno)
 	{
 	}
 
@@ -289,6 +296,7 @@ public:
 
 private:
 	std::string m_filename;
+	int m_error_no;
 };
 
 
@@ -297,8 +305,8 @@ private:
  * @arg ... Expand to fmt and arg ...
  * @note Expand macro method is not standard.
  */
-#define LIGHTS_THROW_EXCEPTION(ExceptionType, ...) \
-        throw ExceptionType(LIGHTS_CURRENT_SOURCE_LOCATION, ##__VA_ARGS__);
+#define LIGHTS_THROW(ExceptionType, ...) \
+        throw ExceptionType(LIGHTS_CURRENT_SOURCE_LOCATION, ##__VA_ARGS__)
 
 
 #if LIGHTS_OPEN_ASSERTION == 1
@@ -307,8 +315,8 @@ private:
 #	define LIGHTS_ASSERT(expr) \
 	do { \
 		if (!(expr)) \
-			LIGHTS_THROW_EXCEPTION(lights::AssertionError, #expr); \
-	} while (false);
+			LIGHTS_THROW(lights::AssertionError, #expr); \
+	} while (false)
 #else
 #	define LIGHTS_ASSERT(expr)
 #endif

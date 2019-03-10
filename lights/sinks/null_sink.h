@@ -6,14 +6,11 @@
 
 #pragma once
 
-#include <cstddef>
-#include <memory>
-
 #include "../sequence.h"
 
 
 namespace lights {
-namespace log_sinks {
+namespace sinks {
 
 /**
  * NullSink will accept all data and do nothing.
@@ -24,12 +21,12 @@ public:
 	/**
 	 * Returns instance.
 	 */
-	static std::shared_ptr<NullSink> instance()
+	static NullSink& instance()
 	{
-		static auto instance = std::make_shared<NullSink>();
-		return instance;
+		static NullSink inst;
+		return inst;
 	};
 };
 
-} // namespace log_sinks
+} // namespace sinks
 } // namespace lights

@@ -80,7 +80,7 @@ NetworkConnection NetworkManager::get_connection(int conn_id)
 	NetworkConnection conn = find_connection(conn_id);
 	if (!conn.is_valid())
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_CONNECTION_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_NETWORK_CONNECTION_NOT_EXIST);
 	}
 
 	return conn;
@@ -110,7 +110,7 @@ NetworkService& NetworkServiceManager::register_service(const std::string& ip, u
 	NetworkService* old_service = find_service(ip, port);
 	if (old_service != nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
 	}
 
 	NetworkService new_service(m_next_id, ip, port);
@@ -120,7 +120,7 @@ NetworkService& NetworkServiceManager::register_service(const std::string& ip, u
 	auto result = m_service_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_NETWORK_SERVICE_ALREADY_EXIST);
 	}
 
 	return result.first->second;
@@ -171,7 +171,7 @@ int NetworkServiceManager::get_connection_id(int service_id)
 	NetworkService* service = find_service(service_id);
 	if (service == nullptr)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_NETWORK_SERVICE_NOT_EXIST);
+		LIGHTS_THROW(Exception, ERR_NETWORK_SERVICE_NOT_EXIST);
 	}
 
 	auto itr = m_conn_list.find(service_id);

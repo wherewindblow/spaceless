@@ -6,9 +6,8 @@
 
 #pragma once
 
-#include <memory>
-
 #include "sequence.h"
+#include "non_copyable.h"
 
 
 namespace lights {
@@ -19,24 +18,13 @@ struct StringTableImpl;
 
 } // namespace details
 
-class StringTable;
-using StringTablePtr = std::shared_ptr<StringTable>;
-
 
 /**
  * StringTable record string with index.
  */
-class StringTable
+class StringTable : public NonCopyable
 {
 public:
-	/**
-	 * Creates string table.
-	 */
-	static StringTablePtr create(StringView filename)
-	{
-		return std::make_shared<StringTable>(filename);
-	}
-
 	/**
 	 * Creates string table.
 	 */
@@ -53,43 +41,34 @@ public:
 	std::size_t get_index(StringView str);
 
 	/**
-	 * Add new string.
+	 * Adds new string.
 	 * @return Returns index of string.
 	 */
 	std::size_t add_str(StringView str);
 
 	/**
-	 * Get string by index.
+	 * Gets string by index.
 	 * @note Return nullptr if index is invalid.
 	 */
 	StringView get_str(std::size_t index) const;
 
 	/**
-	 * Get string by index.
+	 * Gets string by index.
 	 * @note Return nullptr if index is invalid.
 	 */
-	StringView operator[] (std::size_t index) const
-	{
-		return get_str(index);
-	}
+	StringView operator[] (std::size_t index) const;
 
 private:
 	using ImplementType = details::StringTableImpl;
-	/**
-	 * It's same as use @c p_impl directly. It's the workaround way with Clion and give
-	 * type sugguestion to code completion.
-	 */
-	ImplementType* impl()
-	{
-		return p_impl.get();
-	}
-
-	const ImplementType* impl() const
-	{
-		return p_impl.get();
-	}
-
-	std::unique_ptr<ImplementType> p_impl;
+	ImplementType* p_impl;
 };
+
+
+// ========================== Inline implement. ==============================
+
+inline StringView StringTable::operator[](std::size_t index) const
+{
+	return get_str(index);
+}
 
 } // namespace lights

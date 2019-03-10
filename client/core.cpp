@@ -270,7 +270,7 @@ void DelayTesting::start_testing()
 		protocol::ReqPing request;
 		lights::PreciseTime time = lights::current_precise_time();
 		request.set_second(static_cast<std::int32_t>(time.seconds));
-		std::int64_t microsecond = lights::nanasecond_to_microsecond(time.nanoseconds);
+		std::int64_t microsecond = lights::nanosecond_to_microsecond(time.nanoseconds);
 		request.set_microsecond(static_cast<std::int32_t>(microsecond));
 		Network::send_protocol(conn_id, request);
 	});
@@ -279,7 +279,7 @@ void DelayTesting::start_testing()
 
 void DelayTesting::on_receive_response(int second, int microsecond)
 {
-	lights::PreciseTime send_time(second, lights::microsecond_to_nanasecond(microsecond));
+	lights::PreciseTime send_time(second, lights::microsecond_to_nanosecond(microsecond));
 	lights::PreciseTime rtt = lights::current_precise_time() - send_time;
 	m_last_delay_time = rtt / 2;
 	m_total_delay_time = m_total_delay_time + m_last_delay_time;

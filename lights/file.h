@@ -12,6 +12,7 @@
 #include "env.h"
 #include "sequence.h"
 #include "exception.h"
+#include "non_copyable.h"
 
 
 namespace lights {
@@ -32,22 +33,25 @@ constexpr const int FILE_DEFAULT_BUFFER_SIZE = BUFSIZ;
 /**
  * FileStream provide operation with a file.
  */
-class FileStream
+class FileStream : public NonCopyable
 {
 public:
-	FileStream() = default;
+	FileStream() :
+		m_std_file(nullptr)
+	{}
 
 	/**
 	 * Opens a file with @c filename and @c modes
 	 * @throw Thrown OpenFileError when have error.
 	 */
-	FileStream(StringView filename, StringView modes)
+	FileStream(StringView filename, StringView modes) :
+		FileStream()
 	{
 		open(filename, modes);
 	}
 
 	/**
-	 * Automaticly close a file when there is a open file.
+	 * Closes a file automatically when there is a open file.
 	 */
 	~FileStream()
 	{
@@ -67,7 +71,7 @@ public:
 		m_std_file = std::fopen(filename.data(), modes.data());
 		if (m_std_file == nullptr)
 		{
-			LIGHTS_THROW_EXCEPTION(OpenFileError, filename);
+			LIGHTS_THROW(OpenFileError, filename);
 		}
 	}
 
@@ -80,7 +84,7 @@ public:
 		if (std::freopen(filename.data(), modes.data(), m_std_file) == nullptr)
 		{
 			m_std_file = nullptr;
-			LIGHTS_THROW_EXCEPTION(OpenFileError, filename);
+			LIGHTS_THROW(OpenFileError, filename);
 		}
 	}
 
@@ -239,7 +243,7 @@ public:
 	}
 
 	/**
-	 * Writes @c str and append line ender.
+	 * Writes @c str and append line end symbol.
 	 */
 	void write_line(StringView str)
 	{
@@ -254,7 +258,7 @@ public:
 	friend FileStream& stderr_stream();
 
 private:
-	std::FILE* m_std_file = nullptr;
+	std::FILE* m_std_file;
 };
 
 /**
@@ -307,7 +311,7 @@ private:
 };
 
 /**
- * Dumps a excetion @c ex message to file stream @c out.
+ * Dumps a exception @c ex message to file stream @c out.
  */
 inline void dump(const Exception& ex, FileStream& out)
 {

@@ -6,8 +6,8 @@
 
 #include "log.h"
 
-#include <lights/log_sinks/stdout_sink.h>
-#include <lights/log_sinks/file_sink.h>
+#include <lights/sinks/stdout_sink.h>
+#include <lights/sinks/file_sink.h>
 
 
 namespace spaceless {
@@ -43,15 +43,14 @@ lights::LogLevel to_log_level(lights::StringView str)
 
 
 LoggerManager::LoggerManager():
-	m_log_sink_ptr(lights::log_sinks::StdoutSink::instance())
-//	m_log_sink_ptr(std::make_shared<lights::log_sinks::SimpleFileSink>("log"))
+	m_sink(&lights::sinks::StdoutSink::instance())
 {
 }
 
 
 Logger& LoggerManager::register_logger(const std::string& name)
 {
-	Logger* logger = new Logger(name, m_log_sink_ptr);
+	Logger* logger = new Logger(name, *m_sink);
 	auto pair = m_logger_list.insert(std::make_pair(name, logger));
 	if (!pair.second)
 	{
@@ -77,7 +76,7 @@ Logger* LoggerManager::find_logger(const std::string& name)
 
 void LoggerManager::for_each(std::function<void(const std::string&, Logger&)> callback)
 {
-	for (auto& pair :m_logger_list)
+	for (auto& pair : m_logger_list)
 	{
 		callback(pair.first, *pair.second);
 	}

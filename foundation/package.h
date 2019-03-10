@@ -38,7 +38,7 @@ struct PackageHeader
 		int command;
 		// The length of content. If content have padding will not include it.
 		int content_length;
-	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
+	} LIGHTS_NOT_MEMORY_ALIGNMENT;
 
 	/**
 	 * To extend package header, only can add new field in the end of extend structure.
@@ -51,7 +51,7 @@ struct PackageHeader
 		int self_package_id;
 		// self_package_id of request.
 		int trigger_package_id;
-	} LIGHTS_NOT_MEMEORY_ALIGNMENT;
+	} LIGHTS_NOT_MEMORY_ALIGNMENT;
 
 
 	// Base structure.
@@ -65,7 +65,7 @@ struct PackageHeader
 		std::memset(this, 0, sizeof(*this));
 		base.version = PACKAGE_VERSION;
 	}
-} LIGHTS_NOT_MEMEORY_ALIGNMENT;
+} LIGHTS_NOT_MEMORY_ALIGNMENT;
 
 
 struct PackageTriggerSource

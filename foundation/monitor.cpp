@@ -34,7 +34,7 @@ void MonitorManager::register_monitor(const std::string& name, GetSizeFunction g
 	auto result = m_monitor_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW_EXCEPTION(Exception, ERR_MONITOR_MANAGER_ALREADY_EXIST);
+		LIGHTS_THROW(Exception, ERR_MONITOR_MANAGER_ALREADY_EXIST);
 	}
 }
 

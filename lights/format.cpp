@@ -16,12 +16,13 @@ std::size_t format_need_space(Integer n)
 {
 	static_assert(std::is_integral<Integer>::value && "n only can be integer");
 
-	auto absolute = static_cast<std::make_unsigned_t<Integer>>(n);
+	using UnsignedInteger = std::make_unsigned_t<Integer>;
+	auto absolute = static_cast<UnsignedInteger>(n);
 	bool negative = n < 0;
 	unsigned count = 0;
 	if (negative)
 	{
-		absolute = 0 - absolute;
+		absolute = static_cast<UnsignedInteger>(0 - absolute);
 		++count;
 	}
 
@@ -60,11 +61,12 @@ char* format_integer(Integer n, char* output)
 {
 	static_assert(std::is_integral<Integer>::value && "n only can be integer");
 
-	auto absolute = static_cast<std::make_unsigned_t<Integer>>(n);
+	using UnsignedInteger = std::make_unsigned_t<Integer>;
+	auto absolute = static_cast<UnsignedInteger>(n);
 	bool negative = n < 0;
 	if (negative)
 	{
-		absolute = 0 - absolute;
+		absolute = static_cast<UnsignedInteger>(0 - absolute);
 	}
 
 	if (absolute == 0)
@@ -124,27 +126,88 @@ LIGHTSIMPL_ALL_INTEGER_FUNCTION(LIGHTSIMPL_FORMAT_INTEGER);
 } // namespace details
 
 
-void TextWriter::handle_full(char ch)
+TextWriter::TextWriter(String write_target) :
+	m_use_default_buffer(!is_valid(write_target)),
+	m_buffer(is_valid(write_target) ? write_target.data() : new char[WRITER_BUFFER_SIZE_DEFAULT]),
+	m_length(0),
+	m_capacity(is_valid(write_target) ? write_target.length() : WRITER_BUFFER_SIZE_DEFAULT),
+	m_full_handler()
+{}
+
+
+TextWriter::TextWriter(const TextWriter& rhs)
 {
-	if (m_full_handler)
+	*this = rhs;
+}
+
+
+TextWriter::~TextWriter()
+{
+	if (m_use_default_buffer)
 	{
-		m_full_handler(string_view());
-		clear();
-		if (sizeof(ch) <= max_size())
+		delete[] m_buffer;
+	}
+}
+
+
+TextWriter& TextWriter::operator=(const TextWriter& rhs)
+{
+	if (&rhs != this)
+	{
+		if (m_use_default_buffer)
 		{
-			append(ch);
+			delete[] m_buffer;
+		}
+
+		m_use_default_buffer = rhs.m_use_default_buffer;
+		m_buffer = rhs.m_use_default_buffer ? new char[WRITER_BUFFER_SIZE_DEFAULT] : rhs.m_buffer;
+		m_length = rhs.m_length;
+		m_capacity = rhs.m_capacity;
+		m_full_handler = rhs.m_full_handler;
+	}
+	return *this;
+}
+
+
+void TextWriter::append(char ch)
+{
+	if (can_append(sizeof(ch)))
+	{
+		m_buffer[m_length] = ch;
+		++m_length;
+	}
+	else // Full
+	{
+		if (m_full_handler)
+		{
+			m_full_handler(string_view());
+			clear();
+			if (sizeof(ch) <= max_size())
+			{
+				append(ch);
+			}
 		}
 	}
 }
 
 
-void TextWriter::handle_not_enougth_space(StringView str)
+void TextWriter::append(StringView str)
 {
-	// Append to the remaining place.
-	StringView part(str.data(), max_size() - m_length);
-	append(part);
-	str.move_forward(part.length());
-	handle_full(str);
+	if (can_append(str.length()))
+	{
+		copy_array(m_buffer + m_length, str.data(), str.length());
+		m_length += str.length();
+	}
+	else // Have not enough space to hold all.
+	{
+		// Append to the remaining place.
+		StringView part(str.data(), max_size() - m_length);
+		append(part);
+		str.move_forward(part.length());
+
+		// Handle for full situation.
+		handle_full(str);
+	}
 }
 
 
@@ -158,7 +221,7 @@ void TextWriter::handle_full(StringView str)
 		{
 			append(str);
 		}
-		else // Have not enought space to hold all.
+		else // Have not enough space to hold all.
 		{
 			while (str.length())
 			{
@@ -173,6 +236,32 @@ void TextWriter::handle_full(StringView str)
 				str.move_forward(append_len);
 			}
 		}
+	}
+}
+
+
+#define LIGHTSIMPL_TEXT_WRITER_INSERT_IMPL(Type)            \
+	TextWriter& TextWriter::operator<< (Type n)             \
+	{                                                       \
+		auto len = details::format_need_space(n);           \
+		if (can_append(len))                                \
+		{                                                   \
+			details::format_integer(n, m_buffer + m_length + len); \
+			m_length += len;                                \
+		}                                                   \
+		return *this;                                       \
+	}
+
+LIGHTSIMPL_ALL_INTEGER_FUNCTION(LIGHTSIMPL_TEXT_WRITER_INSERT_IMPL)
+
+#undef LIGHTSIMPL_TEXT_WRITER_INSERT_IMPL
+
+
+void FormatSink<TextWriter>::append(std::size_t num, char ch)
+{
+	for (std::size_t i = 0; i < num; ++i)
+	{
+		this->append(ch);
 	}
 }
 

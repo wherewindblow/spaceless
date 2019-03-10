@@ -1,4 +1,4 @@
-#include <lights/log_sinks/file_sink.h>
+#include <lights/sinks/file_sink.h>
 #include <foundation/network.h>
 #include <foundation/transaction.h>
 #include <foundation/scheduler.h>

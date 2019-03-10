@@ -9,14 +9,15 @@
 #include <cstddef>
 
 #include "sequence.h"
+#include "non_copyable.h"
 
 
 namespace lights {
 
 /**
- * Sink is virtual base class and use as backend of ouput.
+ * Sink is virtual base class and use as backend of output.
  */
-class Sink
+class Sink : public NonCopyable
 {
 public:
 	Sink() = default;
@@ -24,7 +25,7 @@ public:
 
 	/**
 	 * Writes sequence to backend.
-	 * @note It's pure virtual function and must implementaion by derived class.
+	 * @note It's pure virtual function and must implementation by derived class.
 	 */
 	virtual std::size_t write(SequenceView sequence) = 0;
 };
@@ -80,37 +81,42 @@ public:
 	/**
 	 * Creates format sink.
 	 */
-	explicit FormatSink(Sink& sink) : m_backend(sink) {}
+	explicit FormatSink(Sink& sink);
 
 	/**
 	 * Appends char to backend.
 	 */
-	void append(char ch)
-	{
-		m_backend.write(SequenceView(&ch, sizeof(ch)));
-	}
+	void append(char ch);
 
 	/**
 	 * Appends multiple same char to backend.
 	 */
-	void append(std::size_t num, char ch)
-	{
-		for (std::size_t i = 0; i < num; ++i)
-		{
-			this->append(ch);
-		}
-	}
+	void append(std::size_t num, char ch);
 
 	/**
 	 * Appends string to backend.
 	 */
-	void append(StringView str)
-	{
-		m_backend.write(str);
-	}
+	void append(StringView str);
 
 private:
 	Sink& m_backend;
 };
+
+
+// ============================== Implement. ===============================
+
+inline FormatSink<Sink>::FormatSink(Sink& sink) :
+	m_backend(sink)
+{}
+
+inline void FormatSink<Sink>::append(char ch)
+{
+	m_backend.write(SequenceView(&ch, sizeof(ch)));
+}
+
+inline void FormatSink<Sink>::append(StringView str)
+{
+	m_backend.write(str);
+}
 
 } // namespace lights
