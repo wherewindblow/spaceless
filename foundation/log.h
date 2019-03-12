@@ -50,6 +50,12 @@ public:
 	 */
 	void for_each(std::function<void(const std::string& logger_name, Logger& logger)> callback);
 
+	/**
+	 * Sets global log sink.
+	 * @note Must ensure lifecycle of sink.
+	 */
+	void set_log_sink(lights::Sink& sink);
+
 private:
 	lights::Sink* m_sink;
 	std::map<std::string, Logger*> m_logger_list;

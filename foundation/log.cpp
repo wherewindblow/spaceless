@@ -83,6 +83,16 @@ void LoggerManager::for_each(std::function<void(const std::string&, Logger&)> ca
 }
 
 
+void LoggerManager::set_log_sink(lights::Sink& sink)
+{
+	m_sink = &sink;
+	for (auto& pair : m_logger_list)
+	{
+		pair.second->set_sink(sink);
+	}
+}
+
+
 Logger& get_logger(const std::string& name)
 {
 	Logger* logger = LoggerManager::instance()->find_logger(name);
