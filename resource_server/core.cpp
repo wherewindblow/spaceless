@@ -995,7 +995,6 @@ Object::Ptr StorageNode::serialize()
 	SERIALIZE(object, ip);
 	SERIALIZE(object, port);
 	SERIALIZE(object, node_id);
-	SERIALIZE(object, service_id);
 	SERIALIZE(object, use_counting);
 	return object;
 }
@@ -1007,8 +1006,9 @@ void StorageNode::deserialize(Object::Ptr object)
 	DESERIALIZE(object, ip);
 	DESERIALIZE(object, port);
 	DESERIALIZE(object, node_id);
-	DESERIALIZE(object, service_id);
 	DESERIALIZE(object, use_counting);
+
+	service_id = 0;
 }
 
 
@@ -1142,6 +1142,24 @@ void StorageNodeManager::deserialize(Object::Ptr object)
 {
 	DESERIALIZE(object, m_next_id);
 	DESERIALIZE_MAP_CUSTOMER(object, m_node_list, StorageNode, node_id);
+
+	for (auto& pair: m_node_list)
+	{
+		int node_id = pair.first;
+		const std::string& ip = pair.second.ip;
+		unsigned short port = pair.second.port;
+
+		Delegation::delegate("deserialize", Delegation::NETWORK, [ip, port, node_id](){
+			NetworkService& service = NetworkServiceManager::instance()->register_service(ip, port);
+			int service_id = service.service_id;
+
+			Delegation::delegate("deserialize", Delegation::WORKER, [ip, port, node_id, service_id](){
+				auto inst = StorageNodeManager::instance();
+				StorageNode& node = inst->get_node(node_id);
+				node.service_id = service_id;
+			});
+		});
+	}
 }
 
 
