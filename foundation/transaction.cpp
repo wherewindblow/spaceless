@@ -88,6 +88,7 @@ void Network::send_protocol(int conn_id,
 MultiplyPhaseTransaction::MultiplyPhaseTransaction(int trans_id) :
 	m_id(trans_id),
 	m_current_phase(0),
+	m_on_active(),
 	m_first_conn_id(0),
 	m_first_trigger_source(),
 	m_wait_conn_id(0),
@@ -122,16 +123,31 @@ void MultiplyPhaseTransaction::on_error(int conn_id, int error_code)
 }
 
 
-void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current_phase, int timeout, int service_id)
+void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, OnActive on_active, int timeout, int service_id)
 {
+	const char* target_type = conn_id ? "Connection" : "Service";
+	int target_id = conn_id ? conn_id : service_id;
+
+	if (*on_active.type_info() != typeid(*this))
+	{
+		LIGHTS_ERROR(logger, "{} {}: On active is not same member of this class. on_active={}, this={}",
+					 target_type,
+					 target_id,
+					 on_active.type_info()->name(),
+					 typeid(this).name());
+		LIGHTS_ASSERT(*on_active.type_info() == typeid(*this));
+	}
+
 	m_wait_conn_id = conn_id;
 	m_wait_service_id = service_id;
 	m_wait_cmd = cmd;
-	m_current_phase = current_phase;
+	++m_current_phase;
+	m_on_active = on_active;
 	m_is_waiting = true;
 
 	int trans_id = m_id; // Cannot capture this. It maybe remove on timeout.
-	TimerManager::instance()->register_timer("wait_next_phase", lights::PreciseTime(timeout), [trans_id]()
+	TimerManager::instance()->register_timer("wait_next_phase", lights::PreciseTime(timeout),
+											 [trans_id, target_type, target_id]()
 	{
 		auto trans = MultiplyPhaseTransactionManager::instance()->find_transaction(trans_id);
 		if (!trans)
@@ -139,8 +155,9 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 			return;
 		}
 
-		LIGHTS_DEBUG(logger, "Connection {}: Transaction timeout. trans_id={}, phase={}.",
-					 trans->waiting_connection_id(),
+		LIGHTS_DEBUG(logger, "{} {}: Transaction timeout. trans_id={}, phase={}.",
+					 target_type,
+					 target_id,
 					 trans_id,
 					 trans->current_phase());
 
@@ -149,7 +166,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, int current
 
 		if (!trans->is_waiting())
 		{
-			LIGHTS_DEBUG(logger, "Connection {}: Transaction end. trans_id={}.", trans->waiting_connection_id(), trans_id);
+			LIGHTS_DEBUG(logger, "{} {}: Transaction end. trans_id={}.", target_type, target_id, trans_id);
 			MultiplyPhaseTransactionManager::instance()->remove_transaction(trans_id);
 		}
 	});

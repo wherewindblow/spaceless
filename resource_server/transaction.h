@@ -47,18 +47,13 @@ void on_list_file(int conn_id, Package package);
 class PutFileSessionTrans: public MultiplyPhaseTransaction
 {
 public:
-	enum
-	{
-		WAIT_STORAGE_NODE,
-	};
-
 	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	PutFileSessionTrans(int trans_id);
 
 	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, Package package) override;
+	void on_active(int conn_id, Package package);
 
 	void on_timeout() override;
 
@@ -72,18 +67,13 @@ private:
 class PutFileTrans: public MultiplyPhaseTransaction
 {
 public:
-	enum
-	{
-		WAIT_STORAGE_NODE,
-	};
-
 	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	PutFileTrans(int trans_id);
 
 	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, Package package) override;
+	void on_active(int conn_id, Package package);
 
 private:
 	int m_session_id;
@@ -93,18 +83,13 @@ private:
 class GetFileSessionTrans: public MultiplyPhaseTransaction
 {
 public:
-	enum
-	{
-		WAIT_STORAGE_NODE,
-	};
-
 	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	GetFileSessionTrans(int trans_id);
 
 	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, Package package) override;
+	void on_active(int conn_id, Package package);
 
 	void on_timeout() override;
 
@@ -118,18 +103,13 @@ private:
 class GetFileTrans: public MultiplyPhaseTransaction
 {
 public:
-	enum
-	{
-		WAIT_STORAGE_NODE,
-	};
-
 	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	GetFileTrans(int trans_id);
 
 	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, Package package) override;
+	void on_active(int conn_id, Package package);
 
 private:
 	int m_session_id;
@@ -139,18 +119,13 @@ private:
 class RemovePathTrans: public MultiplyPhaseTransaction
 {
 public:
-	enum
-	{
-		WAIT_STORAGE_NODE,
-	};
-
 	static MultiplyPhaseTransaction* factory(int trans_id);
 
 	RemovePathTrans(int trans_id);
 
 	void on_init(int conn_id, Package package) override;
 
-	void on_active(int conn_id, Package package) override;
+	void on_active(int conn_id, Package package);
 };
 
 } // namespace transaction

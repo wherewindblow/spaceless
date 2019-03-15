@@ -247,7 +247,8 @@ void Worker::trigger_transaction(const NetworkMessage& msg)
 
 			call_transaction(conn_id, trans_id, package, error_handler, [&]()
 			{
-				waiting_trans->on_active(conn_id, package);
+				auto callback = waiting_trans->on_active().get_callback();
+				(waiting_trans->*callback)(conn_id, package);
 			});
 
 			if (!waiting_trans->is_waiting())

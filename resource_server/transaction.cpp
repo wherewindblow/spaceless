@@ -394,7 +394,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.node_id());
 	Network::service_send_protocol(storage_node.service_id, storage_request, transaction_id());
-	service_wait_next_phase(storage_node.service_id, protocol::RspNodePutFileSession(), WAIT_STORAGE_NODE);
+	service_wait_next_phase(storage_node.service_id, protocol::RspNodePutFileSession(), &PutFileSessionTrans::on_active);
 }
 
 
@@ -470,7 +470,7 @@ void PutFileTrans::on_init(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(group.node_id());
 	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
-	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), WAIT_STORAGE_NODE);
+	service_wait_next_phase(storage_node.service_id, protocol::RspPutFile(), &PutFileTrans::on_active);
 }
 
 
@@ -546,7 +546,7 @@ void GetFileSessionTrans::on_init(int conn_id, Package package)
 	node_request.set_file_path(path.filename());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
 	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
-	service_wait_next_phase(storage_node.service_id, protocol::RspNodeGetFileSession(), WAIT_STORAGE_NODE);
+	service_wait_next_phase(storage_node.service_id, protocol::RspNodeGetFileSession(), &GetFileSessionTrans::on_active);
 }
 
 
@@ -637,7 +637,7 @@ void GetFileTrans::on_init(int conn_id, Package package)
 	node_request.set_fragment_index(request.fragment_index());
 	StorageNode& storage_node = StorageNodeManager::instance()->get_node(storage_file.node_id);
 	Network::service_send_protocol(storage_node.service_id, node_request, transaction_id());
-	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), WAIT_STORAGE_NODE);
+	service_wait_next_phase(storage_node.service_id, protocol::RspGetFile(), &GetFileTrans::on_active);
 }
 
 

@@ -100,6 +100,69 @@ public:
 	static const int DEFAULT_TIME_OUT = 60;
 
 	/**
+	 * Checks on active callback is valid.
+	 */
+	class OnActive
+	{
+	public:
+		/**
+		 * Processes the package of waiting.
+		 * @param conn     Network connection of send package.
+		 * @param package  Package of trigger this function.
+		 */
+		using StorageCallback = void (MultiplyPhaseTransaction::*)(int conn_id, Package package);
+
+		/**
+		 * Creates on active callback.
+		 * @note @c Transaction must derived from @c MultiplyPhaseTransaction.
+		 */
+		template <typename Transaction>
+		OnActive(void (Transaction::*callback)(int conn_id, Package package)) :
+			m_callback(static_cast<StorageCallback>(callback)),
+			m_type_info(&typeid(Transaction))
+		{}
+
+		/**
+		 * Creates on active callback.
+		 */
+		OnActive():
+			m_callback(nullptr),
+			m_type_info(nullptr)
+		{}
+
+		/**
+		 * Gets callback.
+		 */
+		StorageCallback get_callback()
+		{
+			return m_callback;
+		}
+
+		/**
+		 * Sets callback and type info of associated transaction.
+		 * @note @c Transaction must derived from @c MultiplyPhaseTransaction.
+		 */
+		template <typename Transaction>
+		void set_callback(void (Transaction::*callback)(int conn_id, Package package))
+		{
+			m_callback = static_cast<StorageCallback>(callback);
+			m_type_info = &typeid(Transaction);
+		}
+
+		/**
+		 * Returns type info of associated transaction
+		 */
+		const std::type_info* type_info()
+		{
+			return m_type_info;
+		}
+
+	private:
+		StorageCallback m_callback;
+		const std::type_info* m_type_info;
+	};
+
+	/**
 	 * Factory of this type transaction. Just simply call constructor.
 	 * @note This function is only a example.
 	 */
@@ -133,13 +196,6 @@ public:
 	virtual void on_init(int conn_id, Package package) = 0;
 
 	/**
-	 * Processes the package of wait phase.
-	 * @param conn     Network connection of send package.
-	 * @param package  Package of trigger this function.
-	 */
-	virtual void on_active(int conn_id, Package package) = 0;
-
-	/**
 	 * Processes wait time out.
 	 */
 	virtual void on_timeout();
@@ -157,7 +213,7 @@ public:
 	 * @param timeout       Time out of waiting next package.
 	 * @param service_id    Network service that send indicate package. Uses to replace conn_id.
 	 */
-	void wait_next_phase(int conn_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT, int service_id = 0);
+	void wait_next_phase(int conn_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIME_OUT, int service_id = 0);
 
 	/**
 	 * Sets wait package info.
@@ -166,7 +222,7 @@ public:
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
-	void wait_next_phase(int conn_id, const protocol::Message& msg, int current_phase, int timeout = DEFAULT_TIME_OUT);
+	void wait_next_phase(int conn_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
 
 	/**
 	 * Sets wait package info.
@@ -175,7 +231,7 @@ public:
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
-	void service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout = DEFAULT_TIME_OUT);
+	void service_wait_next_phase(int service_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
 
 	/**
 	 * Sets wait package info.
@@ -184,7 +240,7 @@ public:
 	 * @param current_phase Current phase.
 	 * @param timeout       Time out of waiting next package.
 	 */
-	void service_wait_next_phase(int service_id, const protocol::Message& msg, int current_phase, int timeout = DEFAULT_TIME_OUT);
+	void service_wait_next_phase(int service_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
 
 	/**
 	 * Sends back message to first connection.
@@ -205,6 +261,11 @@ public:
 	 * Returns current phase.
 	 */
 	int current_phase() const;
+
+	/**
+	 * Returns on active callback that set by @c wait_next_phase.
+	 */
+	OnActive on_active() const;
 
 	/**
 	 * Returns connection id that first start this transaction.
@@ -244,6 +305,7 @@ public:
 private:
 	int m_id;
 	int m_current_phase;
+	OnActive m_on_active;
 	int m_first_conn_id;
 	PackageTriggerSource m_first_trigger_source;
 	int m_wait_conn_id;
@@ -445,25 +507,25 @@ inline void Network::service_send_protocol(int service_id, const protocol::Messa
 
 inline void MultiplyPhaseTransaction::wait_next_phase(int conn_id,
 													  const protocol::Message& msg,
-													  int current_phase,
+													  OnActive on_active,
 													  int timeout)
 {
 	auto cmd = protocol::get_command(msg);
-	wait_next_phase(conn_id, cmd, current_phase, timeout);
+	wait_next_phase(conn_id, cmd, on_active, timeout);
 }
 
-inline void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, int current_phase, int timeout)
+inline void MultiplyPhaseTransaction::service_wait_next_phase(int service_id, int cmd, OnActive on_active, int timeout)
 {
-	wait_next_phase(0, cmd, current_phase, timeout, service_id);
+	wait_next_phase(0, cmd, on_active, timeout, service_id);
 }
 
 inline void MultiplyPhaseTransaction::service_wait_next_phase(int service_id,
 															  const protocol::Message& msg,
-															  int current_phase,
+															  OnActive on_active,
 															  int timeout)
 {
 	auto cmd = protocol::get_command(msg);
-	service_wait_next_phase(service_id, cmd, current_phase, timeout);
+	service_wait_next_phase(service_id, cmd, on_active, timeout);
 }
 
 inline void MultiplyPhaseTransaction::send_back_message(const protocol::Message& msg)
@@ -479,6 +541,11 @@ inline int MultiplyPhaseTransaction::transaction_id() const
 inline int MultiplyPhaseTransaction::current_phase() const
 {
 	return m_current_phase;
+}
+
+inline MultiplyPhaseTransaction::OnActive MultiplyPhaseTransaction::on_active() const
+{
+	return m_on_active;
 }
 
 inline int MultiplyPhaseTransaction::first_connection_id() const
