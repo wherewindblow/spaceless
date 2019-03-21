@@ -19,6 +19,7 @@ namespace transaction {
 enum
 {
 	ERR_USER_LOGIN_FAILURE = 2001,
+	ERR_USER_NOT_PERMISSION = 2002,
 	ERR_PATH_NOT_EXIST = 2100,
 	ERR_PATH_ALREADY_EXIST = 2101,
 	ERR_PATH_NOT_GENERAL_FILE = 2102,
@@ -93,7 +94,15 @@ void on_remove_user(int conn_id, Package package)
 	protocol::RspRemoveUser response;
 	package.parse_to_protocol(request);
 
-	UserManager::instance()->remove_user(request.user_id());
+	User& user = UserManager::instance()->get_login_user(conn_id);
+	if (UserManager::instance()->is_root_user(user.user_id))
+	{
+		UserManager::instance()->remove_user(request.user_id());
+	}
+	else
+	{
+		response.set_result(ERR_USER_NOT_PERMISSION);
+	}
 
 	Network::send_back_protocol(conn_id, response, package);
 }
@@ -105,19 +114,21 @@ void on_find_user(int conn_id, Package package)
 	protocol::RspFindUser response;
 	package.parse_to_protocol(request);
 
-	User* user = nullptr;
+	UserManager::instance()->get_login_user(conn_id);
+
+	User* target_user = nullptr;
 	if (request.user_id())
 	{
-		user = UserManager::instance()->find_user(request.user_id());
+		target_user = UserManager::instance()->find_user(request.user_id());
 	}
 	else
 	{
-		user = UserManager::instance()->find_user(request.username());
+		target_user = UserManager::instance()->find_user(request.username());
 	}
 
-	if (user != nullptr)
+	if (target_user != nullptr)
 	{
-		convert_user(*user, *response.mutable_user());
+		convert_user(*target_user, *response.mutable_user());
 	}
 	else
 	{
@@ -177,7 +188,7 @@ void on_find_group(int conn_id, Package package)
 	protocol::RspFindGroup response;
 	package.parse_to_protocol(request);
 
-	User& user = UserManager::instance()->get_login_user(conn_id);
+	UserManager::instance()->get_login_user(conn_id);
 
 	SharingGroup* group = nullptr;
 	if (request.group_id())

@@ -152,7 +152,7 @@ void User::deserialize(Object::Ptr object)
 }
 
 
-User& UserManager::register_user(const std::string& username, const std::string& password)
+User& UserManager::register_user(const std::string& username, const std::string& password, bool is_root_user)
 {
 	User* user = find_user(username);
 	if (user != nullptr)
@@ -170,6 +170,10 @@ User& UserManager::register_user(const std::string& username, const std::string&
 		LIGHTS_THROW(Exception, ERR_USER_ALREADY_EXIST);
 	}
 
+	if (is_root_user)
+	{
+		m_root_user_list.insert(new_user.user_id);
+	}
 	return result.first->second;
 }
 
@@ -177,6 +181,7 @@ User& UserManager::register_user(const std::string& username, const std::string&
 void UserManager::remove_user(int user_id)
 {
 	m_user_list.erase(user_id);
+	m_root_user_list.erase(user_id);
 }
 
 
@@ -260,6 +265,7 @@ User* UserManager::find_login_user(int conn_id)
 	return find_user(itr->second);
 }
 
+
 User& UserManager::get_login_user(int conn_id)
 {
 	User* user = find_login_user(conn_id);
@@ -268,6 +274,13 @@ User& UserManager::get_login_user(int conn_id)
 		LIGHTS_THROW(Exception, ERR_USER_NOT_LOGIN);
 	}
 	return *user;
+}
+
+
+bool UserManager::is_root_user(int user_id)
+{
+	auto itr = m_root_user_list.find(user_id);
+	return itr != m_root_user_list.end();
 }
 
 

@@ -95,7 +95,7 @@ class UserManager
 public:
 	SPACELESS_SINGLETON_INSTANCE(UserManager);
 
-	User& register_user(const std::string& username, const std::string& password);
+	User& register_user(const std::string& username, const std::string& password, bool is_root_user = false);
 
 	void remove_user(int user_id);
 
@@ -112,6 +112,8 @@ public:
 	User* find_login_user(int conn_id);
 
 	User& get_login_user(int conn_id);
+	
+	bool is_root_user(int user_id);
 
 	Object::Ptr serialize();
 
@@ -120,6 +122,7 @@ public:
 private:
 	using UserList = std::map<int, User>;
 	UserList m_user_list;
+	std::set<int> m_root_user_list;
 	std::map<int, int> m_login_user_list;
 	int m_next_id = 1;
 };

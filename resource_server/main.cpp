@@ -90,7 +90,7 @@ int main(int argc, const char* argv[])
 		User* root = UserManager::instance()->find_user(root_user_name);
 		if (root == nullptr)
 		{
-			root = &UserManager::instance()->register_user(root_user_name, root_user_pwd);
+			root = &UserManager::instance()->register_user(root_user_name, root_user_pwd, true);
 		}
 
 		std::string root_group_name = configuration.getString("root_user.group");
