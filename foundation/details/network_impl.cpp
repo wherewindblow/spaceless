@@ -12,7 +12,7 @@
 
 #include "../log.h"
 #include "../network.h"
-#include "../network_message.h"
+#include "../actor_message.h"
 
 
 namespace spaceless {
@@ -42,7 +42,7 @@ void dump_sequence(lights::Sequence sequence)
 }
 
 
-void pad_message(NetworkMessage& msg, int conn_id, int package_id)
+void pad_message(ActorMessage::NetworkMsg& msg, int conn_id, int package_id)
 {
 	msg.conn_id = conn_id;
 	msg.package_id = package_id;
@@ -545,9 +545,10 @@ bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& packag
 		Package package = PackageManager::instance()->register_package(content_len);
 		lights::copy_array(package.data(), package_buffer.data(), package_buffer.valid_length());
 
-		NetworkMessage msg;
-		pad_message(msg, m_id, package.package_id());
-		NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
+		ActorMessage msg;
+		msg.type = ActorMessage::NETWORK_TYPE;
+		pad_message(msg.network_msg, m_id, package.package_id());
+		ActorMessageQueue::instance()->push(ActorMessageQueue::IN_QUEUE, msg);
 	}
 	return true;
 }
@@ -731,9 +732,10 @@ void SecureConnection::on_read_complete_package(const PackageBuffer& package_buf
 			crypto::aes_decrypt(cipher, package.content_buffer(), m_aes_key);
 
 			// Push to in queue.
-			NetworkMessage msg;
-			pad_message(msg, m_conn->connection_id(), package.package_id());
-			NetworkMessageQueue::instance()->push(NetworkMessageQueue::IN_QUEUE, msg);
+			ActorMessage msg;
+			msg.type = ActorMessage::NETWORK_TYPE;
+			pad_message(msg.network_msg, m_conn->connection_id(), package.package_id());
+			ActorMessageQueue::instance()->push(ActorMessageQueue::IN_QUEUE, msg);
 			break;
 		}
 	}
@@ -795,29 +797,31 @@ void NetworkReactor::process_out_message()
 {
 	for (std::size_t i = 0; i < MAX_OUT_MSG_PROCESS_PER_TIMES; ++i)
 	{
-		if (NetworkMessageQueue::instance()->empty(NetworkMessageQueue::OUT_QUEUE))
+		if (ActorMessageQueue::instance()->empty(ActorMessageQueue::OUT_QUEUE))
 		{
 			break;
 		}
 
-		auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::OUT_QUEUE);
-		if (msg.conn_id != 0 || msg.service_id != 0)
+		auto actor_msg = ActorMessageQueue::instance()->pop(ActorMessageQueue::OUT_QUEUE);
+		switch (actor_msg.type)
 		{
-			send_package(msg);
-		}
+			case ActorMessage::NETWORK_TYPE:
+				send_package(actor_msg.network_msg);
+				break;
 
-		if (msg.delegate != nullptr)
-		{
-			if (!safe_call(msg.delegate, error_msg))
-			{
-				LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
-			}
+			case ActorMessage::DELEGATE_TYPE:
+				auto& msg = actor_msg.delegate_msg;
+				if (!safe_call(msg.function, error_msg))
+				{
+					LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
+				}
+				break;
 		}
 	}
 }
 
 
-void NetworkReactor::send_package(const NetworkMessage& msg)
+void NetworkReactor::send_package(const ActorMessage::NetworkMsg& msg)
 {
 	int conn_id = msg.conn_id;
 	if (conn_id == 0)

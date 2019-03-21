@@ -10,7 +10,7 @@
 #include <protocol/all.h>
 
 #include "log.h"
-#include "network_message.h"
+#include "actor_message.h"
 #include "worker.h"
 
 
@@ -21,11 +21,13 @@ static Logger& logger = get_logger("worker");
 
 void Network::send_package(int conn_id, Package package, int service_id)
 {
-	NetworkMessage msg;
+	ActorMessage actor_msg;
+	actor_msg.type = ActorMessage::NETWORK_TYPE;
+	auto& msg = actor_msg.network_msg;
 	msg.conn_id = conn_id;
 	msg.package_id = package.package_id();
 	msg.service_id = service_id;
-	NetworkMessageQueue::instance()->push(NetworkMessageQueue::OUT_QUEUE, msg);
+	ActorMessageQueue::instance()->push(ActorMessageQueue::OUT_QUEUE, actor_msg);
 }
 
 

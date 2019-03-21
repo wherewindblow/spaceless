@@ -15,15 +15,15 @@ namespace spaceless {
 class Delegation
 {
 public:
-	enum ThreadTarget
+	enum ActorTarget
 	{
 		NETWORK,
 		WORKER,
 	};
 
 	/**
-	 * Let network thread to run delegate function.
-	 * @param thread_target Specify the thread to run function.
+	 * Let target actor to run delegate function.
+	 * @param actor         Specify the thread to run function.
 	 * @param function      Function that do something.
 	 * @param caller        Indicates who call this delegate.
 	 * @note 1. @c function cannot capture any structure or class by reference in current thread.
@@ -33,7 +33,7 @@ public:
 	 * more than two argument when use macro to expend current source location with
 	 * void delegate(ThreadTarget thread_target, std::function<void()> func, const lights::SourceLocation where).
 	 */
-	static void delegate(lights::StringView caller, ThreadTarget thread_target, std::function<void()> function);
+	static void delegate(lights::StringView caller, ActorTarget actor, std::function<void()> function);
 };
 
 } // namespace spaceless

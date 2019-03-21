@@ -5,24 +5,26 @@
  */
 
 #include "delegation.h"
-#include "network_message.h"
+#include "actor_message.h"
 
 
 namespace spaceless {
 
-void Delegation::delegate(lights::StringView caller, ThreadTarget thread_target, std::function<void()> function)
+void Delegation::delegate(lights::StringView caller, ActorTarget actor, std::function<void()> function)
 {
-	NetworkMessage msg;
-	msg.delegate = function;
+	ActorMessage actor_msg;
+	actor_msg.type = ActorMessage::DELEGATE_TYPE;
+	auto& msg = actor_msg.delegate_msg;
+	msg.function = function;
 	msg.caller = caller;
 
-	NetworkMessageQueue::QueueType queue_type = NetworkMessageQueue::OUT_QUEUE;
-	if (thread_target == ThreadTarget::WORKER)
+	ActorMessageQueue::QueueType queue_type = ActorMessageQueue::OUT_QUEUE;
+	if (actor == ActorTarget::WORKER)
 	{
-		queue_type = NetworkMessageQueue::IN_QUEUE;
+		queue_type = ActorMessageQueue::IN_QUEUE;
 	}
 
-	NetworkMessageQueue::instance()->push(queue_type, msg);
+	ActorMessageQueue::instance()->push(queue_type, actor_msg);
 }
 
 } // namespace spaceless

@@ -6,7 +6,7 @@ set(SPACELESS_FOUNDATION_SRC
         log.h log.cpp
         package.h package.cpp
         network.h network.cpp
-        network_message.h network_message.cpp
+        actor_message.h actor_message.cpp
         transaction.h transaction.cpp
         worker.h worker.cpp
         scheduler.h scheduler.cpp

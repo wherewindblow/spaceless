@@ -15,7 +15,7 @@
 
 #include "log.h"
 #include "package.h"
-#include "network_message.h"
+#include "actor_message.h"
 #include "transaction.h"
 #include "monitor.h"
 
@@ -46,9 +46,9 @@ public:
 	std::atomic<bool> stop_flag = ATOMIC_VAR_INIT(false);
 
 private:
-	void process_message(const NetworkMessage& msg);
+	void process_message(const ActorMessage& actor_msg);
 
-	void trigger_transaction(const NetworkMessage& msg);
+	void trigger_transaction(const ActorMessage::NetworkMsg& msg);
 
 	bool call_transaction(int conn_id,
 						  int trans_id,
@@ -77,10 +77,10 @@ void Worker::run()
 	while (!stop_flag)
 	{
 		bool have_message = false;
-		if (!NetworkMessageQueue::instance()->empty(NetworkMessageQueue::IN_QUEUE))
+		if (!ActorMessageQueue::instance()->empty(ActorMessageQueue::IN_QUEUE))
 		{
 			have_message = true;
-			auto msg = NetworkMessageQueue::instance()->pop(NetworkMessageQueue::IN_QUEUE);
+			auto msg = ActorMessageQueue::instance()->pop(ActorMessageQueue::IN_QUEUE);
 			process_message(msg);
 		}
 
@@ -110,24 +110,26 @@ void Worker::run()
 }
 
 
-void Worker::process_message(const NetworkMessage& msg)
+void Worker::process_message(const ActorMessage& actor_msg)
 {
-	if (msg.conn_id != 0 || msg.service_id != 0)
+	switch (actor_msg.type)
 	{
-		trigger_transaction(msg);
-	}
+		case ActorMessage::NETWORK_TYPE:
+			trigger_transaction(actor_msg.network_msg);
+			break;
 
-	if (msg.delegate != nullptr)
-	{
-		if (!safe_call(msg.delegate, error_msg))
-		{
-			LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
-		}
+		case ActorMessage::DELEGATE_TYPE:
+			auto& msg = actor_msg.delegate_msg;
+			if (!safe_call(msg.function, error_msg))
+			{
+				LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
+			}
+			break;
 	}
 }
 
 
-void Worker::trigger_transaction(const NetworkMessage& msg)
+void Worker::trigger_transaction(const ActorMessage::NetworkMsg& msg)
 {
 	int conn_id = msg.conn_id;
 	int package_id = msg.package_id;
