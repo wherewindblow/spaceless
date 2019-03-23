@@ -103,10 +103,10 @@ public:
 	bool is_open() const;
 
 private:
-	enum class ReadState
+	enum class ReceiveState
 	{
-		READ_HEADER,
-		READ_CONTENT,
+		RECEIVE_HEADER,
+		RECEIVE_CONTENT,
 	};
 
 	/**
@@ -125,14 +125,19 @@ private:
 	void on_error(const Poco::AutoPtr<ErrorNotification>& notification);
 
 	/**
-	 * Reads input according to read state.
+	 * Receives input according to state.
 	 */
-	void read_for_state();
+	void receive_for_state();
 
 	/**
-	 * On read a complete package event.
+	 * Checks package version.
 	 */
-	bool on_read_complete_package(const PackageBuffer& package_buffer);
+	bool process_check_package_version(int receive_len);
+
+	/**
+	 * On receive a complete package event.
+	 */
+	bool on_receive_complete_package(const PackageBuffer& package_buffer);
 
 	/**
 	 * Sends all pending package.
@@ -150,7 +155,7 @@ private:
 	ConnectionOpenType m_open_type;
 	PackageBuffer m_receive_buffer;
 	int m_receive_len;
-	ReadState m_read_state;
+	ReceiveState m_receive_state;
 	std::queue<int> m_send_list;
 	int m_send_len;
 	bool m_is_opening;
@@ -188,9 +193,9 @@ public:
 	void send_package(Package package);
 
 	/**
-	 * On read a complete package.
+	 * On receive a complete package.
 	 */
-	void on_read_complete_package(const PackageBuffer& package_buffer);
+	void on_receive_complete_package(const PackageBuffer& package_buffer);
 
 	/**
 	 * Gets content length that process with security.

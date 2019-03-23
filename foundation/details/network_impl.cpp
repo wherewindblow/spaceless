@@ -108,7 +108,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 	m_reactor(reactor),
 	m_open_type(open_type),
 	m_receive_len(0),
-	m_read_state(ReadState::READ_HEADER),
+	m_receive_state(ReceiveState::RECEIVE_HEADER),
 	m_send_len(0),
 	m_is_opening(true),
 	m_is_closing(false),
@@ -304,7 +304,7 @@ void NetworkConnectionImpl::on_readable(const Poco::AutoPtr<ReadableNotification
 		return;
 	}
 
-	read_for_state();
+	receive_for_state();
 }
 
 
@@ -363,13 +363,13 @@ void NetworkConnectionImpl::on_error(const Poco::AutoPtr<ErrorNotification>& not
 }
 
 
-void NetworkConnectionImpl::read_for_state()
+void NetworkConnectionImpl::receive_for_state()
 {
 	while (true)
 	{
-		switch (m_read_state)
+		switch (m_receive_state)
 		{
-			case ReadState::READ_HEADER:
+			case ReceiveState::RECEIVE_HEADER:
 			{
 				int len = m_socket.receiveBytes(reinterpret_cast<char*>(&m_receive_buffer.header()) + m_receive_len,
 												static_cast<int>(PackageBuffer::HEADER_LEN) - m_receive_len);
@@ -388,44 +388,20 @@ void NetworkConnectionImpl::read_for_state()
 				m_receive_len += len;
 
 				// Check package version.
-				if (m_receive_len >= static_cast<int>(sizeof(PackageHeader::Base)))
+				if (!process_check_package_version(m_receive_len))
 				{
-					PackageHeader::Base& read_header_base = reinterpret_cast<PackageHeader::Base&>(m_receive_buffer.header());
-					if (read_header_base.version != PACKAGE_VERSION)
-					{
-						if (read_header_base.command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
-						{
-							// Notify peer and logic layer package version is invalid.
-							Package package = PackageManager::instance()->register_package(0);
-							PackageHeader::Base& header_base = package.header().base;
-							header_base.command = static_cast<int>(BuildinCommand::NTF_INVALID_VERSION);
-							header_base.content_length = 0;
-							send_raw_package(package);
-
-							LIGHTS_INFO(logger, "Connection {}: Package version invalid. cmd={}.",
-										m_id, read_header_base.command);
-							close();
-							return;
-						}
-						else
-						{
-							// Notify logic layer package version is invalid.
-							LIGHTS_INFO(logger, "Connection {}: Package version invalid.", m_id);
-							close();
-							return;
-						}
-					}
+					return;
 				}
 
 				if (m_receive_len == PackageBuffer::HEADER_LEN)
 				{
 					m_receive_len = 0;
-					m_read_state = ReadState::READ_CONTENT;
+					m_receive_state = ReceiveState::RECEIVE_CONTENT;
 				}
 				break;
 			}
 
-			case ReadState::READ_CONTENT:
+			case ReceiveState::RECEIVE_CONTENT:
 			{
 				int raw_len = m_receive_buffer.header().base.content_length;
 				int read_content_len = raw_len;
@@ -470,9 +446,9 @@ void NetworkConnectionImpl::read_for_state()
 				if (m_receive_len == read_content_len)
 				{
 					m_receive_len = 0;
-					m_read_state = ReadState::READ_HEADER;
+					m_receive_state = ReceiveState::RECEIVE_HEADER;
 
-					if (!on_read_complete_package(m_receive_buffer))
+					if (!on_receive_complete_package(m_receive_buffer))
 					{
 						return;
 					}
@@ -484,7 +460,42 @@ void NetworkConnectionImpl::read_for_state()
 }
 
 
-bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& package_buffer)
+bool NetworkConnectionImpl::process_check_package_version(int receive_len)
+{
+	if (receive_len < static_cast<int>(sizeof(PackageHeader::Base)))
+	{
+		return true;
+	}
+
+	PackageHeader::Base& receive_header_base = reinterpret_cast<PackageHeader::Base&>(m_receive_buffer.header());
+	if (receive_header_base.version != PACKAGE_VERSION)
+	{
+		if (receive_header_base.command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
+		{
+			// Notify peer and logic layer package version is invalid.
+			Package package = PackageManager::instance()->register_package(0);
+			PackageHeader::Base& header_base = package.header().base;
+			header_base.command = static_cast<int>(BuildinCommand::NTF_INVALID_VERSION);
+			header_base.content_length = 0;
+			send_raw_package(package);
+
+			LIGHTS_INFO(logger, "Connection {}: Package version invalid. cmd={}.", m_id, receive_header_base.command);
+			close();
+		}
+		else
+		{
+			// Notify logic layer package version is invalid.
+			LIGHTS_INFO(logger, "Connection {}: Package version invalid.", m_id);
+			close();
+		}
+		return false;
+	}
+
+	return true;
+}
+
+
+bool NetworkConnectionImpl::on_receive_complete_package(const PackageBuffer& package_buffer)
 {
 	const PackageHeader& header = package_buffer.header();
 	int cmd = header.base.command;
@@ -537,7 +548,7 @@ bool NetworkConnectionImpl::on_read_complete_package(const PackageBuffer& packag
 	// Receive general package.
 	if (m_secure_conn != nullptr)
 	{
-		m_secure_conn->on_read_complete_package(package_buffer);
+		m_secure_conn->on_receive_complete_package(package_buffer);
 	}
 	else
 	{
@@ -655,7 +666,7 @@ void SecureConnection::send_package(Package package)
 }
 
 
-void SecureConnection::on_read_complete_package(const PackageBuffer& package_buffer)
+void SecureConnection::on_receive_complete_package(const PackageBuffer& package_buffer)
 {
 	const PackageHeader& header = package_buffer.header();
 	switch (m_state)
