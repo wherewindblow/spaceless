@@ -806,31 +806,35 @@ void NetworkReactor::process_out_message()
 		switch (actor_msg.type)
 		{
 			case ActorMessage::NETWORK_TYPE:
-				send_package(actor_msg.network_msg);
+			{
+				auto& msg = actor_msg.network_msg;
+				send_package(msg.conn_id, msg.service_id, msg.package_id);
 				break;
+			}
 
 			case ActorMessage::DELEGATE_TYPE:
+			{
 				auto& msg = actor_msg.delegate_msg;
 				if (!safe_call(msg.function, error_msg))
 				{
 					LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
 				}
 				break;
+			}
 		}
 	}
 }
 
 
-void NetworkReactor::send_package(const ActorMessage::NetworkMsg& msg)
+void NetworkReactor::send_package(int conn_id, int service_id, int package_id)
 {
-	int conn_id = msg.conn_id;
 	if (conn_id == 0)
 	{
-		conn_id = NetworkServiceManager::instance()->get_connection_id(msg.service_id);
+		conn_id = NetworkServiceManager::instance()->get_connection_id(service_id);
 	}
 
 	NetworkConnectionImpl* conn = NetworkManagerImpl::instance()->find_open_connection(conn_id);
-	Package package = PackageManager::instance()->find_package(msg.package_id);
+	Package package = PackageManager::instance()->find_package(package_id);
 
 	if (conn == nullptr || !package.is_valid())
 	{
@@ -841,12 +845,12 @@ void NetworkReactor::send_package(const ActorMessage::NetworkMsg& msg)
 
 		if (!package.is_valid())
 		{
-			LIGHTS_ERROR(logger, "Connection {}: Package already remove. package_id={}.", conn_id, msg.package_id);
+			LIGHTS_ERROR(logger, "Connection {}: Package already remove. package_id={}.", conn_id, package_id);
 		}
 
 		if (package.is_valid())
 		{
-			PackageManager::instance()->remove_package(msg.package_id);
+			PackageManager::instance()->remove_package(package_id);
 		}
 
 		return;

@@ -14,15 +14,12 @@
 #include <Poco/Net/SocketReactor.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/StreamSocket.h>
-#include <foundation/actor_message.h>
 
 #include "../basics.h"
 #include "../package.h"
 
 
 namespace spaceless {
-
-struct ActorMessage;
 
 namespace details {
 
@@ -247,7 +244,7 @@ private:
 	/**
 	 * Sends package by network message.
 	 */
-	void send_package(const ActorMessage::NetworkMsg& msg);
+	void send_package(int conn_id, int service_id, int package_id);
 };
 
 

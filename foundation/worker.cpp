@@ -48,7 +48,7 @@ public:
 private:
 	void process_message(const ActorMessage& actor_msg);
 
-	void trigger_transaction(const ActorMessage::NetworkMsg& msg);
+	void trigger_transaction(int conn_id, int service_id, int package_id);
 
 	bool call_transaction(int conn_id,
 						  int trans_id,
@@ -115,25 +115,27 @@ void Worker::process_message(const ActorMessage& actor_msg)
 	switch (actor_msg.type)
 	{
 		case ActorMessage::NETWORK_TYPE:
-			trigger_transaction(actor_msg.network_msg);
+		{
+			auto& msg = actor_msg.network_msg;
+			trigger_transaction(msg.conn_id, msg.service_id, msg.package_id);
 			break;
+		}
 
 		case ActorMessage::DELEGATE_TYPE:
+		{
 			auto& msg = actor_msg.delegate_msg;
 			if (!safe_call(msg.function, error_msg))
 			{
 				LIGHTS_ERROR(logger, "Delegation {}: {}.", msg.caller, error_msg.c_str());
 			}
 			break;
+		}
 	}
 }
 
 
-void Worker::trigger_transaction(const ActorMessage::NetworkMsg& msg)
+void Worker::trigger_transaction(int conn_id, int service_id, int package_id)
 {
-	int conn_id = msg.conn_id;
-	int package_id = msg.package_id;
-
 	Package package = PackageManager::instance()->find_package(package_id);
 	if (!package.is_valid())
 	{
@@ -222,7 +224,7 @@ void Worker::trigger_transaction(const ActorMessage::NetworkMsg& msg)
 		}
 		else
 		{
-			is_fit_network = msg.service_id == waiting_trans->waiting_service_id();
+			is_fit_network = service_id == waiting_trans->waiting_service_id();
 		}
 
 		if (is_fit_network && command == waiting_trans->waiting_command())
@@ -264,7 +266,7 @@ void Worker::trigger_transaction(const ActorMessage::NetworkMsg& msg)
 			LIGHTS_ERROR(logger, "Connection {}: Not fit with waiting info. "
 				"service_id={}, cmd={}, waiting_conn_id={}, waiting_service_id={}, waiting_cmd={}.",
 						 conn_id,
-						 msg.service_id,
+						 service_id,
 						 command,
 						 waiting_trans->waiting_connection_id(),
 						 waiting_trans->waiting_service_id(),
