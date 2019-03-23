@@ -29,6 +29,8 @@ namespace resource_server {
 const std::string DATA_FILENAME = "../data/data.json";
 const int STORE_DATA_PER_SEC = 5;
 const int DATA_INDENT = 4;
+const int CHECK_OFFLINE_USERS_PER_SEC = 15;
+const int MAX_NO_HEARTBEAT_SEC = 7;
 
 
 #define SERIALIZE(object, member) object->set(#member, member)
@@ -149,6 +151,16 @@ void User::deserialize(Object::Ptr object)
 	DESERIALIZE(object, user_id);
 	DESERIALIZE(object, user_name);
 	DESERIALIZE(object, password);
+}
+
+
+UserManager::UserManager()
+{
+	TimerManager::instance()->register_frequent_timer("kick_out_offline_users",
+													  lights::PreciseTime(CHECK_OFFLINE_USERS_PER_SEC), []()
+	{
+		UserManager::instance()->kick_out_offline_users();
+	});
 }
 
 
@@ -277,10 +289,40 @@ User& UserManager::get_login_user(int conn_id)
 }
 
 
+void UserManager::kick_out_user(int conn_id)
+{
+	User& user = get_login_user(conn_id);
+	user.conn_id = 0;
+	m_login_user_list.erase(conn_id);
+	LIGHTS_INFO(logger, "Kick out user. user_id={}, conn_id={}", user.user_id, conn_id);
+}
+
+
+void UserManager::heartbeat(int user_id)
+{
+	User& user = get_user(user_id);
+	user.last_hearbeat = std::time(nullptr);
+}
+
+
 bool UserManager::is_root_user(int user_id)
 {
 	auto itr = m_root_user_list.find(user_id);
 	return itr != m_root_user_list.end();
+}
+
+
+void UserManager::kick_out_offline_users()
+{
+	std::time_t now = std::time(nullptr);
+	for (auto& pair : m_login_user_list)
+	{
+		User& user = get_user(pair.second);
+		if (user.last_hearbeat != 0 && user.last_hearbeat + MAX_NO_HEARTBEAT_SEC < now)
+		{
+			kick_out_user(pair.first);
+		}
+	}
 }
 
 

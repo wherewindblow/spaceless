@@ -89,8 +89,6 @@ int main(int argc, const char* argv[])
 
 		UserManager::instance()->login_user(1, "pwd");
 
-		DelayTesting::instance()->start_testing();
-
 		cmd_ui_interface(conn_list);
 	}
 	catch (Exception& ex)
@@ -302,7 +300,11 @@ void read_handler(int conn_id, Package package)
 	if (error.result())
 	{
 		std::cout << lights::format("Failure {} by {}.", error.result(), command) << std::endl;
-		return;
+
+		if (command != cmd("RspPing"))
+		{
+			return;
+		}
 	}
 
 	if (command == cmd("RspRegisterUser"))
@@ -310,6 +312,10 @@ void read_handler(int conn_id, Package package)
 		protocol::RspRegisterUser response;
 		package.parse_to_protocol(response);
 		std::cout << lights::format("Your user id is {}.", response.user().user_id()) << std::endl;
+	}
+	else if (command == cmd("RspLoginUser"))
+	{
+		HeartbeatManager::instance()->start_heartbeat();
 	}
 	else if (command == cmd("RspFindUser"))
 	{
@@ -437,10 +443,18 @@ void read_handler(int conn_id, Package package)
 	{
 		protocol::RspPing response;
 		package.parse_to_protocol(response);
-		DelayTesting::instance()->on_receive_response(response.second(), response.microsecond());
-		LIGHTS_INFO(logger, "Delay testing. last_time={}, average_time={}",
-					DelayTesting::instance()->last_delay_time(),
-					DelayTesting::instance()->average_delay_time());
+
+		if (response.result())
+		{
+			HeartbeatManager::instance()->stop_heartbeat();
+		}
+		else
+		{
+			HeartbeatManager::instance()->on_receive_response(response.second(), response.microsecond());
+			LIGHTS_INFO(logger, "Delay testing. last_time={}, average_time={}",
+						HeartbeatManager::instance()->last_delay_time(),
+						HeartbeatManager::instance()->average_delay_time());
+		}
 	}
 }
 

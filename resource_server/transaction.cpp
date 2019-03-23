@@ -26,17 +26,6 @@ enum
 };
 
 
-void on_ping(int conn_id, Package package)
-{
-	protocol::ReqPing request;
-	package.parse_to_protocol(request);
-	protocol::RspPing response;
-	response.set_second(request.second());
-	response.set_microsecond(request.microsecond());
-	Network::send_back_protocol(conn_id, response, package);
-}
-
-
 void convert_user(const User& server_user, protocol::User& proto_user)
 {
 	proto_user.set_user_id(server_user.user_id);
@@ -135,6 +124,21 @@ void on_find_user(int conn_id, Package package)
 		response.set_result(ERR_USER_NOT_EXIST);
 	}
 
+	Network::send_back_protocol(conn_id, response, package);
+}
+
+
+void on_ping(int conn_id, Package package)
+{
+	protocol::ReqPing request;
+	protocol::RspPing response;
+	package.parse_to_protocol(request);
+
+	User& user = UserManager::instance()->get_login_user(conn_id);
+	UserManager::instance()->heartbeat(user.user_id);
+
+	response.set_second(request.second());
+	response.set_microsecond(request.microsecond());
 	Network::send_back_protocol(conn_id, response, package);
 }
 

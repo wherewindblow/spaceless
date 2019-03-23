@@ -22,7 +22,7 @@ namespace client {
 
 int conn_id = 0;
 
-const int DELAY_TESTING_PER_SEC = 60;
+const int HEARTBEAT_PER_SEC = 5;
 
 const std::string META_FILE_PREFIX = ".meta";
 
@@ -263,9 +263,20 @@ FileSession& SharingFileManager::get_file_session()
 }
 
 
-void DelayTesting::start_testing()
+HeartbeatManager::HeartbeatManager() :
+	m_last_delay_time(),
+	m_total_delay_time(),
+	m_heartbeat_times(0),
+	m_timer_id(0)
 {
-	TimerManager::instance()->register_frequent_timer("start_testing", lights::PreciseTime(DELAY_TESTING_PER_SEC), []()
+
+}
+
+
+void HeartbeatManager::start_heartbeat()
+{
+	m_timer_id = TimerManager::instance()->register_frequent_timer("start_heartbeat",
+																   lights::PreciseTime(HEARTBEAT_PER_SEC), []()
 	{
 		protocol::ReqPing request;
 		lights::PreciseTime time = lights::current_precise_time();
@@ -277,31 +288,37 @@ void DelayTesting::start_testing()
 }
 
 
-void DelayTesting::on_receive_response(int second, int microsecond)
+void HeartbeatManager::stop_heartbeat()
+{
+	TimerManager::instance()->remove_timer(m_timer_id);
+}
+
+
+void HeartbeatManager::on_receive_response(int second, int microsecond)
 {
 	lights::PreciseTime send_time(second, lights::microsecond_to_nanosecond(microsecond));
 	lights::PreciseTime rtt = lights::current_precise_time() - send_time;
 	m_last_delay_time = rtt / 2;
 	m_total_delay_time = m_total_delay_time + m_last_delay_time;
-	++m_test_times;
+	++m_heartbeat_times;
 }
 
 
-lights::PreciseTime DelayTesting::last_delay_time()
+lights::PreciseTime HeartbeatManager::last_delay_time()
 {
 	return m_last_delay_time;
 }
 
 
-lights::PreciseTime DelayTesting::average_delay_time()
+lights::PreciseTime HeartbeatManager::average_delay_time()
 {
-	if (m_test_times == 0)
+	if (m_heartbeat_times == 0)
 	{
 		return lights::PreciseTime();
 	}
 	else
 	{
-		return m_total_delay_time / m_test_times;
+		return m_total_delay_time / m_heartbeat_times;
 	}
 }
 

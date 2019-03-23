@@ -69,7 +69,8 @@ struct User
 		user_name(user_name),
 		password(password),
 		group_list(),
-		conn_id(0)
+		conn_id(0),
+		last_hearbeat(0)
 	{}
 
 	Object::Ptr serialize();
@@ -81,6 +82,7 @@ struct User
 	std::string password;
 	std::vector<int> group_list;
 	int conn_id;
+	std::time_t last_hearbeat;
 };
 
 
@@ -94,6 +96,8 @@ class UserManager
 {
 public:
 	SPACELESS_SINGLETON_INSTANCE(UserManager);
+
+	UserManager();
 
 	User& register_user(const std::string& username, const std::string& password, bool is_root_user = false);
 
@@ -112,6 +116,10 @@ public:
 	User* find_login_user(int conn_id);
 
 	User& get_login_user(int conn_id);
+
+	void kick_out_user(int conn_id);
+
+	void heartbeat(int user_id);
 	
 	bool is_root_user(int user_id);
 
@@ -120,6 +128,8 @@ public:
 	void deserialize(Object::Ptr object);
 
 private:
+	void kick_out_offline_users();
+
 	using UserList = std::map<int, User>;
 	UserList m_user_list;
 	std::set<int> m_root_user_list;

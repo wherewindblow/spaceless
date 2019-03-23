@@ -156,12 +156,16 @@ private:
 };
 
 
-class DelayTesting
+class HeartbeatManager
 {
 public:
-	SPACELESS_SINGLETON_INSTANCE(DelayTesting);
+	SPACELESS_SINGLETON_INSTANCE(HeartbeatManager);
 
-	void start_testing();
+	HeartbeatManager();
+
+	void start_heartbeat();
+
+	void stop_heartbeat();
 
 	void on_receive_response(int second, int microsecond);
 
@@ -172,7 +176,8 @@ public:
 private:
 	lights::PreciseTime m_last_delay_time;
 	lights::PreciseTime m_total_delay_time;
-	int m_test_times;
+	int m_heartbeat_times;
+	int m_timer_id;
 };
 
 
