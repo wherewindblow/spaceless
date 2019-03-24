@@ -491,7 +491,7 @@ void PutFileTrans::on_init(int conn_id, Package package)
 
 void PutFileTrans::on_active(int conn_id, Package package)
 {
-	User& user = UserManager::instance()->get_login_user(first_connection_id());
+	UserManager::instance()->get_login_user(first_connection_id());
 
 	protocol::RspPutFile response;
 	package.parse_to_protocol(response);
@@ -658,7 +658,7 @@ void GetFileTrans::on_init(int conn_id, Package package)
 
 void GetFileTrans::on_active(int conn_id, Package package)
 {
-	User& user = UserManager::instance()->get_login_user(first_connection_id());
+	UserManager::instance()->get_login_user(first_connection_id());
 
 	protocol::RspGetFile response;
 	package.parse_to_protocol(response);

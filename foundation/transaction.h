@@ -97,7 +97,7 @@ public:
 class MultiplyPhaseTransaction
 {
 public:
-	static const int DEFAULT_TIME_OUT = 60;
+	static const int DEFAULT_TIME_OUT = 1;
 
 	/**
 	 * Checks on active callback is valid.
@@ -209,7 +209,7 @@ public:
 	 * Sets wait package info.
 	 * @param conn_id       Network connection that send indicate package.
 	 * @param cmd           Waits command.
-	 * @param current_phase Current phase.
+	 * @param on_active     Callback of on active.
 	 * @param timeout       Time out of waiting next package.
 	 * @param service_id    Network service that send indicate package. Uses to replace conn_id.
 	 */
@@ -219,7 +219,7 @@ public:
 	 * Sets wait package info.
 	 * @param conn_id       Network connection that send indicate package.
 	 * @param msg           Waits protocol message.
-	 * @param current_phase Current phase.
+	 * @param on_active     Callback of on active.
 	 * @param timeout       Time out of waiting next package.
 	 */
 	void wait_next_phase(int conn_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
@@ -228,7 +228,7 @@ public:
 	 * Sets wait package info.
 	 * @param service_id    Network service that send indicate package.
 	 * @param cmd           Waits command.
-	 * @param current_phase Current phase.
+	 * @param on_active     Callback of on active.
 	 * @param timeout       Time out of waiting next package.
 	 */
 	void service_wait_next_phase(int service_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
@@ -237,7 +237,7 @@ public:
 	 * Sets wait package info.
 	 * @param service_id    Network service that send indicate package.
 	 * @param cmd           Waits protocol message.
-	 * @param current_phase Current phase.
+	 * @param on_active     Callback of on active.
 	 * @param timeout       Time out of waiting next package.
 	 */
 	void service_wait_next_phase(int service_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
