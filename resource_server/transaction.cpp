@@ -321,6 +321,11 @@ void on_list_file(int conn_id, Package package)
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
+	if (!group.is_member(user.user_id))
+	{
+		LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+	}
+
 	int file_id = group.get_file_id(request.file_path());
 	SharingFile& file = SharingFileManager::instance()->get_file(file_id);
 	if (file.file_type != SharingFile::DIRECTORY)
