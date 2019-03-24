@@ -433,13 +433,6 @@ void PutFileSessionTrans::on_active(int conn_id, Package package)
 }
 
 
-void PutFileSessionTrans::on_timeout()
-{
-	FileSessionManager::instance()->remove_session(m_session_id);
-	MultiplyPhaseTransaction::on_timeout();
-}
-
-
 void PutFileSessionTrans::on_error(int conn_id, int error_code)
 {
 	FileSessionManager::instance()->remove_session(m_session_id);
@@ -584,13 +577,6 @@ void GetFileSessionTrans::on_active(int conn_id, Package package)
 	response.set_session_id(m_session_id);
 	response.set_max_fragment(node_response.max_fragment());
 	send_back_message(response);
-}
-
-
-void GetFileSessionTrans::on_timeout()
-{
-	FileSessionManager::instance()->remove_session(m_session_id);
-	MultiplyPhaseTransaction::on_timeout();
 }
 
 

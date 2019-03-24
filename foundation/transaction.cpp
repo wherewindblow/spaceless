@@ -114,11 +114,6 @@ void MultiplyPhaseTransaction::pre_on_init(int conn_id, Package package)
 }
 
 
-void MultiplyPhaseTransaction::on_timeout()
-{
-}
-
-
 void MultiplyPhaseTransaction::on_error(int conn_id, int error_code)
 {
 	on_transaction_error(m_first_conn_id, m_first_trigger_source, error_code);
@@ -164,7 +159,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, OnActive on
 					 trans->current_phase());
 
 		trans->clear_waiting_state();
-		trans->on_timeout();
+		trans->on_error(trans->waiting_connection_id(), ERR_TRANSACTION_TIMEOUT);
 
 		if (!trans->is_waiting())
 		{

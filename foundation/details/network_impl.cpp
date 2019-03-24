@@ -963,7 +963,7 @@ void NetworkManagerImpl::stop_all()
 void NetworkManagerImpl::start()
 {
 	LIGHTS_INFO(logger, "Starting network scheduler.");
-	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIME_OUT_US));
+	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIMEOUT_US));
 	m_reactor.run();
 	LIGHTS_INFO(logger, "Stopped network scheduler.");
 }

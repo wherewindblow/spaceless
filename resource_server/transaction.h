@@ -55,8 +55,6 @@ public:
 
 	void on_active(int conn_id, Package package);
 
-	void on_timeout() override;
-
 	void on_error(int conn_id, int error_code) override;
 
 private:
@@ -90,8 +88,6 @@ public:
 	void on_init(int conn_id, Package package) override;
 
 	void on_active(int conn_id, Package package);
-
-	void on_timeout() override;
 
 	void on_error(int conn_id, int error_code) override;
 

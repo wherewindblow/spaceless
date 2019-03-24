@@ -97,7 +97,7 @@ public:
 class MultiplyPhaseTransaction
 {
 public:
-	static const int DEFAULT_TIME_OUT = 1;
+	static const int DEFAULT_TIMEOUT = 1;
 
 	/**
 	 * Checks on active callback is valid.
@@ -196,11 +196,6 @@ public:
 	virtual void on_init(int conn_id, Package package) = 0;
 
 	/**
-	 * Processes wait time out.
-	 */
-	virtual void on_timeout();
-
-	/**
 	 * Processes error.
 	 */
 	virtual void on_error(int conn_id, int error_code);
@@ -210,37 +205,37 @@ public:
 	 * @param conn_id       Network connection that send indicate package.
 	 * @param cmd           Waits command.
 	 * @param on_active     Callback of on active.
-	 * @param timeout       Time out of waiting next package.
+	 * @param timeout       Timeout of waiting next package.
 	 * @param service_id    Network service that send indicate package. Uses to replace conn_id.
 	 */
-	void wait_next_phase(int conn_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIME_OUT, int service_id = 0);
+	void wait_next_phase(int conn_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIMEOUT, int service_id = 0);
 
 	/**
 	 * Sets wait package info.
 	 * @param conn_id       Network connection that send indicate package.
 	 * @param msg           Waits protocol message.
 	 * @param on_active     Callback of on active.
-	 * @param timeout       Time out of waiting next package.
+	 * @param timeout       Timeout of waiting next package.
 	 */
-	void wait_next_phase(int conn_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
+	void wait_next_phase(int conn_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIMEOUT);
 
 	/**
 	 * Sets wait package info.
 	 * @param service_id    Network service that send indicate package.
 	 * @param cmd           Waits command.
 	 * @param on_active     Callback of on active.
-	 * @param timeout       Time out of waiting next package.
+	 * @param timeout       Timeout of waiting next package.
 	 */
-	void service_wait_next_phase(int service_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
+	void service_wait_next_phase(int service_id, int cmd, OnActive on_active, int timeout = DEFAULT_TIMEOUT);
 
 	/**
 	 * Sets wait package info.
 	 * @param service_id    Network service that send indicate package.
 	 * @param cmd           Waits protocol message.
 	 * @param on_active     Callback of on active.
-	 * @param timeout       Time out of waiting next package.
+	 * @param timeout       Timeout of waiting next package.
 	 */
-	void service_wait_next_phase(int service_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIME_OUT);
+	void service_wait_next_phase(int service_id, const protocol::Message& msg, OnActive on_active, int timeout = DEFAULT_TIMEOUT);
 
 	/**
 	 * Sends back message to first connection.
