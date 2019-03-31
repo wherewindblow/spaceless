@@ -52,10 +52,11 @@ bool safe_call(std::function<void()> function, lights::TextWriter& error_msg, Er
 	}
 	catch (lights::Exception& ex)
 	{
-		lights::write(sink, "Exception. code={}, msg={}", ex.code(), ex);
+		ErrorInfo error = get_error_info(ex);
+		lights::write(sink, "Exception. error_info={}:{}, msg={}", static_cast<int>(error.category), error.code, ex);
 		if (error_info != nullptr)
 		{
-			*error_info = get_error_info(ex);
+			*error_info = error;
 		}
 	}
 	catch (Poco::Exception& ex)

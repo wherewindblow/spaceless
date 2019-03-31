@@ -29,8 +29,8 @@ namespace resource_server {
 const std::string DATA_FILENAME = "../data/data.json";
 const int STORE_DATA_PER_SEC = 5;
 const int DATA_INDENT = 4;
-const int CHECK_OFFLINE_USERS_PER_SEC = 15;
-const int MAX_NO_HEARTBEAT_SEC = 7;
+const int CHECK_OFFLINE_USERS_PER_SEC = 60;
+const int MAX_NO_HEARTBEAT_SEC = 50;
 
 
 #define SERIALIZE(object, member) object->set(#member, member)

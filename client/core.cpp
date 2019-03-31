@@ -22,7 +22,7 @@ namespace client {
 
 int conn_id = 0;
 
-const int HEARTBEAT_PER_SEC = 5;
+const int HEARTBEAT_PER_SEC = 50;
 
 const std::string META_FILE_PREFIX = ".meta";
 

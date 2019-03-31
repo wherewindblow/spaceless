@@ -172,7 +172,10 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, OnActive on
 
 void MultiplyPhaseTransaction::send_back_error(const ErrorInfo& error_info)
 {
-	LIGHTS_ERROR(logger, "Connection {}: Transaction error. code={}.", first_connection_id(), error_info.code);
+	LIGHTS_ERROR(logger, "Connection {}: Transaction error. error_info={}:{}.",
+				 first_connection_id(),
+				 static_cast<int>(error_info.category),
+				 error_info.code);
 	on_transaction_error(first_connection_id(), m_first_trigger_source, error_info);
 }
 

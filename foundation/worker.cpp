@@ -185,8 +185,8 @@ void Worker::trigger_transaction(int conn_id, int service_id, int package_id)
 								 trans_id);
 					trans_handler.pre_on_init(conn_id, package);
 
-					auto error_handler = [&](int conn_id, 
-											 const PackageTriggerSource& trigger_source, 
+					auto error_handler = [&](int conn_id,
+											 const PackageTriggerSource& trigger_source,
 											 const ErrorInfo& error_info)
 					{
 						trans_handler.on_error(conn_id, error_info);
@@ -246,8 +246,8 @@ void Worker::trigger_transaction(int conn_id, int service_id, int package_id)
 
 			waiting_trans->clear_waiting_state();
 
-			auto error_handler = [&](int conn_id, 
-									 const PackageTriggerSource& trigger_source, 
+			auto error_handler = [&](int conn_id,
+									 const PackageTriggerSource& trigger_source,
 									 const ErrorInfo& error_info)
 			{
 				waiting_trans->on_error(conn_id, error_info);
@@ -297,12 +297,15 @@ bool Worker::call_transaction(int conn_id,
 
 		if (error_handler != nullptr)
 		{
-			safe_call([&]() {
+			bool success = safe_call([&]() {
 				error_handler(conn_id, package.get_trigger_source(), error_info);
 			}, error_msg);
 
-			LIGHTS_ERROR(logger, "Connection {}: Transaction error handler error. trans_id={}. {}.",
-						 conn_id, trans_id, error_msg.c_str());
+			if (!success)
+			{
+				LIGHTS_ERROR(logger, "Connection {}: Transaction error handler error. trans_id={}. {}.",
+							 conn_id, trans_id, error_msg.c_str());
+			}
 		}
 		return false;
 	}
