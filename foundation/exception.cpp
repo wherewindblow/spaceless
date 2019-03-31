@@ -7,12 +7,41 @@
 #include "exception.h"
 
 #include <functional>
+#include <lights/format.h>
 #include <Poco/Exception.h>
 
 
 namespace spaceless {
 
-bool safe_call(std::function<void()> function, lights::TextWriter& error_msg, int* error_code)
+namespace details {
+
+lights::StringView ErrorCodeCategory::name() const
+{
+	return "SpacelessErrorCodeCategory";
+}
+
+
+const lights::ErrorCodeDescriptions& ErrorCodeCategory::descriptions(int code) const
+{
+	static lights::ErrorCodeDescriptions map[] = {
+		{"Success"},
+	};
+
+	if (is_safe_index(code, map))
+	{
+		return map[static_cast<std::size_t>(code)];
+	}
+	else
+	{
+		static lights::ErrorCodeDescriptions unknown = {"Unknown error"};
+		return unknown;
+	}
+}
+
+} // namespace details
+
+
+bool safe_call(std::function<void()> function, lights::TextWriter& error_msg, ErrorInfo* error_info)
 {
 	error_msg.clear();
 	auto sink = lights::make_format_sink(error_msg);
@@ -21,12 +50,12 @@ bool safe_call(std::function<void()> function, lights::TextWriter& error_msg, in
 		function();
 		return true;
 	}
-	catch (Exception& ex)
+	catch (lights::Exception& ex)
 	{
 		lights::write(sink, "Exception. code={}, msg={}", ex.code(), ex);
-		if (error_code != nullptr)
+		if (error_info != nullptr)
 		{
-			*error_code = ex.code();
+			*error_info = get_error_info(ex);
 		}
 	}
 	catch (Poco::Exception& ex)

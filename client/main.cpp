@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 
-#include <lights/ostream.h>
 #include <foundation/package.h>
 #include <foundation/network.h>
 #include <foundation/transaction.h>
@@ -91,7 +90,7 @@ int main(int argc, const char* argv[])
 
 		cmd_ui_interface(conn_list);
 	}
-	catch (Exception& ex)
+	catch (lights::Exception& ex)
 	{
 		LIGHTS_ERROR(logger, ex);
 	}
@@ -297,9 +296,12 @@ void read_handler(int conn_id, Package package)
 
 	protocol::RspError error;
 	package.parse_to_protocol(error);
-	if (error.result())
+	if (error.has_error())
 	{
-		std::cout << lights::format("Failure {} by {}.", error.result(), command) << std::endl;
+		std::cout << lights::format("Failure {}:{} by {}.",
+									error.error().category(),
+									error.error().code(),
+									command) << std::endl;
 
 		if (command != cmd("RspPing"))
 		{
@@ -444,7 +446,7 @@ void read_handler(int conn_id, Package package)
 		protocol::RspPing response;
 		package.parse_to_protocol(response);
 
-		if (response.result())
+		if (response.has_error())
 		{
 			HeartbeatManager::instance()->stop_heartbeat();
 		}

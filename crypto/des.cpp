@@ -169,7 +169,7 @@ void des_decrypt(std::istream& in, std::ostream& out, const DesKey& key)
 		{
 			if (static_cast<std::size_t>(in.gcount()) < cipher.size())
 			{
-				LIGHTS_THROW(Exception, ERR_CRYPTO_INCOMPLETE_DATA);
+				SPACELESS_THROW(ERR_CRYPTO_INCOMPLETE_DATA);
 			}
 			decryptor.decrypt(cipher.data(), plain.data());
 		}
@@ -186,11 +186,11 @@ void des_encrypt_file(const std::string& in_filename, const std::string& out_fil
 
 	if (in.fail())
 	{
-		LIGHTS_THROW(Exception, ERR_CRYPTO_CANNOT_OPEN_FILE);
+		SPACELESS_THROW(ERR_CRYPTO_CANNOT_OPEN_FILE);
 	}
 	else if (out.fail())
 	{
-		LIGHTS_THROW(Exception, ERR_CRYPTO_CANNOT_OPEN_FILE);
+		SPACELESS_THROW(ERR_CRYPTO_CANNOT_OPEN_FILE);
 	}
 	else
 	{
@@ -206,11 +206,11 @@ void des_decrypt_file(const std::string& in_filename, const std::string& out_fil
 
 	if (in.fail())
 	{
-		LIGHTS_THROW(Exception, ERR_CRYPTO_CANNOT_OPEN_FILE);
+		SPACELESS_THROW(ERR_CRYPTO_CANNOT_OPEN_FILE);
 	}
 	else if (out.fail())
 	{
-		LIGHTS_THROW(Exception, ERR_CRYPTO_CANNOT_OPEN_FILE);
+		SPACELESS_THROW(ERR_CRYPTO_CANNOT_OPEN_FILE);
 	}
 	else
 	{
@@ -219,7 +219,7 @@ void des_decrypt_file(const std::string& in_filename, const std::string& out_fil
 
 		if (size % DES_BLOCK_SIZE != 0)
 		{
-			LIGHTS_THROW(Exception, ERR_CRYPTO_INCOMPLETE_DATA);
+			SPACELESS_THROW(ERR_CRYPTO_INCOMPLETE_DATA);
 		}
 
 		des_decrypt(in, out, key);

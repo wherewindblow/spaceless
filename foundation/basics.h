@@ -21,10 +21,10 @@ static class_name* instance() \
 
 namespace spaceless {
 
-const int PACKAGE_VERSION = 2;
 const int INVALID_ID = 0;
-const int MAX_OUT_MSG_PROCESS_PER_TIMES = 10;
-const int REACTOR_TIMEOUT_US = 5000;
+const int PACKAGE_VERSION = 2;
+const int REACTOR_TIMEOUT_MS = 5;
+const int REACTOR_MAX_MSG_PER_TIMES = 10;
 const int WORKER_IDLE_SLEEP_MS = 2;
 const int WORKER_LONG_IDLE_TIMES = 5;
 const int WORKER_LONG_IDLE_SLEEP_MS = 10;
@@ -56,7 +56,7 @@ enum
 	ERR_CRYPTO_CANNOT_OPEN_FILE = 203,
 };
 
-enum class BuildinCommand
+enum class BuildInCommand
 {
 	NTF_INVALID_VERSION = 1,
 	NTF_SECURITY_SETTING = 2,
@@ -69,6 +69,13 @@ enum class SecuritySetting: std::uint8_t
 {
 	CLOSE_SECURITY = 1,
 	OPEN_SECURITY = 2,
+};
+
+enum class ErrorCategory
+{
+	INVALID = 0,
+	LIGHTS = 1,
+	SPACELESS = 2,
 };
 
 } // namespace spaceless

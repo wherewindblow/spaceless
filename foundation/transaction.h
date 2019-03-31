@@ -198,7 +198,7 @@ public:
 	/**
 	 * Processes error.
 	 */
-	virtual void on_error(int conn_id, int error_code);
+	virtual void on_error(int conn_id, const ErrorInfo& error_info);
 
 	/**
 	 * Sets wait package info.
@@ -245,7 +245,7 @@ public:
 	/**
 	 * Sends back error message to first connection.
 	 */
-	void send_back_error(int code);
+	void send_back_error(const ErrorInfo& error_info);
 
 	/**
 	 * Returns transaction id.
@@ -381,9 +381,11 @@ enum class TransactionType
 };
 
 
-using TransactionErrorHandler = std::function<void(int conn_id, const PackageTriggerSource& trigger_source, int error_code)>;
+using TransactionErrorHandler = std::function<void(int conn_id,
+												   const PackageTriggerSource& trigger_source,
+												   const ErrorInfo& error_info)>;
 
-void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, int error_code);
+void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, const ErrorInfo& error_info);
 
 
 /**

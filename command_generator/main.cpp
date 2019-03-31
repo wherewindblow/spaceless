@@ -83,7 +83,7 @@ int main(int argc, const char* argv[])
 
 	// Generate cmd.
 	MatchPatterns match_patterns = { "Req", "Rsp" };
-	int next_cmd = static_cast<int>(spaceless::BuildinCommand::MAX); // Avoid using build-in cmd.
+	int next_cmd = static_cast<int>(spaceless::BuildInCommand::MAX); // Avoid using build-in cmd.
 	CommandTable cmd_table = generate_commands(proto_filename, match_patterns, next_cmd);
 
 	// Save cmd in txt.

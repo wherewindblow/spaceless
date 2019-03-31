@@ -73,7 +73,7 @@ std::size_t SharingFileManager::get_file(const std::string& filename, lights::Se
 	std::string path = get_absolute_path(filename);
 	if (!lights::env::file_exists(path.c_str()))
 	{
-		LIGHTS_THROW(Exception, ERR_FILE_NOT_EXIST);
+		SPACELESS_THROW(ERR_FILE_NOT_EXIST);
 	}
 
 	lights::FileStream& file = get_file_stream(path);
@@ -124,7 +124,7 @@ FileSession& FileSessionManager::register_session(const std::string& filename)
 	FileSession* session = find_session(filename);
 	if (session != nullptr)
 	{
-		LIGHTS_THROW(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
+		SPACELESS_THROW(ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	FileSession new_session(m_next_id, filename);
@@ -134,7 +134,7 @@ FileSession& FileSessionManager::register_session(const std::string& filename)
 	auto result = m_session_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW(Exception, ERR_FILE_SESSION_ALREADY_EXIST);
+		SPACELESS_THROW(ERR_FILE_SESSION_ALREADY_EXIST);
 	}
 
 	return result.first->second;
@@ -200,7 +200,7 @@ FileSession& FileSessionManager::get_session(int session_id)
 	FileSession* session = find_session(session_id);
 	if (session == nullptr)
 	{
-		LIGHTS_THROW(Exception, ERR_FILE_SESSION_NOT_EXIST);
+		SPACELESS_THROW(ERR_FILE_SESSION_NOT_EXIST);
 	}
 
 	return *session;

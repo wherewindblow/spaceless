@@ -9,6 +9,7 @@
 
 #include <Poco/NObserver.h>
 #include <Poco/Net/NetException.h>
+#include <lights/precise_time.h>
 
 #include "../log.h"
 #include "../network.h"
@@ -141,7 +142,7 @@ NetworkConnectionImpl::NetworkConnectionImpl(StreamSocket& socket,
 			int content_len = sizeof(security_setting);
 			Package package = PackageManager::instance()->register_package(content_len);
 			PackageHeader::Base& header_base = package.header().base;
-			header_base.command = static_cast<int>(BuildinCommand::NTF_SECURITY_SETTING);
+			header_base.command = static_cast<int>(BuildInCommand::NTF_SECURITY_SETTING);
 			header_base.content_length = content_len;
 			lights::copy_array(static_cast<char*>(package.content_buffer().data()),
 							   reinterpret_cast<const char*>(&security_setting),
@@ -470,12 +471,12 @@ bool NetworkConnectionImpl::process_check_package_version(int receive_len)
 	PackageHeader::Base& receive_header_base = reinterpret_cast<PackageHeader::Base&>(m_receive_buffer.header());
 	if (receive_header_base.version != PACKAGE_VERSION)
 	{
-		if (receive_header_base.command != static_cast<int>(BuildinCommand::NTF_INVALID_VERSION))
+		if (receive_header_base.command != static_cast<int>(BuildInCommand::NTF_INVALID_VERSION))
 		{
 			// Notify peer and logic layer package version is invalid.
 			Package package = PackageManager::instance()->register_package(0);
 			PackageHeader::Base& header_base = package.header().base;
-			header_base.command = static_cast<int>(BuildinCommand::NTF_INVALID_VERSION);
+			header_base.command = static_cast<int>(BuildInCommand::NTF_INVALID_VERSION);
 			header_base.content_length = 0;
 			send_raw_package(package);
 
@@ -503,7 +504,7 @@ bool NetworkConnectionImpl::on_receive_complete_package(const PackageBuffer& pac
 				 m_id, cmd, header.extend.trigger_package_id);
 
 	// Receive security setting.
-	if (cmd == static_cast<int>(BuildinCommand::NTF_SECURITY_SETTING))
+	if (cmd == static_cast<int>(BuildInCommand::NTF_SECURITY_SETTING))
 	{
 		if (m_open_type == ConnectionOpenType::PASSIVE_OPEN)
 		{
@@ -606,7 +607,7 @@ SecureConnection::SecureConnection(NetworkConnectionImpl* conn) :
 		// Send public key to peer.
 		Package package = PackageManager::instance()->register_package(content_len);
 		PackageHeader::Base& header_base = package.header().base;
-		header_base.command = static_cast<int>(BuildinCommand::REQ_START_CRYPTO);
+		header_base.command = static_cast<int>(BuildInCommand::REQ_START_CRYPTO);
 		header_base.content_length = content_len;
 		lights::copy_array(static_cast<char*>(package.content_buffer().data()),
 						   public_key.c_str(),
@@ -674,8 +675,8 @@ void SecureConnection::on_receive_complete_package(const PackageBuffer& package_
 		case State::STARTING:
 		{
 			ConnectionOpenType open_type = m_conn->open_type();
-			auto cmd = static_cast<BuildinCommand>(header.base.command);
-			if (open_type== ConnectionOpenType::PASSIVE_OPEN && cmd == BuildinCommand::RSP_START_CRYPTO)
+			auto cmd = static_cast<BuildInCommand>(header.base.command);
+			if (open_type== ConnectionOpenType::PASSIVE_OPEN && cmd == BuildInCommand::RSP_START_CRYPTO)
 			{
 				LIGHTS_ASSERT(m_private_key != nullptr && "Have not store private key");
 
@@ -694,7 +695,7 @@ void SecureConnection::on_receive_complete_package(const PackageBuffer& package_
 				// Re-send all pending package again.
 				send_all_pending_package();
 			}
-			else if (open_type == ConnectionOpenType::ACTIVE_OPEN && cmd == BuildinCommand::REQ_START_CRYPTO)
+			else if (open_type == ConnectionOpenType::ACTIVE_OPEN && cmd == BuildInCommand::REQ_START_CRYPTO)
 			{
 				// Get public key.
 				crypto::RsaPublicKey public_key;
@@ -712,7 +713,7 @@ void SecureConnection::on_receive_complete_package(const PackageBuffer& package_
 				// Send cipher AES key to peer.
 				Package package = PackageManager::instance()->register_package(content_len);
 				PackageHeader::Base& header_base = package.header().base;
-				header_base.command = static_cast<int>(BuildinCommand::RSP_START_CRYPTO);
+				header_base.command = static_cast<int>(BuildInCommand::RSP_START_CRYPTO);
 				header_base.content_length = content_len;
 				lights::copy_array(static_cast<char*>(package.content_buffer().data()),
 								   cipher.c_str(), cipher.length());
@@ -806,7 +807,7 @@ void NetworkReactor::onTimeout()
 
 void NetworkReactor::process_out_message()
 {
-	for (std::size_t i = 0; i < MAX_OUT_MSG_PROCESS_PER_TIMES; ++i)
+	for (std::size_t i = 0; i < REACTOR_MAX_MSG_PER_TIMES; ++i)
 	{
 		if (ActorMessageQueue::instance()->empty(ActorMessageQueue::OUT_QUEUE))
 		{
@@ -963,7 +964,8 @@ void NetworkManagerImpl::stop_all()
 void NetworkManagerImpl::start()
 {
 	LIGHTS_INFO(logger, "Starting network scheduler.");
-	m_reactor.setTimeout(Poco::Timespan(0, REACTOR_TIMEOUT_US));
+	Poco::Timespan time_span(0, lights::millisecond_to_microsecond(REACTOR_TIMEOUT_MS));
+	m_reactor.setTimeout(time_span);
 	m_reactor.run();
 	LIGHTS_INFO(logger, "Stopped network scheduler.");
 }

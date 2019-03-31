@@ -70,7 +70,7 @@ void on_login_user(int conn_id, Package package)
 	bool pass = UserManager::instance()->login_user(request.user_id(), request.password(), conn_id);
 	if (!pass)
 	{
-		response.set_result(ERR_USER_LOGIN_FAILURE);
+		SPACELESS_THROW(ERR_USER_LOGIN_FAILURE);
 	}
 
 	Network::send_back_protocol(conn_id, response, package);
@@ -84,14 +84,12 @@ void on_remove_user(int conn_id, Package package)
 	package.parse_to_protocol(request);
 
 	User& user = UserManager::instance()->get_login_user(conn_id);
-	if (UserManager::instance()->is_root_user(user.user_id))
+	if (!UserManager::instance()->is_root_user(user.user_id))
 	{
-		UserManager::instance()->remove_user(request.user_id());
+		SPACELESS_THROW(ERR_USER_NOT_PERMISSION);
 	}
-	else
-	{
-		response.set_result(ERR_USER_NOT_PERMISSION);
-	}
+
+	UserManager::instance()->remove_user(request.user_id());
 
 	Network::send_back_protocol(conn_id, response, package);
 }
@@ -115,15 +113,12 @@ void on_find_user(int conn_id, Package package)
 		target_user = UserManager::instance()->find_user(request.username());
 	}
 
-	if (target_user != nullptr)
+	if (target_user == nullptr)
 	{
-		convert_user(*target_user, *response.mutable_user());
-	}
-	else
-	{
-		response.set_result(ERR_USER_NOT_EXIST);
+		SPACELESS_THROW(ERR_USER_NOT_EXIST);
 	}
 
+	convert_user(*target_user, *response.mutable_user());
 	Network::send_back_protocol(conn_id, response, package);
 }
 
@@ -204,14 +199,12 @@ void on_find_group(int conn_id, Package package)
 		group = SharingGroupManager::instance()->find_group(request.group_name());
 	}
 
-	if (group != nullptr)
+	if (group == nullptr)
 	{
-		convert_group(*group, *response.mutable_group());
+		SPACELESS_THROW(ERR_GROUP_NOT_EXIST);
 	}
-	else
-	{
-		response.set_result(ERR_GROUP_NOT_EXIST);
-	}
+
+	convert_group(*group, *response.mutable_group());
 
 	Network::send_back_protocol(conn_id, response, package);
 }
@@ -241,13 +234,10 @@ void on_assign_as_manager(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		response.set_result(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
-	}
-	else
-	{
-		group.assign_as_manager(request.user_id());
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
+	group.assign_as_manager(request.user_id());
 	Network::send_back_protocol(conn_id, response, package);
 }
 
@@ -262,12 +252,10 @@ void on_assign_as_member(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		response.set_result(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
-	else
-	{
-		group.assign_as_member(request.user_id());
-	}
+
+	group.assign_as_member(request.user_id());
 
 	Network::send_back_protocol(conn_id, response, package);
 }
@@ -285,7 +273,7 @@ void on_kick_out_user(int conn_id, Package package)
 	{
 		if (!group.is_manager(user.user_id))
 		{
-			LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+			SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 		}
 	}
 	group.kick_out_user(request.user_id());
@@ -304,7 +292,7 @@ void on_create_path(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	group.create_path(request.path());
@@ -323,14 +311,14 @@ void on_list_file(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_member(user.user_id))
 	{
-		LIGHTS_THROW(Exception, ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
 	}
 
 	int file_id = group.get_file_id(request.file_path());
 	SharingFile& file = SharingFileManager::instance()->get_file(file_id);
 	if (file.file_type != SharingFile::DIRECTORY)
 	{
-		LIGHTS_THROW(Exception, ERR_GROUP_NOT_DIRECTORY);
+		SPACELESS_THROW(ERR_GROUP_NOT_DIRECTORY);
 	}
 
 	SharingDirectory& directory = dynamic_cast<SharingDirectory&>(file);
@@ -366,7 +354,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	PutFileSession* session = FileSessionManager::instance()->find_put_session(user.user_id,
@@ -376,7 +364,7 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 	{
 		if (request.max_fragment() != session->max_fragment)
 		{
-			LIGHTS_THROW(Exception, ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
+			SPACELESS_THROW(ERR_FILE_SESSION_CANNOT_CHANGE_MAX_FRAGMENT);
 		}
 	}
 	else
@@ -384,12 +372,12 @@ void PutFileSessionTrans::on_init(int conn_id, Package package)
 		FilePath path = request.file_path();
 		if (!group.exist_path(path.directory_path()))
 		{
-			return send_back_error(ERR_PATH_NOT_EXIST);
+			SPACELESS_THROW(ERR_PATH_NOT_EXIST);
 		}
 
 		if (group.exist_path(path))
 		{
-			return send_back_error(ERR_PATH_ALREADY_EXIST);
+			SPACELESS_THROW(ERR_PATH_ALREADY_EXIST);
 		}
 
 		SharingFile& storage_file = SharingFileManager::instance()->register_file(SharingFile::STORAGE_FILE,
@@ -422,10 +410,13 @@ void PutFileSessionTrans::on_active(int conn_id, Package package)
 {
 	protocol::RspNodePutFileSession node_response;
 	package.parse_to_protocol(node_response);
-	if (node_response.result())
+	if (node_response.has_error())
 	{
 		FileSessionManager::instance()->remove_session(m_session_id);
-		return send_back_error(node_response.result());
+		protocol::RspPutFileSession response;
+		*response.mutable_error() = node_response.error();
+		send_back_message(response);
+		return;
 	}
 
 	PutFileSession* session = FileSessionManager::instance()->find_put_session(m_session_id);
@@ -438,10 +429,10 @@ void PutFileSessionTrans::on_active(int conn_id, Package package)
 }
 
 
-void PutFileSessionTrans::on_error(int conn_id, int error_code)
+void PutFileSessionTrans::on_error(int conn_id, const ErrorInfo& error_info)
 {
 	FileSessionManager::instance()->remove_session(m_session_id);
-	MultiplyPhaseTransaction::on_error(conn_id, error_code);
+	MultiplyPhaseTransaction::on_error(conn_id, error_info);
 }
 
 
@@ -467,12 +458,12 @@ void PutFileTrans::on_init(int conn_id, Package package)
 	PutFileSession& session = FileSessionManager::instance()->get_put_session(request.session_id());
 	if (session.user_id != user.user_id)
 	{
-		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
+		SPACELESS_THROW(ERR_FILE_SESSION_NOT_REGISTER_USER);
 	}
 
 	if (request.fragment_index() != session.next_fragment)
 	{
-		return send_back_error(ERR_FILE_SESSION_INVALID_FRAGMENT);
+		SPACELESS_THROW(ERR_FILE_SESSION_INVALID_FRAGMENT);
 	}
 
 	++session.next_fragment;
@@ -519,20 +510,20 @@ void GetFileSessionTrans::on_init(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_member(user.user_id))
 	{
-		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MEMBER);
 	}
 
 	FilePath path = request.file_path();
 	if (!group.exist_path(path))
 	{
-		return send_back_error(ERR_PATH_NOT_EXIST);
+		SPACELESS_THROW(ERR_PATH_NOT_EXIST);
 	}
 
 	int file_id = group.get_file_id(path);
 	SharingFile& sharing_file = SharingFileManager::instance()->get_file(file_id);
 	if (sharing_file.file_type != SharingFile::GENERAL_FILE)
 	{
-		return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
+		SPACELESS_THROW(ERR_PATH_NOT_GENERAL_FILE);
 	}
 
 	auto& general_file = dynamic_cast<SharingGeneralFile&>(sharing_file);
@@ -568,10 +559,12 @@ void GetFileSessionTrans::on_active(int conn_id, Package package)
 	protocol::RspNodeGetFileSession node_response;
 	package.parse_to_protocol(node_response);
 
-	if (node_response.result())
+	if (node_response.has_error())
 	{
 		FileSessionManager::instance()->remove_session(m_session_id);
-		send_back_error(node_response.result());
+		protocol::RspGetFileSession response;
+		*response.mutable_error() = node_response.error();
+		send_back_message(response);
 		return;
 	}
 
@@ -585,10 +578,10 @@ void GetFileSessionTrans::on_active(int conn_id, Package package)
 }
 
 
-void GetFileSessionTrans::on_error(int conn_id, int error_code)
+void GetFileSessionTrans::on_error(int conn_id, const ErrorInfo& error_info)
 {
 	FileSessionManager::instance()->remove_session(m_session_id);
-	MultiplyPhaseTransaction::on_error(conn_id, error_code);
+	MultiplyPhaseTransaction::on_error(conn_id, error_info);
 }
 
 
@@ -614,21 +607,21 @@ void GetFileTrans::on_init(int conn_id, Package package)
 	GetFileSession& session = FileSessionManager::instance()->get_get_session(request.session_id());
 	if (session.user_id != user.user_id)
 	{
-		return send_back_error(ERR_FILE_SESSION_NOT_REGISTER_USER);
+		SPACELESS_THROW(ERR_FILE_SESSION_NOT_REGISTER_USER);
 	}
 
 	SharingGroup& group = SharingGroupManager::instance()->get_group(session.group_id);
 	FilePath path = session.file_path;
 	if (!group.exist_path(path))
 	{
-		return send_back_error(ERR_PATH_NOT_EXIST);
+		SPACELESS_THROW(ERR_PATH_NOT_EXIST);
 	}
 
 	int file_id = group.get_file_id(path);
 	SharingFile& sharing_file = SharingFileManager::instance()->get_file(file_id);
 	if (sharing_file.file_type != SharingFile::GENERAL_FILE)
 	{
-		return send_back_error(ERR_PATH_NOT_GENERAL_FILE);
+		SPACELESS_THROW(ERR_PATH_NOT_GENERAL_FILE);
 	}
 
 	m_session_id = session.session_id;
@@ -677,7 +670,7 @@ void RemovePathTrans::on_init(int conn_id, Package package)
 	SharingGroup& group = SharingGroupManager::instance()->get_group(request.group_id());
 	if (!group.is_manager(user.user_id))
 	{
-		return send_back_error(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
+		SPACELESS_THROW(ERR_GROUP_NOT_PERMIT_NEED_MANAGER);
 	}
 
 	group.remove_path(request.path());

@@ -39,7 +39,7 @@ namespace protobuf_protocol_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[46];
+  static const ::google::protobuf::internal::ParseTable schema[47];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -48,6 +48,9 @@ void AddDescriptors();
 }  // namespace protobuf_protocol_2eproto
 namespace spaceless {
 namespace protocol {
+class ErrorInfo;
+class ErrorInfoDefaultTypeInternal;
+extern ErrorInfoDefaultTypeInternal _ErrorInfo_default_instance_;
 class File;
 class FileDefaultTypeInternal;
 extern FileDefaultTypeInternal _File_default_instance_;
@@ -190,6 +193,7 @@ extern UserDefaultTypeInternal _User_default_instance_;
 }  // namespace spaceless
 namespace google {
 namespace protobuf {
+template<> ::spaceless::protocol::ErrorInfo* Arena::CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(Arena*);
 template<> ::spaceless::protocol::File* Arena::CreateMaybeMessage<::spaceless::protocol::File>(Arena*);
 template<> ::spaceless::protocol::ReqAssignAsManager* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsManager>(Arena*);
 template<> ::spaceless::protocol::ReqAssignAsMember* Arena::CreateMaybeMessage<::spaceless::protocol::ReqAssignAsMember>(Arena*);
@@ -285,6 +289,116 @@ inline bool FileType_Parse(
 }
 // ===================================================================
 
+class ErrorInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.ErrorInfo) */ {
+ public:
+  ErrorInfo();
+  virtual ~ErrorInfo();
+
+  ErrorInfo(const ErrorInfo& from);
+
+  inline ErrorInfo& operator=(const ErrorInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  ErrorInfo(ErrorInfo&& from) noexcept
+    : ErrorInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline ErrorInfo& operator=(ErrorInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const ErrorInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const ErrorInfo* internal_default_instance() {
+    return reinterpret_cast<const ErrorInfo*>(
+               &_ErrorInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  void Swap(ErrorInfo* other);
+  friend void swap(ErrorInfo& a, ErrorInfo& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline ErrorInfo* New() const final {
+    return CreateMaybeMessage<ErrorInfo>(NULL);
+  }
+
+  ErrorInfo* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ErrorInfo>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const ErrorInfo& from);
+  void MergeFrom(const ErrorInfo& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ErrorInfo* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 category = 1;
+  void clear_category();
+  static const int kCategoryFieldNumber = 1;
+  ::google::protobuf::int32 category() const;
+  void set_category(::google::protobuf::int32 value);
+
+  // int32 code = 2;
+  void clear_code();
+  static const int kCodeFieldNumber = 2;
+  ::google::protobuf::int32 code() const;
+  void set_code(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:spaceless.protocol.ErrorInfo)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 category_;
+  ::google::protobuf::int32 code_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_protocol_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class RspError : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:spaceless.protocol.RspError) */ {
  public:
   RspError();
@@ -320,7 +434,7 @@ class RspError : public ::google::protobuf::Message /* @@protoc_insertion_point(
                &_RspError_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    1;
 
   void Swap(RspError* other);
   friend void swap(RspError& a, RspError& b) {
@@ -372,17 +486,23 @@ class RspError : public ::google::protobuf::Message /* @@protoc_insertion_point(
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspError)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -423,7 +543,7 @@ class ReqPing : public ::google::protobuf::Message /* @@protoc_insertion_point(c
                &_ReqPing_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    2;
 
   void Swap(ReqPing* other);
   friend void swap(ReqPing& a, ReqPing& b) {
@@ -533,7 +653,7 @@ class RspPing : public ::google::protobuf::Message /* @@protoc_insertion_point(c
                &_RspPing_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    3;
 
   void Swap(RspPing* other);
   friend void swap(RspPing& a, RspPing& b) {
@@ -585,11 +705,17 @@ class RspPing : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 second = 2;
   void clear_second();
@@ -607,7 +733,7 @@ class RspPing : public ::google::protobuf::Message /* @@protoc_insertion_point(c
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 second_;
   ::google::protobuf::int32 microsecond_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -650,7 +776,7 @@ class User : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
                &_User_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    4;
 
   void Swap(User* other);
   friend void swap(User& a, User& b) {
@@ -782,7 +908,7 @@ class ReqRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion
                &_ReqRegisterUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    5;
 
   void Swap(ReqRegisterUser* other);
   friend void swap(ReqRegisterUser& a, ReqRegisterUser& b) {
@@ -908,7 +1034,7 @@ class RspRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion
                &_RspRegisterUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    6;
 
   void Swap(RspRegisterUser* other);
   friend void swap(RspRegisterUser& a, RspRegisterUser& b) {
@@ -960,6 +1086,18 @@ class RspRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion
 
   // accessors -------------------------------------------------------
 
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
+
   // .spaceless.protocol.User user = 2;
   bool has_user() const;
   void clear_user();
@@ -972,18 +1110,12 @@ class RspRegisterUser : public ::google::protobuf::Message /* @@protoc_insertion
   ::spaceless::protocol::User* mutable_user();
   void set_allocated_user(::spaceless::protocol::User* user);
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
-
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspRegisterUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::spaceless::protocol::User* user_;
-  ::google::protobuf::int32 result_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -1024,7 +1156,7 @@ class ReqLoginUser : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ReqLoginUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   void Swap(ReqLoginUser* other);
   friend void swap(ReqLoginUser& a, ReqLoginUser& b) {
@@ -1142,7 +1274,7 @@ class RspLoginUser : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_RspLoginUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   void Swap(RspLoginUser* other);
   friend void swap(RspLoginUser& a, RspLoginUser& b) {
@@ -1194,17 +1326,23 @@ class RspLoginUser : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspLoginUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -1245,7 +1383,7 @@ class ReqRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqRemoveUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   void Swap(ReqRemoveUser* other);
   friend void swap(ReqRemoveUser& a, ReqRemoveUser& b) {
@@ -1348,7 +1486,7 @@ class RspRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspRemoveUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    10;
 
   void Swap(RspRemoveUser* other);
   friend void swap(RspRemoveUser& a, RspRemoveUser& b) {
@@ -1400,17 +1538,23 @@ class RspRemoveUser : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspRemoveUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -1451,7 +1595,7 @@ class ReqFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_ReqFindUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    11;
 
   void Swap(ReqFindUser* other);
   friend void swap(ReqFindUser& a, ReqFindUser& b) {
@@ -1569,7 +1713,7 @@ class RspFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_RspFindUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    11;
+    12;
 
   void Swap(RspFindUser* other);
   friend void swap(RspFindUser& a, RspFindUser& b) {
@@ -1621,6 +1765,18 @@ class RspFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
+
   // .spaceless.protocol.User user = 2;
   bool has_user() const;
   void clear_user();
@@ -1633,18 +1789,12 @@ class RspFindUser : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::spaceless::protocol::User* mutable_user();
   void set_allocated_user(::spaceless::protocol::User* user);
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
-
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspFindUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::spaceless::protocol::User* user_;
-  ::google::protobuf::int32 result_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -1685,7 +1835,7 @@ class SharingGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_SharingGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    12;
+    13;
 
   void Swap(SharingGroup* other);
   friend void swap(SharingGroup& a, SharingGroup& b) {
@@ -1845,7 +1995,7 @@ class ReqRegisterGroup : public ::google::protobuf::Message /* @@protoc_insertio
                &_ReqRegisterGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    13;
+    14;
 
   void Swap(ReqRegisterGroup* other);
   friend void swap(ReqRegisterGroup& a, ReqRegisterGroup& b) {
@@ -1956,7 +2106,7 @@ class RspRegisterGroup : public ::google::protobuf::Message /* @@protoc_insertio
                &_RspRegisterGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    14;
+    15;
 
   void Swap(RspRegisterGroup* other);
   friend void swap(RspRegisterGroup& a, RspRegisterGroup& b) {
@@ -2008,11 +2158,17 @@ class RspRegisterGroup : public ::google::protobuf::Message /* @@protoc_insertio
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 group_id = 2;
   void clear_group_id();
@@ -2024,7 +2180,7 @@ class RspRegisterGroup : public ::google::protobuf::Message /* @@protoc_insertio
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 group_id_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
@@ -2066,7 +2222,7 @@ class ReqRemoveGroup : public ::google::protobuf::Message /* @@protoc_insertion_
                &_ReqRemoveGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    15;
+    16;
 
   void Swap(ReqRemoveGroup* other);
   friend void swap(ReqRemoveGroup& a, ReqRemoveGroup& b) {
@@ -2169,7 +2325,7 @@ class RspRemoveGroup : public ::google::protobuf::Message /* @@protoc_insertion_
                &_RspRemoveGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    16;
+    17;
 
   void Swap(RspRemoveGroup* other);
   friend void swap(RspRemoveGroup& a, RspRemoveGroup& b) {
@@ -2272,7 +2428,7 @@ class ReqFindGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ReqFindGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    18;
 
   void Swap(ReqFindGroup* other);
   friend void swap(ReqFindGroup& a, ReqFindGroup& b) {
@@ -2390,7 +2546,7 @@ class RspFindGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_RspFindGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    19;
 
   void Swap(RspFindGroup* other);
   friend void swap(RspFindGroup& a, RspFindGroup& b) {
@@ -2442,6 +2598,18 @@ class RspFindGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
+
   // .spaceless.protocol.SharingGroup group = 2;
   bool has_group() const;
   void clear_group();
@@ -2454,18 +2622,12 @@ class RspFindGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
   ::spaceless::protocol::SharingGroup* mutable_group();
   void set_allocated_group(::spaceless::protocol::SharingGroup* group);
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
-
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspFindGroup)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::spaceless::protocol::SharingGroup* group_;
-  ::google::protobuf::int32 result_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -2506,7 +2668,7 @@ class ReqJoinGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ReqJoinGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    20;
 
   void Swap(ReqJoinGroup* other);
   friend void swap(ReqJoinGroup& a, ReqJoinGroup& b) {
@@ -2609,7 +2771,7 @@ class RspJoinGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_RspJoinGroup_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    20;
+    21;
 
   void Swap(RspJoinGroup* other);
   friend void swap(RspJoinGroup& a, RspJoinGroup& b) {
@@ -2661,17 +2823,23 @@ class RspJoinGroup : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspJoinGroup)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -2712,7 +2880,7 @@ class ReqAssignAsManager : public ::google::protobuf::Message /* @@protoc_insert
                &_ReqAssignAsManager_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    21;
+    22;
 
   void Swap(ReqAssignAsManager* other);
   friend void swap(ReqAssignAsManager& a, ReqAssignAsManager& b) {
@@ -2822,7 +2990,7 @@ class RspAssignAsManager : public ::google::protobuf::Message /* @@protoc_insert
                &_RspAssignAsManager_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    22;
+    23;
 
   void Swap(RspAssignAsManager* other);
   friend void swap(RspAssignAsManager& a, RspAssignAsManager& b) {
@@ -2874,17 +3042,23 @@ class RspAssignAsManager : public ::google::protobuf::Message /* @@protoc_insert
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspAssignAsManager)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -2925,7 +3099,7 @@ class ReqAssignAsMember : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqAssignAsMember_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    23;
+    24;
 
   void Swap(ReqAssignAsMember* other);
   friend void swap(ReqAssignAsMember& a, ReqAssignAsMember& b) {
@@ -3035,7 +3209,7 @@ class RspAssignAsMember : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspAssignAsMember_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    24;
+    25;
 
   void Swap(RspAssignAsMember* other);
   friend void swap(RspAssignAsMember& a, RspAssignAsMember& b) {
@@ -3087,17 +3261,23 @@ class RspAssignAsMember : public ::google::protobuf::Message /* @@protoc_inserti
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspAssignAsMember)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3138,7 +3318,7 @@ class ReqKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
                &_ReqKickOutUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    25;
+    26;
 
   void Swap(ReqKickOutUser* other);
   friend void swap(ReqKickOutUser& a, ReqKickOutUser& b) {
@@ -3248,7 +3428,7 @@ class RspKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
                &_RspKickOutUser_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    26;
+    27;
 
   void Swap(RspKickOutUser* other);
   friend void swap(RspKickOutUser& a, RspKickOutUser& b) {
@@ -3300,17 +3480,23 @@ class RspKickOutUser : public ::google::protobuf::Message /* @@protoc_insertion_
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspKickOutUser)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3351,7 +3537,7 @@ class File : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
                &_File_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    27;
+    28;
 
   void Swap(File* other);
   friend void swap(File& a, File& b) {
@@ -3469,7 +3655,7 @@ class ReqListFile : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_ReqListFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    28;
+    29;
 
   void Swap(ReqListFile* other);
   friend void swap(ReqListFile& a, ReqListFile& b) {
@@ -3587,7 +3773,7 @@ class RspListFile : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_RspListFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    29;
+    30;
 
   void Swap(RspListFile* other);
   friend void swap(RspListFile& a, RspListFile& b) {
@@ -3651,18 +3837,24 @@ class RspListFile : public ::google::protobuf::Message /* @@protoc_insertion_poi
   const ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File >&
       file_list() const;
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspListFile)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedPtrField< ::spaceless::protocol::File > file_list_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -3703,7 +3895,7 @@ class ReqPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    30;
+    31;
 
   void Swap(ReqPutFileSession* other);
   friend void swap(ReqPutFileSession& a, ReqPutFileSession& b) {
@@ -3828,7 +4020,7 @@ class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspPutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    31;
+    32;
 
   void Swap(RspPutFileSession* other);
   friend void swap(RspPutFileSession& a, RspPutFileSession& b) {
@@ -3880,11 +4072,17 @@ class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 session_id = 2;
   void clear_session_id();
@@ -3902,7 +4100,7 @@ class RspPutFileSession : public ::google::protobuf::Message /* @@protoc_inserti
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 session_id_;
   ::google::protobuf::int32 next_fragment_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -3945,7 +4143,7 @@ class ReqNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_ReqNodePutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    32;
+    33;
 
   void Swap(ReqNodePutFileSession* other);
   friend void swap(ReqNodePutFileSession& a, ReqNodePutFileSession& b) {
@@ -4063,7 +4261,7 @@ class RspNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_RspNodePutFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    33;
+    34;
 
   void Swap(RspNodePutFileSession* other);
   friend void swap(RspNodePutFileSession& a, RspNodePutFileSession& b) {
@@ -4115,11 +4313,17 @@ class RspNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 session_id = 2;
   void clear_session_id();
@@ -4131,7 +4335,7 @@ class RspNodePutFileSession : public ::google::protobuf::Message /* @@protoc_ins
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 session_id_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
@@ -4173,7 +4377,7 @@ class ReqPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    34;
+    35;
 
   void Swap(ReqPutFile* other);
   friend void swap(ReqPutFile& a, ReqPutFile& b) {
@@ -4298,7 +4502,7 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspPutFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    35;
+    36;
 
   void Swap(RspPutFile* other);
   friend void swap(RspPutFile& a, RspPutFile& b) {
@@ -4350,11 +4554,17 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 session_id = 2;
   void clear_session_id();
@@ -4372,7 +4582,7 @@ class RspPutFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 session_id_;
   ::google::protobuf::int32 fragment_index_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -4415,7 +4625,7 @@ class ReqGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_ReqGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    36;
+    37;
 
   void Swap(ReqGetFileSession* other);
   friend void swap(ReqGetFileSession& a, ReqGetFileSession& b) {
@@ -4533,7 +4743,7 @@ class RspGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
                &_RspGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    37;
+    38;
 
   void Swap(RspGetFileSession* other);
   friend void swap(RspGetFileSession& a, RspGetFileSession& b) {
@@ -4585,11 +4795,17 @@ class RspGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 session_id = 2;
   void clear_session_id();
@@ -4607,7 +4823,7 @@ class RspGetFileSession : public ::google::protobuf::Message /* @@protoc_inserti
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 session_id_;
   ::google::protobuf::int32 max_fragment_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -4650,7 +4866,7 @@ class ReqNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_ReqNodeGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    38;
+    39;
 
   void Swap(ReqNodeGetFileSession* other);
   friend void swap(ReqNodeGetFileSession& a, ReqNodeGetFileSession& b) {
@@ -4761,7 +4977,7 @@ class RspNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
                &_RspNodeGetFileSession_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    39;
+    40;
 
   void Swap(RspNodeGetFileSession* other);
   friend void swap(RspNodeGetFileSession& a, RspNodeGetFileSession& b) {
@@ -4813,11 +5029,17 @@ class RspNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 session_id = 2;
   void clear_session_id();
@@ -4835,7 +5057,7 @@ class RspNodeGetFileSession : public ::google::protobuf::Message /* @@protoc_ins
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 session_id_;
   ::google::protobuf::int32 max_fragment_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -4878,7 +5100,7 @@ class ReqGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_ReqGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    40;
+    41;
 
   void Swap(ReqGetFile* other);
   friend void swap(ReqGetFile& a, ReqGetFile& b) {
@@ -4988,7 +5210,7 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_RspGetFile_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    41;
+    42;
 
   void Swap(RspGetFile* other);
   friend void swap(RspGetFile& a, RspGetFile& b) {
@@ -5054,11 +5276,17 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::std::string* release_fragment_content();
   void set_allocated_fragment_content(::std::string* fragment_content);
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // int32 session_id = 2;
   void clear_session_id();
@@ -5077,7 +5305,7 @@ class RspGetFile : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr fragment_content_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   ::google::protobuf::int32 session_id_;
   ::google::protobuf::int32 fragment_index_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -5120,7 +5348,7 @@ class ReqCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    42;
+    43;
 
   void Swap(ReqCreatePath* other);
   friend void swap(ReqCreatePath& a, ReqCreatePath& b) {
@@ -5238,7 +5466,7 @@ class RspCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspCreatePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    43;
+    44;
 
   void Swap(RspCreatePath* other);
   friend void swap(RspCreatePath& a, RspCreatePath& b) {
@@ -5290,17 +5518,23 @@ class RspCreatePath : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspCreatePath)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -5341,7 +5575,7 @@ class ReqRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReqRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    44;
+    45;
 
   void Swap(ReqRemovePath* other);
   friend void swap(ReqRemovePath& a, ReqRemovePath& b) {
@@ -5466,7 +5700,7 @@ class RspRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_RspRemovePath_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    45;
+    46;
 
   void Swap(RspRemovePath* other);
   friend void swap(RspRemovePath& a, RspRemovePath& b) {
@@ -5518,17 +5752,23 @@ class RspRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // int32 result = 1;
-  void clear_result();
-  static const int kResultFieldNumber = 1;
-  ::google::protobuf::int32 result() const;
-  void set_result(::google::protobuf::int32 value);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  bool has_error() const;
+  void clear_error();
+  static const int kErrorFieldNumber = 1;
+  private:
+  const ::spaceless::protocol::ErrorInfo& _internal_error() const;
+  public:
+  const ::spaceless::protocol::ErrorInfo& error() const;
+  ::spaceless::protocol::ErrorInfo* release_error();
+  ::spaceless::protocol::ErrorInfo* mutable_error();
+  void set_allocated_error(::spaceless::protocol::ErrorInfo* error);
 
   // @@protoc_insertion_point(class_scope:spaceless.protocol.RspRemovePath)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::int32 result_;
+  ::spaceless::protocol::ErrorInfo* error_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_protocol_2eproto::TableStruct;
 };
@@ -5541,20 +5781,92 @@ class RspRemovePath : public ::google::protobuf::Message /* @@protoc_insertion_p
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// ErrorInfo
+
+// int32 category = 1;
+inline void ErrorInfo::clear_category() {
+  category_ = 0;
+}
+inline ::google::protobuf::int32 ErrorInfo::category() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ErrorInfo.category)
+  return category_;
+}
+inline void ErrorInfo::set_category(::google::protobuf::int32 value) {
+  
+  category_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ErrorInfo.category)
+}
+
+// int32 code = 2;
+inline void ErrorInfo::clear_code() {
+  code_ = 0;
+}
+inline ::google::protobuf::int32 ErrorInfo::code() const {
+  // @@protoc_insertion_point(field_get:spaceless.protocol.ErrorInfo.code)
+  return code_;
+}
+inline void ErrorInfo::set_code(::google::protobuf::int32 value) {
+  
+  code_ = value;
+  // @@protoc_insertion_point(field_set:spaceless.protocol.ErrorInfo.code)
+}
+
+// -------------------------------------------------------------------
+
 // RspError
 
-// int32 result = 1;
-inline void RspError::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspError::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspError::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspError.result)
-  return result_;
+inline void RspError::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspError::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspError::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspError::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspError.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspError::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspError.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspError.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspError::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspError.error)
+  return error_;
+}
+inline void RspError::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspError.error)
 }
 
 // -------------------------------------------------------------------
@@ -5593,18 +5905,58 @@ inline void ReqPing::set_microsecond(::google::protobuf::int32 value) {
 
 // RspPing
 
-// int32 result = 1;
-inline void RspPing::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspPing::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspPing::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPing.result)
-  return result_;
+inline void RspPing::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspPing::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspPing::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspPing::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPing.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspPing::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspPing.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPing.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspPing::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspPing.error)
+  return error_;
+}
+inline void RspPing::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspPing.error)
 }
 
 // int32 second = 2;
@@ -5850,18 +6202,58 @@ inline void ReqRegisterUser::set_allocated_password(::std::string* password) {
 
 // RspRegisterUser
 
-// int32 result = 1;
-inline void RspRegisterUser::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspRegisterUser::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspRegisterUser::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRegisterUser.result)
-  return result_;
+inline void RspRegisterUser::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspRegisterUser::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspRegisterUser::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspRegisterUser::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRegisterUser.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspRegisterUser::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspRegisterUser.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspRegisterUser.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspRegisterUser::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspRegisterUser.error)
+  return error_;
+}
+inline void RspRegisterUser::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspRegisterUser.error)
 }
 
 // .spaceless.protocol.User user = 2;
@@ -5993,18 +6385,58 @@ inline void ReqLoginUser::set_allocated_password(::std::string* password) {
 
 // RspLoginUser
 
-// int32 result = 1;
-inline void RspLoginUser::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspLoginUser::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspLoginUser::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspLoginUser.result)
-  return result_;
+inline void RspLoginUser::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspLoginUser::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspLoginUser::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspLoginUser::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspLoginUser.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspLoginUser::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspLoginUser.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspLoginUser.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspLoginUser::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspLoginUser.error)
+  return error_;
+}
+inline void RspLoginUser::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspLoginUser.error)
 }
 
 // -------------------------------------------------------------------
@@ -6029,18 +6461,58 @@ inline void ReqRemoveUser::set_user_id(::google::protobuf::int32 value) {
 
 // RspRemoveUser
 
-// int32 result = 1;
-inline void RspRemoveUser::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspRemoveUser::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspRemoveUser::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRemoveUser.result)
-  return result_;
+inline void RspRemoveUser::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspRemoveUser::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspRemoveUser::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspRemoveUser::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRemoveUser.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspRemoveUser::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspRemoveUser.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspRemoveUser.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspRemoveUser::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspRemoveUser.error)
+  return error_;
+}
+inline void RspRemoveUser::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspRemoveUser.error)
 }
 
 // -------------------------------------------------------------------
@@ -6118,18 +6590,58 @@ inline void ReqFindUser::set_allocated_username(::std::string* username) {
 
 // RspFindUser
 
-// int32 result = 1;
-inline void RspFindUser::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspFindUser::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspFindUser::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspFindUser.result)
-  return result_;
+inline void RspFindUser::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspFindUser::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspFindUser::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspFindUser::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspFindUser.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspFindUser::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspFindUser.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspFindUser.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspFindUser::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspFindUser.error)
+  return error_;
+}
+inline void RspFindUser::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspFindUser.error)
 }
 
 // .spaceless.protocol.User user = 2;
@@ -6406,18 +6918,58 @@ inline void ReqRegisterGroup::set_allocated_group_name(::std::string* group_name
 
 // RspRegisterGroup
 
-// int32 result = 1;
-inline void RspRegisterGroup::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspRegisterGroup::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspRegisterGroup::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRegisterGroup.result)
-  return result_;
+inline void RspRegisterGroup::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspRegisterGroup::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspRegisterGroup::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspRegisterGroup::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRegisterGroup.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspRegisterGroup::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspRegisterGroup.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspRegisterGroup.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspRegisterGroup::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspRegisterGroup.error)
+  return error_;
+}
+inline void RspRegisterGroup::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspRegisterGroup.error)
 }
 
 // int32 group_id = 2;
@@ -6545,18 +7097,58 @@ inline void ReqFindGroup::set_allocated_group_name(::std::string* group_name) {
 
 // RspFindGroup
 
-// int32 result = 1;
-inline void RspFindGroup::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspFindGroup::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspFindGroup::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspFindGroup.result)
-  return result_;
+inline void RspFindGroup::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspFindGroup::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspFindGroup::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspFindGroup::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspFindGroup.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspFindGroup::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspFindGroup.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspFindGroup.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspFindGroup::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspFindGroup.error)
+  return error_;
+}
+inline void RspFindGroup::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspFindGroup.error)
 }
 
 // .spaceless.protocol.SharingGroup group = 2;
@@ -6635,18 +7227,58 @@ inline void ReqJoinGroup::set_group_id(::google::protobuf::int32 value) {
 
 // RspJoinGroup
 
-// int32 result = 1;
-inline void RspJoinGroup::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspJoinGroup::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspJoinGroup::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspJoinGroup.result)
-  return result_;
+inline void RspJoinGroup::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspJoinGroup::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspJoinGroup::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspJoinGroup::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspJoinGroup.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspJoinGroup::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspJoinGroup.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspJoinGroup.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspJoinGroup::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspJoinGroup.error)
+  return error_;
+}
+inline void RspJoinGroup::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspJoinGroup.error)
 }
 
 // -------------------------------------------------------------------
@@ -6685,18 +7317,58 @@ inline void ReqAssignAsManager::set_user_id(::google::protobuf::int32 value) {
 
 // RspAssignAsManager
 
-// int32 result = 1;
-inline void RspAssignAsManager::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspAssignAsManager::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspAssignAsManager::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsManager.result)
-  return result_;
+inline void RspAssignAsManager::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspAssignAsManager::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspAssignAsManager::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspAssignAsManager::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsManager.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspAssignAsManager::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspAssignAsManager.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsManager.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspAssignAsManager::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspAssignAsManager.error)
+  return error_;
+}
+inline void RspAssignAsManager::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspAssignAsManager.error)
 }
 
 // -------------------------------------------------------------------
@@ -6735,18 +7407,58 @@ inline void ReqAssignAsMember::set_user_id(::google::protobuf::int32 value) {
 
 // RspAssignAsMember
 
-// int32 result = 1;
-inline void RspAssignAsMember::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspAssignAsMember::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspAssignAsMember::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsMember.result)
-  return result_;
+inline void RspAssignAsMember::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspAssignAsMember::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspAssignAsMember::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspAssignAsMember::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspAssignAsMember.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspAssignAsMember::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspAssignAsMember.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspAssignAsMember.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspAssignAsMember::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspAssignAsMember.error)
+  return error_;
+}
+inline void RspAssignAsMember::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspAssignAsMember.error)
 }
 
 // -------------------------------------------------------------------
@@ -6785,18 +7497,58 @@ inline void ReqKickOutUser::set_user_id(::google::protobuf::int32 value) {
 
 // RspKickOutUser
 
-// int32 result = 1;
-inline void RspKickOutUser::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspKickOutUser::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspKickOutUser::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspKickOutUser.result)
-  return result_;
+inline void RspKickOutUser::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspKickOutUser::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspKickOutUser::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspKickOutUser::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspKickOutUser.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspKickOutUser::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspKickOutUser.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspKickOutUser.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspKickOutUser::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspKickOutUser.error)
+  return error_;
+}
+inline void RspKickOutUser::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspKickOutUser.error)
 }
 
 // -------------------------------------------------------------------
@@ -6945,18 +7697,58 @@ inline void ReqListFile::set_allocated_file_path(::std::string* file_path) {
 
 // RspListFile
 
-// int32 result = 1;
-inline void RspListFile::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspListFile::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspListFile::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspListFile.result)
-  return result_;
+inline void RspListFile::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspListFile::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspListFile::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspListFile::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspListFile.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspListFile::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspListFile.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspListFile.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspListFile::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspListFile.error)
+  return error_;
+}
+inline void RspListFile::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspListFile.error)
 }
 
 // repeated .spaceless.protocol.File file_list = 2;
@@ -7078,18 +7870,58 @@ inline void ReqPutFileSession::set_max_fragment(::google::protobuf::int32 value)
 
 // RspPutFileSession
 
-// int32 result = 1;
-inline void RspPutFileSession::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspPutFileSession::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspPutFileSession::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFileSession.result)
-  return result_;
+inline void RspPutFileSession::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspPutFileSession::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspPutFileSession::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspPutFileSession::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFileSession.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspPutFileSession::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspPutFileSession.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFileSession.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspPutFileSession::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspPutFileSession.error)
+  return error_;
+}
+inline void RspPutFileSession::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspPutFileSession.error)
 }
 
 // int32 session_id = 2;
@@ -7195,18 +8027,58 @@ inline void ReqNodePutFileSession::set_max_fragment(::google::protobuf::int32 va
 
 // RspNodePutFileSession
 
-// int32 result = 1;
-inline void RspNodePutFileSession::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspNodePutFileSession::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspNodePutFileSession::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodePutFileSession.result)
-  return result_;
+inline void RspNodePutFileSession::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspNodePutFileSession::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspNodePutFileSession::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspNodePutFileSession::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodePutFileSession.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspNodePutFileSession::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspNodePutFileSession.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodePutFileSession.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspNodePutFileSession::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspNodePutFileSession.error)
+  return error_;
+}
+inline void RspNodePutFileSession::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspNodePutFileSession.error)
 }
 
 // int32 session_id = 2;
@@ -7312,18 +8184,58 @@ inline void ReqPutFile::set_allocated_fragment_content(::std::string* fragment_c
 
 // RspPutFile
 
-// int32 result = 1;
-inline void RspPutFile::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspPutFile::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspPutFile::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFile.result)
-  return result_;
+inline void RspPutFile::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspPutFile::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspPutFile::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspPutFile::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspPutFile.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspPutFile::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspPutFile.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspPutFile.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspPutFile::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspPutFile.error)
+  return error_;
+}
+inline void RspPutFile::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspPutFile.error)
 }
 
 // int32 session_id = 2;
@@ -7429,18 +8341,58 @@ inline void ReqGetFileSession::set_allocated_file_path(::std::string* file_path)
 
 // RspGetFileSession
 
-// int32 result = 1;
-inline void RspGetFileSession::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspGetFileSession::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspGetFileSession::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFileSession.result)
-  return result_;
+inline void RspGetFileSession::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspGetFileSession::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspGetFileSession::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspGetFileSession::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFileSession.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspGetFileSession::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspGetFileSession.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFileSession.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspGetFileSession::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspGetFileSession.error)
+  return error_;
+}
+inline void RspGetFileSession::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspGetFileSession.error)
 }
 
 // int32 session_id = 2;
@@ -7532,18 +8484,58 @@ inline void ReqNodeGetFileSession::set_allocated_file_path(::std::string* file_p
 
 // RspNodeGetFileSession
 
-// int32 result = 1;
-inline void RspNodeGetFileSession::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspNodeGetFileSession::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspNodeGetFileSession::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodeGetFileSession.result)
-  return result_;
+inline void RspNodeGetFileSession::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspNodeGetFileSession::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspNodeGetFileSession::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspNodeGetFileSession::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspNodeGetFileSession.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspNodeGetFileSession::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspNodeGetFileSession.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspNodeGetFileSession.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspNodeGetFileSession::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspNodeGetFileSession.error)
+  return error_;
+}
+inline void RspNodeGetFileSession::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspNodeGetFileSession.error)
 }
 
 // int32 session_id = 2;
@@ -7610,18 +8602,58 @@ inline void ReqGetFile::set_fragment_index(::google::protobuf::int32 value) {
 
 // RspGetFile
 
-// int32 result = 1;
-inline void RspGetFile::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspGetFile::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspGetFile::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFile.result)
-  return result_;
+inline void RspGetFile::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspGetFile::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspGetFile::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspGetFile::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspGetFile.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspGetFile::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspGetFile.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspGetFile.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspGetFile::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspGetFile.error)
+  return error_;
+}
+inline void RspGetFile::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspGetFile.error)
 }
 
 // int32 session_id = 2;
@@ -7780,18 +8812,58 @@ inline void ReqCreatePath::set_allocated_path(::std::string* path) {
 
 // RspCreatePath
 
-// int32 result = 1;
-inline void RspCreatePath::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspCreatePath::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspCreatePath::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspCreatePath.result)
-  return result_;
+inline void RspCreatePath::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspCreatePath::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspCreatePath::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspCreatePath::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspCreatePath.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspCreatePath::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspCreatePath.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspCreatePath.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspCreatePath::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspCreatePath.error)
+  return error_;
+}
+inline void RspCreatePath::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspCreatePath.error)
 }
 
 // -------------------------------------------------------------------
@@ -7883,23 +8955,65 @@ inline void ReqRemovePath::set_force_remove_all(bool value) {
 
 // RspRemovePath
 
-// int32 result = 1;
-inline void RspRemovePath::clear_result() {
-  result_ = 0;
+// .spaceless.protocol.ErrorInfo error = 1;
+inline bool RspRemovePath::has_error() const {
+  return this != internal_default_instance() && error_ != NULL;
 }
-inline ::google::protobuf::int32 RspRemovePath::result() const {
-  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRemovePath.result)
-  return result_;
+inline void RspRemovePath::clear_error() {
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
 }
-inline void RspRemovePath::set_result(::google::protobuf::int32 value) {
+inline const ::spaceless::protocol::ErrorInfo& RspRemovePath::_internal_error() const {
+  return *error_;
+}
+inline const ::spaceless::protocol::ErrorInfo& RspRemovePath::error() const {
+  const ::spaceless::protocol::ErrorInfo* p = error_;
+  // @@protoc_insertion_point(field_get:spaceless.protocol.RspRemovePath.error)
+  return p != NULL ? *p : *reinterpret_cast<const ::spaceless::protocol::ErrorInfo*>(
+      &::spaceless::protocol::_ErrorInfo_default_instance_);
+}
+inline ::spaceless::protocol::ErrorInfo* RspRemovePath::release_error() {
+  // @@protoc_insertion_point(field_release:spaceless.protocol.RspRemovePath.error)
   
-  result_ = value;
-  // @@protoc_insertion_point(field_set:spaceless.protocol.RspRemovePath.result)
+  ::spaceless::protocol::ErrorInfo* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline ::spaceless::protocol::ErrorInfo* RspRemovePath::mutable_error() {
+  
+  if (error_ == NULL) {
+    auto* p = CreateMaybeMessage<::spaceless::protocol::ErrorInfo>(GetArenaNoVirtual());
+    error_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:spaceless.protocol.RspRemovePath.error)
+  return error_;
+}
+inline void RspRemovePath::set_allocated_error(::spaceless::protocol::ErrorInfo* error) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete error_;
+  }
+  if (error) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      error = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, error, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  error_ = error;
+  // @@protoc_insertion_point(field_set_allocated:spaceless.protocol.RspRemovePath.error)
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

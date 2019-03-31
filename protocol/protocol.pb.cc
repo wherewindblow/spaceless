@@ -20,12 +20,18 @@
 // @@protoc_insertion_point(includes)
 
 namespace protobuf_protocol_2eproto {
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_protocol_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_ErrorInfo;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_protocol_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_File;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_protocol_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_SharingGroup;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_protocol_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_User;
 }  // namespace protobuf_protocol_2eproto
 namespace spaceless {
 namespace protocol {
+class ErrorInfoDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<ErrorInfo>
+      _instance;
+} _ErrorInfo_default_instance_;
 class RspErrorDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<RspError>
@@ -259,6 +265,20 @@ class RspRemovePathDefaultTypeInternal {
 }  // namespace protocol
 }  // namespace spaceless
 namespace protobuf_protocol_2eproto {
+static void InitDefaultsErrorInfo() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::spaceless::protocol::_ErrorInfo_default_instance_;
+    new (ptr) ::spaceless::protocol::ErrorInfo();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::spaceless::protocol::ErrorInfo::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_ErrorInfo =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsErrorInfo}, {}};
+
 static void InitDefaultsRspError() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -270,8 +290,9 @@ static void InitDefaultsRspError() {
   ::spaceless::protocol::RspError::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspError =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspError}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspError =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspError}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqPing() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -298,8 +319,9 @@ static void InitDefaultsRspPing() {
   ::spaceless::protocol::RspPing::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspPing =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspPing}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspPing =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspPing}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsUser() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -340,8 +362,9 @@ static void InitDefaultsRspRegisterUser() {
   ::spaceless::protocol::RspRegisterUser::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_RspRegisterUser =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspRegisterUser}, {
+::google::protobuf::internal::SCCInfo<2> scc_info_RspRegisterUser =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsRspRegisterUser}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,
       &protobuf_protocol_2eproto::scc_info_User.base,}};
 
 static void InitDefaultsReqLoginUser() {
@@ -369,8 +392,9 @@ static void InitDefaultsRspLoginUser() {
   ::spaceless::protocol::RspLoginUser::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspLoginUser =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspLoginUser}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspLoginUser =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspLoginUser}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqRemoveUser() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -397,8 +421,9 @@ static void InitDefaultsRspRemoveUser() {
   ::spaceless::protocol::RspRemoveUser::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspRemoveUser =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspRemoveUser}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspRemoveUser =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspRemoveUser}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqFindUser() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -425,8 +450,9 @@ static void InitDefaultsRspFindUser() {
   ::spaceless::protocol::RspFindUser::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_RspFindUser =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspFindUser}, {
+::google::protobuf::internal::SCCInfo<2> scc_info_RspFindUser =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsRspFindUser}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,
       &protobuf_protocol_2eproto::scc_info_User.base,}};
 
 static void InitDefaultsSharingGroup() {
@@ -468,8 +494,9 @@ static void InitDefaultsRspRegisterGroup() {
   ::spaceless::protocol::RspRegisterGroup::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspRegisterGroup =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspRegisterGroup}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspRegisterGroup =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspRegisterGroup}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqRemoveGroup() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -524,8 +551,9 @@ static void InitDefaultsRspFindGroup() {
   ::spaceless::protocol::RspFindGroup::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_RspFindGroup =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspFindGroup}, {
+::google::protobuf::internal::SCCInfo<2> scc_info_RspFindGroup =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsRspFindGroup}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,
       &protobuf_protocol_2eproto::scc_info_SharingGroup.base,}};
 
 static void InitDefaultsReqJoinGroup() {
@@ -553,8 +581,9 @@ static void InitDefaultsRspJoinGroup() {
   ::spaceless::protocol::RspJoinGroup::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspJoinGroup =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspJoinGroup}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspJoinGroup =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspJoinGroup}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqAssignAsManager() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -581,8 +610,9 @@ static void InitDefaultsRspAssignAsManager() {
   ::spaceless::protocol::RspAssignAsManager::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspAssignAsManager =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspAssignAsManager}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspAssignAsManager =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspAssignAsManager}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqAssignAsMember() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -609,8 +639,9 @@ static void InitDefaultsRspAssignAsMember() {
   ::spaceless::protocol::RspAssignAsMember::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspAssignAsMember =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspAssignAsMember}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspAssignAsMember =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspAssignAsMember}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqKickOutUser() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -637,8 +668,9 @@ static void InitDefaultsRspKickOutUser() {
   ::spaceless::protocol::RspKickOutUser::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspKickOutUser =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspKickOutUser}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspKickOutUser =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspKickOutUser}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsFile() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -679,8 +711,9 @@ static void InitDefaultsRspListFile() {
   ::spaceless::protocol::RspListFile::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_RspListFile =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspListFile}, {
+::google::protobuf::internal::SCCInfo<2> scc_info_RspListFile =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsRspListFile}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,
       &protobuf_protocol_2eproto::scc_info_File.base,}};
 
 static void InitDefaultsReqPutFileSession() {
@@ -708,8 +741,9 @@ static void InitDefaultsRspPutFileSession() {
   ::spaceless::protocol::RspPutFileSession::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspPutFileSession =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspPutFileSession}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspPutFileSession =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspPutFileSession}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqNodePutFileSession() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -736,8 +770,9 @@ static void InitDefaultsRspNodePutFileSession() {
   ::spaceless::protocol::RspNodePutFileSession::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspNodePutFileSession =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspNodePutFileSession}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspNodePutFileSession =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspNodePutFileSession}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqPutFile() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -764,8 +799,9 @@ static void InitDefaultsRspPutFile() {
   ::spaceless::protocol::RspPutFile::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspPutFile =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspPutFile}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspPutFile =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspPutFile}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqGetFileSession() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -792,8 +828,9 @@ static void InitDefaultsRspGetFileSession() {
   ::spaceless::protocol::RspGetFileSession::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspGetFileSession =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspGetFileSession}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspGetFileSession =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspGetFileSession}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqNodeGetFileSession() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -820,8 +857,9 @@ static void InitDefaultsRspNodeGetFileSession() {
   ::spaceless::protocol::RspNodeGetFileSession::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspNodeGetFileSession =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspNodeGetFileSession}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspNodeGetFileSession =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspNodeGetFileSession}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqGetFile() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -848,8 +886,9 @@ static void InitDefaultsRspGetFile() {
   ::spaceless::protocol::RspGetFile::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspGetFile =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspGetFile}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspGetFile =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspGetFile}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqCreatePath() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -876,8 +915,9 @@ static void InitDefaultsRspCreatePath() {
   ::spaceless::protocol::RspCreatePath::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspCreatePath =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspCreatePath}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspCreatePath =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspCreatePath}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 static void InitDefaultsReqRemovePath() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -904,10 +944,12 @@ static void InitDefaultsRspRemovePath() {
   ::spaceless::protocol::RspRemovePath::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_RspRemovePath =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsRspRemovePath}, {}};
+::google::protobuf::internal::SCCInfo<1> scc_info_RspRemovePath =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsRspRemovePath}, {
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base,}};
 
 void InitDefaults() {
+  ::google::protobuf::internal::InitSCC(&scc_info_ErrorInfo.base);
   ::google::protobuf::internal::InitSCC(&scc_info_RspError.base);
   ::google::protobuf::internal::InitSCC(&scc_info_ReqPing.base);
   ::google::protobuf::internal::InitSCC(&scc_info_RspPing.base);
@@ -956,16 +998,23 @@ void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_RspRemovePath.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[46];
+::google::protobuf::Metadata file_level_metadata[47];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ErrorInfo, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ErrorInfo, category_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ErrorInfo, code_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspError, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspError, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspError, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqPing, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -978,7 +1027,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPing, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPing, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPing, second_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPing, microsecond_),
   ~0u,  // no _has_bits_
@@ -1001,7 +1050,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRegisterUser, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRegisterUser, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRegisterUser, user_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqLoginUser, _internal_metadata_),
@@ -1015,7 +1064,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspLoginUser, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspLoginUser, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqRemoveUser, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1027,7 +1076,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRemoveUser, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRemoveUser, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqFindUser, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1040,7 +1089,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspFindUser, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspFindUser, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspFindUser, user_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::SharingGroup, _internal_metadata_),
@@ -1064,7 +1113,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRegisterGroup, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRegisterGroup, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRegisterGroup, group_id_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqRemoveGroup, _internal_metadata_),
@@ -1090,7 +1139,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspFindGroup, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspFindGroup, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspFindGroup, group_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqJoinGroup, _internal_metadata_),
@@ -1103,7 +1152,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspJoinGroup, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspJoinGroup, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqAssignAsManager, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1116,7 +1165,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspAssignAsManager, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspAssignAsManager, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqAssignAsMember, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1129,7 +1178,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspAssignAsMember, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspAssignAsMember, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqKickOutUser, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1142,7 +1191,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspKickOutUser, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspKickOutUser, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::File, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1162,7 +1211,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspListFile, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspListFile, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspListFile, file_list_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqPutFileSession, _internal_metadata_),
@@ -1177,7 +1226,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, session_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFileSession, next_fragment_),
   ~0u,  // no _has_bits_
@@ -1192,7 +1241,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodePutFileSession, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodePutFileSession, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodePutFileSession, session_id_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqPutFile, _internal_metadata_),
@@ -1207,7 +1256,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFile, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFile, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFile, session_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspPutFile, fragment_index_),
   ~0u,  // no _has_bits_
@@ -1222,7 +1271,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFileSession, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFileSession, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFileSession, session_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFileSession, max_fragment_),
   ~0u,  // no _has_bits_
@@ -1236,7 +1285,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodeGetFileSession, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodeGetFileSession, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodeGetFileSession, session_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspNodeGetFileSession, max_fragment_),
   ~0u,  // no _has_bits_
@@ -1251,7 +1300,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFile, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFile, error_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFile, session_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFile, fragment_index_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspGetFile, fragment_content_),
@@ -1267,7 +1316,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspCreatePath, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspCreatePath, error_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::ReqRemovePath, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -1281,58 +1330,60 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRemovePath, result_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::spaceless::protocol::RspRemovePath, error_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::spaceless::protocol::RspError)},
-  { 6, -1, sizeof(::spaceless::protocol::ReqPing)},
-  { 13, -1, sizeof(::spaceless::protocol::RspPing)},
-  { 21, -1, sizeof(::spaceless::protocol::User)},
-  { 29, -1, sizeof(::spaceless::protocol::ReqRegisterUser)},
-  { 36, -1, sizeof(::spaceless::protocol::RspRegisterUser)},
-  { 43, -1, sizeof(::spaceless::protocol::ReqLoginUser)},
-  { 50, -1, sizeof(::spaceless::protocol::RspLoginUser)},
-  { 56, -1, sizeof(::spaceless::protocol::ReqRemoveUser)},
-  { 62, -1, sizeof(::spaceless::protocol::RspRemoveUser)},
-  { 68, -1, sizeof(::spaceless::protocol::ReqFindUser)},
-  { 75, -1, sizeof(::spaceless::protocol::RspFindUser)},
-  { 82, -1, sizeof(::spaceless::protocol::SharingGroup)},
-  { 93, -1, sizeof(::spaceless::protocol::ReqRegisterGroup)},
-  { 99, -1, sizeof(::spaceless::protocol::RspRegisterGroup)},
-  { 106, -1, sizeof(::spaceless::protocol::ReqRemoveGroup)},
-  { 112, -1, sizeof(::spaceless::protocol::RspRemoveGroup)},
-  { 118, -1, sizeof(::spaceless::protocol::ReqFindGroup)},
-  { 125, -1, sizeof(::spaceless::protocol::RspFindGroup)},
-  { 132, -1, sizeof(::spaceless::protocol::ReqJoinGroup)},
-  { 138, -1, sizeof(::spaceless::protocol::RspJoinGroup)},
-  { 144, -1, sizeof(::spaceless::protocol::ReqAssignAsManager)},
-  { 151, -1, sizeof(::spaceless::protocol::RspAssignAsManager)},
-  { 157, -1, sizeof(::spaceless::protocol::ReqAssignAsMember)},
-  { 164, -1, sizeof(::spaceless::protocol::RspAssignAsMember)},
-  { 170, -1, sizeof(::spaceless::protocol::ReqKickOutUser)},
-  { 177, -1, sizeof(::spaceless::protocol::RspKickOutUser)},
-  { 183, -1, sizeof(::spaceless::protocol::File)},
-  { 190, -1, sizeof(::spaceless::protocol::ReqListFile)},
-  { 197, -1, sizeof(::spaceless::protocol::RspListFile)},
-  { 204, -1, sizeof(::spaceless::protocol::ReqPutFileSession)},
-  { 212, -1, sizeof(::spaceless::protocol::RspPutFileSession)},
-  { 220, -1, sizeof(::spaceless::protocol::ReqNodePutFileSession)},
-  { 227, -1, sizeof(::spaceless::protocol::RspNodePutFileSession)},
-  { 234, -1, sizeof(::spaceless::protocol::ReqPutFile)},
-  { 242, -1, sizeof(::spaceless::protocol::RspPutFile)},
-  { 250, -1, sizeof(::spaceless::protocol::ReqGetFileSession)},
-  { 257, -1, sizeof(::spaceless::protocol::RspGetFileSession)},
-  { 265, -1, sizeof(::spaceless::protocol::ReqNodeGetFileSession)},
-  { 271, -1, sizeof(::spaceless::protocol::RspNodeGetFileSession)},
-  { 279, -1, sizeof(::spaceless::protocol::ReqGetFile)},
-  { 286, -1, sizeof(::spaceless::protocol::RspGetFile)},
-  { 295, -1, sizeof(::spaceless::protocol::ReqCreatePath)},
-  { 302, -1, sizeof(::spaceless::protocol::RspCreatePath)},
-  { 308, -1, sizeof(::spaceless::protocol::ReqRemovePath)},
-  { 316, -1, sizeof(::spaceless::protocol::RspRemovePath)},
+  { 0, -1, sizeof(::spaceless::protocol::ErrorInfo)},
+  { 7, -1, sizeof(::spaceless::protocol::RspError)},
+  { 13, -1, sizeof(::spaceless::protocol::ReqPing)},
+  { 20, -1, sizeof(::spaceless::protocol::RspPing)},
+  { 28, -1, sizeof(::spaceless::protocol::User)},
+  { 36, -1, sizeof(::spaceless::protocol::ReqRegisterUser)},
+  { 43, -1, sizeof(::spaceless::protocol::RspRegisterUser)},
+  { 50, -1, sizeof(::spaceless::protocol::ReqLoginUser)},
+  { 57, -1, sizeof(::spaceless::protocol::RspLoginUser)},
+  { 63, -1, sizeof(::spaceless::protocol::ReqRemoveUser)},
+  { 69, -1, sizeof(::spaceless::protocol::RspRemoveUser)},
+  { 75, -1, sizeof(::spaceless::protocol::ReqFindUser)},
+  { 82, -1, sizeof(::spaceless::protocol::RspFindUser)},
+  { 89, -1, sizeof(::spaceless::protocol::SharingGroup)},
+  { 100, -1, sizeof(::spaceless::protocol::ReqRegisterGroup)},
+  { 106, -1, sizeof(::spaceless::protocol::RspRegisterGroup)},
+  { 113, -1, sizeof(::spaceless::protocol::ReqRemoveGroup)},
+  { 119, -1, sizeof(::spaceless::protocol::RspRemoveGroup)},
+  { 125, -1, sizeof(::spaceless::protocol::ReqFindGroup)},
+  { 132, -1, sizeof(::spaceless::protocol::RspFindGroup)},
+  { 139, -1, sizeof(::spaceless::protocol::ReqJoinGroup)},
+  { 145, -1, sizeof(::spaceless::protocol::RspJoinGroup)},
+  { 151, -1, sizeof(::spaceless::protocol::ReqAssignAsManager)},
+  { 158, -1, sizeof(::spaceless::protocol::RspAssignAsManager)},
+  { 164, -1, sizeof(::spaceless::protocol::ReqAssignAsMember)},
+  { 171, -1, sizeof(::spaceless::protocol::RspAssignAsMember)},
+  { 177, -1, sizeof(::spaceless::protocol::ReqKickOutUser)},
+  { 184, -1, sizeof(::spaceless::protocol::RspKickOutUser)},
+  { 190, -1, sizeof(::spaceless::protocol::File)},
+  { 197, -1, sizeof(::spaceless::protocol::ReqListFile)},
+  { 204, -1, sizeof(::spaceless::protocol::RspListFile)},
+  { 211, -1, sizeof(::spaceless::protocol::ReqPutFileSession)},
+  { 219, -1, sizeof(::spaceless::protocol::RspPutFileSession)},
+  { 227, -1, sizeof(::spaceless::protocol::ReqNodePutFileSession)},
+  { 234, -1, sizeof(::spaceless::protocol::RspNodePutFileSession)},
+  { 241, -1, sizeof(::spaceless::protocol::ReqPutFile)},
+  { 249, -1, sizeof(::spaceless::protocol::RspPutFile)},
+  { 257, -1, sizeof(::spaceless::protocol::ReqGetFileSession)},
+  { 264, -1, sizeof(::spaceless::protocol::RspGetFileSession)},
+  { 272, -1, sizeof(::spaceless::protocol::ReqNodeGetFileSession)},
+  { 278, -1, sizeof(::spaceless::protocol::RspNodeGetFileSession)},
+  { 286, -1, sizeof(::spaceless::protocol::ReqGetFile)},
+  { 293, -1, sizeof(::spaceless::protocol::RspGetFile)},
+  { 302, -1, sizeof(::spaceless::protocol::ReqCreatePath)},
+  { 309, -1, sizeof(::spaceless::protocol::RspCreatePath)},
+  { 315, -1, sizeof(::spaceless::protocol::ReqRemovePath)},
+  { 323, -1, sizeof(::spaceless::protocol::RspRemovePath)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::google::protobuf::Message*>(&::spaceless::protocol::_ErrorInfo_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::spaceless::protocol::_RspError_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::spaceless::protocol::_ReqPing_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::spaceless::protocol::_RspPing_default_instance_),
@@ -1396,86 +1447,103 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 46);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 47);
 }
 
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\016protocol.proto\022\022spaceless.protocol\"\032\n\010"
-      "RspError\022\016\n\006result\030\001 \001(\005\".\n\007ReqPing\022\016\n\006s"
-      "econd\030\001 \001(\005\022\023\n\013microsecond\030\002 \001(\005\">\n\007RspP"
-      "ing\022\016\n\006result\030\001 \001(\005\022\016\n\006second\030\002 \001(\005\022\023\n\013m"
-      "icrosecond\030\003 \001(\005\">\n\004User\022\017\n\007user_id\030\001 \001("
-      "\005\022\021\n\tuser_name\030\002 \001(\t\022\022\n\ngroup_list\030\003 \003(\005"
-      "\"5\n\017ReqRegisterUser\022\020\n\010username\030\001 \001(\t\022\020\n"
-      "\010password\030\002 \001(\t\"I\n\017RspRegisterUser\022\016\n\006re"
-      "sult\030\001 \001(\005\022&\n\004user\030\002 \001(\0132\030.spaceless.pro"
-      "tocol.User\"1\n\014ReqLoginUser\022\017\n\007user_id\030\001 "
-      "\001(\005\022\020\n\010password\030\002 \001(\t\"\036\n\014RspLoginUser\022\016\n"
-      "\006result\030\001 \001(\005\" \n\rReqRemoveUser\022\017\n\007user_i"
-      "d\030\001 \001(\005\"\037\n\rRspRemoveUser\022\016\n\006result\030\001 \001(\005"
-      "\"0\n\013ReqFindUser\022\017\n\007user_id\030\001 \001(\005\022\020\n\010user"
-      "name\030\002 \001(\t\"E\n\013RspFindUser\022\016\n\006result\030\001 \001("
-      "\005\022&\n\004user\030\002 \001(\0132\030.spaceless.protocol.Use"
-      "r\"\206\001\n\014SharingGroup\022\020\n\010group_id\030\001 \001(\005\022\022\n\n"
-      "group_name\030\002 \001(\t\022\020\n\010owner_id\030\003 \001(\005\022\023\n\013ro"
-      "ot_dir_id\030\004 \001(\005\022\024\n\014manager_list\030\005 \003(\005\022\023\n"
-      "\013member_list\030\006 \003(\005\"&\n\020ReqRegisterGroup\022\022"
-      "\n\ngroup_name\030\001 \001(\t\"4\n\020RspRegisterGroup\022\016"
-      "\n\006result\030\001 \001(\005\022\020\n\010group_id\030\002 \001(\005\"\"\n\016ReqR"
-      "emoveGroup\022\020\n\010group_id\030\001 \001(\005\" \n\016RspRemov"
-      "eGroup\022\016\n\006result\030\001 \001(\010\"4\n\014ReqFindGroup\022\020"
-      "\n\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 \001(\t\"O\n\014"
-      "RspFindGroup\022\016\n\006result\030\001 \001(\005\022/\n\005group\030\002 "
-      "\001(\0132 .spaceless.protocol.SharingGroup\" \n"
-      "\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\"\036\n\014RspJo"
-      "inGroup\022\016\n\006result\030\001 \001(\005\"7\n\022ReqAssignAsMa"
-      "nager\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005"
-      "\"$\n\022RspAssignAsManager\022\016\n\006result\030\001 \001(\005\"6"
-      "\n\021ReqAssignAsMember\022\020\n\010group_id\030\001 \001(\005\022\017\n"
-      "\007user_id\030\002 \001(\005\"#\n\021RspAssignAsMember\022\016\n\006r"
-      "esult\030\001 \001(\005\"3\n\016ReqKickOutUser\022\020\n\010group_i"
-      "d\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\" \n\016RspKickOutUs"
-      "er\022\016\n\006result\030\001 \001(\005\"D\n\004File\022\020\n\010filename\030\001"
-      " \001(\t\022*\n\004type\030\002 \001(\0162\034.spaceless.protocol."
-      "FileType\"2\n\013ReqListFile\022\020\n\010group_id\030\001 \001("
-      "\005\022\021\n\tfile_path\030\002 \001(\t\"J\n\013RspListFile\022\016\n\006r"
-      "esult\030\001 \001(\005\022+\n\tfile_list\030\002 \003(\0132\030.spacele"
-      "ss.protocol.File\"N\n\021ReqPutFileSession\022\020\n"
-      "\010group_id\030\001 \001(\005\022\021\n\tfile_path\030\002 \001(\t\022\024\n\014ma"
-      "x_fragment\030\003 \001(\005\"N\n\021RspPutFileSession\022\016\n"
-      "\006result\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\022\025\n\rnex"
-      "t_fragment\030\003 \001(\005\"@\n\025ReqNodePutFileSessio"
-      "n\022\021\n\tfile_path\030\002 \001(\t\022\024\n\014max_fragment\030\003 \001"
-      "(\005\";\n\025RspNodePutFileSession\022\016\n\006result\030\001 "
-      "\001(\005\022\022\n\nsession_id\030\002 \001(\005\"R\n\nReqPutFile\022\022\n"
-      "\nsession_id\030\001 \001(\005\022\026\n\016fragment_index\030\002 \001("
-      "\005\022\030\n\020fragment_content\030\003 \001(\014\"H\n\nRspPutFil"
-      "e\022\016\n\006result\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\022\026\n"
-      "\016fragment_index\030\003 \001(\005\"8\n\021ReqGetFileSessi"
-      "on\022\020\n\010group_id\030\001 \001(\005\022\021\n\tfile_path\030\002 \001(\t\""
-      "M\n\021RspGetFileSession\022\016\n\006result\030\001 \001(\005\022\022\n\n"
-      "session_id\030\002 \001(\005\022\024\n\014max_fragment\030\003 \001(\005\"*"
-      "\n\025ReqNodeGetFileSession\022\021\n\tfile_path\030\002 \001"
-      "(\t\"Q\n\025RspNodeGetFileSession\022\016\n\006result\030\001 "
-      "\001(\005\022\022\n\nsession_id\030\002 \001(\005\022\024\n\014max_fragment\030"
-      "\003 \001(\005\"8\n\nReqGetFile\022\022\n\nsession_id\030\001 \001(\005\022"
-      "\026\n\016fragment_index\030\002 \001(\005\"b\n\nRspGetFile\022\016\n"
-      "\006result\030\001 \001(\005\022\022\n\nsession_id\030\002 \001(\005\022\026\n\016fra"
-      "gment_index\030\003 \001(\005\022\030\n\020fragment_content\030\004 "
-      "\001(\014\"/\n\rReqCreatePath\022\020\n\010group_id\030\001 \001(\005\022\014"
-      "\n\004path\030\002 \001(\t\"\037\n\rRspCreatePath\022\016\n\006result\030"
-      "\001 \001(\005\"I\n\rReqRemovePath\022\020\n\010group_id\030\001 \001(\005"
-      "\022\014\n\004path\030\002 \001(\t\022\030\n\020force_remove_all\030\003 \001(\010"
-      "\"\037\n\rRspRemovePath\022\016\n\006result\030\001 \001(\005*N\n\021Mis"
-      "cellaneousType\022\031\n\025INVALID_MISCELLANEOUS\020"
-      "\000\022\036\n\030MAX_FRAGMENT_CONTENT_LEN\020\320\206\003*+\n\010Fil"
-      "eType\022\020\n\014GENERAL_FILE\020\000\022\r\n\tDIRECTORY\020\001b\006"
-      "proto3"
+      "\n\016protocol.proto\022\022spaceless.protocol\"+\n\t"
+      "ErrorInfo\022\020\n\010category\030\001 \001(\005\022\014\n\004code\030\002 \001("
+      "\005\"8\n\010RspError\022,\n\005error\030\001 \001(\0132\035.spaceless"
+      ".protocol.ErrorInfo\".\n\007ReqPing\022\016\n\006second"
+      "\030\001 \001(\005\022\023\n\013microsecond\030\002 \001(\005\"\\\n\007RspPing\022,"
+      "\n\005error\030\001 \001(\0132\035.spaceless.protocol.Error"
+      "Info\022\016\n\006second\030\002 \001(\005\022\023\n\013microsecond\030\003 \001("
+      "\005\">\n\004User\022\017\n\007user_id\030\001 \001(\005\022\021\n\tuser_name\030"
+      "\002 \001(\t\022\022\n\ngroup_list\030\003 \003(\005\"5\n\017ReqRegister"
+      "User\022\020\n\010username\030\001 \001(\t\022\020\n\010password\030\002 \001(\t"
+      "\"g\n\017RspRegisterUser\022,\n\005error\030\001 \001(\0132\035.spa"
+      "celess.protocol.ErrorInfo\022&\n\004user\030\002 \001(\0132"
+      "\030.spaceless.protocol.User\"1\n\014ReqLoginUse"
+      "r\022\017\n\007user_id\030\001 \001(\005\022\020\n\010password\030\002 \001(\t\"<\n\014"
+      "RspLoginUser\022,\n\005error\030\001 \001(\0132\035.spaceless."
+      "protocol.ErrorInfo\" \n\rReqRemoveUser\022\017\n\007u"
+      "ser_id\030\001 \001(\005\"=\n\rRspRemoveUser\022,\n\005error\030\001"
+      " \001(\0132\035.spaceless.protocol.ErrorInfo\"0\n\013R"
+      "eqFindUser\022\017\n\007user_id\030\001 \001(\005\022\020\n\010username\030"
+      "\002 \001(\t\"c\n\013RspFindUser\022,\n\005error\030\001 \001(\0132\035.sp"
+      "aceless.protocol.ErrorInfo\022&\n\004user\030\002 \001(\013"
+      "2\030.spaceless.protocol.User\"\206\001\n\014SharingGr"
+      "oup\022\020\n\010group_id\030\001 \001(\005\022\022\n\ngroup_name\030\002 \001("
+      "\t\022\020\n\010owner_id\030\003 \001(\005\022\023\n\013root_dir_id\030\004 \001(\005"
+      "\022\024\n\014manager_list\030\005 \003(\005\022\023\n\013member_list\030\006 "
+      "\003(\005\"&\n\020ReqRegisterGroup\022\022\n\ngroup_name\030\001 "
+      "\001(\t\"R\n\020RspRegisterGroup\022,\n\005error\030\001 \001(\0132\035"
+      ".spaceless.protocol.ErrorInfo\022\020\n\010group_i"
+      "d\030\002 \001(\005\"\"\n\016ReqRemoveGroup\022\020\n\010group_id\030\001 "
+      "\001(\005\" \n\016RspRemoveGroup\022\016\n\006result\030\001 \001(\010\"4\n"
+      "\014ReqFindGroup\022\020\n\010group_id\030\001 \001(\005\022\022\n\ngroup"
+      "_name\030\002 \001(\t\"m\n\014RspFindGroup\022,\n\005error\030\001 \001"
+      "(\0132\035.spaceless.protocol.ErrorInfo\022/\n\005gro"
+      "up\030\002 \001(\0132 .spaceless.protocol.SharingGro"
+      "up\" \n\014ReqJoinGroup\022\020\n\010group_id\030\001 \001(\005\"<\n\014"
+      "RspJoinGroup\022,\n\005error\030\001 \001(\0132\035.spaceless."
+      "protocol.ErrorInfo\"7\n\022ReqAssignAsManager"
+      "\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\"B\n\022R"
+      "spAssignAsManager\022,\n\005error\030\001 \001(\0132\035.space"
+      "less.protocol.ErrorInfo\"6\n\021ReqAssignAsMe"
+      "mber\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\""
+      "A\n\021RspAssignAsMember\022,\n\005error\030\001 \001(\0132\035.sp"
+      "aceless.protocol.ErrorInfo\"3\n\016ReqKickOut"
+      "User\022\020\n\010group_id\030\001 \001(\005\022\017\n\007user_id\030\002 \001(\005\""
+      ">\n\016RspKickOutUser\022,\n\005error\030\001 \001(\0132\035.space"
+      "less.protocol.ErrorInfo\"D\n\004File\022\020\n\010filen"
+      "ame\030\001 \001(\t\022*\n\004type\030\002 \001(\0162\034.spaceless.prot"
+      "ocol.FileType\"2\n\013ReqListFile\022\020\n\010group_id"
+      "\030\001 \001(\005\022\021\n\tfile_path\030\002 \001(\t\"h\n\013RspListFile"
+      "\022,\n\005error\030\001 \001(\0132\035.spaceless.protocol.Err"
+      "orInfo\022+\n\tfile_list\030\002 \003(\0132\030.spaceless.pr"
+      "otocol.File\"N\n\021ReqPutFileSession\022\020\n\010grou"
+      "p_id\030\001 \001(\005\022\021\n\tfile_path\030\002 \001(\t\022\024\n\014max_fra"
+      "gment\030\003 \001(\005\"l\n\021RspPutFileSession\022,\n\005erro"
+      "r\030\001 \001(\0132\035.spaceless.protocol.ErrorInfo\022\022"
+      "\n\nsession_id\030\002 \001(\005\022\025\n\rnext_fragment\030\003 \001("
+      "\005\"@\n\025ReqNodePutFileSession\022\021\n\tfile_path\030"
+      "\002 \001(\t\022\024\n\014max_fragment\030\003 \001(\005\"Y\n\025RspNodePu"
+      "tFileSession\022,\n\005error\030\001 \001(\0132\035.spaceless."
+      "protocol.ErrorInfo\022\022\n\nsession_id\030\002 \001(\005\"R"
+      "\n\nReqPutFile\022\022\n\nsession_id\030\001 \001(\005\022\026\n\016frag"
+      "ment_index\030\002 \001(\005\022\030\n\020fragment_content\030\003 \001"
+      "(\014\"f\n\nRspPutFile\022,\n\005error\030\001 \001(\0132\035.spacel"
+      "ess.protocol.ErrorInfo\022\022\n\nsession_id\030\002 \001"
+      "(\005\022\026\n\016fragment_index\030\003 \001(\005\"8\n\021ReqGetFile"
+      "Session\022\020\n\010group_id\030\001 \001(\005\022\021\n\tfile_path\030\002"
+      " \001(\t\"k\n\021RspGetFileSession\022,\n\005error\030\001 \001(\013"
+      "2\035.spaceless.protocol.ErrorInfo\022\022\n\nsessi"
+      "on_id\030\002 \001(\005\022\024\n\014max_fragment\030\003 \001(\005\"*\n\025Req"
+      "NodeGetFileSession\022\021\n\tfile_path\030\002 \001(\t\"o\n"
+      "\025RspNodeGetFileSession\022,\n\005error\030\001 \001(\0132\035."
+      "spaceless.protocol.ErrorInfo\022\022\n\nsession_"
+      "id\030\002 \001(\005\022\024\n\014max_fragment\030\003 \001(\005\"8\n\nReqGet"
+      "File\022\022\n\nsession_id\030\001 \001(\005\022\026\n\016fragment_ind"
+      "ex\030\002 \001(\005\"\200\001\n\nRspGetFile\022,\n\005error\030\001 \001(\0132\035"
+      ".spaceless.protocol.ErrorInfo\022\022\n\nsession"
+      "_id\030\002 \001(\005\022\026\n\016fragment_index\030\003 \001(\005\022\030\n\020fra"
+      "gment_content\030\004 \001(\014\"/\n\rReqCreatePath\022\020\n\010"
+      "group_id\030\001 \001(\005\022\014\n\004path\030\002 \001(\t\"=\n\rRspCreat"
+      "ePath\022,\n\005error\030\001 \001(\0132\035.spaceless.protoco"
+      "l.ErrorInfo\"I\n\rReqRemovePath\022\020\n\010group_id"
+      "\030\001 \001(\005\022\014\n\004path\030\002 \001(\t\022\030\n\020force_remove_all"
+      "\030\003 \001(\010\"=\n\rRspRemovePath\022,\n\005error\030\001 \001(\0132\035"
+      ".spaceless.protocol.ErrorInfo*N\n\021Miscell"
+      "aneousType\022\031\n\025INVALID_MISCELLANEOUS\020\000\022\036\n"
+      "\030MAX_FRAGMENT_CONTENT_LEN\020\320\206\003*+\n\010FileTyp"
+      "e\022\020\n\014GENERAL_FILE\020\000\022\r\n\tDIRECTORY\020\001b\006prot"
+      "o3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 2806);
+      descriptor, 3482);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "protocol.proto", &protobuf_RegisterTypes);
 }
@@ -1524,10 +1592,277 @@ bool FileType_IsValid(int value) {
 
 // ===================================================================
 
-void RspError::InitAsDefaultInstance() {
+void ErrorInfo::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspError::kResultFieldNumber;
+const int ErrorInfo::kCategoryFieldNumber;
+const int ErrorInfo::kCodeFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+ErrorInfo::ErrorInfo()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_protocol_2eproto::scc_info_ErrorInfo.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:spaceless.protocol.ErrorInfo)
+}
+ErrorInfo::ErrorInfo(const ErrorInfo& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::memcpy(&category_, &from.category_,
+    static_cast<size_t>(reinterpret_cast<char*>(&code_) -
+    reinterpret_cast<char*>(&category_)) + sizeof(code_));
+  // @@protoc_insertion_point(copy_constructor:spaceless.protocol.ErrorInfo)
+}
+
+void ErrorInfo::SharedCtor() {
+  ::memset(&category_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&code_) -
+      reinterpret_cast<char*>(&category_)) + sizeof(code_));
+}
+
+ErrorInfo::~ErrorInfo() {
+  // @@protoc_insertion_point(destructor:spaceless.protocol.ErrorInfo)
+  SharedDtor();
+}
+
+void ErrorInfo::SharedDtor() {
+}
+
+void ErrorInfo::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* ErrorInfo::descriptor() {
+  ::protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_protocol_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const ErrorInfo& ErrorInfo::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_protocol_2eproto::scc_info_ErrorInfo.base);
+  return *internal_default_instance();
+}
+
+
+void ErrorInfo::Clear() {
+// @@protoc_insertion_point(message_clear_start:spaceless.protocol.ErrorInfo)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  ::memset(&category_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&code_) -
+      reinterpret_cast<char*>(&category_)) + sizeof(code_));
+  _internal_metadata_.Clear();
+}
+
+bool ErrorInfo::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:spaceless.protocol.ErrorInfo)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // int32 category = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &category_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // int32 code = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &code_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:spaceless.protocol.ErrorInfo)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:spaceless.protocol.ErrorInfo)
+  return false;
+#undef DO_
+}
+
+void ErrorInfo::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:spaceless.protocol.ErrorInfo)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 category = 1;
+  if (this->category() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->category(), output);
+  }
+
+  // int32 code = 2;
+  if (this->code() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->code(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:spaceless.protocol.ErrorInfo)
+}
+
+::google::protobuf::uint8* ErrorInfo::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:spaceless.protocol.ErrorInfo)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 category = 1;
+  if (this->category() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->category(), target);
+  }
+
+  // int32 code = 2;
+  if (this->code() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->code(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:spaceless.protocol.ErrorInfo)
+  return target;
+}
+
+size_t ErrorInfo::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:spaceless.protocol.ErrorInfo)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // int32 category = 1;
+  if (this->category() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->category());
+  }
+
+  // int32 code = 2;
+  if (this->code() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->code());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void ErrorInfo::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:spaceless.protocol.ErrorInfo)
+  GOOGLE_DCHECK_NE(&from, this);
+  const ErrorInfo* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const ErrorInfo>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:spaceless.protocol.ErrorInfo)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:spaceless.protocol.ErrorInfo)
+    MergeFrom(*source);
+  }
+}
+
+void ErrorInfo::MergeFrom(const ErrorInfo& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:spaceless.protocol.ErrorInfo)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.category() != 0) {
+    set_category(from.category());
+  }
+  if (from.code() != 0) {
+    set_code(from.code());
+  }
+}
+
+void ErrorInfo::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:spaceless.protocol.ErrorInfo)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void ErrorInfo::CopyFrom(const ErrorInfo& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:spaceless.protocol.ErrorInfo)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ErrorInfo::IsInitialized() const {
+  return true;
+}
+
+void ErrorInfo::Swap(ErrorInfo* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void ErrorInfo::InternalSwap(ErrorInfo* other) {
+  using std::swap;
+  swap(category_, other->category_);
+  swap(code_, other->code_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata ErrorInfo::GetMetadata() const {
+  protobuf_protocol_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_protocol_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void RspError::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspError_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int RspError::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspError::RspError()
@@ -1541,12 +1876,16 @@ RspError::RspError(const RspError& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspError)
 }
 
 void RspError::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspError::~RspError() {
@@ -1555,6 +1894,7 @@ RspError::~RspError() {
 }
 
 void RspError::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspError::SetCachedSize(int size) const {
@@ -1577,7 +1917,10 @@ void RspError::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -1591,14 +1934,12 @@ bool RspError::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -1631,9 +1972,10 @@ void RspError::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1650,9 +1992,11 @@ void RspError::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -1672,11 +2016,11 @@ size_t RspError::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -1706,8 +2050,8 @@ void RspError::MergeFrom(const RspError& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -1735,7 +2079,7 @@ void RspError::Swap(RspError* other) {
 }
 void RspError::InternalSwap(RspError* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -2013,9 +2357,11 @@ void ReqPing::InternalSwap(ReqPing* other) {
 // ===================================================================
 
 void RspPing::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspPing_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspPing::kResultFieldNumber;
+const int RspPing::kErrorFieldNumber;
 const int RspPing::kSecondFieldNumber;
 const int RspPing::kMicrosecondFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -2031,16 +2377,21 @@ RspPing::RspPing(const RspPing& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  ::memcpy(&second_, &from.second_,
     static_cast<size_t>(reinterpret_cast<char*>(&microsecond_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(microsecond_));
+    reinterpret_cast<char*>(&second_)) + sizeof(microsecond_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspPing)
 }
 
 void RspPing::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&microsecond_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(microsecond_));
+      reinterpret_cast<char*>(&error_)) + sizeof(microsecond_));
 }
 
 RspPing::~RspPing() {
@@ -2049,6 +2400,7 @@ RspPing::~RspPing() {
 }
 
 void RspPing::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspPing::SetCachedSize(int size) const {
@@ -2071,9 +2423,13 @@ void RspPing::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  ::memset(&second_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&microsecond_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(microsecond_));
+      reinterpret_cast<char*>(&second_)) + sizeof(microsecond_));
   _internal_metadata_.Clear();
 }
 
@@ -2087,14 +2443,12 @@ bool RspPing::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -2155,9 +2509,10 @@ void RspPing::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 second = 2;
@@ -2184,9 +2539,11 @@ void RspPing::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 second = 2;
@@ -2216,11 +2573,11 @@ size_t RspPing::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 second = 2;
@@ -2264,8 +2621,8 @@ void RspPing::MergeFrom(const RspPing& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.second() != 0) {
     set_second(from.second());
@@ -2299,7 +2656,7 @@ void RspPing::Swap(RspPing* other) {
 }
 void RspPing::InternalSwap(RspPing* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(second_, other->second_);
   swap(microsecond_, other->microsecond_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -2959,11 +3316,13 @@ void ReqRegisterUser::InternalSwap(ReqRegisterUser* other) {
 // ===================================================================
 
 void RspRegisterUser::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspRegisterUser_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
   ::spaceless::protocol::_RspRegisterUser_default_instance_._instance.get_mutable()->user_ = const_cast< ::spaceless::protocol::User*>(
       ::spaceless::protocol::User::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspRegisterUser::kResultFieldNumber;
+const int RspRegisterUser::kErrorFieldNumber;
 const int RspRegisterUser::kUserFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -2978,19 +3337,23 @@ RspRegisterUser::RspRegisterUser(const RspRegisterUser& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   if (from.has_user()) {
     user_ = new ::spaceless::protocol::User(*from.user_);
   } else {
     user_ = NULL;
   }
-  result_ = from.result_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspRegisterUser)
 }
 
 void RspRegisterUser::SharedCtor() {
-  ::memset(&user_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&result_) -
-      reinterpret_cast<char*>(&user_)) + sizeof(result_));
+  ::memset(&error_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&user_) -
+      reinterpret_cast<char*>(&error_)) + sizeof(user_));
 }
 
 RspRegisterUser::~RspRegisterUser() {
@@ -2999,6 +3362,7 @@ RspRegisterUser::~RspRegisterUser() {
 }
 
 void RspRegisterUser::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
   if (this != internal_default_instance()) delete user_;
 }
 
@@ -3022,11 +3386,14 @@ void RspRegisterUser::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   if (GetArenaNoVirtual() == NULL && user_ != NULL) {
     delete user_;
   }
   user_ = NULL;
-  result_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -3040,14 +3407,12 @@ bool RspRegisterUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -3092,9 +3457,10 @@ void RspRegisterUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // .spaceless.protocol.User user = 2;
@@ -3117,9 +3483,11 @@ void RspRegisterUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // .spaceless.protocol.User user = 2;
@@ -3146,18 +3514,18 @@ size_t RspRegisterUser::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
+  }
+
   // .spaceless.protocol.User user = 2;
   if (this->has_user()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSize(
         *user_);
-  }
-
-  // int32 result = 1;
-  if (this->result() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -3187,11 +3555,11 @@ void RspRegisterUser::MergeFrom(const RspRegisterUser& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
+  }
   if (from.has_user()) {
     mutable_user()->::spaceless::protocol::User::MergeFrom(from.user());
-  }
-  if (from.result() != 0) {
-    set_result(from.result());
   }
 }
 
@@ -3219,8 +3587,8 @@ void RspRegisterUser::Swap(RspRegisterUser* other) {
 }
 void RspRegisterUser::InternalSwap(RspRegisterUser* other) {
   using std::swap;
+  swap(error_, other->error_);
   swap(user_, other->user_);
-  swap(result_, other->result_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -3514,9 +3882,11 @@ void ReqLoginUser::InternalSwap(ReqLoginUser* other) {
 // ===================================================================
 
 void RspLoginUser::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspLoginUser_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspLoginUser::kResultFieldNumber;
+const int RspLoginUser::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspLoginUser::RspLoginUser()
@@ -3530,12 +3900,16 @@ RspLoginUser::RspLoginUser(const RspLoginUser& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspLoginUser)
 }
 
 void RspLoginUser::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspLoginUser::~RspLoginUser() {
@@ -3544,6 +3918,7 @@ RspLoginUser::~RspLoginUser() {
 }
 
 void RspLoginUser::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspLoginUser::SetCachedSize(int size) const {
@@ -3566,7 +3941,10 @@ void RspLoginUser::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -3580,14 +3958,12 @@ bool RspLoginUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -3620,9 +3996,10 @@ void RspLoginUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -3639,9 +4016,11 @@ void RspLoginUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -3661,11 +4040,11 @@ size_t RspLoginUser::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -3695,8 +4074,8 @@ void RspLoginUser::MergeFrom(const RspLoginUser& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -3724,7 +4103,7 @@ void RspLoginUser::Swap(RspLoginUser* other) {
 }
 void RspLoginUser::InternalSwap(RspLoginUser* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -3960,9 +4339,11 @@ void ReqRemoveUser::InternalSwap(ReqRemoveUser* other) {
 // ===================================================================
 
 void RspRemoveUser::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspRemoveUser_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspRemoveUser::kResultFieldNumber;
+const int RspRemoveUser::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspRemoveUser::RspRemoveUser()
@@ -3976,12 +4357,16 @@ RspRemoveUser::RspRemoveUser(const RspRemoveUser& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspRemoveUser)
 }
 
 void RspRemoveUser::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspRemoveUser::~RspRemoveUser() {
@@ -3990,6 +4375,7 @@ RspRemoveUser::~RspRemoveUser() {
 }
 
 void RspRemoveUser::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspRemoveUser::SetCachedSize(int size) const {
@@ -4012,7 +4398,10 @@ void RspRemoveUser::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -4026,14 +4415,12 @@ bool RspRemoveUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -4066,9 +4453,10 @@ void RspRemoveUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -4085,9 +4473,11 @@ void RspRemoveUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -4107,11 +4497,11 @@ size_t RspRemoveUser::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -4141,8 +4531,8 @@ void RspRemoveUser::MergeFrom(const RspRemoveUser& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -4170,7 +4560,7 @@ void RspRemoveUser::Swap(RspRemoveUser* other) {
 }
 void RspRemoveUser::InternalSwap(RspRemoveUser* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -4464,11 +4854,13 @@ void ReqFindUser::InternalSwap(ReqFindUser* other) {
 // ===================================================================
 
 void RspFindUser::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspFindUser_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
   ::spaceless::protocol::_RspFindUser_default_instance_._instance.get_mutable()->user_ = const_cast< ::spaceless::protocol::User*>(
       ::spaceless::protocol::User::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspFindUser::kResultFieldNumber;
+const int RspFindUser::kErrorFieldNumber;
 const int RspFindUser::kUserFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -4483,19 +4875,23 @@ RspFindUser::RspFindUser(const RspFindUser& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   if (from.has_user()) {
     user_ = new ::spaceless::protocol::User(*from.user_);
   } else {
     user_ = NULL;
   }
-  result_ = from.result_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspFindUser)
 }
 
 void RspFindUser::SharedCtor() {
-  ::memset(&user_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&result_) -
-      reinterpret_cast<char*>(&user_)) + sizeof(result_));
+  ::memset(&error_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&user_) -
+      reinterpret_cast<char*>(&error_)) + sizeof(user_));
 }
 
 RspFindUser::~RspFindUser() {
@@ -4504,6 +4900,7 @@ RspFindUser::~RspFindUser() {
 }
 
 void RspFindUser::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
   if (this != internal_default_instance()) delete user_;
 }
 
@@ -4527,11 +4924,14 @@ void RspFindUser::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   if (GetArenaNoVirtual() == NULL && user_ != NULL) {
     delete user_;
   }
   user_ = NULL;
-  result_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -4545,14 +4945,12 @@ bool RspFindUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -4597,9 +4995,10 @@ void RspFindUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // .spaceless.protocol.User user = 2;
@@ -4622,9 +5021,11 @@ void RspFindUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // .spaceless.protocol.User user = 2;
@@ -4651,18 +5052,18 @@ size_t RspFindUser::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
+  }
+
   // .spaceless.protocol.User user = 2;
   if (this->has_user()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSize(
         *user_);
-  }
-
-  // int32 result = 1;
-  if (this->result() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -4692,11 +5093,11 @@ void RspFindUser::MergeFrom(const RspFindUser& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
+  }
   if (from.has_user()) {
     mutable_user()->::spaceless::protocol::User::MergeFrom(from.user());
-  }
-  if (from.result() != 0) {
-    set_result(from.result());
   }
 }
 
@@ -4724,8 +5125,8 @@ void RspFindUser::Swap(RspFindUser* other) {
 }
 void RspFindUser::InternalSwap(RspFindUser* other) {
   using std::swap;
+  swap(error_, other->error_);
   swap(user_, other->user_);
-  swap(result_, other->result_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -5467,9 +5868,11 @@ void ReqRegisterGroup::InternalSwap(ReqRegisterGroup* other) {
 // ===================================================================
 
 void RspRegisterGroup::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspRegisterGroup_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspRegisterGroup::kResultFieldNumber;
+const int RspRegisterGroup::kErrorFieldNumber;
 const int RspRegisterGroup::kGroupIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -5484,16 +5887,19 @@ RspRegisterGroup::RspRegisterGroup(const RspRegisterGroup& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
-    static_cast<size_t>(reinterpret_cast<char*>(&group_id_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(group_id_));
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  group_id_ = from.group_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspRegisterGroup)
 }
 
 void RspRegisterGroup::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&group_id_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(group_id_));
+      reinterpret_cast<char*>(&error_)) + sizeof(group_id_));
 }
 
 RspRegisterGroup::~RspRegisterGroup() {
@@ -5502,6 +5908,7 @@ RspRegisterGroup::~RspRegisterGroup() {
 }
 
 void RspRegisterGroup::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspRegisterGroup::SetCachedSize(int size) const {
@@ -5524,9 +5931,11 @@ void RspRegisterGroup::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&group_id_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(group_id_));
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  group_id_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -5540,14 +5949,12 @@ bool RspRegisterGroup::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -5594,9 +6001,10 @@ void RspRegisterGroup::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 group_id = 2;
@@ -5618,9 +6026,11 @@ void RspRegisterGroup::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 group_id = 2;
@@ -5645,11 +6055,11 @@ size_t RspRegisterGroup::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 group_id = 2;
@@ -5686,8 +6096,8 @@ void RspRegisterGroup::MergeFrom(const RspRegisterGroup& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.group_id() != 0) {
     set_group_id(from.group_id());
@@ -5718,7 +6128,7 @@ void RspRegisterGroup::Swap(RspRegisterGroup* other) {
 }
 void RspRegisterGroup::InternalSwap(RspRegisterGroup* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(group_id_, other->group_id_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
@@ -6457,11 +6867,13 @@ void ReqFindGroup::InternalSwap(ReqFindGroup* other) {
 // ===================================================================
 
 void RspFindGroup::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspFindGroup_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
   ::spaceless::protocol::_RspFindGroup_default_instance_._instance.get_mutable()->group_ = const_cast< ::spaceless::protocol::SharingGroup*>(
       ::spaceless::protocol::SharingGroup::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspFindGroup::kResultFieldNumber;
+const int RspFindGroup::kErrorFieldNumber;
 const int RspFindGroup::kGroupFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -6476,19 +6888,23 @@ RspFindGroup::RspFindGroup(const RspFindGroup& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   if (from.has_group()) {
     group_ = new ::spaceless::protocol::SharingGroup(*from.group_);
   } else {
     group_ = NULL;
   }
-  result_ = from.result_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspFindGroup)
 }
 
 void RspFindGroup::SharedCtor() {
-  ::memset(&group_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&result_) -
-      reinterpret_cast<char*>(&group_)) + sizeof(result_));
+  ::memset(&error_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&group_) -
+      reinterpret_cast<char*>(&error_)) + sizeof(group_));
 }
 
 RspFindGroup::~RspFindGroup() {
@@ -6497,6 +6913,7 @@ RspFindGroup::~RspFindGroup() {
 }
 
 void RspFindGroup::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
   if (this != internal_default_instance()) delete group_;
 }
 
@@ -6520,11 +6937,14 @@ void RspFindGroup::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   if (GetArenaNoVirtual() == NULL && group_ != NULL) {
     delete group_;
   }
   group_ = NULL;
-  result_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -6538,14 +6958,12 @@ bool RspFindGroup::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -6590,9 +7008,10 @@ void RspFindGroup::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // .spaceless.protocol.SharingGroup group = 2;
@@ -6615,9 +7034,11 @@ void RspFindGroup::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // .spaceless.protocol.SharingGroup group = 2;
@@ -6644,18 +7065,18 @@ size_t RspFindGroup::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
+  }
+
   // .spaceless.protocol.SharingGroup group = 2;
   if (this->has_group()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSize(
         *group_);
-  }
-
-  // int32 result = 1;
-  if (this->result() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -6685,11 +7106,11 @@ void RspFindGroup::MergeFrom(const RspFindGroup& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
+  }
   if (from.has_group()) {
     mutable_group()->::spaceless::protocol::SharingGroup::MergeFrom(from.group());
-  }
-  if (from.result() != 0) {
-    set_result(from.result());
   }
 }
 
@@ -6717,8 +7138,8 @@ void RspFindGroup::Swap(RspFindGroup* other) {
 }
 void RspFindGroup::InternalSwap(RspFindGroup* other) {
   using std::swap;
+  swap(error_, other->error_);
   swap(group_, other->group_);
-  swap(result_, other->result_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -6954,9 +7375,11 @@ void ReqJoinGroup::InternalSwap(ReqJoinGroup* other) {
 // ===================================================================
 
 void RspJoinGroup::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspJoinGroup_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspJoinGroup::kResultFieldNumber;
+const int RspJoinGroup::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspJoinGroup::RspJoinGroup()
@@ -6970,12 +7393,16 @@ RspJoinGroup::RspJoinGroup(const RspJoinGroup& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspJoinGroup)
 }
 
 void RspJoinGroup::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspJoinGroup::~RspJoinGroup() {
@@ -6984,6 +7411,7 @@ RspJoinGroup::~RspJoinGroup() {
 }
 
 void RspJoinGroup::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspJoinGroup::SetCachedSize(int size) const {
@@ -7006,7 +7434,10 @@ void RspJoinGroup::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -7020,14 +7451,12 @@ bool RspJoinGroup::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -7060,9 +7489,10 @@ void RspJoinGroup::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -7079,9 +7509,11 @@ void RspJoinGroup::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -7101,11 +7533,11 @@ size_t RspJoinGroup::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -7135,8 +7567,8 @@ void RspJoinGroup::MergeFrom(const RspJoinGroup& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -7164,7 +7596,7 @@ void RspJoinGroup::Swap(RspJoinGroup* other) {
 }
 void RspJoinGroup::InternalSwap(RspJoinGroup* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -7442,9 +7874,11 @@ void ReqAssignAsManager::InternalSwap(ReqAssignAsManager* other) {
 // ===================================================================
 
 void RspAssignAsManager::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspAssignAsManager_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspAssignAsManager::kResultFieldNumber;
+const int RspAssignAsManager::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspAssignAsManager::RspAssignAsManager()
@@ -7458,12 +7892,16 @@ RspAssignAsManager::RspAssignAsManager(const RspAssignAsManager& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspAssignAsManager)
 }
 
 void RspAssignAsManager::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspAssignAsManager::~RspAssignAsManager() {
@@ -7472,6 +7910,7 @@ RspAssignAsManager::~RspAssignAsManager() {
 }
 
 void RspAssignAsManager::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspAssignAsManager::SetCachedSize(int size) const {
@@ -7494,7 +7933,10 @@ void RspAssignAsManager::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -7508,14 +7950,12 @@ bool RspAssignAsManager::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -7548,9 +7988,10 @@ void RspAssignAsManager::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -7567,9 +8008,11 @@ void RspAssignAsManager::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -7589,11 +8032,11 @@ size_t RspAssignAsManager::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -7623,8 +8066,8 @@ void RspAssignAsManager::MergeFrom(const RspAssignAsManager& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -7652,7 +8095,7 @@ void RspAssignAsManager::Swap(RspAssignAsManager* other) {
 }
 void RspAssignAsManager::InternalSwap(RspAssignAsManager* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -7930,9 +8373,11 @@ void ReqAssignAsMember::InternalSwap(ReqAssignAsMember* other) {
 // ===================================================================
 
 void RspAssignAsMember::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspAssignAsMember_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspAssignAsMember::kResultFieldNumber;
+const int RspAssignAsMember::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspAssignAsMember::RspAssignAsMember()
@@ -7946,12 +8391,16 @@ RspAssignAsMember::RspAssignAsMember(const RspAssignAsMember& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspAssignAsMember)
 }
 
 void RspAssignAsMember::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspAssignAsMember::~RspAssignAsMember() {
@@ -7960,6 +8409,7 @@ RspAssignAsMember::~RspAssignAsMember() {
 }
 
 void RspAssignAsMember::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspAssignAsMember::SetCachedSize(int size) const {
@@ -7982,7 +8432,10 @@ void RspAssignAsMember::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -7996,14 +8449,12 @@ bool RspAssignAsMember::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -8036,9 +8487,10 @@ void RspAssignAsMember::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -8055,9 +8507,11 @@ void RspAssignAsMember::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -8077,11 +8531,11 @@ size_t RspAssignAsMember::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -8111,8 +8565,8 @@ void RspAssignAsMember::MergeFrom(const RspAssignAsMember& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -8140,7 +8594,7 @@ void RspAssignAsMember::Swap(RspAssignAsMember* other) {
 }
 void RspAssignAsMember::InternalSwap(RspAssignAsMember* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -8418,9 +8872,11 @@ void ReqKickOutUser::InternalSwap(ReqKickOutUser* other) {
 // ===================================================================
 
 void RspKickOutUser::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspKickOutUser_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspKickOutUser::kResultFieldNumber;
+const int RspKickOutUser::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspKickOutUser::RspKickOutUser()
@@ -8434,12 +8890,16 @@ RspKickOutUser::RspKickOutUser(const RspKickOutUser& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspKickOutUser)
 }
 
 void RspKickOutUser::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspKickOutUser::~RspKickOutUser() {
@@ -8448,6 +8908,7 @@ RspKickOutUser::~RspKickOutUser() {
 }
 
 void RspKickOutUser::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspKickOutUser::SetCachedSize(int size) const {
@@ -8470,7 +8931,10 @@ void RspKickOutUser::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -8484,14 +8948,12 @@ bool RspKickOutUser::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -8524,9 +8986,10 @@ void RspKickOutUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -8543,9 +9006,11 @@ void RspKickOutUser::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -8565,11 +9030,11 @@ size_t RspKickOutUser::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -8599,8 +9064,8 @@ void RspKickOutUser::MergeFrom(const RspKickOutUser& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -8628,7 +9093,7 @@ void RspKickOutUser::Swap(RspKickOutUser* other) {
 }
 void RspKickOutUser::InternalSwap(RspKickOutUser* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -9205,9 +9670,11 @@ void ReqListFile::InternalSwap(ReqListFile* other) {
 // ===================================================================
 
 void RspListFile::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspListFile_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspListFile::kResultFieldNumber;
+const int RspListFile::kErrorFieldNumber;
 const int RspListFile::kFileListFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -9223,12 +9690,16 @@ RspListFile::RspListFile(const RspListFile& from)
       _internal_metadata_(NULL),
       file_list_(from.file_list_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspListFile)
 }
 
 void RspListFile::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspListFile::~RspListFile() {
@@ -9237,6 +9708,7 @@ RspListFile::~RspListFile() {
 }
 
 void RspListFile::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspListFile::SetCachedSize(int size) const {
@@ -9260,7 +9732,10 @@ void RspListFile::Clear() {
   (void) cached_has_bits;
 
   file_list_.Clear();
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -9274,14 +9749,12 @@ bool RspListFile::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -9326,9 +9799,10 @@ void RspListFile::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // repeated .spaceless.protocol.File file_list = 2;
@@ -9354,9 +9828,11 @@ void RspListFile::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // repeated .spaceless.protocol.File file_list = 2;
@@ -9395,11 +9871,11 @@ size_t RspListFile::ByteSizeLong() const {
     }
   }
 
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -9430,8 +9906,8 @@ void RspListFile::MergeFrom(const RspListFile& from) {
   (void) cached_has_bits;
 
   file_list_.MergeFrom(from.file_list_);
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -9460,7 +9936,7 @@ void RspListFile::Swap(RspListFile* other) {
 void RspListFile::InternalSwap(RspListFile* other) {
   using std::swap;
   CastToBase(&file_list_)->InternalSwap(CastToBase(&other->file_list_));
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -9796,9 +10272,11 @@ void ReqPutFileSession::InternalSwap(ReqPutFileSession* other) {
 // ===================================================================
 
 void RspPutFileSession::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspPutFileSession_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspPutFileSession::kResultFieldNumber;
+const int RspPutFileSession::kErrorFieldNumber;
 const int RspPutFileSession::kSessionIdFieldNumber;
 const int RspPutFileSession::kNextFragmentFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -9814,16 +10292,21 @@ RspPutFileSession::RspPutFileSession(const RspPutFileSession& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  ::memcpy(&session_id_, &from.session_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&next_fragment_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(next_fragment_));
+    reinterpret_cast<char*>(&session_id_)) + sizeof(next_fragment_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspPutFileSession)
 }
 
 void RspPutFileSession::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&next_fragment_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(next_fragment_));
+      reinterpret_cast<char*>(&error_)) + sizeof(next_fragment_));
 }
 
 RspPutFileSession::~RspPutFileSession() {
@@ -9832,6 +10315,7 @@ RspPutFileSession::~RspPutFileSession() {
 }
 
 void RspPutFileSession::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspPutFileSession::SetCachedSize(int size) const {
@@ -9854,9 +10338,13 @@ void RspPutFileSession::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  ::memset(&session_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&next_fragment_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(next_fragment_));
+      reinterpret_cast<char*>(&session_id_)) + sizeof(next_fragment_));
   _internal_metadata_.Clear();
 }
 
@@ -9870,14 +10358,12 @@ bool RspPutFileSession::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -9938,9 +10424,10 @@ void RspPutFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 session_id = 2;
@@ -9967,9 +10454,11 @@ void RspPutFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 session_id = 2;
@@ -9999,11 +10488,11 @@ size_t RspPutFileSession::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 session_id = 2;
@@ -10047,8 +10536,8 @@ void RspPutFileSession::MergeFrom(const RspPutFileSession& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
@@ -10082,7 +10571,7 @@ void RspPutFileSession::Swap(RspPutFileSession* other) {
 }
 void RspPutFileSession::InternalSwap(RspPutFileSession* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(session_id_, other->session_id_);
   swap(next_fragment_, other->next_fragment_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -10378,9 +10867,11 @@ void ReqNodePutFileSession::InternalSwap(ReqNodePutFileSession* other) {
 // ===================================================================
 
 void RspNodePutFileSession::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspNodePutFileSession_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspNodePutFileSession::kResultFieldNumber;
+const int RspNodePutFileSession::kErrorFieldNumber;
 const int RspNodePutFileSession::kSessionIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -10395,16 +10886,19 @@ RspNodePutFileSession::RspNodePutFileSession(const RspNodePutFileSession& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
-    static_cast<size_t>(reinterpret_cast<char*>(&session_id_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(session_id_));
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  session_id_ = from.session_id_;
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspNodePutFileSession)
 }
 
 void RspNodePutFileSession::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&session_id_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(session_id_));
+      reinterpret_cast<char*>(&error_)) + sizeof(session_id_));
 }
 
 RspNodePutFileSession::~RspNodePutFileSession() {
@@ -10413,6 +10907,7 @@ RspNodePutFileSession::~RspNodePutFileSession() {
 }
 
 void RspNodePutFileSession::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspNodePutFileSession::SetCachedSize(int size) const {
@@ -10435,9 +10930,11 @@ void RspNodePutFileSession::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&session_id_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(session_id_));
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  session_id_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -10451,14 +10948,12 @@ bool RspNodePutFileSession::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -10505,9 +11000,10 @@ void RspNodePutFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 session_id = 2;
@@ -10529,9 +11025,11 @@ void RspNodePutFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 session_id = 2;
@@ -10556,11 +11054,11 @@ size_t RspNodePutFileSession::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 session_id = 2;
@@ -10597,8 +11095,8 @@ void RspNodePutFileSession::MergeFrom(const RspNodePutFileSession& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
@@ -10629,7 +11127,7 @@ void RspNodePutFileSession::Swap(RspNodePutFileSession* other) {
 }
 void RspNodePutFileSession::InternalSwap(RspNodePutFileSession* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(session_id_, other->session_id_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
@@ -10954,9 +11452,11 @@ void ReqPutFile::InternalSwap(ReqPutFile* other) {
 // ===================================================================
 
 void RspPutFile::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspPutFile_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspPutFile::kResultFieldNumber;
+const int RspPutFile::kErrorFieldNumber;
 const int RspPutFile::kSessionIdFieldNumber;
 const int RspPutFile::kFragmentIndexFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -10972,16 +11472,21 @@ RspPutFile::RspPutFile(const RspPutFile& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  ::memcpy(&session_id_, &from.session_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&fragment_index_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(fragment_index_));
+    reinterpret_cast<char*>(&session_id_)) + sizeof(fragment_index_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspPutFile)
 }
 
 void RspPutFile::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&fragment_index_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(fragment_index_));
+      reinterpret_cast<char*>(&error_)) + sizeof(fragment_index_));
 }
 
 RspPutFile::~RspPutFile() {
@@ -10990,6 +11495,7 @@ RspPutFile::~RspPutFile() {
 }
 
 void RspPutFile::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspPutFile::SetCachedSize(int size) const {
@@ -11012,9 +11518,13 @@ void RspPutFile::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  ::memset(&session_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&fragment_index_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(fragment_index_));
+      reinterpret_cast<char*>(&session_id_)) + sizeof(fragment_index_));
   _internal_metadata_.Clear();
 }
 
@@ -11028,14 +11538,12 @@ bool RspPutFile::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -11096,9 +11604,10 @@ void RspPutFile::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 session_id = 2;
@@ -11125,9 +11634,11 @@ void RspPutFile::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 session_id = 2;
@@ -11157,11 +11668,11 @@ size_t RspPutFile::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 session_id = 2;
@@ -11205,8 +11716,8 @@ void RspPutFile::MergeFrom(const RspPutFile& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
@@ -11240,7 +11751,7 @@ void RspPutFile::Swap(RspPutFile* other) {
 }
 void RspPutFile::InternalSwap(RspPutFile* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(session_id_, other->session_id_);
   swap(fragment_index_, other->fragment_index_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -11536,9 +12047,11 @@ void ReqGetFileSession::InternalSwap(ReqGetFileSession* other) {
 // ===================================================================
 
 void RspGetFileSession::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspGetFileSession_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspGetFileSession::kResultFieldNumber;
+const int RspGetFileSession::kErrorFieldNumber;
 const int RspGetFileSession::kSessionIdFieldNumber;
 const int RspGetFileSession::kMaxFragmentFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -11554,16 +12067,21 @@ RspGetFileSession::RspGetFileSession(const RspGetFileSession& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  ::memcpy(&session_id_, &from.session_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&max_fragment_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(max_fragment_));
+    reinterpret_cast<char*>(&session_id_)) + sizeof(max_fragment_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspGetFileSession)
 }
 
 void RspGetFileSession::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&max_fragment_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(max_fragment_));
+      reinterpret_cast<char*>(&error_)) + sizeof(max_fragment_));
 }
 
 RspGetFileSession::~RspGetFileSession() {
@@ -11572,6 +12090,7 @@ RspGetFileSession::~RspGetFileSession() {
 }
 
 void RspGetFileSession::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspGetFileSession::SetCachedSize(int size) const {
@@ -11594,9 +12113,13 @@ void RspGetFileSession::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  ::memset(&session_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&max_fragment_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(max_fragment_));
+      reinterpret_cast<char*>(&session_id_)) + sizeof(max_fragment_));
   _internal_metadata_.Clear();
 }
 
@@ -11610,14 +12133,12 @@ bool RspGetFileSession::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -11678,9 +12199,10 @@ void RspGetFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 session_id = 2;
@@ -11707,9 +12229,11 @@ void RspGetFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 session_id = 2;
@@ -11739,11 +12263,11 @@ size_t RspGetFileSession::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 session_id = 2;
@@ -11787,8 +12311,8 @@ void RspGetFileSession::MergeFrom(const RspGetFileSession& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
@@ -11822,7 +12346,7 @@ void RspGetFileSession::Swap(RspGetFileSession* other) {
 }
 void RspGetFileSession::InternalSwap(RspGetFileSession* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(session_id_, other->session_id_);
   swap(max_fragment_, other->max_fragment_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -12079,9 +12603,11 @@ void ReqNodeGetFileSession::InternalSwap(ReqNodeGetFileSession* other) {
 // ===================================================================
 
 void RspNodeGetFileSession::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspNodeGetFileSession_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspNodeGetFileSession::kResultFieldNumber;
+const int RspNodeGetFileSession::kErrorFieldNumber;
 const int RspNodeGetFileSession::kSessionIdFieldNumber;
 const int RspNodeGetFileSession::kMaxFragmentFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -12097,16 +12623,21 @@ RspNodeGetFileSession::RspNodeGetFileSession(const RspNodeGetFileSession& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&result_, &from.result_,
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  ::memcpy(&session_id_, &from.session_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&max_fragment_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(max_fragment_));
+    reinterpret_cast<char*>(&session_id_)) + sizeof(max_fragment_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspNodeGetFileSession)
 }
 
 void RspNodeGetFileSession::SharedCtor() {
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&max_fragment_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(max_fragment_));
+      reinterpret_cast<char*>(&error_)) + sizeof(max_fragment_));
 }
 
 RspNodeGetFileSession::~RspNodeGetFileSession() {
@@ -12115,6 +12646,7 @@ RspNodeGetFileSession::~RspNodeGetFileSession() {
 }
 
 void RspNodeGetFileSession::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspNodeGetFileSession::SetCachedSize(int size) const {
@@ -12137,9 +12669,13 @@ void RspNodeGetFileSession::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  ::memset(&result_, 0, static_cast<size_t>(
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  ::memset(&session_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&max_fragment_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(max_fragment_));
+      reinterpret_cast<char*>(&session_id_)) + sizeof(max_fragment_));
   _internal_metadata_.Clear();
 }
 
@@ -12153,14 +12689,12 @@ bool RspNodeGetFileSession::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -12221,9 +12755,10 @@ void RspNodeGetFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 session_id = 2;
@@ -12250,9 +12785,11 @@ void RspNodeGetFileSession::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 session_id = 2;
@@ -12282,11 +12819,11 @@ size_t RspNodeGetFileSession::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 session_id = 2;
@@ -12330,8 +12867,8 @@ void RspNodeGetFileSession::MergeFrom(const RspNodeGetFileSession& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
@@ -12365,7 +12902,7 @@ void RspNodeGetFileSession::Swap(RspNodeGetFileSession* other) {
 }
 void RspNodeGetFileSession::InternalSwap(RspNodeGetFileSession* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(session_id_, other->session_id_);
   swap(max_fragment_, other->max_fragment_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -12645,9 +13182,11 @@ void ReqGetFile::InternalSwap(ReqGetFile* other) {
 // ===================================================================
 
 void RspGetFile::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspGetFile_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspGetFile::kResultFieldNumber;
+const int RspGetFile::kErrorFieldNumber;
 const int RspGetFile::kSessionIdFieldNumber;
 const int RspGetFile::kFragmentIndexFieldNumber;
 const int RspGetFile::kFragmentContentFieldNumber;
@@ -12668,17 +13207,22 @@ RspGetFile::RspGetFile(const RspGetFile& from)
   if (from.fragment_content().size() > 0) {
     fragment_content_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.fragment_content_);
   }
-  ::memcpy(&result_, &from.result_,
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
+  ::memcpy(&session_id_, &from.session_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&fragment_index_) -
-    reinterpret_cast<char*>(&result_)) + sizeof(fragment_index_));
+    reinterpret_cast<char*>(&session_id_)) + sizeof(fragment_index_));
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspGetFile)
 }
 
 void RspGetFile::SharedCtor() {
   fragment_content_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&result_, 0, static_cast<size_t>(
+  ::memset(&error_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&fragment_index_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(fragment_index_));
+      reinterpret_cast<char*>(&error_)) + sizeof(fragment_index_));
 }
 
 RspGetFile::~RspGetFile() {
@@ -12688,6 +13232,7 @@ RspGetFile::~RspGetFile() {
 
 void RspGetFile::SharedDtor() {
   fragment_content_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspGetFile::SetCachedSize(int size) const {
@@ -12711,9 +13256,13 @@ void RspGetFile::Clear() {
   (void) cached_has_bits;
 
   fragment_content_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&result_, 0, static_cast<size_t>(
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
+  ::memset(&session_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&fragment_index_) -
-      reinterpret_cast<char*>(&result_)) + sizeof(fragment_index_));
+      reinterpret_cast<char*>(&session_id_)) + sizeof(fragment_index_));
   _internal_metadata_.Clear();
 }
 
@@ -12727,14 +13276,12 @@ bool RspGetFile::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -12807,9 +13354,10 @@ void RspGetFile::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   // int32 session_id = 2;
@@ -12842,9 +13390,11 @@ void RspGetFile::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   // int32 session_id = 2;
@@ -12888,11 +13438,11 @@ size_t RspGetFile::ByteSizeLong() const {
         this->fragment_content());
   }
 
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   // int32 session_id = 2;
@@ -12940,8 +13490,8 @@ void RspGetFile::MergeFrom(const RspGetFile& from) {
 
     fragment_content_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.fragment_content_);
   }
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
   if (from.session_id() != 0) {
     set_session_id(from.session_id());
@@ -12977,7 +13527,7 @@ void RspGetFile::InternalSwap(RspGetFile* other) {
   using std::swap;
   fragment_content_.Swap(&other->fragment_content_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   swap(session_id_, other->session_id_);
   swap(fragment_index_, other->fragment_index_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -13273,9 +13823,11 @@ void ReqCreatePath::InternalSwap(ReqCreatePath* other) {
 // ===================================================================
 
 void RspCreatePath::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspCreatePath_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspCreatePath::kResultFieldNumber;
+const int RspCreatePath::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspCreatePath::RspCreatePath()
@@ -13289,12 +13841,16 @@ RspCreatePath::RspCreatePath(const RspCreatePath& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspCreatePath)
 }
 
 void RspCreatePath::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspCreatePath::~RspCreatePath() {
@@ -13303,6 +13859,7 @@ RspCreatePath::~RspCreatePath() {
 }
 
 void RspCreatePath::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspCreatePath::SetCachedSize(int size) const {
@@ -13325,7 +13882,10 @@ void RspCreatePath::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -13339,14 +13899,12 @@ bool RspCreatePath::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -13379,9 +13937,10 @@ void RspCreatePath::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -13398,9 +13957,11 @@ void RspCreatePath::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -13420,11 +13981,11 @@ size_t RspCreatePath::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -13454,8 +14015,8 @@ void RspCreatePath::MergeFrom(const RspCreatePath& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -13483,7 +14044,7 @@ void RspCreatePath::Swap(RspCreatePath* other) {
 }
 void RspCreatePath::InternalSwap(RspCreatePath* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -13817,9 +14378,11 @@ void ReqRemovePath::InternalSwap(ReqRemovePath* other) {
 // ===================================================================
 
 void RspRemovePath::InitAsDefaultInstance() {
+  ::spaceless::protocol::_RspRemovePath_default_instance_._instance.get_mutable()->error_ = const_cast< ::spaceless::protocol::ErrorInfo*>(
+      ::spaceless::protocol::ErrorInfo::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int RspRemovePath::kResultFieldNumber;
+const int RspRemovePath::kErrorFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 RspRemovePath::RspRemovePath()
@@ -13833,12 +14396,16 @@ RspRemovePath::RspRemovePath(const RspRemovePath& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  result_ = from.result_;
+  if (from.has_error()) {
+    error_ = new ::spaceless::protocol::ErrorInfo(*from.error_);
+  } else {
+    error_ = NULL;
+  }
   // @@protoc_insertion_point(copy_constructor:spaceless.protocol.RspRemovePath)
 }
 
 void RspRemovePath::SharedCtor() {
-  result_ = 0;
+  error_ = NULL;
 }
 
 RspRemovePath::~RspRemovePath() {
@@ -13847,6 +14414,7 @@ RspRemovePath::~RspRemovePath() {
 }
 
 void RspRemovePath::SharedDtor() {
+  if (this != internal_default_instance()) delete error_;
 }
 
 void RspRemovePath::SetCachedSize(int size) const {
@@ -13869,7 +14437,10 @@ void RspRemovePath::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  result_ = 0;
+  if (GetArenaNoVirtual() == NULL && error_ != NULL) {
+    delete error_;
+  }
+  error_ = NULL;
   _internal_metadata_.Clear();
 }
 
@@ -13883,14 +14454,12 @@ bool RspRemovePath::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // int32 result = 1;
+      // .spaceless.protocol.ErrorInfo error = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &result_)));
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_error()));
         } else {
           goto handle_unusual;
         }
@@ -13923,9 +14492,10 @@ void RspRemovePath::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->result(), output);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->_internal_error(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -13942,9 +14512,11 @@ void RspRemovePath::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // int32 result = 1;
-  if (this->result() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->result(), target);
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        1, this->_internal_error(), deterministic, target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -13964,11 +14536,11 @@ size_t RspRemovePath::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
   }
-  // int32 result = 1;
-  if (this->result() != 0) {
+  // .spaceless.protocol.ErrorInfo error = 1;
+  if (this->has_error()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->result());
+      ::google::protobuf::internal::WireFormatLite::MessageSize(
+        *error_);
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -13998,8 +14570,8 @@ void RspRemovePath::MergeFrom(const RspRemovePath& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.result() != 0) {
-    set_result(from.result());
+  if (from.has_error()) {
+    mutable_error()->::spaceless::protocol::ErrorInfo::MergeFrom(from.error());
   }
 }
 
@@ -14027,7 +14599,7 @@ void RspRemovePath::Swap(RspRemovePath* other) {
 }
 void RspRemovePath::InternalSwap(RspRemovePath* other) {
   using std::swap;
-  swap(result_, other->result_);
+  swap(error_, other->error_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -14042,6 +14614,9 @@ void RspRemovePath::InternalSwap(RspRemovePath* other) {
 }  // namespace spaceless
 namespace google {
 namespace protobuf {
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::spaceless::protocol::ErrorInfo* Arena::CreateMaybeMessage< ::spaceless::protocol::ErrorInfo >(Arena* arena) {
+  return Arena::CreateInternal< ::spaceless::protocol::ErrorInfo >(arena);
+}
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::spaceless::protocol::RspError* Arena::CreateMaybeMessage< ::spaceless::protocol::RspError >(Arena* arena) {
   return Arena::CreateInternal< ::spaceless::protocol::RspError >(arena);
 }

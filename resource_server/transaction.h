@@ -55,7 +55,7 @@ public:
 
 	void on_active(int conn_id, Package package);
 
-	void on_error(int conn_id, int error_code) override;
+	void on_error(int conn_id, const ErrorInfo& error_info) override;
 
 private:
 	int m_session_id;
@@ -89,7 +89,7 @@ public:
 
 	void on_active(int conn_id, Package package);
 
-	void on_error(int conn_id, int error_code) override;
+	void on_error(int conn_id, const ErrorInfo& error_info) override;
 
 private:
 	int m_session_id;

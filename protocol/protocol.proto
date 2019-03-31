@@ -8,12 +8,18 @@ enum MiscellaneousType
     MAX_FRAGMENT_CONTENT_LEN = 50000;
 }
 
-// NOTE: Every response message must have a int32 result as first field to enable
+// NOTE: Every response message must have a ErrorInfo error as first field to enable
 //       reciver to detect error that via parsing message `RspError`.
+
+message ErrorInfo
+{
+    int32 category = 1;
+    int32 code = 2;
+}
 
 message RspError
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqPing
@@ -24,7 +30,7 @@ message ReqPing
 
 message RspPing
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 second = 2;
     int32 microsecond = 3;
 }
@@ -44,7 +50,7 @@ message ReqRegisterUser
 
 message RspRegisterUser
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     User user = 2;
 }
 
@@ -56,7 +62,7 @@ message ReqLoginUser
 
 message RspLoginUser
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqRemoveUser
@@ -66,7 +72,7 @@ message ReqRemoveUser
 
 message RspRemoveUser
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqFindUser
@@ -77,7 +83,7 @@ message ReqFindUser
 
 message RspFindUser
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     User user = 2;
 }
 
@@ -98,7 +104,7 @@ message ReqRegisterGroup
 
 message RspRegisterGroup
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 group_id = 2;
 }
 
@@ -120,7 +126,7 @@ message ReqFindGroup
 
 message RspFindGroup
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     SharingGroup group = 2;
 }
 
@@ -131,7 +137,7 @@ message ReqJoinGroup
 
 message RspJoinGroup
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqAssignAsManager
@@ -142,7 +148,7 @@ message ReqAssignAsManager
 
 message RspAssignAsManager
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqAssignAsMember
@@ -153,7 +159,7 @@ message ReqAssignAsMember
 
 message RspAssignAsMember
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqKickOutUser
@@ -164,7 +170,7 @@ message ReqKickOutUser
 
 message RspKickOutUser
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 enum FileType
@@ -187,7 +193,7 @@ message ReqListFile
 
 message RspListFile
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     repeated File file_list = 2;
 }
 
@@ -200,7 +206,7 @@ message ReqPutFileSession
 
 message RspPutFileSession
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 session_id = 2;
     int32 next_fragment = 3;
 }
@@ -213,7 +219,7 @@ message ReqNodePutFileSession
 
 message RspNodePutFileSession
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 session_id = 2;
 }
 
@@ -226,7 +232,7 @@ message ReqPutFile
 
 message RspPutFile
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 session_id = 2;
     int32 fragment_index = 3;
 }
@@ -239,7 +245,7 @@ message ReqGetFileSession
 
 message RspGetFileSession
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 session_id = 2;
     int32 max_fragment = 3;
 }
@@ -251,7 +257,7 @@ message ReqNodeGetFileSession
 
 message RspNodeGetFileSession
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 session_id = 2;
     int32 max_fragment = 3;
 }
@@ -264,7 +270,7 @@ message ReqGetFile
 
 message RspGetFile
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
     int32 session_id = 2;
     int32 fragment_index = 3;
     bytes fragment_content = 4;
@@ -278,7 +284,7 @@ message ReqCreatePath
 
 message RspCreatePath
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }
 
 message ReqRemovePath
@@ -290,5 +296,5 @@ message ReqRemovePath
 
 message RspRemovePath
 {
-    int32 result = 1;
+    ErrorInfo error = 1;
 }

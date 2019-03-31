@@ -114,9 +114,9 @@ void MultiplyPhaseTransaction::pre_on_init(int conn_id, Package package)
 }
 
 
-void MultiplyPhaseTransaction::on_error(int conn_id, int error_code)
+void MultiplyPhaseTransaction::on_error(int conn_id, const ErrorInfo& error_info)
 {
-	on_transaction_error(m_first_conn_id, m_first_trigger_source, error_code);
+	on_transaction_error(m_first_conn_id, m_first_trigger_source, error_info);
 }
 
 
@@ -159,7 +159,7 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, OnActive on
 					 trans->current_phase());
 
 		trans->clear_waiting_state();
-		trans->on_error(trans->waiting_connection_id(), ERR_TRANSACTION_TIMEOUT);
+		trans->on_error(trans->waiting_connection_id(), to_error_info(ERR_TRANSACTION_TIMEOUT));
 
 		if (!trans->is_waiting())
 		{
@@ -170,12 +170,10 @@ void MultiplyPhaseTransaction::wait_next_phase(int conn_id, int cmd, OnActive on
 }
 
 
-void MultiplyPhaseTransaction::send_back_error(int code)
+void MultiplyPhaseTransaction::send_back_error(const ErrorInfo& error_info)
 {
-	LIGHTS_ERROR(logger, "Connection {}: Transaction error. code={}.", first_connection_id(), code);
-	protocol::RspError error;
-	error.set_result(code);
-	Network::send_back_protocol(first_connection_id(), error, m_first_trigger_source);
+	LIGHTS_ERROR(logger, "Connection {}: Transaction error. code={}.", first_connection_id(), error_info.code);
+	on_transaction_error(first_connection_id(), m_first_trigger_source, error_info);
 }
 
 
@@ -188,7 +186,7 @@ MultiplyPhaseTransaction& MultiplyPhaseTransactionManager::register_transaction(
 	auto result = m_trans_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW(Exception, ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST);
+		SPACELESS_THROW(ERR_MULTIPLY_PHASE_TRANSACTION_ALREADY_EXIST);
 	}
 
 	return *trans;
@@ -231,7 +229,7 @@ void MultiplyPhaseTransactionManager::bind_transaction(int trans_id, int package
 	auto result = m_bind_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW(Exception, ERR_BOUND_TRANSACTION_ALREADY_EXIST);
+		SPACELESS_THROW(ERR_BOUND_TRANSACTION_ALREADY_EXIST);
 	}
 }
 
@@ -254,11 +252,12 @@ MultiplyPhaseTransaction* MultiplyPhaseTransactionManager::find_bound_transactio
 }
 
 
-void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, int error_code)
+void on_transaction_error(int conn_id, const PackageTriggerSource& trigger_source, const ErrorInfo& error_info)
 {
-	protocol::RspError error;
-	error.set_result(error_code);
-	Network::send_back_protocol(conn_id, error, trigger_source);
+	protocol::RspError response;
+	response.mutable_error()->set_category(static_cast<std::int32_t>(error_info.category));
+	response.mutable_error()->set_code(error_info.code);
+	Network::send_back_protocol(conn_id, response, trigger_source);
 }
 
 
@@ -272,7 +271,7 @@ void TransactionManager::register_transaction(int cmd,
 	auto result = m_trans_list.insert(value);
 	if (!result.second)
 	{
-		LIGHTS_THROW(Exception, ERR_TRANSACTION_ALREADY_EXIST);
+		SPACELESS_THROW(ERR_TRANSACTION_ALREADY_EXIST);
 	}
 }
 
